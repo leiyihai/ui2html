@@ -2,7 +2,7 @@ import { PRESETS } from "../App";
 import type { ScaleMode } from "../types";
 
 interface Props {
-  onLoadFile: (buffer: ArrayBuffer) => void;
+  onLoadFile: (buffer: ArrayBuffer, name: string) => void;
   viewport: { width: number; height: number };
   onViewport: (v: { width: number; height: number }) => void;
   safeArea: { left: number; right: number; top: number; bottom: number };
@@ -21,11 +21,14 @@ interface Props {
   canRedo: boolean;
   onUndo: () => void;
   onRedo: () => void;
+  psdList: string[];
+  onLoadPsdFromFolder: (name: string) => void;
+  exportMsg: string;
 }
 
 export default function Toolbar(p: Props) {
   const onFile = async (f: File | undefined) => {
-    if (f) p.onLoadFile(await f.arrayBuffer());
+    if (f) p.onLoadFile(await f.arrayBuffer(), f.name);
   };
 
   return (
@@ -36,10 +39,11 @@ export default function Toolbar(p: Props) {
         <input type="file" accept=".psd" style={{ display: "none" }}
           onChange={(e) => onFile(e.target.files?.[0])} />
       </label>
-      <button className="btn" onClick={async () => {
-        const r = await fetch("/test.psd");
-        p.onLoadFile(await r.arrayBuffer());
-      }}>加载示例 test.psd</button>
+      <select title="从 psd 文件夹选择" value=""
+        onChange={(e) => { const n = e.target.value; if (n) p.onLoadPsdFromFolder(n); }}>
+        <option value="">psd 文件夹…</option>
+        {p.psdList.map((n) => <option key={n} value={n}>{n}</option>)}
+      </select>
 
       <span className="sep" />
       {(() => {
@@ -78,8 +82,9 @@ export default function Toolbar(p: Props) {
       <button className="btn" disabled={!p.canRedo} onClick={p.onRedo} title="前进一步 (Ctrl+X)">↪ 重做</button>
 
       <span className="sep" />
-      <button className="btn primary" disabled={!p.hasScene} onClick={p.onExportHtml} title="导出自适应网页 HTML">导出 HTML</button>
+      <button className="btn primary" disabled={!p.hasScene} onClick={p.onExportHtml} title="导出到 export 文件夹">导出 HTML</button>
       <button className="btn" disabled={!p.hasScene} onClick={p.onExportAnchors}>导出锚点</button>
+      {p.exportMsg && <span className="ok">{p.exportMsg}</span>}
 
       <span className="sep" />
       <label><input type="checkbox" checked={p.showSafeArea} onChange={(e) => p.onShowSafeArea(e.target.checked)} /> Safe Area</label>

@@ -42,6 +42,9 @@ export default function App() {
   const [warnings, setWarnings] = useState<string[]>([]);
   const [histLen, setHistLen] = useState(0);
   const [futureLen, setFutureLen] = useState(0);
+  const [psdName, setPsdName] = useState<string | null>(null);
+  const [psdList, setPsdList] = useState<string[]>([]);
+  const [exportMsg, setExportMsg] = useState("");
 
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
@@ -116,7 +119,13 @@ export default function App() {
     applyScene(mutator(prev));
   }, [applyScene, pushHistory]);
 
-  const loadPsd = useCallback(async (buffer: ArrayBuffer) => {
+  // 读取 psd 文件夹列表（start.bat 同步到 public/psd/list.txt）
+  useEffect(() => {
+    fetch("/psd/list.txt").then((r) => r.text()).then((t) =>
+      setPsdList(t.split(/\r?\n/).map((s) => s.trim()).filter(Boolean))).catch(() => { });
+  }, []);
+
+  const loadPsd = useCallback(async (buffer: ArrayBuffer, name: string) => {
     const { scene: s, warnings: w } = importPsd(buffer);
     // 应用已保存的锚点默认配置（public/anchor.json，按图层名）
     try {
@@ -137,9 +146,19 @@ export default function App() {
     setHistLen(0); setFutureLen(0);
     applyScene(s);
     setWarnings(w);
+    setPsdName(name);
     setViewport({ width: s.designWidth, height: s.designHeight });
     setSelectedId(null);
   }, [applyScene]);
+
+  // 从 psd 文件夹加载（下拉选择）
+  const loadPsdFromFolder = useCallback(async (name: string) => {
+    try {
+      const r = await fetch(`/psd/${name}`);
+      if (!r.ok) throw 0;
+      await loadPsd(await r.arrayBuffer(), name);
+    } catch { setExportMsg(`无法加载 psd/${name}（请用 start.bat 启动）`); }
+  }, [loadPsd]);
 
   const exportAnchors = useCallback(() => {
     if (!scene) return;
@@ -157,15 +176,29 @@ export default function App() {
     a.click();
   }, [scene]);
 
-  const exportHtml = useCallback(() => {
+  const exportHtml = useCallback(async () => {
     if (!scene) return;
     const html = buildExportHtml(scene, scaleMode, safeArea);
-    const blob = new Blob([html], { type: "text/html" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "ui-export.html";
-    a.click();
-  }, [scene, scaleMode, safeArea]);
+    const base = (psdName ?? "ui").replace(/\.psd$/i, "");
+    try {
+      const r = await fetch("/save-export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: base, html }),
+      });
+      if (!r.ok) throw 0;
+      setExportMsg(`已导出 export/${base}.html ✓`);
+      return;
+    } catch {
+      // dev server 不可用（file:// 打开）时回退浏览器下载
+      const blob = new Blob([html], { type: "text/html" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${base}.html`;
+      a.click();
+      setExportMsg("已下载（未通过 start.bat 启动，无法写入 export 文件夹）");
+    }
+  }, [scene, scaleMode, safeArea, psdName]);
 
   const updateNode = useCallback((id: string, patch: (n: UINode) => void) => {
     mutateScene((s) => {
@@ -264,6 +297,7 @@ export default function App() {
         showDesignBorder={showDesignBorder} onShowDesignBorder={setShowDesignBorder}
         warnings={warnings} hasScene={!!scene} onExportAnchors={exportAnchors} onExportHtml={exportHtml}
         canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
+        psdList={psdList} onLoadPsdFromFolder={loadPsdFromFolder} exportMsg={exportMsg}
       />
       <div className="body">
         <LayerPanel

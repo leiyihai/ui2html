@@ -28,6 +28,7 @@ body {
 .toolbar .sa-inputs { display: inline-flex; gap: 4px; }
 .toolbar .sa-inputs input { width: 44px; }
 .toolbar .warn { color: #e8b04b; }
+.toolbar .ok { color: #8fd08f; font-size: 12px; }
 .toolbar label { display: inline-flex; align-items: center; gap: 4px; }
 
 .body { flex: 1; display: flex; min-height: 0; }
