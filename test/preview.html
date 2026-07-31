@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>预览 - test</title>
+<style>
+  html,body { margin:0; padding:0; width:100%; height:100%; background:#b2cefb; overflow:hidden; }
+  #stage { position:absolute; left:0; top:0; transform-origin:0 0; }
+  #stage img { position:absolute; }
+</style>
+</head>
+<body>
+<div id="stage">
+<img id="el-0" src="images/背景.png" style="position:absolute;z-index:0;">
+<img id="el-1" src="images/摇杆.png" style="position:absolute;z-index:1;">
+<img id="el-2" src="images/跳跃.png" style="position:absolute;z-index:2;">
+<img id="el-3" src="images/攻击.png" style="position:absolute;z-index:3;">
+<img id="el-4" src="images/镜头.png" style="position:absolute;z-index:4;">
+<img id="el-5" src="images/底栏.png" style="position:absolute;z-index:5;">
+<img id="el-6" src="images/血条.png" style="position:absolute;z-index:6;">
+<img id="el-7" src="images/buff.png" style="position:absolute;z-index:7;">
+<img id="el-8" src="images/设置.png" style="position:absolute;z-index:8;">
+<img id="el-9" src="images/聊天.png" style="position:absolute;z-index:9;">
+<img id="el-10" src="images/镜头.png" style="position:absolute;z-index:10;">
+<img id="el-11" src="images/表情.png" style="position:absolute;z-index:11;">
+<img id="el-12" src="images/摄像机.png" style="position:absolute;z-index:12;">
+<img id="el-13" src="images/荣誉之路.png" style="position:absolute;z-index:13;">
+<img id="el-14" src="images/头像.png" style="position:absolute;z-index:14;">
+<img id="el-15" src="images/通行证.png" style="position:absolute;z-index:15;">
+<img id="el-16" src="images/货币栏.png" style="position:absolute;z-index:16;">
+<img id="el-17" src="images/战斗商店.png" style="position:absolute;z-index:17;">
+<img id="el-18" src="images/角色系统.png" style="position:absolute;z-index:18;">
+<img id="el-19" src="images/快捷栏2.png" style="position:absolute;z-index:19;">
+<img id="el-20" src="images/快捷栏1.png" style="position:absolute;z-index:20;">
+<img id="el-21" src="images/开始游戏.png" style="position:absolute;z-index:21;">
+<img id="el-22" src="images/宝箱.png" style="position:absolute;z-index:22;">
+</div>
+<script>
+
+var W = 1280, H = 720;
+var ELEMS = [{"idx": 0, "name": "背景", "file": "背景.png", "anchor": "tl", "x": 0.0, "y": 0.0, "w": 1280, "h": 720, "z": 0}, {"idx": 1, "name": "摇杆", "file": "摇杆.png", "anchor": "bl", "x": 35.0, "y": -312.0, "w": 244, "h": 243, "z": 1}, {"idx": 2, "name": "跳跃", "file": "跳跃.png", "anchor": "br", "x": -193.0, "y": -231.0, "w": 100, "h": 100, "z": 2}, {"idx": 3, "name": "攻击", "file": "攻击.png", "anchor": "cr", "x": -327.0, "y": 22.0, "w": 100, "h": 100, "z": 3}, {"idx": 4, "name": "镜头", "file": "镜头.png", "anchor": "br", "x": -274.0, "y": -80.0, "w": 64, "h": 64, "z": 4}, {"idx": 5, "name": "底栏", "file": "底栏.png", "anchor": "bl", "x": 306.0, "y": -80.0, "w": 668, "h": 67, "z": 5}, {"idx": 6, "name": "血条", "file": "血条.png", "anchor": "bc", "x": -250.0, "y": -108.0, "w": 245, "h": 24, "z": 6}, {"idx": 7, "name": "buff", "file": "buff.png", "anchor": "bc", "x": -249.0, "y": -151.0, "w": 194, "h": 29, "z": 7}, {"idx": 8, "name": "设置", "file": "设置.png", "anchor": "tl", "x": 18.0, "y": 8.0, "w": 64, "h": 64, "z": 8}, {"idx": 9, "name": "聊天", "file": "聊天.png", "anchor": "tl", "x": 84.0, "y": 8.0, "w": 64, "h": 64, "z": 9}, {"idx": 10, "name": "镜头", "file": "镜头.png", "anchor": "tl", "x": 150.0, "y": 8.0, "w": 64, "h": 64, "z": 10}, {"idx": 11, "name": "表情", "file": "表情.png", "anchor": "tl", "x": 216.0, "y": 8.0, "w": 64, "h": 64, "z": 11}, {"idx": 12, "name": "摄像机", "file": "摄像机.png", "anchor": "tl", "x": 282.0, "y": 8.0, "w": 64, "h": 64, "z": 12}, {"idx": 13, "name": "荣誉之路", "file": "荣誉之路.png", "anchor": "tl", "x": 92.0, "y": 81.0, "w": 155, "h": 69, "z": 13}, {"idx": 14, "name": "头像", "file": "头像.png", "anchor": "tl", "x": 14.0, "y": 73.0, "w": 75, "h": 83, "z": 14}, {"idx": 15, "name": "通行证", "file": "通行证.png", "anchor": "tl", "x": 350.0, "y": 5.0, "w": 162, "h": 67, "z": 15}, {"idx": 16, "name": "货币栏", "file": "货币栏.png", "anchor": "tr", "x": -227.0, "y": 7.0, "w": 208, "h": 64, "z": 16}, {"idx": 17, "name": "战斗商店", "file": "战斗商店.png", "anchor": "tl", "x": 250.0, "y": 86.0, "w": 64, "h": 64, "z": 17}, {"idx": 18, "name": "角色系统", "file": "角色系统.png", "anchor": "tr", "x": -272.0, "y": 72.0, "w": 256, "h": 100, "z": 18}, {"idx": 19, "name": "快捷栏2", "file": "快捷栏2.png", "anchor": "cr", "x": -242.0, "y": -108.0, "w": 84, "h": 83, "z": 19}, {"idx": 20, "name": "快捷栏1", "file": "快捷栏1.png", "anchor": "tr", "x": -386.0, "y": 158.0, "w": 83, "h": 83, "z": 20}, {"idx": 21, "name": "开始游戏", "file": "开始游戏.png", "anchor": "bc", "x": 48.0, "y": -151.0, "w": 203, "h": 65, "z": 21}, {"idx": 22, "name": "宝箱", "file": "宝箱.png", "anchor": "br", "x": -374.0, "y": -152.0, "w": 63, "h": 70, "z": 22}];
+var BG = "#b2cefb";
+var ANCHOR = { tl:[0,0], tc:[.5,0], tr:[1,0], cl:[0,.5], cc:[.5,.5], cr:[1,.5], bl:[0,1], bc:[.5,1], br:[1,1] };
+function rectOf(e, cw, ch, s) {
+  var a = ANCHOR[e.anchor] || ANCHOR.cc;
+  return { l: a[0]*cw + e.x*s, t: a[1]*ch + e.y*s, w: e.w*s, h: e.h*s };
+}
+function render(cw, ch, s) {
+  ELEMS.forEach(function (e) {
+    var el = document.getElementById("el-" + e.idx);
+    if (!el) return;
+    var r = rectOf(e, cw, ch, s);
+    el.style.left = r.l + "px"; el.style.top = r.t + "px";
+    el.style.width = r.w + "px"; el.style.height = r.h + "px";
+  });
+}
+
+(function () {
+  var stage = document.getElementById("stage");
+  var cw = 0, ch = 0, scale = 1;
+  var vv = window.visualViewport || window;
+  function fit() {
+    // 容器 = 视口，元素按锚点渲染；再整体等比缩放以看清全貌
+    scale = Math.min(vv.width / W, vv.height / H);
+    cw = W * scale; ch = H * scale;
+    stage.style.transform = "scale(" + scale + ")";
+    stage.style.left = (vv.width - cw) / 2 + "px";
+    stage.style.top = (vv.height - ch) / 2 + "px";
+    stage.style.width = W + "px"; stage.style.height = H + "px";
+    render(W, H, 1);   // 容器=设计尺寸，锚点偏移按设计稿；缩放交给 stage
+  }
+  vv.addEventListener && vv.addEventListener("resize", fit);
+  window.addEventListener("orientationchange", fit);
+  fit();
+})();
+
+</script>
+</body>
+</html>
