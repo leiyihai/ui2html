@@ -20,10 +20,10 @@ body {
 }
 .btn:hover { background: #454d5e; }
 .toolbar .sep { width: 1px; height: 20px; background: #3a4150; margin: 0 4px; }
-.toolbar select, .toolbar input[type="number"] {
-  background: #1c2026; color: #eee; border: 1px solid #3a4150; border-radius: 4px;
-  padding: 3px 6px; font-size: 12px; width: 74px;
-}
+.toolbar select { background: #1c2026; color: #eee; border: 1px solid #3a4150; border-radius: 4px;
+  padding: 3px 6px; font-size: 12px; width: 150px; }
+.toolbar input[type="number"] { background: #1c2026; color: #eee; border: 1px solid #3a4150; border-radius: 4px;
+  padding: 3px 6px; font-size: 12px; width: 74px; }
 .toolbar .num input { width: 56px; }
 .toolbar .sa-inputs { display: inline-flex; gap: 4px; }
 .toolbar .sa-inputs input { width: 44px; }

@@ -25,14 +25,14 @@ export interface OverlayOptions {
 export function renderOverlay(ctx: CanvasRenderingContext2D, result: LayoutResult,
   layoutCtx: LayoutContext, opt: OverlayOptions) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  const { scale, letterbox } = result;
+  const { scaleX, scaleY, letterbox } = result;
 
   // 设计分辨率边框（letterbox 区域边界）
   if (opt.showDesignBorder) {
     ctx.strokeStyle = "rgba(74,144,217,0.9)";
     ctx.setLineDash([6, 4]);
     ctx.lineWidth = 1;
-    ctx.strokeRect(letterbox.x, letterbox.y, layoutCtx.designWidth * scale, layoutCtx.designHeight * scale);
+    ctx.strokeRect(letterbox.x, letterbox.y, layoutCtx.designWidth * scaleX, layoutCtx.designHeight * scaleY);
     ctx.setLineDash([]);
   }
 

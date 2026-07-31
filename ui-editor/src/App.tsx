@@ -2,34 +2,54 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LayoutEngine, reanchor } from "./layoutEngine";
 import { importPsd } from "./psdImport";
 import { renderOverlay, renderUi } from "./renderer";
-import type { LayoutContext, UINode, UIScene } from "./types";
+import { buildExportHtml } from "./exportHtml";
+import type { LayoutContext, ScaleMode, UINode, UIScene } from "./types";
 import Toolbar from "./components/Toolbar";
 import LayerPanel from "./components/LayerPanel";
 import Inspector from "./components/Inspector";
 
 export const PRESETS: [string, number, number][] = [
-  ["1920 × 1080", 1920, 1080],
-  ["2340 × 1080", 2340, 1080],
-  ["2560 × 1440", 2560, 1440],
-  ["1280 × 720", 1280, 720],
-  ["1080 × 1920", 1080, 1920],
-  ["390 × 844", 390, 844],
-  ["375 × 812", 375, 812],
+  ["16:9 (1920 × 1080)", 1920, 1080],
+  ["18:9 (2160 × 1080)", 2160, 1080],
+  ["21:9 (2520 × 1080)", 2520, 1080],
+  ["iPad 横屏 (1024 × 768)", 1024, 768],
+  ["iPad 竖屏 (768 × 1024)", 768, 1024],
+  ["iPhone 刘海屏 (390 × 844)", 390, 844],
 ];
+
+// 撤销快照：只存可变属性（image 是 canvas 不能序列化）
+type Snapshot = Record<string, {
+  anchor: UINode["anchor"]; adaptation: UINode["adaptation"];
+  visible: boolean; opacity: number; zIndex: number; rotation: number;
+  scale: { x: number; y: number }; name: string; locked?: boolean;
+}>;
+const snapScene = (s: UIScene): Snapshot => Object.fromEntries(s.nodes.map((n) => [n.id, {
+  anchor: { ...n.anchor }, adaptation: { ...n.adaptation }, visible: n.visible,
+  opacity: n.opacity, zIndex: n.zIndex, rotation: n.rotation,
+  scale: { ...n.scale }, name: n.name, locked: n.locked,
+}]));
+
+const HISTORY_LIMIT = 50; // 步数不用保留太多
 
 export default function App() {
   const [scene, setScene] = useState<UIScene | null>(null);
   const [viewport, setViewport] = useState({ width: 1280, height: 720 });
   const [safeArea, setSafeArea] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
+  const [scaleMode, setScaleMode] = useState<ScaleMode>("cover");
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [showSafeArea, setShowSafeArea] = useState(true);
+  const [showSafeArea, setShowSafeArea] = useState(false);
   const [showDesignBorder, setShowDesignBorder] = useState(true);
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [histLen, setHistLen] = useState(0);
+  const [futureLen, setFutureLen] = useState(0);
 
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ id: string; startX: number; startY: number } | null>(null);
+  const sceneRef = useRef<UIScene | null>(null); // 同步引用（事件中立即更新）
+  const historyRef = useRef<Snapshot[]>([]);
+  const futureRef = useRef<Snapshot[]>([]);
 
   const layoutCtx: LayoutContext | null = useMemo(
     () => (scene ? {
@@ -38,8 +58,9 @@ export default function App() {
       viewportWidth: viewport.width,
       viewportHeight: viewport.height,
       safeArea,
+      scaleMode,
     } : null),
-    [scene, viewport, safeArea],
+    [scene, viewport, safeArea, scaleMode],
   );
   const result = useMemo(
     () => (scene && layoutCtx ? new LayoutEngine().layoutScene(scene, layoutCtx) : null),
@@ -78,33 +99,124 @@ export default function App() {
     return () => window.removeEventListener("resize", fit);
   }, [layoutCtx]);
 
-  const loadPsd = useCallback((buffer: ArrayBuffer) => {
+  // ---- 状态变更统一入口（record=true 时压入历史）----
+  const applyScene = useCallback((next: UIScene) => { sceneRef.current = next; setScene(next); }, []);
+  const pushHistory = useCallback((s: UIScene) => {
+    historyRef.current.push(snapScene(s));
+    if (historyRef.current.length > HISTORY_LIMIT) historyRef.current.shift();
+    futureRef.current = [];
+    setHistLen(historyRef.current.length);
+    setFutureLen(0);
+  }, []);
+
+  const mutateScene = useCallback((mutator: (s: UIScene) => UIScene, record = true) => {
+    const prev = sceneRef.current;
+    if (!prev) return;
+    if (record) pushHistory(prev);
+    applyScene(mutator(prev));
+  }, [applyScene, pushHistory]);
+
+  const loadPsd = useCallback(async (buffer: ArrayBuffer) => {
     const { scene: s, warnings: w } = importPsd(buffer);
-    setScene(s);
+    // 应用已保存的锚点默认配置（public/anchor.json，按图层名）
+    try {
+      const r = await fetch("anchor.json");
+      if (r.ok) {
+        const presets = await r.json();
+        s.nodes.forEach((n) => {
+          const p = presets[n.name];
+          if (p) {
+            n.anchor = { ...n.anchor, ...p };
+            if (p.mode) n.adaptation.mode = p.mode;
+          }
+        });
+      }
+    } catch { /* 无默认配置则用 PSD 推断 */ }
+    historyRef.current = [];
+    futureRef.current = [];
+    setHistLen(0); setFutureLen(0);
+    applyScene(s);
     setWarnings(w);
     setViewport({ width: s.designWidth, height: s.designHeight });
     setSelectedId(null);
-  }, []);
+  }, [applyScene]);
+
+  const exportAnchors = useCallback(() => {
+    if (!scene) return;
+    const data = Object.fromEntries(scene.nodes.map((n) => [n.name, {
+      parentX: n.anchor.parentX, parentY: n.anchor.parentY,
+      selfX: n.anchor.selfX, selfY: n.anchor.selfY,
+      offsetX: Math.round(n.anchor.offsetX * 10) / 10,
+      offsetY: Math.round(n.anchor.offsetY * 10) / 10,
+      mode: n.adaptation.mode,
+    }]));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "anchor.json";
+    a.click();
+  }, [scene]);
+
+  const exportHtml = useCallback(() => {
+    if (!scene) return;
+    const html = buildExportHtml(scene, scaleMode, safeArea);
+    const blob = new Blob([html], { type: "text/html" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "ui-export.html";
+    a.click();
+  }, [scene, scaleMode, safeArea]);
 
   const updateNode = useCallback((id: string, patch: (n: UINode) => void) => {
-    setScene((prev) => prev && {
-      ...prev,
-      nodes: prev.nodes.map((n) => (n.id === id ? (patch(n), { ...n }) : n)),
-    });
-  }, []);
-
-  const updateSelected = useCallback((patch: (n: UINode) => void) => {
-    setScene((prev) => {
-      if (!prev) return prev;
-      const idx = prev.nodes.findIndex((n) => n.id === selectedId);
-      if (idx < 0) return prev;
-      const n = { ...prev.nodes[idx] };
+    mutateScene((s) => {
+      const n = { ...s.nodes.find((x) => x.id === id)! };
       patch(n);
-      const nodes = prev.nodes.slice();
-      nodes[idx] = n;
-      return { ...prev, nodes };
+      return { ...s, nodes: s.nodes.map((x) => (x.id === id ? n : x)) };
     });
-  }, [selectedId]);
+  }, [mutateScene]);
+
+  const updateSelected = useCallback((patch: (n: UINode) => void, record = true) => {
+    const prev = sceneRef.current;
+    if (!prev) return;
+    const idx = prev.nodes.findIndex((x) => x.id === selectedId);
+    if (idx < 0) return;
+    const n = { ...prev.nodes[idx] };
+    patch(n);
+    mutateScene((s) => ({ ...s, nodes: s.nodes.map((x) => (x.id === n.id ? n : x)) }), record);
+  }, [selectedId, mutateScene]);
+
+  // ---- 撤销 / 重做（Ctrl+Z 后退，Ctrl+X 前进）----
+  const undo = useCallback(() => {
+    const snap = historyRef.current.pop();
+    if (!snap) return;
+    futureRef.current.push(snapScene(sceneRef.current!));
+    const s = sceneRef.current!;
+    applyScene({ ...s, nodes: s.nodes.map((n) => (snap[n.id] ? { ...n, ...snap[n.id] } : n)) });
+    setHistLen(historyRef.current.length);
+    setFutureLen(futureRef.current.length);
+  }, [applyScene]);
+
+  const redo = useCallback(() => {
+    const snap = futureRef.current.pop();
+    if (!snap) return;
+    historyRef.current.push(snapScene(sceneRef.current!));
+    const s = sceneRef.current!;
+    applyScene({ ...s, nodes: s.nodes.map((n) => (snap[n.id] ? { ...n, ...snap[n.id] } : n)) });
+    setHistLen(historyRef.current.length);
+    setFutureLen(futureRef.current.length);
+  }, [applyScene]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      const t = e.target as HTMLElement;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+      if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
+      else if (e.key === "x" || e.key === "X") { e.preventDefault(); redo(); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [undo, redo]);
 
   // 命中检测 + 拖动（文档 §17：拖动只改 offset，不碰 designRect）
   const toLogical = (clientX: number, clientY: number) => {
@@ -124,6 +236,7 @@ export default function App() {
     if (!hit) { setSelectedId(null); return; }
     setSelectedId(hit.node.id);
     if (hit.node.locked) return;
+    pushHistory(sceneRef.current!); // 拖动前记录一次，撤销回退整个拖动
     dragRef.current = { id: hit.node.id, startX: e.clientX, startY: e.clientY };
   };
   const onPointerMove = (e: React.PointerEvent) => {
@@ -134,9 +247,9 @@ export default function App() {
     const dx = p.x - start.x, dy = p.y - start.y;
     updateSelected((n) => {
       if (n.adaptation.mode !== "anchor") n.adaptation.mode = "anchor"; // 拖动 → 锚点模式
-      n.anchor.offsetX += dx / result.scale;   // 预览位移 → 设计 offset（÷scale 等比）
-      n.anchor.offsetY += dy / result.scale;
-    });
+      n.anchor.offsetX += dx / result.scaleX;   // 预览位移 → 设计 offset（÷scale 等比）
+      n.anchor.offsetY += dy / result.scaleY;
+    }, false); // 拖动中不记录（按下时已记录一次）
     dragRef.current = { ...d, startX: e.clientX, startY: e.clientY };
   };
   const onPointerUp = () => { dragRef.current = null; };
@@ -146,9 +259,11 @@ export default function App() {
       <Toolbar
         onLoadFile={loadPsd} viewport={viewport} onViewport={setViewport}
         safeArea={safeArea} onSafeArea={setSafeArea}
+        scaleMode={scaleMode} onScaleMode={setScaleMode}
         showSafeArea={showSafeArea} onShowSafeArea={setShowSafeArea}
         showDesignBorder={showDesignBorder} onShowDesignBorder={setShowDesignBorder}
-        warnings={warnings} hasScene={!!scene}
+        warnings={warnings} hasScene={!!scene} onExportAnchors={exportAnchors} onExportHtml={exportHtml}
+        canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
       />
       <div className="body">
         <LayerPanel

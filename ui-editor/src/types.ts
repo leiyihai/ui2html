@@ -52,12 +52,15 @@ export interface UIScene {
   nodes: UINode[];
 }
 
+export type ScaleMode = "contain" | "width" | "height" | "fill" | "cover";
+
 export interface LayoutContext {
   designWidth: number;
   designHeight: number;
   viewportWidth: number;
   viewportHeight: number;
   safeArea: { left: number; right: number; top: number; bottom: number };
+  scaleMode: ScaleMode; // 整体缩放策略：contain | 按宽度 | 按高度 | fill
 }
 
 export interface LayoutResultNode {
@@ -67,6 +70,7 @@ export interface LayoutResultNode {
 
 export interface LayoutResult {
   nodes: LayoutResultNode[];
-  scale: number; // contain 等比缩放
+  scaleX: number;
+  scaleY: number;
   letterbox: { x: number; y: number }; // 容器内居中偏移
 }
