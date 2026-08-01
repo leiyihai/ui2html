@@ -92,7 +92,7 @@ export default function App() {
     const fit = () => {
       const wrap = wrapRef.current;
       if (!wrap || !layoutCtx) return;
-      const s = Math.min(wrap.clientWidth / layoutCtx.viewportWidth, wrap.clientHeight / layoutCtx.viewportHeight);
+      const s = Math.min(wrap.clientWidth / layoutCtx.viewportWidth, wrap.clientHeight / layoutCtx.viewportHeight) * 0.72;
       for (const c of [uiRef.current, ovRef.current]) {
         if (c) { c.style.width = `${layoutCtx.viewportWidth * s}px`; c.style.height = `${layoutCtx.viewportHeight * s}px`; }
       }
