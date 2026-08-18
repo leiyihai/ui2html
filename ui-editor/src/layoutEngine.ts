@@ -10,6 +10,7 @@
 //   stretch ：填满容器（viewport 或 safe area）
 
 import type { LayoutContext, LayoutResult, UINode } from "./types";
+import { estTextWidth, LINE_HEIGHT } from "./textMeasure";
 
 export class LayoutEngine {
   layoutScene(scene: { designWidth: number; designHeight: number; nodes: UINode[] }, ctx: LayoutContext): LayoutResult {
@@ -141,7 +142,10 @@ export class LayoutEngine {
         : parentRect ?? { x: 0, y: 0, width: ctx.viewportWidth, height: ctx.viewportHeight };
       rect = { x: area.x, y: area.y, width: area.width, height: area.height };
     } else {
-      const w = dw * scaleX, h = dh * scaleY;
+      // auto 模式文本：宽/高随内容（单行估算），其他节点用 designRect
+      const isAutoText = n.text?.mode === "auto";
+      const w = isAutoText ? Math.max(1, estTextWidth(n.text!.content, n.text!.fontSize)) * scaleX : dw * scaleX;
+      const h = isAutoText ? n.text!.fontSize * LINE_HEIGHT * scaleY : dh * scaleY;
       if (n.adaptation.mode === "scale") {
         rect = parentRect
           ? { x: parentRect.x + n.designRect.x * scaleX, y: parentRect.y + n.designRect.y * scaleY, width: w, height: h }

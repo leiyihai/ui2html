@@ -4,7 +4,7 @@ import type { ScaleMode, UINode, UIScene } from "./types";
 interface FlatNode {
   name: string;
   img: string;
-  txt?: { t: string; fs: number; c: string } | null;
+  txt?: { t: string; fs: number; c: string; f?: string; m?: string; mfs?: number } | null;
   w: number; h: number;
   dx: number; dy: number;
   a: UINode["anchor"];
@@ -24,7 +24,7 @@ function flatten(nodes: UINode[], out: FlatNode[] = [], parentIdx = -1): FlatNod
     out.push({
       name: n.name,
       img: n.image ? n.image.toDataURL("image/png") : "",
-      txt: n.text ? { t: n.text.content, fs: n.text.fontSize, c: n.text.color } : null,
+      txt: n.text ? { t: n.text.content, fs: n.text.fontSize, c: n.text.color, f: n.text.font, m: n.text.mode, mfs: n.text.minFontSize } : null,
       w: n.designRect.width, h: n.designRect.height,
       dx: n.designRect.x, dy: n.designRect.y,
       a: n.anchor, mode: n.adaptation.mode,
@@ -170,6 +170,24 @@ function layout(vw, vh) {
   return out;
 }
 
+/** 估算字符宽/文本宽/换行/fit 字号（与编辑器一致） */
+function charW(ch, fs) { var c = ch.codePointAt ? ch.codePointAt(0) : ch.charCodeAt(0); return c > 0x2e7f ? fs : (c <= 0x7f ? fs * 0.55 : fs * 0.8); }
+function tWidth(t, fs) { var w = 0; for (var i = 0; i < t.length; i++) w += charW(t[i], fs); return w; }
+function wrap(t, fs, maxW) {
+  var lines = [], line = "";
+  for (var i = 0; i < t.length; i++) {
+    var ch = t[i];
+    if (ch === "
+") { lines.push(line); line = ""; continue; }
+    if (line && tWidth(line + ch, fs) > maxW) { lines.push(line); line = ch; } else line += ch;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+function fitFs(t, maxFs, minFs, boxW, boxH) {
+  for (var f = maxFs; f >= minFs; f--) { var ls = wrap(t, f, boxW); if (ls.length * f * 1.2 <= boxH) return f; }
+  return minFs;
+}
 function draw() {
   var vw = window.innerWidth, vh = window.innerHeight;
   var dpr = window.devicePixelRatio || 1;
@@ -189,7 +207,7 @@ function draw() {
       if (im && im.complete) ctx.drawImage(im, r.r.x, r.r.y, r.r.w, r.r.h);
     } else if (r.n.txt) {
       var fsScale = SCENE.scaleMode === "fill" ? vw / SCENE.width : Math.min(vw / SCENE.width, vh / SCENE.height);
-      ctx.font = r.n.txt.fs * fsScale + 'px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.font = r.n.txt.fs * fsScale + 'px ' + (r.n.txt.f ? '"' + r.n.txt.f + '", ' : '') + '"PingFang SC","Microsoft YaHei",sans-serif';
       ctx.fillStyle = r.n.txt.c;
       ctx.textBaseline = "top";
       ctx.fillText(r.n.txt.t, r.r.x, r.r.y, r.r.w);

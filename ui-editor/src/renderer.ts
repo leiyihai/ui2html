@@ -2,6 +2,7 @@
 // uiCanvas：UI 图片；overlayCanvas：选中框 / 锚点 / Safe Area / 网格 / 设计分辨率边框
 
 import type { LayoutResult, LayoutContext } from "./types";
+import { fitFontSize, wrapText, LINE_HEIGHT } from "./textMeasure";
 
 export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -13,15 +14,34 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult) {
     if (node.image) {
       ctx.drawImage(node.image, rect.x, rect.y, rect.width, rect.height);
     } else if (node.text) {
-      // 文本节点：按文本内容绘制（粗粒度，后续可细化）
-      ctx.font = `${node.text.fontSize * Math.min(result.scaleX, result.scaleY)}px "PingFang SC", "Microsoft YaHei", sans-serif`;
-      ctx.fillStyle = node.text.color;
-      ctx.textBaseline = "top";
-      ctx.textAlign = "left";
-      const lines = node.text.content.split("\n");
-      for (let li = 0; li < lines.length; li++) {
-        ctx.fillText(lines[li], rect.x, rect.y + li * node.text.fontSize * result.scaleY, rect.width);
+      const t = node.text;
+      const scale = Math.min(result.scaleX, result.scaleY);
+      const fam = t.font ? `"${t.font}", ` : "";
+      ctx.save();
+      if (t.mode !== "auto") {
+        // 固定框 / 自适应：内容限定在 rect 内，超出裁切
+        ctx.beginPath();
+        ctx.rect(rect.x, rect.y, rect.width, rect.height);
+        ctx.clip();
       }
+      let fs = t.fontSize;
+      if (t.mode === "fit") {
+        fs = fitFontSize(t.content, t.fontSize, t.minFontSize,
+          rect.width / result.scaleX, rect.height / result.scaleY);
+      }
+      ctx.font = `${fs * scale}px ${fam}"PingFang SC", "Microsoft YaHei", sans-serif`;
+      ctx.fillStyle = t.color;
+      ctx.textBaseline = "top";
+      if (t.mode === "auto") {
+        // 单行随内容延伸，不换行不裁切
+        ctx.fillText(t.content, rect.x, rect.y);
+      } else {
+        const lines = wrapText(t.content, fs, rect.width / result.scaleX);
+        for (let li = 0; li < lines.length; li++) {
+          ctx.fillText(lines[li], rect.x, rect.y + li * fs * LINE_HEIGHT * result.scaleY);
+        }
+      }
+      ctx.restore();
     }
     ctx.restore();
   }

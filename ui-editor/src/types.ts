@@ -21,12 +21,23 @@ export interface ListConfig {
   columns: number;
 }
 
+export type TextMode = "auto" | "fixed" | "fit";
+
 export interface UINode {
   id: string;
   name: string;
   image: HTMLCanvasElement | null;
   /** 文本节点内容（image 为 null 时按文本绘制） */
-  text?: { content: string; fontSize: number; color: string };
+  text?: {
+    content: string;
+    fontSize: number;
+    color: string;
+    font?: string;
+    /** auto=单行随内容延伸；fixed=固定框内换行+裁切；fit=固定框内字号自适应 */
+    mode: TextMode;
+    /** fit 模式最小字号 */
+    minFontSize: number;
+  };
   /** 组节点（PSD 文件夹）：子节点相对该组定位，自身不绘制 */
   children?: UINode[];
   /** list 节点（文件夹名为 list）：li 按类型重排、容器尺寸自适应 */

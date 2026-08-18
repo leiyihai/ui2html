@@ -89,12 +89,27 @@ export default function Inspector(p: Props) {
           <h4>文本内容</h4>
           <textarea rows={2} value={n.text.content}
             onChange={(e) => set("text", { ...n.text!, content: e.target.value })} />
+          <div className="row"><label>模式</label>
+            <select value={n.text.mode}
+              onChange={(e) => set("text", { ...n.text!, mode: e.target.value as any })}>
+              <option value="auto">单行延伸</option>
+              <option value="fixed">固定框（换行+裁切）</option>
+              <option value="fit">自适应字号</option>
+            </select></div>
           <div className="row"><label>字号</label>
             <input type="number" min={1} value={n.text.fontSize}
               onChange={(e) => set("text", { ...n.text!, fontSize: Math.max(1, +e.target.value || 1) })} /></div>
+          {n.text.mode === "fit" && (
+            <div className="row"><label>最小字号</label>
+              <input type="number" min={1} value={n.text.minFontSize}
+                onChange={(e) => set("text", { ...n.text!, minFontSize: Math.max(1, +e.target.value || 1) })} /></div>
+          )}
           <div className="row"><label>颜色</label>
             <input type="color" value={toHex(n.text.color)}
               onChange={(e) => set("text", { ...n.text!, color: e.target.value })} /></div>
+          {n.text.mode !== "auto" && (
+            <p className="hint">文本框宽高用下方「尺寸」调整；内容超出框会被裁切</p>
+          )}
         </>
       )}
 

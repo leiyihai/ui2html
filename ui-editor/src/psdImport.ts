@@ -42,8 +42,12 @@ function textColor(layer: Layer): string {
   const c = layer.text?.style?.fillColor ?? layer.text?.styleRuns?.[0]?.style?.fillColor;
   if (!c) return "#ffffff";
   if (typeof c === "string") return c;
-  const v = c as { r: number; g: number; b: number };
-  return `rgb(${Math.round(v.r * 255)},${Math.round(v.g * 255)},${Math.round(v.b * 255)})`;
+  // ag-psd 的 r/g/b 已是 0..255，直接使用（不要 ×255，否则深色溢出成白色）
+  const v = c as { r: number; g: number; b: number; a?: number };
+  if (v.a != null && v.a < 0.999) {
+    return `rgba(${Math.round(v.r)},${Math.round(v.g)},${Math.round(v.b)},${v.a})`;
+  }
+  return `rgb(${Math.round(v.r)},${Math.round(v.g)},${Math.round(v.b)})`;
 }
 
 /** 检测启用的图层样式（投影/内阴影/发光/描边等），返回名称列表 */
@@ -71,7 +75,9 @@ function rasterizeVector(layer: Layer, w: number, h: number): HTMLCanvasElement 
   c.width = w; c.height = h;
   const g = c.getContext("2d")!;
   const col = fill.color as { r: number; g: number; b: number; a?: number };
-  g.fillStyle = `rgba(${Math.round(col.r * 255)},${Math.round(col.g * 255)},${Math.round(col.b * 255)},${col.a ?? 1})`;
+  g.fillStyle = col.a != null && col.a < 0.999
+    ? `rgba(${Math.round(col.r)},${Math.round(col.g)},${Math.round(col.b)},${col.a})`
+    : `rgb(${Math.round(col.r)},${Math.round(col.g)},${Math.round(col.b)})`;
   for (const p of paths) {
     g.beginPath();
     const knots = (p as any).knots as { point: { x: number; y: number }; left?: { x: number; y: number }; right?: { x: number; y: number } }[];
@@ -158,11 +164,19 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
 
   // 文本图层优先转文本节点（可编辑文字），除非带启用的图层样式（此时保留合成裁剪的样式效果）
   if (layer.text?.text && !effects.length) {
+    // ag-psd 对中文文本的 fontSize 解析异常（值远小于实际），用 bbox 高度估算兜底：
+    // 单行文本高 ≈ 字号 × leading(≈1.2)。fsRaw 明显小于估算一半时视为异常。
+    const fsRaw = layer.text.style?.fontSize ?? layer.text.styleRuns?.[0]?.style?.fontSize ?? 0;
+    const fsEst = h / 1.2;
+    const fontSize = fsRaw > 0 && fsRaw >= fsEst / 2 ? fsRaw : fsEst;
     return {
       ...base, image: null, text: {
         content: layer.text.text,
-        fontSize: layer.text.style?.fontSize ?? layer.text.styleRuns?.[0]?.style?.fontSize ?? 32,
+        fontSize,
         color: textColor(layer),
+        font: layer.text.style?.font?.name ?? undefined,
+        mode: "auto", // 默认单行随内容延伸，可在属性面板切换
+        minFontSize: Math.max(6, Math.round(fontSize * 0.5)),
       }, zIndex: i,
       designRect: { x: x - baseX, y: y - baseY, width: w, height: h },
       anchor: { parentX: px, parentY: py, selfX: 0, selfY: 0, offsetX: ox, offsetY: oy, safeArea: false },
