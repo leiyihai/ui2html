@@ -26,6 +26,12 @@ export default function Inspector(p: Props) {
   const set = <K extends keyof UINode>(key: K, val: UINode[K]) =>
     p.onUpdate((x) => { (x as any)[key] = val; });
 
+  const toHex = (color: string): string => {
+    const m = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    if (m) return "#" + m.slice(1).map((v) => (+v).toString(16).padStart(2, "0")).join("");
+    return /^#[0-9a-fA-F]{6}$/.test(color) ? color : "#ffffff";
+  };
+
   return (
     <aside className="inspector">
       <h3>属性</h3>
@@ -37,6 +43,38 @@ export default function Inspector(p: Props) {
           <option value="scale">scale</option>
           <option value="stretch">stretch</option>
         </select></div>
+      {n.list && (
+        <>
+          <h4>List</h4>
+          <div className="row"><label>类型</label>
+            <select value={n.list.type}
+              onChange={(e) => set("list", { ...n.list!, type: e.target.value as any })}>
+              <option value="horizontal">水平</option>
+              <option value="vertical">垂直</option>
+              <option value="grid">格子</option>
+            </select></div>
+          <div className="row"><label>间距</label>
+            <input type="number" min={0} value={Math.round(n.list.spacing)}
+              onChange={(e) => set("list", { ...n.list!, spacing: Math.max(0, +e.target.value || 0) })} /></div>
+          {n.list.type === "grid" && (
+            <div className="row"><label>列数</label>
+              <input type="number" min={1} value={n.list.columns}
+                onChange={(e) => set("list", { ...n.list!, columns: Math.max(1, +e.target.value || 1) })} /></div>
+          )}
+          <div className="row"><label>边距L</label>
+            <input type="number" min={0} value={Math.round(n.list.padding.left)}
+              onChange={(e) => set("list", { ...n.list!, padding: { ...n.list!.padding, left: Math.max(0, +e.target.value || 0) } })} /></div>
+          <div className="row"><label>边距R</label>
+            <input type="number" min={0} value={Math.round(n.list.padding.right)}
+              onChange={(e) => set("list", { ...n.list!, padding: { ...n.list!.padding, right: Math.max(0, +e.target.value || 0) } })} /></div>
+          <div className="row"><label>边距T</label>
+            <input type="number" min={0} value={Math.round(n.list.padding.top)}
+              onChange={(e) => set("list", { ...n.list!, padding: { ...n.list!.padding, top: Math.max(0, +e.target.value || 0) } })} /></div>
+          <div className="row"><label>边距B</label>
+            <input type="number" min={0} value={Math.round(n.list.padding.bottom)}
+              onChange={(e) => set("list", { ...n.list!, padding: { ...n.list!.padding, bottom: Math.max(0, +e.target.value || 0) } })} /></div>
+        </>
+      )}
       <div className="row"><label>可见</label>
         <input type="checkbox" checked={n.visible} onChange={(e) => set("visible", e.target.checked)} /></div>
       <div className="row"><label>透明度</label>
@@ -46,6 +84,19 @@ export default function Inspector(p: Props) {
         <input type="number" value={n.zIndex} onChange={(e) => set("zIndex", +e.target.value || 0)} /></div>
       <div className="row"><label>旋转</label>
         <input type="number" value={n.rotation} onChange={(e) => set("rotation", +e.target.value || 0)} /></div>
+      {n.text && (
+        <>
+          <h4>文本内容</h4>
+          <textarea rows={2} value={n.text.content}
+            onChange={(e) => set("text", { ...n.text!, content: e.target.value })} />
+          <div className="row"><label>字号</label>
+            <input type="number" min={1} value={n.text.fontSize}
+              onChange={(e) => set("text", { ...n.text!, fontSize: Math.max(1, +e.target.value || 1) })} /></div>
+          <div className="row"><label>颜色</label>
+            <input type="color" value={toHex(n.text.color)}
+              onChange={(e) => set("text", { ...n.text!, color: e.target.value })} /></div>
+        </>
+      )}
 
       <h4>Parent Anchor（改模式为 anchor 时生效）</h4>
       <div className="grid">

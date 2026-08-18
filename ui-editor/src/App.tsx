@@ -17,13 +17,33 @@ export const PRESETS: [string, number, number][] = [
   ["iPhone 刘海屏 (390 × 844)", 390, 844],
 ];
 
+// 树工具：组节点含 children，节点操作需要递归
+function walkNodes(nodes: UINode[], out: UINode[] = []): UINode[] {
+  for (const n of nodes) { out.push(n); if (n.children) walkNodes(n.children, out); }
+  return out;
+}
+function mapNodes(nodes: UINode[], id: string, fn: (n: UINode) => void): UINode[] {
+  return nodes.map((n) => {
+    if (n.id === id) { const c = { ...n }; fn(c); return c; }
+    if (n.children) return { ...n, children: mapNodes(n.children, id, fn) };
+    return n;
+  });
+}
+function applySnap(nodes: UINode[], snap: Snapshot): UINode[] {
+  return nodes.map((n) => {
+    const c = snap[n.id] ? { ...n, ...snap[n.id] } : { ...n };
+    if (c.children) c.children = applySnap(c.children, snap);
+    return c;
+  });
+}
+
 // 撤销快照：只存可变属性（image 是 canvas 不能序列化）
 type Snapshot = Record<string, {
   anchor: UINode["anchor"]; adaptation: UINode["adaptation"];
   visible: boolean; opacity: number; zIndex: number; rotation: number;
   scale: { x: number; y: number }; name: string; locked?: boolean;
 }>;
-const snapScene = (s: UIScene): Snapshot => Object.fromEntries(s.nodes.map((n) => [n.id, {
+const snapScene = (s: UIScene): Snapshot => Object.fromEntries(walkNodes(s.nodes).map((n) => [n.id, {
   anchor: { ...n.anchor }, adaptation: { ...n.adaptation }, visible: n.visible,
   opacity: n.opacity, zIndex: n.zIndex, rotation: n.rotation,
   scale: { ...n.scale }, name: n.name, locked: n.locked,
@@ -129,17 +149,17 @@ export default function App() {
     const { scene: s, warnings: w } = importPsd(buffer);
     // 应用已保存的锚点默认配置（public/anchor.json，按图层名）
     try {
-      const r = await fetch("anchor.json");
-      if (r.ok) {
-        const presets = await r.json();
-        s.nodes.forEach((n) => {
-          const p = presets[n.name];
-          if (p) {
-            n.anchor = { ...n.anchor, ...p };
-            if (p.mode) n.adaptation.mode = p.mode;
-          }
-        });
-      }
+        const r = await fetch("anchor.json");
+        if (r.ok) {
+          const presets = await r.json();
+          walkNodes(s.nodes).forEach((n) => {
+            const p = presets[n.name];
+            if (p) {
+              n.anchor = { ...n.anchor, ...p };
+              if (p.mode) n.adaptation.mode = p.mode;
+            }
+          });
+        }
     } catch { /* 无默认配置则用 PSD 推断 */ }
     historyRef.current = [];
     futureRef.current = [];
@@ -162,7 +182,7 @@ export default function App() {
 
   const exportAnchors = useCallback(() => {
     if (!scene) return;
-    const data = Object.fromEntries(scene.nodes.map((n) => [n.name, {
+    const data = Object.fromEntries(walkNodes(scene.nodes).map((n) => [n.name, {
       parentX: n.anchor.parentX, parentY: n.anchor.parentY,
       selfX: n.anchor.selfX, selfY: n.anchor.selfY,
       offsetX: Math.round(n.anchor.offsetX * 10) / 10,
@@ -201,21 +221,14 @@ export default function App() {
   }, [scene, scaleMode, safeArea, psdName]);
 
   const updateNode = useCallback((id: string, patch: (n: UINode) => void) => {
-    mutateScene((s) => {
-      const n = { ...s.nodes.find((x) => x.id === id)! };
-      patch(n);
-      return { ...s, nodes: s.nodes.map((x) => (x.id === id ? n : x)) };
-    });
+    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, patch) }));
   }, [mutateScene]);
 
   const updateSelected = useCallback((patch: (n: UINode) => void, record = true) => {
     const prev = sceneRef.current;
     if (!prev) return;
-    const idx = prev.nodes.findIndex((x) => x.id === selectedId);
-    if (idx < 0) return;
-    const n = { ...prev.nodes[idx] };
-    patch(n);
-    mutateScene((s) => ({ ...s, nodes: s.nodes.map((x) => (x.id === n.id ? n : x)) }), record);
+    if (!walkNodes(prev.nodes).some((x) => x.id === selectedId)) return;
+    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, selectedId!, patch) }), record);
   }, [selectedId, mutateScene]);
 
   // ---- 撤销 / 重做（Ctrl+Z 后退，Ctrl+X 前进）----
@@ -224,7 +237,7 @@ export default function App() {
     if (!snap) return;
     futureRef.current.push(snapScene(sceneRef.current!));
     const s = sceneRef.current!;
-    applyScene({ ...s, nodes: s.nodes.map((n) => (snap[n.id] ? { ...n, ...snap[n.id] } : n)) });
+    applyScene({ ...s, nodes: applySnap(s.nodes, snap) });
     setHistLen(historyRef.current.length);
     setFutureLen(futureRef.current.length);
   }, [applyScene]);
@@ -234,7 +247,7 @@ export default function App() {
     if (!snap) return;
     historyRef.current.push(snapScene(sceneRef.current!));
     const s = sceneRef.current!;
-    applyScene({ ...s, nodes: s.nodes.map((n) => (snap[n.id] ? { ...n, ...snap[n.id] } : n)) });
+    applyScene({ ...s, nodes: applySnap(s.nodes, snap) });
     setHistLen(historyRef.current.length);
     setFutureLen(futureRef.current.length);
   }, [applyScene]);
@@ -264,7 +277,7 @@ export default function App() {
     const p = toLogical(e.clientX, e.clientY);
     const hit = [...result.nodes]
       .sort((a, b) => b.node.zIndex - a.node.zIndex)
-      .find((n) => n.node.visible && p.x >= n.rect.x && p.x <= n.rect.x + n.rect.width
+      .find((n) => n.visible && p.x >= n.rect.x && p.x <= n.rect.x + n.rect.width
         && p.y >= n.rect.y && p.y <= n.rect.y + n.rect.height);
     if (!hit) { setSelectedId(null); return; }
     setSelectedId(hit.node.id);
@@ -312,7 +325,7 @@ export default function App() {
           </div>
         </div>
         <Inspector
-          node={scene?.nodes.find((n) => n.id === selectedId) ?? null}
+          node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
           rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
           viewport={viewport}
           onUpdate={updateSelected}

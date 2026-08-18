@@ -9,10 +9,28 @@ export interface UIRect {
 
 export type LayoutMode = "anchor" | "scale" | "stretch";
 
+export type ListType = "horizontal" | "vertical" | "grid";
+
+export interface ListConfig {
+  type: ListType;
+  /** 项间距（设计像素） */
+  spacing: number;
+  /** 容器内边距（设计像素） */
+  padding: { left: number; right: number; top: number; bottom: number };
+  /** grid 列数 */
+  columns: number;
+}
+
 export interface UINode {
   id: string;
   name: string;
   image: HTMLCanvasElement | null;
+  /** 文本节点内容（image 为 null 时按文本绘制） */
+  text?: { content: string; fontSize: number; color: string };
+  /** 组节点（PSD 文件夹）：子节点相对该组定位，自身不绘制 */
+  children?: UINode[];
+  /** list 节点（文件夹名为 list）：li 按类型重排、容器尺寸自适应 */
+  list?: ListConfig;
 
   /** PSD 导入时的原始布局（只在导入时写入，编辑不改它） */
   designRect: UIRect;
@@ -66,6 +84,10 @@ export interface LayoutContext {
 export interface LayoutResultNode {
   node: UINode;
   rect: UIRect;
+  /** 组内子节点的父组矩形（用于锚点参照 / reanchor） */
+  parent?: UIRect;
+  /** 有效可见性（组不可见时其后代也为 false） */
+  visible: boolean;
 }
 
 export interface LayoutResult {

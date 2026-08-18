@@ -6,11 +6,23 @@ import type { LayoutResult, LayoutContext } from "./types";
 export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const nodes = [...result.nodes].sort((a, b) => a.node.zIndex - b.node.zIndex); // zIndex 小(底)先画
-  for (const { node, rect } of nodes) {
-    if (!node.visible || !node.image) continue;
+  for (const { node, rect, visible } of nodes) {
+    if (!visible) continue; // 有效可见性：组隐藏时其后代也不显示
     ctx.save();
     ctx.globalAlpha = node.opacity;
-    ctx.drawImage(node.image, rect.x, rect.y, rect.width, rect.height);
+    if (node.image) {
+      ctx.drawImage(node.image, rect.x, rect.y, rect.width, rect.height);
+    } else if (node.text) {
+      // 文本节点：按文本内容绘制（粗粒度，后续可细化）
+      ctx.font = `${node.text.fontSize * Math.min(result.scaleX, result.scaleY)}px "PingFang SC", "Microsoft YaHei", sans-serif`;
+      ctx.fillStyle = node.text.color;
+      ctx.textBaseline = "top";
+      ctx.textAlign = "left";
+      const lines = node.text.content.split("\n");
+      for (let li = 0; li < lines.length; li++) {
+        ctx.fillText(lines[li], rect.x, rect.y + li * node.text.fontSize * result.scaleY, rect.width);
+      }
+    }
     ctx.restore();
   }
 }
@@ -60,10 +72,12 @@ export function renderOverlay(ctx: CanvasRenderingContext2D, result: LayoutResul
       `${Math.round(rect.width)}×${Math.round(rect.height)}  ${node.name}`,
       rect.x, Math.max(0, rect.y - 4),
     );
-    // 锚点十字（parent anchor 位置）
-    const base = node.anchor.safeArea
-      ? { x: layoutCtx.safeArea.left, y: layoutCtx.safeArea.top, w: layoutCtx.viewportWidth - layoutCtx.safeArea.left - layoutCtx.safeArea.right, h: layoutCtx.viewportHeight - layoutCtx.safeArea.top - layoutCtx.safeArea.bottom }
-      : { x: 0, y: 0, w: layoutCtx.viewportWidth, h: layoutCtx.viewportHeight };
+    // 锚点十字（parent anchor 位置：组内子节点参照父组矩形）
+    const base = sel.parent
+      ? { x: sel.parent.x, y: sel.parent.y, w: sel.parent.width, h: sel.parent.height }
+      : node.anchor.safeArea
+        ? { x: layoutCtx.safeArea.left, y: layoutCtx.safeArea.top, w: layoutCtx.viewportWidth - layoutCtx.safeArea.left - layoutCtx.safeArea.right, h: layoutCtx.viewportHeight - layoutCtx.safeArea.top - layoutCtx.safeArea.bottom }
+        : { x: 0, y: 0, w: layoutCtx.viewportWidth, h: layoutCtx.viewportHeight };
     const ax = base.x + node.anchor.parentX * base.w + node.anchor.offsetX;
     const ay = base.y + node.anchor.parentY * base.h + node.anchor.offsetY;
     ctx.strokeStyle = "rgba(230,126,34,0.9)";

@@ -42,15 +42,39 @@ body {
 .inspector h4 { margin: 12px 0 4px; font-size: 12px; color: #9fb0c3; }
 .layer-panel ul { list-style: none; margin: 0; padding: 0; }
 .layer-panel li {
-  display: flex; align-items: center; gap: 4px; padding: 3px 4px; cursor: pointer;
-  border-radius: 4px;
+  position: relative; display: flex; align-items: center; gap: 4px; padding: 3px 4px; cursor: pointer;
+  border-radius: 4px; height: 24px; box-sizing: border-box;
 }
-.layer-panel li:hover { background: #30363f; }
-.layer-panel li.sel { background: #3a526e; }
+.layer-panel li:hover { background: #262c35; }
+.layer-panel li.sel { background: #2d4259; }
+.layer-panel .indent-line {
+  position: absolute; top: 2px; bottom: 2px; width: 1px; pointer-events: none;
+  background: repeating-linear-gradient(to bottom, #333c48 0 2px, transparent 2px 4px);
+}
+.layer-panel .fold {
+  width: 15px; height: 15px; padding: 0; flex: none; background: none; border: none;
+  color: #6b7888; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.layer-panel .fold svg { width: 8px; height: 8px; transition: transform .12s ease; }
+.layer-panel .fold svg.open { transform: rotate(90deg); }
+.layer-panel .type-ic {
+  width: 16px; height: 16px; flex: none; display: flex; align-items: center; justify-content: center;
+}
+/* 类型色：list=琥珀、组=蓝灰、图片=青绿、文本=紫 */
+.layer-panel .t-list { color: #d9a04a; }
+.layer-panel .t-group { color: #7f93a8; }
+.layer-panel .t-image { color: #5fbf9e; }
+.layer-panel .t-text { color: #a88cd9; }
+.layer-panel li.sel .t-group, .layer-panel li.sel .t-list,
+.layer-panel li.sel .t-image, .layer-panel li.sel .t-text { color: #cfe3f5; }
+.layer-panel .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: #d7dee7; }
+.layer-panel li.sel .name { color: #fff; }
+.layer-panel .type-tag { font-size: 9px; color: #5f6c7c; letter-spacing: .4px; }
 .layer-panel .icon {
-  background: none; border: none; color: #ccc; cursor: pointer; font-size: 11px; padding: 0;
+  background: none; border: none; color: #77838f; cursor: pointer; padding: 0; flex: none;
+  width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
 }
-.layer-panel .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.layer-panel .icon:hover { color: #e6ebf2; }
 .layer-panel .mode { font-size: 10px; color: #8fa1b5; }
 
 .canvas-wrap {
@@ -71,6 +95,13 @@ body {
   border-radius: 4px; padding: 3px 6px;
 }
 .inspector select { background: #1c2026; color: #eee; border: 1px solid #3a4150; border-radius: 4px; padding: 3px; }
+.inspector .row input[type="color"] { padding: 0 2px; width: 48px; height: 24px; }
+.inspector textarea {
+  width: 100%; box-sizing: border-box; resize: vertical; min-height: 44px;
+  background: #0f1318; color: #e6ebf2; border: 1px solid #3a4150; border-radius: 4px;
+  padding: 5px 7px; font: 12px/1.5 inherit;
+}
+.inspector textarea:focus { outline: none; border-color: #4a90d9; }
 .inspector .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 4px 0; }
 .inspector .grid button {
   padding: 6px 0; background: #3a4150; border: 1px solid #4a5263; color: #ddd;
