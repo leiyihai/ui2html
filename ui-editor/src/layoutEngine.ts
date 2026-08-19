@@ -10,7 +10,7 @@
 //   stretch ：填满容器（viewport 或 safe area）
 
 import type { LayoutContext, LayoutResult, UINode } from "./types";
-import { estTextWidth, LINE_HEIGHT } from "./textMeasure";
+import { LINE_HEIGHT } from "./textMeasure";
 
 export class LayoutEngine {
   layoutScene(scene: { designWidth: number; designHeight: number; nodes: UINode[] }, ctx: LayoutContext): LayoutResult {
@@ -64,7 +64,7 @@ export class LayoutEngine {
     };
   }
 
-  /** list 布局：li 按类型重排（忽略 PSD 偏移），容器尺寸随内容自适应 */
+  /** list 布局：li 按类型重排（忽略 PSD 偏移），容器框 = 尺寸宽高，内容超出裁切 */
   private layoutList(n: UINode, scaleX: number, scaleY: number, lx: number, ly: number,
     sa: { left: number; top: number; width: number; height: number },
     ctx: LayoutContext, parentRect?: LayoutResult["nodes"][0]["rect"],
@@ -82,24 +82,12 @@ export class LayoutEngine {
     const liDims = lis.map((li) => ({ w: li.designRect.width * scaleX, h: li.designRect.height * scaleY }));
     const pad = cfg.padding;
     const spX = cfg.spacing * scaleX, spY = cfg.spacing * scaleY;
-    let contentW = 0, contentH = 0;
-    if (cfg.type === "horizontal") {
-      contentW = liDims.reduce((s, d) => s + d.w, 0) + spX * Math.max(0, lis.length - 1);
-      contentH = Math.max(0, ...liDims.map((d) => d.h));
-    } else if (cfg.type === "vertical") {
-      contentH = liDims.reduce((s, d) => s + d.h, 0) + spY * Math.max(0, lis.length - 1);
-      contentW = Math.max(0, ...liDims.map((d) => d.w));
-    } else {
-      const cols = Math.max(1, Math.min(cfg.columns || 3, lis.length));
-      const rows = Math.ceil(lis.length / cols);
-      contentW = cols * Math.max(0, ...liDims.map((d) => d.w)) + (cols - 1) * spX;
-      contentH = rows * Math.max(0, ...liDims.map((d) => d.h)) + (rows - 1) * spY;
-    }
+    // 容器框 = 尺寸宽高（固定，内容超出裁切，与文本 auto 模式一致）
     const origin = this.anchorOrigin(n, scaleX, scaleY, lx, ly, ctx, parentRect);
     const rect: LayoutResult["nodes"][0]["rect"] = {
       x: origin.x, y: origin.y,
-      width: contentW + (pad.left + pad.right) * scaleX,
-      height: contentH + (pad.top + pad.bottom) * scaleY,
+      width: n.designRect.width * scaleX,
+      height: n.designRect.height * scaleY,
     };
     const out: LayoutResult["nodes"] = [{ node: n, rect, visible: effVisible }];
     let accX = pad.left * scaleX, accY = pad.top * scaleY;
@@ -117,11 +105,11 @@ export class LayoutEngine {
         liY = pad.top * scaleY + Math.floor(i / cols) * (cellH + spY);
       }
       const liRect = { x: rect.x + liX, y: rect.y + liY, width: d.w, height: d.h };
-      out.push(...this.layoutNode(li, scaleX, scaleY, lx, ly, sa, ctx, liRect, liRect, effVisible));
+      out.push(...this.layoutNode(li, scaleX, scaleY, lx, ly, sa, ctx, liRect, liRect, effVisible, rect));
       i++;
     }
     // 非 li 子节点（含嵌套 list）：保持相对容器的偏移定位
-    for (const o of others) out.push(...this.layoutNode(o, scaleX, scaleY, lx, ly, sa, ctx, rect, undefined, effVisible));
+    for (const o of others) out.push(...this.layoutNode(o, scaleX, scaleY, lx, ly, sa, ctx, rect, undefined, effVisible, rect));
     return out;
   }
 
@@ -129,7 +117,7 @@ export class LayoutEngine {
     sa: { left: number; top: number; width: number; height: number },
     ctx: LayoutContext, parentRect?: LayoutResult["nodes"][0]["rect"],
     fixedRect?: LayoutResult["nodes"][0]["rect"],
-    parentVisible = true): LayoutResult["nodes"] {
+    parentVisible = true, clipRect?: LayoutResult["nodes"][0]["rect"]): LayoutResult["nodes"] {
     const dw = n.designRect.width, dh = n.designRect.height;
     const effVisible = n.visible && parentVisible; // 组隐藏 → 后代全部隐藏
     let rect: LayoutResult["nodes"][0]["rect"];
@@ -142,9 +130,9 @@ export class LayoutEngine {
         : parentRect ?? { x: 0, y: 0, width: ctx.viewportWidth, height: ctx.viewportHeight };
       rect = { x: area.x, y: area.y, width: area.width, height: area.height };
     } else {
-      // auto 模式文本：宽/高随内容（单行估算），其他节点用 designRect
+      // auto 模式文本：单行，框宽 = 尺寸宽度（显示裁切边界，内容超出裁切）；其他节点用 designRect
       const isAutoText = n.text?.mode === "auto";
-      const w = isAutoText ? Math.max(1, estTextWidth(n.text!.content, n.text!.fontSize)) * scaleX : dw * scaleX;
+      const w = dw * scaleX;
       const h = isAutoText ? n.text!.fontSize * LINE_HEIGHT * scaleY : dh * scaleY;
       if (n.adaptation.mode === "scale") {
         rect = parentRect
@@ -183,12 +171,12 @@ export class LayoutEngine {
 
     if (n.children?.length) {
       if (n.list) return this.layoutList(n, scaleX, scaleY, lx, ly, sa, ctx, parentRect, effVisible);
-      // 组节点自身也进入结果（可选中/拖动整体），不绘制；子节点带父组矩形参照
+      // 组节点自身也进入结果（可选中/拖动整体），不绘制；子节点带父组矩形参照，继承外层裁剪
       const childOut: LayoutResult["nodes"] = [{ node: n, rect, visible: effVisible }];
-      for (const c of n.children) childOut.push(...this.layoutNode(c, scaleX, scaleY, lx, ly, sa, ctx, rect, undefined, effVisible));
+      for (const c of n.children) childOut.push(...this.layoutNode(c, scaleX, scaleY, lx, ly, sa, ctx, rect, undefined, effVisible, clipRect));
       return childOut;
     }
-    return [{ node: n, rect, parent: parentRect, visible: effVisible }];
+    return [{ node: n, rect, parent: parentRect, visible: effVisible, clipRect }];
   }
 }
 

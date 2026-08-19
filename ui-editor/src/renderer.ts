@@ -7,9 +7,15 @@ import { fitFontSize, wrapText, LINE_HEIGHT } from "./textMeasure";
 export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const nodes = [...result.nodes].sort((a, b) => a.node.zIndex - b.node.zIndex); // zIndex 小(底)先画
-  for (const { node, rect, visible } of nodes) {
+  for (const { node, rect, visible, clipRect } of nodes) {
     if (!visible) continue; // 有效可见性：组隐藏时其后代也不显示
     ctx.save();
+    if (clipRect) {
+      // list 容器：内容超出框的部分裁切
+      ctx.beginPath();
+      ctx.rect(clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+      ctx.clip();
+    }
     ctx.globalAlpha = node.opacity;
     if (node.image) {
       ctx.drawImage(node.image, rect.x, rect.y, rect.width, rect.height);
@@ -18,12 +24,10 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult) {
       const scale = Math.min(result.scaleX, result.scaleY);
       const fam = t.font ? `"${t.font}", ` : "";
       ctx.save();
-      if (t.mode !== "auto") {
-        // 固定框 / 自适应：内容限定在 rect 内，超出裁切
-        ctx.beginPath();
-        ctx.rect(rect.x, rect.y, rect.width, rect.height);
-        ctx.clip();
-      }
+      // 所有模式都裁剪到 rect：auto 内容超出尺寸宽度时裁切，fixed/fit 限框内
+      ctx.beginPath();
+      ctx.rect(rect.x, rect.y, rect.width, rect.height);
+      ctx.clip();
       let fs = t.fontSize;
       if (t.mode === "fit") {
         fs = fitFontSize(t.content, t.fontSize, t.minFontSize,

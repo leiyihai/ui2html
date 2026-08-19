@@ -224,6 +224,17 @@ export default function App() {
     mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, patch) }));
   }, [mutateScene]);
 
+  /** 全局字体：一次性替换场景内所有文本节点的字体 */
+  const applyGlobalFont = useCallback((font: string) => {
+    mutateScene((s) => {
+      const nodes = s.nodes.map((n) => ({ ...n }));
+      let n = 0;
+      walkNodes(nodes).forEach((x) => { if (x.text) { x.text = { ...x.text, font }; n++; } });
+      setExportMsg(`已将全部 ${n} 个文本的字体替换为「${font}」`);
+      return { ...s, nodes };
+    });
+  }, [mutateScene]);
+
   const updateSelected = useCallback((patch: (n: UINode) => void, record = true) => {
     const prev = sceneRef.current;
     if (!prev) return;
@@ -311,6 +322,7 @@ export default function App() {
         warnings={warnings} hasScene={!!scene} onExportAnchors={exportAnchors} onExportHtml={exportHtml}
         canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
         psdList={psdList} onLoadPsdFromFolder={loadPsdFromFolder} exportMsg={exportMsg}
+        onGlobalFont={applyGlobalFont}
       />
       <div className="body">
         <LayerPanel

@@ -101,7 +101,7 @@ function layout(vw, vh) {
       // li 的矩形已由父 list 分支算好（重排结果），复用
       r = rects[i];
       if (!n.img && !n.txt) return;
-      out.push({ n: n, r: r });
+      out.push({ n: n, r: r, clip: findClip(i) });
       return;
     }
     var parent = n.p >= 0 ? rects[n.p] : null;
@@ -165,9 +165,18 @@ function layout(vw, vh) {
     }
     rects[i] = r;
     if (!n.img && !n.txt) return; // 组：只计算矩形，不绘制
-    out.push({ n: n, r: r });
+    out.push({ n: n, r: r, clip: findClip(i) });
   });
   return out;
+}
+function findClip(i) {
+  // 沿父链找最近的 list 容器矩形（list 的 rect 已算，父先于子）
+  var j = i;
+  while (j >= 0) {
+    if (SCENE.nodes[j].l) return rects[j];
+    j = SCENE.nodes[j].p;
+  }
+  return null;
 }
 
 /** 估算字符宽/文本宽/换行/fit 字号（与编辑器一致） */
@@ -201,6 +210,7 @@ function draw() {
   out.slice().sort(function (a, b) { return a.n.z - b.n.z; }).forEach(function (r) {
     if (!r.n.visible) return;
     ctx.save();
+    if (r.clip) { ctx.beginPath(); ctx.rect(r.clip.x, r.clip.y, r.clip.w, r.clip.h); ctx.clip(); }
     ctx.globalAlpha = r.n.opacity;
     if (r.n.img) {
       var im = IMGS[r.n.name];

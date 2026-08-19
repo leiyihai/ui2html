@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { PRESETS } from "../App";
 import type { ScaleMode } from "../types";
 
@@ -24,12 +25,27 @@ interface Props {
   psdList: string[];
   onLoadPsdFromFolder: (name: string) => void;
   exportMsg: string;
+  onGlobalFont: (font: string) => void;
 }
 
 export default function Toolbar(p: Props) {
   const onFile = async (f: File | undefined) => {
     if (f) p.onLoadFile(await f.arrayBuffer(), f.name);
   };
+
+  // 项目内置字体（public/fonts 通过 @font-face 注册，从 document.fonts 动态读取）
+  const [fontList, setFontList] = useState<string[]>([]);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try { await document.fonts.ready; } catch { /* 等字体就绪 */ }
+      if (!alive) return;
+      const fams = new Set<string>();
+      document.fonts.forEach((f) => { if (f.family) fams.add(f.family.replace(/^"/, "").replace(/"$/, "")); });
+      setFontList([...fams]);
+    })();
+    return () => { alive = false; };
+  }, []);
 
   return (
     <header className="toolbar">
@@ -44,6 +60,12 @@ export default function Toolbar(p: Props) {
         <option value="">psd 文件夹…</option>
         {p.psdList.map((n) => <option key={n} value={n}>{n}</option>)}
       </select>
+      <input className="global-font" list="global-font-list" placeholder="项目字体：选择或输入（应用全部文本）" disabled={!p.hasScene}
+        onChange={(e) => { const v = e.target.value.trim(); if (v) p.onGlobalFont(v); }}
+        onKeyDown={(e) => { if (e.key === "Enter") { const v = e.currentTarget.value.trim(); if (v) p.onGlobalFont(v); } }} />
+      <datalist id="global-font-list">
+        {fontList.map((f) => <option key={f} value={f} />)}
+      </datalist>
 
       <span className="sep" />
       {(() => {
