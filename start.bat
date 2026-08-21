@@ -8,7 +8,7 @@ rem 3. 启动 Vite dev server
 cd /d %~dp0ui-editor
 if not exist "public\psd" mkdir "public\psd"
 copy /y "..\psd\*.psd" "public\psd\" >nul 2>&1
-dir /b "public\psd\*.psd" > "public\psd\list.txt"
+powershell -NoProfile -Command "Get-ChildItem 'public\psd\*.psd' -Name | Set-Content -Encoding utf8 'public\psd\list.txt'"
 
 start "" cmd /c "timeout /t 3 /nobreak >nul & start http://localhost:5173"
 npm run dev

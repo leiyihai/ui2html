@@ -146,10 +146,19 @@ export default function App() {
     applyScene(mutator(prev));
   }, [applyScene, pushHistory]);
 
-  // 读取 psd 文件夹列表（start.bat 同步到 public/psd/list.txt）
+  // 读取 psd 文件夹列表（start.bat 同步到 public/psd/list.txt，可能是 GBK 或 UTF-8 编码）
   useEffect(() => {
-    fetch("/psd/list.txt").then((r) => r.text()).then((t) =>
-      setPsdList(t.split(/\r?\n/).map((s) => s.trim()).filter(Boolean))).catch(() => { });
+    fetch("/psd/list.txt")
+      .then((r) => r.arrayBuffer())
+      .then((buf) => {
+        // 优先按 UTF-8 严格解码，失败（GBK 中文）回退 GBK
+        let t: string;
+        try { t = new TextDecoder("utf-8", { fatal: true }).decode(buf); }
+        catch { t = new TextDecoder("gbk").decode(buf); }
+        return t;
+      })
+      .then((t) => setPsdList(t.split(/\r?\n/).map((s) => s.trim()).filter(Boolean)))
+      .catch(() => { });
   }, []);
 
   const loadPsd = useCallback(async (buffer: ArrayBuffer, name: string) => {

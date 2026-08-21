@@ -20,11 +20,11 @@ body {
 }
 .appbar .grow { flex: 1; }
 .vsep { width: 1px; height: 20px; background: #3a4150; margin: 0 2px; flex: none; }
-.appbar select { background: #1c2026; color: #eee; border: 1px solid #3a4150; border-radius: 4px; padding: 4px 6px; }
+.appbar select { background: #1c2026; color: #eee; border: 1px solid #3a4150; border-radius: 4px; padding: 4px 8px; height: 27px; }
 .appbar input[type="number"] { background: #1c2026; color: #eee; border: 1px solid #3a4150; border-radius: 4px; }
 .appbar .global-font {
   background: #1c2026; color: #eee; border: 1px solid #3a4150; border-radius: 4px;
-  padding: 4px 8px; font-size: 12px; width: 200px;
+  padding: 4px 8px; font-size: 12px; width: 200px; height: 27px; box-sizing: border-box;
 }
 .appbar .global-font::placeholder { color: #5f6c7c; }
 .appbar .global-font:focus { outline: none; border-color: #4a90d9; }
