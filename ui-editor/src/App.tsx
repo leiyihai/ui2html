@@ -384,7 +384,8 @@ export default function App() {
       const t = e.target as HTMLElement;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
       if (e.ctrlKey || e.metaKey) {
-        if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
+        if (e.key === "s" || e.key === "S") { e.preventDefault(); exportAnchors(); } // Ctrl+S 保存配置
+        else if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
         else if (e.key === "x" || e.key === "X") { e.preventDefault(); redo(); }
         return;
       }
@@ -402,7 +403,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [undo, redo, selectedId, updateSelected]);
+  }, [undo, redo, selectedId, updateSelected, exportAnchors]);
 
   // 命中检测 + 拖动（文档 §17：拖动只改 offset，不碰 designRect）
   const toLogical = (clientX: number, clientY: number) => {
