@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-interface Props {
-  sources: { name: string; canvas: HTMLCanvasElement }[];
-  psdName: string | null;
-}
-
-const DEFAULT_SLICE = { left: 0, top: 0, right: 0, bottom: 0 };
-type Slice = typeof DEFAULT_SLICE;
+export type Slice = { left: number; top: number; right: number; bottom: number };
+export const DEFAULT_SLICE: Slice = { left: 0, top: 0, right: 0, bottom: 0 };
 
 export function loadSlice(psdName: string, imgName: string): Slice {
   try {
@@ -16,68 +11,82 @@ export function loadSlice(psdName: string, imgName: string): Slice {
   return { ...DEFAULT_SLICE };
 }
 
-/** 九宫格标记面板：图片 + 4 条可拖动引导线 + 边距数值，自动保存 */
-export default function SlicePanel(p: Props) {
-  const [selected, setSelected] = useState<string | null>(p.sources[0]?.name ?? null);
-  const [slice, setSlice] = useState<Slice>(() => selected ? loadSlice(p.psdName ?? "", selected) : { ...DEFAULT_SLICE });
+/** 左侧九宫格图片列表（类似图层面板） */
+export function SliceList(p: {
+  sources: { name: string; canvas: HTMLCanvasElement }[];
+  selected: string | null;
+  onSelect: (name: string) => void;
+}) {
+  if (!p.sources.length) {
+    return <div className="slice-empty">未找到「9」文件夹（约定：名为 9 的文件夹内图片作为九宫格替换源）</div>;
+  }
+  return (
+    <ul className="slice-list">
+      {p.sources.map((s) => (
+        <li key={s.name} className={s.name === p.selected ? "sel" : ""}
+          onClick={() => p.onSelect(s.name)}>
+          <span className="type-ic t-image">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2.5" y="3.5" width="11" height="9" rx="1.5" />
+              <circle cx="6" cy="6.8" r="1" />
+              <path d="M4.2 11.5 7.2 8.4l2 2 2.6-2.6" />
+            </svg>
+          </span>
+          <span className="name">{s.name}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** 中间区域的九宫格编辑：图片预览 + 4 条可拖动引导线 + 边距数值，自动保存 */
+export function SliceEditor(p: {
+  source: { name: string; canvas: HTMLCanvasElement };
+  psdName: string | null;
+  onBack: () => void;
+}) {
+  const [slice, setSlice] = useState<Slice>(() => loadSlice(p.psdName ?? "", p.source.name));
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dragRef = useRef<"top" | "bottom" | "left" | "right" | null>(null);
-
-  const src = p.sources.find((s) => s.name === selected) ?? null;
-  const scaleRef = useRef(1); // 画布像素 / 图片像素
-
-  useEffect(() => {
-    setSelected(p.sources[0]?.name ?? null);
-  }, [p.sources]);
-
-  useEffect(() => {
-    if (!selected) return;
-    setSlice(loadSlice(p.psdName ?? "", selected));
-  }, [selected, p.psdName]);
+  const scaleRef = useRef(1);
 
   // 绘制图片 + 引导线
   useEffect(() => {
     const cv = canvasRef.current;
-    if (!cv || !src) return;
+    if (!cv) return;
+    const { canvas } = p.source;
     const dpr = window.devicePixelRatio || 1;
-    const maxW = 240, maxH = 150;
-    const sc = Math.min(maxW / src.canvas.width, maxH / src.canvas.height, 1);
+    const maxW = 420, maxH = 300;
+    const sc = Math.min(maxW / canvas.width, maxH / canvas.height, 1);
     scaleRef.current = sc;
-    cv.width = src.canvas.width * sc * dpr;
-    cv.height = src.canvas.height * sc * dpr;
-    cv.style.width = src.canvas.width * sc + "px";
-    cv.style.height = src.canvas.height * sc + "px";
+    cv.width = canvas.width * sc * dpr;
+    cv.height = canvas.height * sc * dpr;
+    cv.style.width = canvas.width * sc + "px";
+    cv.style.height = canvas.height * sc + "px";
     const g = cv.getContext("2d")!;
     g.setTransform(dpr * sc, 0, 0, dpr * sc, 0, 0);
-    g.clearRect(0, 0, src.canvas.width, src.canvas.height);
-    g.drawImage(src.canvas, 0, 0);
-    // 引导线（绿色，参考 9-Slice 插件）
+    g.clearRect(0, 0, canvas.width, canvas.height);
+    g.drawImage(canvas, 0, 0);
     g.strokeStyle = "#00ff00";
     g.lineWidth = 1 / sc;
     const { left, top, right, bottom } = slice;
-    const w = src.canvas.width, h = src.canvas.height;
-    [[top, 0, w], [h - bottom, 0, w]].forEach(([y]) => {
-      g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke();
-    });
-    [[left, 0, h], [w - right, 0, h]].forEach(([x]) => {
-      g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke();
-    });
-  }, [src, slice]);
+    const w = canvas.width, h = canvas.height;
+    g.beginPath(); g.moveTo(0, top); g.lineTo(w, top); g.stroke();
+    g.beginPath(); g.moveTo(0, h - bottom); g.lineTo(w, h - bottom); g.stroke();
+    g.beginPath(); g.moveTo(left, 0); g.lineTo(left, h); g.stroke();
+    g.beginPath(); g.moveTo(w - right, 0); g.lineTo(w - right, h); g.stroke();
+  }, [p.source, slice]);
 
   const save = (s: Slice) => {
     setSlice(s);
-    if (selected && p.psdName) {
-      localStorage.setItem(`ui2html.slice.${p.psdName}.${selected}`, JSON.stringify(s));
-    }
+    localStorage.setItem(`ui2html.slice.${p.psdName}.${p.source.name}`, JSON.stringify(s));
   };
 
-  // 拖动引导线
   const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!src) return;
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
     const px = (e.clientX - rect.left) / scaleRef.current;
     const py = (e.clientY - rect.top) / scaleRef.current;
-    const w = src.canvas.width, h = src.canvas.height;
+    const w = p.source.canvas.width, h = p.source.canvas.height;
     const near = 6 / scaleRef.current;
     const { left, top, right, bottom } = slice;
     const lines: [string, number][] = [
@@ -90,11 +99,11 @@ export default function SlicePanel(p: Props) {
     if (hit) { dragRef.current = hit[0] as "top" | "bottom" | "left" | "right"; (e.target as HTMLCanvasElement).setPointerCapture(e.pointerId); }
   };
   const onPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!dragRef.current || !src) return;
+    if (!dragRef.current) return;
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
     const px = Math.max(0, Math.round((e.clientX - rect.left) / scaleRef.current));
     const py = Math.max(0, Math.round((e.clientY - rect.top) / scaleRef.current));
-    const w = src.canvas.width, h = src.canvas.height;
+    const w = p.source.canvas.width, h = p.source.canvas.height;
     const d = dragRef.current;
     save({
       ...slice,
@@ -114,35 +123,23 @@ export default function SlicePanel(p: Props) {
     </label>
   );
 
-  if (!p.sources.length) {
-    return <div className="slice-empty">未找到「9」文件夹（约定：名为 9 的文件夹内图片作为九宫格替换源）</div>;
-  }
-
   return (
-    <div className="slice-panel">
-      <div className="slice-list">
-        {p.sources.map((s) => (
-          <button key={s.name} className={s.name === selected ? "on" : ""}
-            onClick={() => setSelected(s.name)}>{s.name}</button>
-        ))}
+    <div className="slice-editor">
+      <div className="slice-editor-head">
+        <button className="btn" onClick={p.onBack}>← 返回画布</button>
+        <span className="slice-title">{p.source.name}</span>
+        <span className="slice-hint">拖动绿色线或输入数值标记九宫格边距（自动保存）</span>
       </div>
-      {src ? (
-        <>
-          <div className="slice-preview">
-            <canvas ref={canvasRef} onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove} onPointerUp={onPointerUp} />
-          </div>
-          <div className="slice-nums">
-            {num("top", src.canvas.height - 1)}
-            {num("bottom", src.canvas.height - 1)}
-            {num("left", src.canvas.width - 1)}
-            {num("right", src.canvas.width - 1)}
-          </div>
-          <p className="slice-hint">拖动绿色线标记九宫格边距（自动保存）</p>
-        </>
-      ) : (
-        <p className="slice-empty">选择左侧图片</p>
-      )}
+      <div className="slice-preview">
+        <canvas ref={canvasRef} onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove} onPointerUp={onPointerUp} />
+      </div>
+      <div className="slice-nums">
+        {num("top", p.source.canvas.height - 1)}
+        {num("bottom", p.source.canvas.height - 1)}
+        {num("left", p.source.canvas.width - 1)}
+        {num("right", p.source.canvas.width - 1)}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { UINode } from "../types";
-import SlicePanel from "./SlicePanel";
+import { SliceList } from "./SlicePanel";
 
 interface Props {
   nodes: UINode[];
@@ -9,7 +9,8 @@ interface Props {
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
   sliceSources: { name: string; canvas: HTMLCanvasElement }[];
-  psdName: string | null;
+  sliceSelected: string | null;
+  onSelectSlice: (name: string | null) => void;
 }
 
 export type NodeType = "group" | "list" | "image" | "text";
@@ -101,7 +102,8 @@ export default function LayerPanel(p: Props) {
   return (
     <aside className="layer-panel">
       <div className="panel-tabs">
-        <button className={tab === "layers" ? "on" : ""} onClick={() => setTab("layers")}>图层</button>
+        <button className={tab === "layers" ? "on" : ""}
+          onClick={() => { setTab("layers"); p.onSelectSlice(null); }}>图层</button>
         <button className={tab === "slice" ? "on" : ""} onClick={() => setTab("slice")}>九宫格</button>
       </div>
       {tab === "layers" ? (
@@ -112,7 +114,8 @@ export default function LayerPanel(p: Props) {
           ))}
         </ul>
       ) : (
-        <SlicePanel sources={p.sliceSources} psdName={p.psdName} />
+        <SliceList sources={p.sliceSources} selected={p.sliceSelected}
+          onSelect={(name) => p.onSelectSlice(p.sliceSelected === name ? null : name)} />
       )}
     </aside>
   );

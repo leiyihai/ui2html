@@ -7,6 +7,7 @@ import type { LayoutContext, ScaleMode, UINode, UIScene } from "./types";
 import Toolbar from "./components/Toolbar";
 import LayerPanel from "./components/LayerPanel";
 import Inspector from "./components/Inspector";
+import { SliceEditor } from "./components/SlicePanel";
 
 export const PRESETS: [string, number, number][] = [
   ["16:9 (1920 × 1080)", 1920, 1080],
@@ -64,6 +65,7 @@ export default function App() {
   const [futureLen, setFutureLen] = useState(0);
   const [psdName, setPsdName] = useState<string | null>(null);
   const [sliceApplied, setSliceApplied] = useState(false);
+  const [sliceSelected, setSliceSelected] = useState<string | null>(null);
   const [psdList, setPsdList] = useState<string[]>([]);
   const [exportMsg, setExportMsg] = useState("");
 
@@ -148,20 +150,28 @@ export default function App() {
 
   const loadPsd = useCallback(async (buffer: ArrayBuffer, name: string) => {
     const { scene: s, warnings: w } = importPsd(buffer);
-    // 应用已保存的锚点默认配置（public/anchor.json，按图层名）
+    // 打开 psd 时读取同名 json（锚点 + 九宫格），没有则用 PSD 推断
+    const base = name.replace(/\.psd$/i, "");
     try {
-        const r = await fetch("anchor.json");
-        if (r.ok) {
-          const presets = await r.json();
+      const r = await fetch(`/psd/${base}.json`);
+      if (r.ok) {
+        const cfg = await r.json();
+        if (cfg.anchors) {
           walkNodes(s.nodes).forEach((n) => {
-            const p = presets[n.name];
+            const p = cfg.anchors[n.name];
             if (p) {
               n.anchor = { ...n.anchor, ...p };
               if (p.mode) n.adaptation.mode = p.mode;
             }
           });
         }
-    } catch { /* 无默认配置则用 PSD 推断 */ }
+        if (cfg.slices) {
+          for (const [k, v] of Object.entries(cfg.slices as Record<string, unknown>)) {
+            localStorage.setItem(`ui2html.slice.${name}.${k}`, JSON.stringify(v));
+          }
+        }
+      }
+    } catch { /* 无同名 json 则用 PSD 推断 */ }
     historyRef.current = [];
     futureRef.current = [];
     setHistLen(0); setFutureLen(0);
@@ -181,21 +191,40 @@ export default function App() {
     } catch { setExportMsg(`无法加载 psd/${name}（请用 start.bat 启动）`); }
   }, [loadPsd]);
 
-  const exportAnchors = useCallback(() => {
+  const exportAnchors = useCallback(async () => {
     if (!scene) return;
-    const data = Object.fromEntries(walkNodes(scene.nodes).map((n) => [n.name, {
+    const anchors = Object.fromEntries(walkNodes(scene.nodes).map((n) => [n.name, {
       parentX: n.anchor.parentX, parentY: n.anchor.parentY,
       selfX: n.anchor.selfX, selfY: n.anchor.selfY,
       offsetX: Math.round(n.anchor.offsetX * 10) / 10,
       offsetY: Math.round(n.anchor.offsetY * 10) / 10,
       mode: n.adaptation.mode,
     }]));
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "anchor.json";
-    a.click();
-  }, [scene]);
+    // 汇总九宫格边距（各图独立，来自编辑器中的保存）
+    const slices: Record<string, { left: number; top: number; right: number; bottom: number }> = {};
+    for (const src of scene.sliceSources ?? []) {
+      const s = localStorage.getItem(`ui2html.slice.${psdName}.${src.name}`);
+      if (s) slices[src.name] = JSON.parse(s);
+    }
+    const data = { anchors, slices };
+    const base = (psdName ?? "ui").replace(/\.psd$/i, "");
+    try {
+      const r = await fetch("/save-export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: base, json: data }),
+      });
+      if (!r.ok) throw 0;
+      setExportMsg(`已保存 ${base}.json（锚点 + 九宫格）✓`);
+    } catch {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${base}.json`;
+      a.click();
+      setExportMsg("已下载（未通过 start.bat 启动，无法写入 psd 文件夹）");
+    }
+  }, [scene, psdName]);
 
   const exportHtml = useCallback(async () => {
     if (!scene) return;
@@ -380,14 +409,23 @@ export default function App() {
           nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={setSelectedId}
           onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
           onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
-          sliceSources={scene?.sliceSources ?? []} psdName={psdName}
+          sliceSources={scene?.sliceSources ?? []} sliceSelected={sliceSelected}
+          onSelectSlice={setSliceSelected}
         />
+        {sliceSelected && scene ? (
+          <SliceEditor
+            key={sliceSelected}
+            source={scene.sliceSources?.find((s) => s.name === sliceSelected)!}
+            psdName={psdName} onBack={() => setSliceSelected(null)}
+          />
+        ) : (
         <div className="canvas-wrap" ref={wrapRef}>
           <div className="canvas-stack">
             <canvas ref={uiRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp} />
             <canvas ref={ovRef} style={{ pointerEvents: "none" }} />
           </div>
         </div>
+        )}
         <Inspector
           node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
           rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}

@@ -35,25 +35,32 @@ body {
 }
 .layer-panel .panel-tabs button.on { background: #2d4259; color: #fff; border-color: #4a90d9; }
 .slice-panel { font-size: 12px; }
-.slice-list { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
-.slice-list button {
-  background: #1c2026; border: 1px solid #3a4150; border-radius: 4px; color: #d7dee7;
-  padding: 3px 8px; cursor: pointer; font-size: 11px;
+.slice-list { list-style: none; margin: 0; padding: 0; }
+.slice-list li {
+  display: flex; align-items: center; gap: 6px; padding: 3px 6px; cursor: pointer; border-radius: 4px;
 }
-.slice-list button.on { background: #2d4259; border-color: #4a90d9; color: #fff; }
-.slice-preview {
-  background: #111; border-radius: 6px; padding: 6px; display: flex; align-items: center;
-  justify-content: center; margin-bottom: 8px;
+.slice-list li:hover { background: #262c35; }
+.slice-list li.sel { background: #2d4259; }
+.slice-list li .name { font-size: 12px; color: #d7dee7; }
+.slice-list li.sel .name { color: #fff; }
+/* 中间九宫格编辑区 */
+.slice-editor {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 12px; background: #15181d;
 }
-.slice-preview canvas { cursor: crosshair; touch-action: none; }
-.slice-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.slice-num { display: flex; align-items: center; justify-content: space-between; gap: 6px; color: #9fb0c3; }
-.slice-num input {
+.slice-editor-head { display: flex; align-items: center; gap: 12px; }
+.slice-title { color: #e6ebf2; font-size: 14px; font-weight: 600; }
+.slice-editor .slice-preview {
+  background: #111; border: 1px solid #3a4150; border-radius: 8px; padding: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.slice-editor .slice-preview canvas { cursor: crosshair; touch-action: none; }
+.slice-editor .slice-nums { display: grid; grid-template-columns: repeat(4, auto); gap: 14px; }
+.slice-editor .slice-num { display: flex; align-items: center; gap: 6px; color: #9fb0c3; }
+.slice-editor .slice-num input {
   width: 56px; padding: 3px 6px; background: #0f1318; color: #e6ebf2;
   border: 1px solid #3a4150; border-radius: 4px;
 }
-.slice-empty { color: #6b7888; padding: 8px 2px; line-height: 1.6; }
-.slice-hint { color: #5f6c7c; font-size: 11px; margin: 8px 0 0; }
 .toolbar select { background: #1c2026; color: #eee; border: 1px solid #3a4150; border-radius: 4px;
   padding: 3px 6px; font-size: 12px; width: 150px; }
 .toolbar input[type="number"] { background: #1c2026; color: #eee; border: 1px solid #3a4150; border-radius: 4px;
