@@ -16,7 +16,8 @@ interface Props {
   node: UINode | null;
   rect: UIRect | null;
   viewport: { width: number; height: number };
-  onUpdate: (patch: (n: UINode) => void) => void;
+  /** record=false 时不进撤销历史（拖动微调中间态） */
+  onUpdate: (patch: (n: UINode) => void, record?: boolean) => void;
   onReanchor: (a: { parentX: number; parentY: number; selfX: number; selfY: number }) => void;
   templates: InteractionTemplate[];
   onTemplates: (t: InteractionTemplate[]) => void;
@@ -26,8 +27,31 @@ export default function Inspector(p: Props) {
   const n = p.node;
   if (!n) return <aside className="inspector"><h3>属性</h3><p className="hint">选中一个图层</p></aside>;
 
-  const set = <K extends keyof UINode>(key: K, val: UINode[K]) =>
-    p.onUpdate((x) => { (x as any)[key] = val; });
+  const set = <K extends keyof UINode>(key: K, val: UINode[K], record = true) =>
+    p.onUpdate((x) => { (x as any)[key] = val; }, record);
+
+  /** 数值行：label 按住左右拖动快速调值（起点 record 一次，拖动中不记录历史） */
+  const NumRow = (p2: { label: string; value: number; step?: number; set: (v: number, record?: boolean) => void }) => {
+    const step = p2.step ?? 1;
+    const onPointerDown = (e: React.PointerEvent<HTMLLabelElement>) => {
+      const el = e.currentTarget;
+      el.setPointerCapture(e.pointerId);
+      p2.set(p2.value, true); // 快照拖动前
+      const start = p2.value;
+      const move = (ev: PointerEvent) =>
+        p2.set(start + Math.round((ev.clientX - e.clientX) * step * 100) / 100, false);
+      const up = () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); };
+      el.addEventListener("pointermove", move);
+      el.addEventListener("pointerup", up);
+    };
+    return (
+      <div className="row">
+        <label className="drag" onPointerDown={onPointerDown} title="按住左右拖动调整数值">{p2.label}</label>
+        <input type="number" value={p2.value}
+          onChange={(ev) => p2.set(+ev.target.value || 0, true)} />
+      </div>
+    );
+  };
 
   const toHex = (color: string): string => {
     const m = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
@@ -57,26 +81,20 @@ export default function Inspector(p: Props) {
               <option value="vertical">垂直</option>
               <option value="grid">格子</option>
             </select></div>
-          <div className="row"><label>间距</label>
-            <input type="number" min={0} value={Math.round(n.list.spacing)}
-              onChange={(e) => set("list", { ...n.list!, spacing: Math.max(0, +e.target.value || 0) })} /></div>
+          <NumRow label="间距" value={Math.round(n.list.spacing)}
+            set={(v) => set("list", { ...n.list!, spacing: Math.max(0, v) })} />
           {n.list.type === "grid" && (
-            <div className="row"><label>列数</label>
-              <input type="number" min={1} value={n.list.columns}
-                onChange={(e) => set("list", { ...n.list!, columns: Math.max(1, +e.target.value || 1) })} /></div>
+            <NumRow label="列数" value={n.list.columns}
+              set={(v) => set("list", { ...n.list!, columns: Math.max(1, v || 1) })} />
           )}
-          <div className="row"><label>边距L</label>
-            <input type="number" min={0} value={Math.round(n.list.padding.left)}
-              onChange={(e) => set("list", { ...n.list!, padding: { ...n.list!.padding, left: Math.max(0, +e.target.value || 0) } })} /></div>
-          <div className="row"><label>边距R</label>
-            <input type="number" min={0} value={Math.round(n.list.padding.right)}
-              onChange={(e) => set("list", { ...n.list!, padding: { ...n.list!.padding, right: Math.max(0, +e.target.value || 0) } })} /></div>
-          <div className="row"><label>边距T</label>
-            <input type="number" min={0} value={Math.round(n.list.padding.top)}
-              onChange={(e) => set("list", { ...n.list!, padding: { ...n.list!.padding, top: Math.max(0, +e.target.value || 0) } })} /></div>
-          <div className="row"><label>边距B</label>
-            <input type="number" min={0} value={Math.round(n.list.padding.bottom)}
-              onChange={(e) => set("list", { ...n.list!, padding: { ...n.list!.padding, bottom: Math.max(0, +e.target.value || 0) } })} /></div>
+          <NumRow label="边距L" value={Math.round(n.list.padding.left)}
+            set={(v) => set("list", { ...n.list!, padding: { ...n.list!.padding, left: Math.max(0, v) } })} />
+          <NumRow label="边距R" value={Math.round(n.list.padding.right)}
+            set={(v) => set("list", { ...n.list!, padding: { ...n.list!.padding, right: Math.max(0, v) } })} />
+          <NumRow label="边距T" value={Math.round(n.list.padding.top)}
+            set={(v) => set("list", { ...n.list!, padding: { ...n.list!.padding, top: Math.max(0, v) } })} />
+          <NumRow label="边距B" value={Math.round(n.list.padding.bottom)}
+            set={(v) => set("list", { ...n.list!, padding: { ...n.list!.padding, bottom: Math.max(0, v) } })} />
         </>
       )}
       <div className="row"><label>可见</label>
@@ -84,10 +102,8 @@ export default function Inspector(p: Props) {
       <div className="row"><label>透明度</label>
         <input type="range" min={0} max={1} step={0.01} value={n.opacity}
           onChange={(e) => set("opacity", +e.target.value)} /></div>
-      <div className="row"><label>Z-Index</label>
-        <input type="number" value={n.zIndex} onChange={(e) => set("zIndex", +e.target.value || 0)} /></div>
-      <div className="row"><label>旋转</label>
-        <input type="number" value={n.rotation} onChange={(e) => set("rotation", +e.target.value || 0)} /></div>
+      <NumRow label="Z-Index" value={n.zIndex} set={(v) => set("zIndex", v || 0)} />
+      <NumRow label="旋转" value={n.rotation} set={(v) => set("rotation", v || 0)} />
       {n.text && (
         <>
           <h4>文本内容</h4>
@@ -100,13 +116,11 @@ export default function Inspector(p: Props) {
               <option value="fixed">固定框（换行+裁切）</option>
               <option value="fit">自适应字号</option>
             </select></div>
-          <div className="row"><label>字号</label>
-            <input type="number" min={1} value={n.text.fontSize}
-              onChange={(e) => set("text", { ...n.text!, fontSize: Math.max(1, +e.target.value || 1) })} /></div>
+          <NumRow label="字号" value={n.text.fontSize}
+            set={(v) => set("text", { ...n.text!, fontSize: Math.max(1, v || 1) })} />
           {n.text.mode === "fit" && (
-            <div className="row"><label>最小字号</label>
-              <input type="number" min={1} value={n.text.minFontSize}
-                onChange={(e) => set("text", { ...n.text!, minFontSize: Math.max(1, +e.target.value || 1) })} /></div>
+            <NumRow label="最小字号" value={n.text.minFontSize}
+              set={(v) => set("text", { ...n.text!, minFontSize: Math.max(1, v || 1) })} />
           )}
           <div className="row"><label>颜色</label>
             <input type="color" value={toHex(n.text.color)}
@@ -147,20 +161,17 @@ export default function Inspector(p: Props) {
               <button className="icon" title="删除模板"
                 onClick={() => p.onTemplates(p.templates.filter((x) => x.id !== t.id))}>✕</button>
             </div>
-            <div className="row"><label>点击缩放</label>
-              <input type="number" step={0.05} min={0.5} max={1.5} value={t.pressScale}
-                onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressScale: +e.target.value || 1 } : x))} /></div>
-            <div className="row"><label>点击透明度</label>
-              <input type="number" step={0.1} min={0} max={1} value={t.pressOpacity}
-                onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressOpacity: +e.target.value || 1 } : x))} /></div>
+            <NumRow label="点击缩放" value={t.pressScale} step={0.01}
+              set={(v) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressScale: v || 1 } : x))} />
+            <NumRow label="点击透明度" value={t.pressOpacity} step={0.01}
+              set={(v) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressOpacity: v } : x))} />
             <div className="row"><label>点击高亮色</label>
               <input type="color" value={t.pressTint ? hex6(t.pressTint) : "#ffffff"}
                 onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressTint: e.target.value + "40" } : x))} />
               <button className="icon" onClick={() => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressTint: null } : x))}
                 title="清除高亮">✕</button></div>
-            <div className="row"><label>动画时长</label>
-              <input type="number" step={0.05} min={0} max={1} value={t.duration}
-                onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, duration: +e.target.value || 0.1 } : x))} /></div>
+            <NumRow label="动画时长" value={t.duration} step={0.01}
+              set={(v) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, duration: v || 0.1 } : x))} />
           </div>
         ))}
       </div>
@@ -186,20 +197,16 @@ export default function Inspector(p: Props) {
       <label className="chk"><input type="checkbox" checked={n.anchor.safeArea}
         onChange={(e) => set("anchor", { ...n.anchor, safeArea: e.target.checked })} /> 绑定 Safe Area</label>
       <h4>Offset（设计像素）</h4>
-      <div className="row"><label>X</label>
-        <input type="number" value={Math.round(n.anchor.offsetX)}
-          onChange={(e) => set("anchor", { ...n.anchor, offsetX: +e.target.value || 0 })} /></div>
-      <div className="row"><label>Y</label>
-        <input type="number" value={Math.round(n.anchor.offsetY)}
-          onChange={(e) => set("anchor", { ...n.anchor, offsetY: +e.target.value || 0 })} /></div>
+      <NumRow label="X" value={Math.round(n.anchor.offsetX)}
+        set={(v) => set("anchor", { ...n.anchor, offsetX: v })} />
+      <NumRow label="Y" value={Math.round(n.anchor.offsetY)}
+        set={(v) => set("anchor", { ...n.anchor, offsetY: v })} />
 
       <h4>尺寸（设计像素）</h4>
-      <div className="row"><label>宽</label>
-        <input type="number" min={1} value={Math.round(n.designRect.width)}
-          onChange={(e) => set("designRect", { ...n.designRect, width: Math.max(1, +e.target.value || 1) })} /></div>
-      <div className="row"><label>高</label>
-        <input type="number" min={1} value={Math.round(n.designRect.height)}
-          onChange={(e) => set("designRect", { ...n.designRect, height: Math.max(1, +e.target.value || 1) })} /></div>
+      <NumRow label="宽" value={Math.round(n.designRect.width)}
+        set={(v) => set("designRect", { ...n.designRect, width: Math.max(1, v || 1) })} />
+      <NumRow label="高" value={Math.round(n.designRect.height)}
+        set={(v) => set("designRect", { ...n.designRect, height: Math.max(1, v || 1) })} />
 
       <h4>当前布局（{p.viewport.width}×{p.viewport.height}）</h4>
       {p.rect && (

@@ -50,14 +50,14 @@ export function SliceEditor(p: {
   const dragRef = useRef<"top" | "bottom" | "left" | "right" | null>(null);
   const scaleRef = useRef(1);
 
-  // 绘制图片 + 引导线
+  // 绘制图片 + 引导线（归一化：无论原图大小都缩放到适中区域，便于操作）
   useEffect(() => {
     const cv = canvasRef.current;
     if (!cv) return;
     const { canvas } = p.source;
     const dpr = window.devicePixelRatio || 1;
     const maxW = 420, maxH = 300;
-    const sc = Math.min(maxW / canvas.width, maxH / canvas.height, 1);
+    const sc = Math.max(0.25, Math.min(maxW / canvas.width, maxH / canvas.height, 8));
     scaleRef.current = sc;
     cv.width = canvas.width * sc * dpr;
     cv.height = canvas.height * sc * dpr;
@@ -124,11 +124,10 @@ export function SliceEditor(p: {
   );
 
   return (
-    <div className="slice-editor">
+    <div className="slice-editor" onClick={(e) => { if (e.target === e.currentTarget) p.onBack(); }}>
       <div className="slice-editor-head">
-        <button className="btn" onClick={p.onBack}>← 返回画布</button>
         <span className="slice-title">{p.source.name}</span>
-        <span className="slice-hint">拖动绿色线或输入数值标记九宫格边距（自动保存）</span>
+        <span className="slice-hint">拖动绿色线或输入数值标记九宫格边距（自动保存）· 点击空白处返回画布</span>
       </div>
       <div className="slice-preview">
         <canvas ref={canvasRef} onPointerDown={onPointerDown}
