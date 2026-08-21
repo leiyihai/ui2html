@@ -82,6 +82,18 @@ export function SliceEditor(p: {
     localStorage.setItem(`ui2html.slice.${p.psdName}.${p.source.name}`, JSON.stringify(s));
   };
 
+  /** 检测鼠标靠近哪条引导线：v=垂直线(left/right)，h=水平线(top/bottom)，null=未靠近 */
+  const nearLine = (px: number, py: number): "v" | "h" | null => {
+    const w = p.source.canvas.width, h = p.source.canvas.height;
+    const near = 6 / scaleRef.current;
+    const { left, top, right, bottom } = slice;
+    const dV = Math.min(Math.abs(px - left), Math.abs(px - (w - right)));
+    const dH = Math.min(Math.abs(py - top), Math.abs(py - (h - bottom)));
+    if (dV < near && dV <= dH) return "v";
+    if (dH < near) return "h";
+    return null;
+  };
+
   const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
     const px = (e.clientX - rect.left) / scaleRef.current;
@@ -96,11 +108,25 @@ export function SliceEditor(p: {
       .map(([d, v]) => [d, v, d === "top" || d === "bottom" ? Math.abs(py - v) : Math.abs(px - v)] as const)
       .filter(([, , dist]) => dist < near)
       .sort((a, b) => a[2] - b[2])[0];
-    if (hit) { dragRef.current = hit[0] as "top" | "bottom" | "left" | "right"; (e.target as HTMLCanvasElement).setPointerCapture(e.pointerId); }
+    if (hit) {
+      dragRef.current = hit[0] as "top" | "bottom" | "left" | "right";
+      const el = e.currentTarget;
+      el.setPointerCapture(e.pointerId);
+      el.style.cursor = hit[0] === "top" || hit[0] === "bottom" ? "ns-resize" : "ew-resize"; // ↕ / ↔
+    }
   };
   const onPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!dragRef.current) return;
-    const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
+    const el = e.currentTarget;
+    if (!dragRef.current) {
+      // hover：靠近引导线时切换光标（↔ 垂直线 / ↕ 水平线）
+      const rect = el.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / scaleRef.current;
+      const py = (e.clientY - rect.top) / scaleRef.current;
+      const dir = nearLine(px, py);
+      el.style.cursor = dir === "v" ? "ew-resize" : dir === "h" ? "ns-resize" : "crosshair";
+      return;
+    }
+    const rect = el.getBoundingClientRect();
     const px = Math.max(0, Math.round((e.clientX - rect.left) / scaleRef.current));
     const py = Math.max(0, Math.round((e.clientY - rect.top) / scaleRef.current));
     const w = p.source.canvas.width, h = p.source.canvas.height;
