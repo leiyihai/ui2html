@@ -136,6 +136,8 @@ function inferCtrl(name: string, isGroup: boolean, hasCanvas: boolean): CtrlType
     return undefined; // 其他文件夹：未标记（手动设空节点等）
   }
   if (hasCanvas) return "image";
+  // icon/img 开头的图层名也默认图片
+  if (/^(icon|img)/i.test(nm)) return "image";
   if (nm) return "text"; // 文本图层（无像素）
   return undefined;
 }
