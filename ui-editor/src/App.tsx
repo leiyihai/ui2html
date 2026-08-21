@@ -148,10 +148,20 @@ export default function App() {
     setFutureLen(0);
   }, []);
 
+  // 连续数值微调合并：500ms 操作窗口内只压一条快照（拖动/滚轮/步进连改后一次撤销回窗口开始）
+  const lastHistoryRef = useRef(0);
+  const hasHistoryRef = useRef(false);
   const mutateScene = useCallback((mutator: (s: UIScene) => UIScene, record = true) => {
     const prev = sceneRef.current;
     if (!prev) return;
-    if (record) pushHistory(prev);
+    const now = Date.now();
+    if (record) {
+      if (!hasHistoryRef.current || now - lastHistoryRef.current > 500) {
+        pushHistory(prev); // 首次或新操作窗口
+        hasHistoryRef.current = true;
+      }
+      lastHistoryRef.current = now;
+    }
     applyScene(mutator(prev));
   }, [applyScene, pushHistory]);
 
