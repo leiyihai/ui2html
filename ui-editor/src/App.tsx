@@ -63,6 +63,7 @@ export default function App() {
   const [histLen, setHistLen] = useState(0);
   const [futureLen, setFutureLen] = useState(0);
   const [psdName, setPsdName] = useState<string | null>(null);
+  const [sliceApplied, setSliceApplied] = useState(false);
   const [psdList, setPsdList] = useState<string[]>([]);
   const [exportMsg, setExportMsg] = useState("");
 
@@ -101,11 +102,11 @@ export default function App() {
       c.height = layoutCtx.viewportHeight * dpr;
       c.getContext("2d")!.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    renderUi(ui.getContext("2d")!, result);
+    renderUi(ui.getContext("2d")!, result, sliceApplied);
     renderOverlay(ov.getContext("2d")!, result, layoutCtx, {
       selectedId, showGrid: false, showSafeArea, showDesignBorder,
     });
-  }, [result, layoutCtx, selectedId, showSafeArea, showDesignBorder]);
+  }, [result, layoutCtx, selectedId, showSafeArea, showDesignBorder, sliceApplied]);
 
   // 画布 CSS 尺寸：contain 到窗口
   useEffect(() => {
@@ -235,6 +236,41 @@ export default function App() {
     });
   }, [mutateScene]);
 
+  // ---- 九宫格：一键替换 / 切换对比 / 还原 ----
+  const replaceWithSlice = useCallback(() => {
+    if (!scene || !psdName) return;
+    mutateScene((s) => {
+      const nodes = s.nodes.map((n) => ({ ...n }));
+      const sources = s.sliceSources ?? [];
+      let n = 0;
+      for (const src of sources) {
+        walkNodes(nodes).forEach((x) => {
+          if (x.image && x.name === src.name) {
+            x.sliceImage = src.canvas;
+            const saved = localStorage.getItem(`ui2html.slice.${psdName}.${src.name}`);
+            x.slice = saved ? JSON.parse(saved) : { left: 0, top: 0, right: 0, bottom: 0 };
+            n++;
+          }
+        });
+      }
+      setExportMsg(`已替换 ${n} 个图片为九宫格版本`);
+      return { ...s, nodes };
+    });
+    setSliceApplied(true);
+  }, [scene, psdName, mutateScene]);
+
+  const toggleSlice = useCallback(() => setSliceApplied((v) => !v), []);
+
+  const restoreSlice = useCallback(() => {
+    mutateScene((s) => {
+      const nodes = s.nodes.map((n) => ({ ...n }));
+      walkNodes(nodes).forEach((x) => { if (x.sliceImage) { x.sliceImage = null; x.slice = undefined; } });
+      return { ...s, nodes };
+    });
+    setSliceApplied(false);
+    setExportMsg("已还原九宫格替换前的版本");
+  }, [mutateScene]);
+
   const updateSelected = useCallback((patch: (n: UINode) => void, record = true) => {
     const prev = sceneRef.current;
     if (!prev) return;
@@ -336,12 +372,15 @@ export default function App() {
         canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
         psdList={psdList} onLoadPsdFromFolder={loadPsdFromFolder} exportMsg={exportMsg}
         onGlobalFont={applyGlobalFont}
+        sliceAvailable={(scene?.sliceSources?.length ?? 0) > 0} sliceApplied={sliceApplied}
+        onReplaceSlice={replaceWithSlice} onToggleSlice={toggleSlice} onRestoreSlice={restoreSlice}
       />
       <div className="body">
         <LayerPanel
           nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={setSelectedId}
           onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
           onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
+          sliceSources={scene?.sliceSources ?? []} psdName={psdName}
         />
         <div className="canvas-wrap" ref={wrapRef}>
           <div className="canvas-stack">

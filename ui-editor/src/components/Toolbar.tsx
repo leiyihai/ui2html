@@ -26,6 +26,11 @@ interface Props {
   onLoadPsdFromFolder: (name: string) => void;
   exportMsg: string;
   onGlobalFont: (font: string) => void;
+  sliceAvailable: boolean;
+  sliceApplied: boolean;
+  onReplaceSlice: () => void;
+  onToggleSlice: () => void;
+  onRestoreSlice: () => void;
 }
 
 export default function Toolbar(p: Props) {
@@ -66,6 +71,14 @@ export default function Toolbar(p: Props) {
       <datalist id="global-font-list">
         {fontList.map((f) => <option key={f} value={f} />)}
       </datalist>
+      {p.sliceAvailable && (
+        <span className="slice-tools">
+          <button className="btn" onClick={p.onReplaceSlice} title="用「9」文件夹内同名图片替换">九宫格替换</button>
+          <button className={"btn" + (p.sliceApplied ? " on" : "")} onClick={p.onToggleSlice}
+            title="切换替换前/后效果">{p.sliceApplied ? "替换后 ✓" : "替换前"}</button>
+          <button className="btn" onClick={p.onRestoreSlice} title="还原为替换前版本">还原</button>
+        </span>
+      )}
 
       <span className="sep" />
       {(() => {

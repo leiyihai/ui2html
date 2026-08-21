@@ -4,7 +4,28 @@
 import type { LayoutResult, LayoutContext } from "./types";
 import { fitFontSize, wrapText, LINE_HEIGHT } from "./textMeasure";
 
-export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult) {
+/** 九宫格拉伸绘制：四角原尺寸、四边单轴拉伸、中心双轴拉伸 */
+export function draw9Slice(ctx: CanvasRenderingContext2D, img: HTMLCanvasElement,
+  rect: { x: number; y: number; width: number; height: number },
+  s: { left: number; top: number; right: number; bottom: number }) {
+  const iw = img.width, ih = img.height;
+  const l = Math.max(0, Math.min(s.left, iw - 1)), t = Math.max(0, Math.min(s.top, ih - 1));
+  const r = Math.max(0, Math.min(s.right, iw - l - 1)), b = Math.max(0, Math.min(s.bottom, ih - t - 1));
+  const sx = [0, l, iw - r, iw];
+  const sy = [0, t, ih - b, ih];
+  const dx = [rect.x, rect.x + l, rect.x + rect.width - r, rect.x + rect.width];
+  const dy = [rect.y, rect.y + t, rect.y + rect.height - b, rect.y + rect.height];
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      const sw = sx[i + 1] - sx[i], sh = sy[j + 1] - sy[j];
+      const dw = dx[i + 1] - dx[i], dh = dy[j + 1] - dy[j];
+      if (sw <= 0 || sh <= 0 || dw <= 0 || dh <= 0) continue;
+      ctx.drawImage(img, sx[i], sy[j], sw, sh, dx[i], dy[j], dw, dh);
+    }
+  }
+}
+
+export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, useSlice = false) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const nodes = [...result.nodes].sort((a, b) => a.node.zIndex - b.node.zIndex); // zIndex 小(底)先画
   for (const { node, rect, visible, clipRect, opacity } of nodes) {
@@ -17,7 +38,10 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult) {
       ctx.clip();
     }
     ctx.globalAlpha = opacity; // 有效透明度：父组 × 自身
-    if (node.image) {
+    if (useSlice && node.sliceImage && node.slice) {
+      // 九宫格替换图：按 slice 边距九宫格拉伸绘制
+      draw9Slice(ctx, node.sliceImage, rect, node.slice);
+    } else if (node.image) {
       ctx.drawImage(node.image, rect.x, rect.y, rect.width, rect.height);
     } else if (node.text) {
       const t = node.text;

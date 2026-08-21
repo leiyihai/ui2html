@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { UINode } from "../types";
+import SlicePanel from "./SlicePanel";
 
 interface Props {
   nodes: UINode[];
@@ -7,6 +8,8 @@ interface Props {
   onSelect: (id: string | null) => void;
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
+  sliceSources: { name: string; canvas: HTMLCanvasElement }[];
+  psdName: string | null;
 }
 
 export type NodeType = "group" | "list" | "image" | "text";
@@ -93,16 +96,24 @@ function Row(p: { n: UINode; depth: number; selectedId: string | null; onSelect:
 }
 
 export default function LayerPanel(p: Props) {
+  const [tab, setTab] = useState<"layers" | "slice">("layers");
   const sorted = [...p.nodes].sort((a, b) => b.zIndex - a.zIndex); // 上层在前
   return (
     <aside className="layer-panel">
-      <h3>图层</h3>
-      <ul>
-        {sorted.map((n) => (
-          <Row key={n.id} n={n} depth={0} selectedId={p.selectedId} onSelect={p.onSelect}
-            onToggleVisible={p.onToggleVisible} onToggleLock={p.onToggleLock} />
-        ))}
-      </ul>
+      <div className="panel-tabs">
+        <button className={tab === "layers" ? "on" : ""} onClick={() => setTab("layers")}>图层</button>
+        <button className={tab === "slice" ? "on" : ""} onClick={() => setTab("slice")}>九宫格</button>
+      </div>
+      {tab === "layers" ? (
+        <ul>
+          {sorted.map((n) => (
+            <Row key={n.id} n={n} depth={0} selectedId={p.selectedId} onSelect={p.onSelect}
+              onToggleVisible={p.onToggleVisible} onToggleLock={p.onToggleLock} />
+          ))}
+        </ul>
+      ) : (
+        <SlicePanel sources={p.sliceSources} psdName={p.psdName} />
+      )}
     </aside>
   );
 }

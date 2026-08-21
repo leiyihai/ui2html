@@ -42,6 +42,10 @@ export interface UINode {
   children?: UINode[];
   /** list 节点（文件夹名为 list）：li 按类型重排、容器尺寸自适应 */
   list?: ListConfig;
+  /** 九宫格边距（设计像素，相对图片原尺寸）；有值时按九宫格渲染 */
+  slice?: { left: number; top: number; right: number; bottom: number };
+  /** 九宫格替换图（来自 "9" 文件夹的同名图片） */
+  sliceImage?: HTMLCanvasElement | null;
 
   /** PSD 导入时的原始布局（只在导入时写入，编辑不改它） */
   designRect: UIRect;
@@ -79,6 +83,8 @@ export interface UIScene {
   designWidth: number;
   designHeight: number;
   nodes: UINode[];
+  /** "9" 文件夹内的图片（九宫格替换源），不进场景布局 */
+  sliceSources?: { name: string; canvas: HTMLCanvasElement }[];
 }
 
 export type ScaleMode = "contain" | "width" | "height" | "fill" | "cover";

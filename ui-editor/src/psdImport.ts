@@ -230,11 +230,33 @@ export function importPsd(buffer: ArrayBuffer): { scene: UIScene; warnings: stri
   const warnings: string[] = [];
   const counter = { n: 0 };
   const compCanvas = psd.canvas ?? null; // PSD 合成图（含图层样式效果）
-  const nodes = (psd.children ?? [])
-    .map((layer) => toNode(layer, 0, 0, psd.width, psd.height, counter, warnings, compCanvas))
-    .filter((n): n is UINode => !!n);
+  // "9" 文件夹（设计约定）：内部的图片是九宫格替换源，不进入场景布局
+  const sliceSources: { name: string; canvas: HTMLCanvasElement }[] = [];
+  const topLayers = psd.children ?? [];
+  const nodes: UINode[] = [];
+  for (const layer of topLayers) {
+    if (layer.children?.length && /^9$/.test((layer.name ?? "").trim())) {
+      collectSliceSources(layer.children, sliceSources, warnings);
+      continue;
+    }
+    const n = toNode(layer, 0, 0, psd.width, psd.height, counter, warnings, compCanvas);
+    if (n) nodes.push(n);
+  }
   return {
-    scene: { designWidth: psd.width, designHeight: psd.height, nodes },
+    scene: { designWidth: psd.width, designHeight: psd.height, nodes, sliceSources },
     warnings,
   };
+}
+
+/** 收集 "9" 文件夹内的图片（叶子 canvas，递归嵌套） */
+function collectSliceSources(layers: Layer[], out: { name: string; canvas: HTMLCanvasElement }[], warnings: string[]) {
+  for (const l of layers) {
+    if (l.children?.length) {
+      collectSliceSources(l.children, out, warnings);
+    } else if (l.canvas) {
+      out.push({ name: l.name ?? "unnamed", canvas: l.canvas });
+    } else {
+      warnings.push(`九宫格源「${l.name}」无像素数据，跳过`);
+    }
+  }
 }
