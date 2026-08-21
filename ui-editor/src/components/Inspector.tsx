@@ -12,6 +12,30 @@ const SELF_GRID: [string, number, number][] = [
   ["↙", 0, 1], ["↓", 0.5, 1], ["↘", 1, 1],
 ];
 
+/** 数值行：label 按住左右拖动快速调值（起点 record 一次，拖动中不记录历史） */
+// 顶层组件（不能在 Inspector 内部定义：内联组件每次渲染类型变化会导致 DOM 重建、拖动监听丢失）
+function NumRow(p2: { label: string; value: number; step?: number; set: (v: number, record?: boolean) => void }) {
+  const step = p2.step ?? 1;
+  const onPointerDown = (e: React.PointerEvent<HTMLLabelElement>) => {
+    const el = e.currentTarget;
+    el.setPointerCapture(e.pointerId);
+    p2.set(p2.value, true); // 快照拖动前
+    const start = p2.value;
+    const move = (ev: PointerEvent) =>
+      p2.set(start + Math.round((ev.clientX - e.clientX) * step * 100) / 100, false);
+    const up = () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); };
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerup", up);
+  };
+  return (
+    <div className="row">
+      <label className="drag" onPointerDown={onPointerDown} title="按住左右拖动调整数值">{p2.label}</label>
+      <input type="number" value={p2.value}
+        onChange={(ev) => p2.set(+ev.target.value || 0, true)} />
+    </div>
+  );
+}
+
 interface Props {
   node: UINode | null;
   rect: UIRect | null;
@@ -29,29 +53,6 @@ export default function Inspector(p: Props) {
 
   const set = <K extends keyof UINode>(key: K, val: UINode[K], record = true) =>
     p.onUpdate((x) => { (x as any)[key] = val; }, record);
-
-  /** 数值行：label 按住左右拖动快速调值（起点 record 一次，拖动中不记录历史） */
-  const NumRow = (p2: { label: string; value: number; step?: number; set: (v: number, record?: boolean) => void }) => {
-    const step = p2.step ?? 1;
-    const onPointerDown = (e: React.PointerEvent<HTMLLabelElement>) => {
-      const el = e.currentTarget;
-      el.setPointerCapture(e.pointerId);
-      p2.set(p2.value, true); // 快照拖动前
-      const start = p2.value;
-      const move = (ev: PointerEvent) =>
-        p2.set(start + Math.round((ev.clientX - e.clientX) * step * 100) / 100, false);
-      const up = () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); };
-      el.addEventListener("pointermove", move);
-      el.addEventListener("pointerup", up);
-    };
-    return (
-      <div className="row">
-        <label className="drag" onPointerDown={onPointerDown} title="按住左右拖动调整数值">{p2.label}</label>
-        <input type="number" value={p2.value}
-          onChange={(ev) => p2.set(+ev.target.value || 0, true)} />
-      </div>
-    );
-  };
 
   const toHex = (color: string): string => {
     const m = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
