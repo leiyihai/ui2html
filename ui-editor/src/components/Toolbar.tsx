@@ -56,8 +56,8 @@ export default function Appbar(p: Props) {
         {fontList.map((f) => <option key={f} value={f} />)}
       </datalist>
       <span className="vsep" />
-      <button className="icon-btn" disabled={!p.canUndo} onClick={p.onUndo} title="后退一步 (Ctrl+Z)">↩</button>
-      <button className="icon-btn" disabled={!p.canRedo} onClick={p.onRedo} title="前进一步 (Ctrl+X)">↪</button>
+      <button className="btn" disabled={!p.canUndo} onClick={p.onUndo} title="后退一步 (Ctrl+Z)">↩ 撤销</button>
+      <button className="btn" disabled={!p.canRedo} onClick={p.onRedo} title="前进一步 (Ctrl+X)">↪ 重做</button>
       <span className="vsep" />
       <button className="btn" disabled={!p.hasScene} onClick={p.onExportAnchors} title="保存为 psd 同名 json（锚点+九宫格+控件）">导出配置</button>
       <button className="btn primary" disabled={!p.hasScene} onClick={p.onExportHtml} title="导出自适应网页">导出 HTML</button>

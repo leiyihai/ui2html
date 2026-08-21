@@ -40,16 +40,25 @@ function applySnap(nodes: UINode[], snap: Snapshot): UINode[] {
   });
 }
 
-// 撤销快照：只存可变属性（image 是 canvas 不能序列化）
+// 撤销快照：存全部可变属性（image 是 canvas 不能序列化，sliceImage 存引用）
 type Snapshot = Record<string, {
   anchor: UINode["anchor"]; adaptation: UINode["adaptation"];
   visible: boolean; opacity: number; zIndex: number; rotation: number;
   scale: { x: number; y: number }; name: string; locked?: boolean;
+  designRect?: UINode["designRect"];
+  ctrl?: UINode["ctrl"]; text?: UINode["text"]; slice?: UINode["slice"];
+  sliceImage?: UINode["sliceImage"]; list?: UINode["list"];
 }>;
 const snapScene = (s: UIScene): Snapshot => Object.fromEntries(walkNodes(s.nodes).map((n) => [n.id, {
   anchor: { ...n.anchor }, adaptation: { ...n.adaptation }, visible: n.visible,
   opacity: n.opacity, zIndex: n.zIndex, rotation: n.rotation,
   scale: { ...n.scale }, name: n.name, locked: n.locked,
+  designRect: { ...n.designRect },
+  ctrl: n.ctrl ? { ...n.ctrl } : undefined,
+  text: n.text ? { ...n.text } : undefined,
+  slice: n.slice ? { ...n.slice } : undefined,
+  sliceImage: n.sliceImage,
+  list: n.list ? { ...n.list, padding: { ...n.list.padding } } : undefined,
 }]));
 
 const HISTORY_LIMIT = 50; // 步数不用保留太多
