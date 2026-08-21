@@ -11,6 +11,8 @@ interface Props {
   sliceSources: { name: string; canvas: HTMLCanvasElement }[];
   sliceSelected: string | null;
   onSelectSlice: (name: string | null) => void;
+  tab: "layers" | "slice";
+  onTab: (t: "layers" | "slice") => void;
 }
 
 export type NodeType = "group" | "list" | "image" | "text";
@@ -97,16 +99,14 @@ function Row(p: { n: UINode; depth: number; selectedId: string | null; onSelect:
 }
 
 export default function LayerPanel(p: Props) {
-  const [tab, setTab] = useState<"layers" | "slice">("layers");
   const sorted = [...p.nodes].sort((a, b) => b.zIndex - a.zIndex); // 上层在前
   return (
     <aside className="layer-panel">
       <div className="panel-tabs">
-        <button className={tab === "layers" ? "on" : ""}
-          onClick={() => { setTab("layers"); p.onSelectSlice(null); }}>图层</button>
-        <button className={tab === "slice" ? "on" : ""} onClick={() => setTab("slice")}>九宫格</button>
+        <button className={p.tab === "layers" ? "on" : ""} onClick={() => p.onTab("layers")}>图层</button>
+        <button className={p.tab === "slice" ? "on" : ""} onClick={() => p.onTab("slice")}>九宫格</button>
       </div>
-      {tab === "layers" ? (
+      {p.tab === "layers" ? (
         <ul>
           {sorted.map((n) => (
             <Row key={n.id} n={n} depth={0} selectedId={p.selectedId} onSelect={p.onSelect}

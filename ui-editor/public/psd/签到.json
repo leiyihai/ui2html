@@ -1,0 +1,279 @@
+{
+  "anchors": {
+    "2": {
+      "parentX": 0.5,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -6.5,
+      "offsetY": -70,
+      "mode": "anchor"
+    },
+    "3": {
+      "parentX": 0.5,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -12,
+      "offsetY": -45,
+      "mode": "anchor"
+    },
+    "200": {
+      "parentX": 0.5,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -17,
+      "offsetY": -79,
+      "mode": "anchor"
+    },
+    "300": {
+      "parentX": 0.5,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -19,
+      "offsetY": -79,
+      "mode": "anchor"
+    },
+    "root": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "stretch"
+    },
+    "背景": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "stretch"
+    },
+    "底板": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 13,
+      "mode": "anchor"
+    },
+    "左上": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 88,
+      "offsetY": 64,
+      "mode": "anchor"
+    },
+    "萌新签到": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -164,
+      "offsetY": -79,
+      "mode": "anchor"
+    },
+    "日历": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "角色": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "list": {
+      "parentX": 0,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 94,
+      "offsetY": -475,
+      "mode": "anchor"
+    },
+    "li3": {
+      "parentX": 1,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -142,
+      "offsetY": 16,
+      "mode": "anchor"
+    },
+    "蓝色底": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "能量堆 拷贝": {
+      "parentX": 0,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 15,
+      "offsetY": -47,
+      "mode": "anchor"
+    },
+    "能量": {
+      "parentX": 0.5,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -20,
+      "offsetY": -52,
+      "mode": "anchor"
+    },
+    "Day 5": {
+      "parentX": 0.5,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -21,
+      "offsetY": 20,
+      "mode": "anchor"
+    },
+    "li2": {
+      "parentX": 0.5,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -107,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "黄色底": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "medium_white_chest": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 32,
+      "offsetY": 67,
+      "mode": "anchor"
+    },
+    "床宝箱": {
+      "parentX": 0.5,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -36.5,
+      "offsetY": -43,
+      "mode": "anchor"
+    },
+    "Day 3": {
+      "parentX": 0.5,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -25.5,
+      "offsetY": 21,
+      "mode": "anchor"
+    },
+    "li1": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 16,
+      "mode": "anchor"
+    },
+    "矩形 1 拷贝 5": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "金币堆": {
+      "parentX": 1,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -121,
+      "offsetY": -45,
+      "mode": "anchor"
+    },
+    "Day 1": {
+      "parentX": 0.5,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -22,
+      "offsetY": 20,
+      "mode": "anchor"
+    },
+    "床币": {
+      "parentX": 0.5,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -19,
+      "offsetY": -52,
+      "mode": "anchor"
+    },
+    "勾选 拷贝 5": {
+      "parentX": 1,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -56,
+      "offsetY": -4,
+      "mode": "anchor"
+    },
+    "关闭": {
+      "parentX": 1,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -116,
+      "offsetY": 170,
+      "mode": "anchor"
+    }
+  },
+  "slices": {
+    "蓝色底": {
+      "left": 2,
+      "top": 2,
+      "right": 2,
+      "bottom": 2
+    },
+    "黄色底": {
+      "left": 10,
+      "top": 10,
+      "right": 10,
+      "bottom": 10
+    }
+  }
+}

@@ -3,10 +3,12 @@ import { LayoutEngine, reanchor } from "./layoutEngine";
 import { importPsd } from "./psdImport";
 import { renderOverlay, renderUi } from "./renderer";
 import { buildExportHtml } from "./exportHtml";
-import type { LayoutContext, ScaleMode, UINode, UIScene } from "./types";
+import type { CtrlType, InteractionTemplate, LayoutContext, ScaleMode, UINode, UIScene } from "./types";
 import Toolbar from "./components/Toolbar";
 import LayerPanel from "./components/LayerPanel";
 import Inspector from "./components/Inspector";
+import ControlsPanel from "./components/ControlsPanel";
+import WorkspaceTabs, { type Workspace } from "./components/WorkspaceTabs";
 import { SliceEditor } from "./components/SlicePanel";
 
 export const PRESETS: [string, number, number][] = [
@@ -66,6 +68,8 @@ export default function App() {
   const [psdName, setPsdName] = useState<string | null>(null);
   const [sliceApplied, setSliceApplied] = useState(false);
   const [sliceSelected, setSliceSelected] = useState<string | null>(null);
+  const [panelTab, setPanelTab] = useState<"layers" | "slice">("layers");
+  const [workspace, setWorkspace] = useState<Workspace>("layout");
   const [psdList, setPsdList] = useState<string[]>([]);
   const [exportMsg, setExportMsg] = useState("");
 
@@ -110,11 +114,11 @@ export default function App() {
     });
   }, [result, layoutCtx, selectedId, showSafeArea, showDesignBorder, sliceApplied]);
 
-  // 画布 CSS 尺寸：contain 到窗口
+  // 画布 CSS 尺寸：contain 到窗口（切回图层 tab 时重新计算）
   useEffect(() => {
     const fit = () => {
       const wrap = wrapRef.current;
-      if (!wrap || !layoutCtx) return;
+      if (!wrap || !layoutCtx || wrap.style.display === "none") return;
       const s = Math.min(wrap.clientWidth / layoutCtx.viewportWidth, wrap.clientHeight / layoutCtx.viewportHeight) * 0.72;
       for (const c of [uiRef.current, ovRef.current]) {
         if (c) { c.style.width = `${layoutCtx.viewportWidth * s}px`; c.style.height = `${layoutCtx.viewportHeight * s}px`; }
@@ -123,7 +127,7 @@ export default function App() {
     fit();
     window.addEventListener("resize", fit);
     return () => window.removeEventListener("resize", fit);
-  }, [layoutCtx]);
+  }, [layoutCtx, panelTab]);
 
   // ---- 状态变更统一入口（record=true 时压入历史）----
   const applyScene = useCallback((next: UIScene) => { sceneRef.current = next; setScene(next); }, []);
@@ -170,6 +174,13 @@ export default function App() {
             localStorage.setItem(`ui2html.slice.${name}.${k}`, JSON.stringify(v));
           }
         }
+        if (cfg.controls) {
+          walkNodes(s.nodes).forEach((n) => {
+            const c = (cfg.controls as Record<string, { type: CtrlType; templateId?: string }>)[n.name];
+            if (c) n.ctrl = { type: c.type, templateId: c.templateId };
+          });
+        }
+        if (cfg.templates) s.interactionTemplates = cfg.templates as InteractionTemplate[];
       }
     } catch { /* 无同名 json 则用 PSD 推断 */ }
     historyRef.current = [];
@@ -206,7 +217,10 @@ export default function App() {
       const s = localStorage.getItem(`ui2html.slice.${psdName}.${src.name}`);
       if (s) slices[src.name] = JSON.parse(s);
     }
-    const data = { anchors, slices };
+    // 控件类型标签
+    const controls: Record<string, { type: CtrlType; templateId?: string }> = {};
+    walkNodes(scene.nodes).forEach((n) => { if (n.ctrl) controls[n.name] = n.ctrl; });
+    const data = { anchors, slices, controls, templates: scene.interactionTemplates ?? [] };
     const base = (psdName ?? "ui").replace(/\.psd$/i, "");
     try {
       const r = await fetch("/save-export", {
@@ -252,6 +266,16 @@ export default function App() {
 
   const updateNode = useCallback((id: string, patch: (n: UINode) => void) => {
     mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, patch) }));
+  }, [mutateScene]);
+
+  /** 控件类型标签 */
+  const setCtrl = useCallback((id: string, type: CtrlType | null) => {
+    updateNode(id, (n) => { if (type) n.ctrl = { ...n.ctrl, type }; else n.ctrl = undefined; });
+  }, [updateNode]);
+
+  /** 交互模板（随场景 json 导出） */
+  const setTemplates = useCallback((t: InteractionTemplate[]) => {
+    mutateScene((s) => ({ ...s, interactionTemplates: t }));
   }, [mutateScene]);
 
   /** 全局字体：一次性替换场景内所有文本节点的字体 */
@@ -404,38 +428,65 @@ export default function App() {
         sliceAvailable={(scene?.sliceSources?.length ?? 0) > 0} sliceApplied={sliceApplied}
         onReplaceSlice={replaceWithSlice} onToggleSlice={toggleSlice} onRestoreSlice={restoreSlice}
       />
+      <WorkspaceTabs ws={workspace} onWs={setWorkspace} />
       <div className="body">
-        <LayerPanel
-          nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={setSelectedId}
-          onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
-          onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
-          sliceSources={scene?.sliceSources ?? []} sliceSelected={sliceSelected}
-          onSelectSlice={setSliceSelected}
-        />
-        {sliceSelected && scene ? (
-          <SliceEditor
-            key={sliceSelected}
-            source={scene.sliceSources?.find((s) => s.name === sliceSelected)!}
-            psdName={psdName} onBack={() => setSliceSelected(null)}
+        {workspace === "controls" ? (
+          <ControlsPanel nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={setSelectedId}
+            onSetCtrl={setCtrl} />
+        ) : workspace === "layout" ? (
+          <LayerPanel
+            nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={setSelectedId}
+            onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
+            onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
+            sliceSources={scene?.sliceSources ?? []} sliceSelected={sliceSelected}
+            onSelectSlice={setSliceSelected}
+            tab={panelTab} onTab={setPanelTab}
           />
         ) : (
-        <div className="canvas-wrap" ref={wrapRef}>
-          <div className="canvas-stack">
-            <canvas ref={uiRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp} />
-            <canvas ref={ovRef} style={{ pointerEvents: "none" }} />
-          </div>
-        </div>
+          <div className="ws-panel" />
         )}
-        <Inspector
-          node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
-          rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
-          viewport={viewport}
-          onUpdate={updateSelected}
-          onReanchor={(a) => updateSelected((n) => {
-            const r = result!.nodes.find((x) => x.node.id === n.id)!.rect;
-            reanchor(n, scene!.designWidth, scene!.designHeight, r, layoutCtx!, result!, a);
-          })}
-        />
+        {workspace === "layout" && panelTab === "slice" && (
+          sliceSelected && scene ? (
+            <SliceEditor
+              key={sliceSelected}
+              source={scene.sliceSources?.find((s) => s.name === sliceSelected)!}
+              psdName={psdName} onBack={() => setSliceSelected(null)}
+            />
+          ) : (
+            <div className="slice-editor">
+              <span className="slice-empty">从左侧列表选择一张图片进行九宫格标记</span>
+            </div>
+          )
+        )}
+        {workspace === "animation" ? (
+          <div className="ws-placeholder">动画编辑器（开发中，敬请期待）</div>
+        ) : workspace === "export" ? (
+          <div className="ws-placeholder">导出设置（开发中）<br />目标：PSD → 自研引擎 UI 文件</div>
+        ) : (
+          <div className="canvas-wrap" ref={wrapRef}
+            style={workspace === "layout" && panelTab === "slice" ? { display: "none" } : undefined}>
+            <div className="canvas-stack">
+              <canvas ref={uiRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp} />
+              <canvas ref={ovRef} style={{ pointerEvents: "none" }} />
+            </div>
+          </div>
+        )}
+        {workspace === "animation" || workspace === "export" ? (
+          <div className="ws-panel" />
+        ) : (
+          <Inspector
+            node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
+            rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
+            viewport={viewport}
+            onUpdate={updateSelected}
+            onReanchor={(a) => updateSelected((n) => {
+              const r = result!.nodes.find((x) => x.node.id === n.id)!.rect;
+              reanchor(n, scene!.designWidth, scene!.designHeight, r, layoutCtx!, result!, a);
+            })}
+            templates={scene?.interactionTemplates ?? []}
+            onTemplates={setTemplates}
+          />
+        )}
       </div>
     </div>
   );

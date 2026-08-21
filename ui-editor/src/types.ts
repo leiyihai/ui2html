@@ -23,6 +23,37 @@ export interface ListConfig {
 
 export type TextMode = "auto" | "fixed" | "fit";
 
+/** 控件类型标签 */
+export type CtrlType =
+  | "button" | "image" | "text" | "panel"
+  | "list" | "listitem" | "progress" | "slider" | "input";
+
+export const CTRL_TYPES: { value: CtrlType; label: string }[] = [
+  { value: "button", label: "按钮" },
+  { value: "image", label: "图片" },
+  { value: "text", label: "文本" },
+  { value: "panel", label: "面板" },
+  { value: "list", label: "列表" },
+  { value: "listitem", label: "列表项" },
+  { value: "progress", label: "进度条" },
+  { value: "slider", label: "滑动条" },
+  { value: "input", label: "输入框" },
+];
+
+/** 交互样式模板（可交互控件引用，改模板批量生效） */
+export interface InteractionTemplate {
+  id: string;
+  name: string;
+  /** 点击时缩放比（0.95 = 缩小 5%） */
+  pressScale: number;
+  /** 点击时透明度 */
+  pressOpacity: number;
+  /** 点击高亮叠加色（#rrggbbaa），null = 不高亮 */
+  pressTint: string | null;
+  /** 动画时长（秒） */
+  duration: number;
+}
+
 export interface UINode {
   id: string;
   name: string;
@@ -46,6 +77,8 @@ export interface UINode {
   slice?: { left: number; top: number; right: number; bottom: number };
   /** 九宫格替换图（来自 "9" 文件夹的同名图片） */
   sliceImage?: HTMLCanvasElement | null;
+  /** 控件类型标签 + 交互模板引用 */
+  ctrl?: { type: CtrlType; templateId?: string };
 
   /** PSD 导入时的原始布局（只在导入时写入，编辑不改它） */
   designRect: UIRect;
@@ -85,6 +118,8 @@ export interface UIScene {
   nodes: UINode[];
   /** "9" 文件夹内的图片（九宫格替换源），不进场景布局 */
   sliceSources?: { name: string; canvas: HTMLCanvasElement }[];
+  /** 交互样式模板（控件工作区管理） */
+  interactionTemplates?: InteractionTemplate[];
 }
 
 export type ScaleMode = "contain" | "width" | "height" | "fill" | "cover";

@@ -28,6 +28,45 @@ body {
 .toolbar .global-font:focus { outline: none; border-color: #4a90d9; }
 .toolbar .slice-tools { display: inline-flex; gap: 4px; }
 .toolbar .btn.on { background: #2d5d46; border-color: #3f8f68; color: #c9f2dd; }
+/* 工作区导航 */
+.ws-tabs {
+  display: flex; align-items: center; gap: 2px; padding: 0 10px;
+  background: #1e232b; border-bottom: 1px solid #3a4150;
+}
+.ws-tabs button {
+  padding: 7px 16px; background: none; border: none; color: #8fa1b5; cursor: pointer;
+  font-size: 13px; border-bottom: 2px solid transparent;
+}
+.ws-tabs button:hover { color: #d7dee7; }
+.ws-tabs button.on { color: #fff; border-bottom-color: #4a90d9; }
+.ws-tabs .ws-spacer { flex: 1; }
+.ws-tabs .ws-settings {
+  padding: 5px 12px; border: 1px solid #4a5263; border-radius: 4px;
+  background: #2a303a; color: #d7dee7; font-size: 12px; margin: 5px 0;
+}
+.ws-tabs .ws-settings.on { background: #3a526e; border-color: #4a90d9; color: #fff; }
+.ws-placeholder {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 8px; color: #5f6c7c; font-size: 14px;
+  background: #15181d; line-height: 1.8;
+}
+.ws-panel { width: 280px; flex: none; background: #262b33; }
+/* 控件类型面板 */
+.controls-panel .ctrl-badge {
+  max-width: 96px; font-size: 11px; padding: 1px 4px; background: #1c2026;
+  color: #d7dee7; border: 1px solid #3a4150; border-radius: 4px;
+}
+.controls-panel li { display: flex; align-items: center; gap: 6px; }
+.controls-panel li .name { flex: 1; }
+/* 交互模板 */
+.inspector .tpl { border: 1px solid #3a4150; border-radius: 6px; padding: 8px; margin-bottom: 8px; }
+.inspector .tpl-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.inspector .tpl-head input {
+  flex: 1; padding: 3px 6px; background: #0f1318; color: #e6ebf2;
+  border: 1px solid #3a4150; border-radius: 4px; font-weight: 600;
+}
+.inspector .tpl .icon { background: none; border: none; color: #77838f; cursor: pointer; }
+.inspector .btn { margin-top: 4px; }
 .layer-panel .panel-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
 .layer-panel .panel-tabs button {
   flex: 1; padding: 4px 0; background: #1c2026; border: 1px solid #3a4150; border-radius: 4px;

@@ -1,4 +1,5 @@
-import type { UINode, UIRect } from "../types";
+import type { InteractionTemplate, UINode, UIRect } from "../types";
+import { CTRL_TYPES, type CtrlType } from "../types";
 
 const PARENT_GRID: [string, number, number][] = [
   ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
@@ -17,6 +18,8 @@ interface Props {
   viewport: { width: number; height: number };
   onUpdate: (patch: (n: UINode) => void) => void;
   onReanchor: (a: { parentX: number; parentY: number; selfX: number; selfY: number }) => void;
+  templates: InteractionTemplate[];
+  onTemplates: (t: InteractionTemplate[]) => void;
 }
 
 export default function Inspector(p: Props) {
@@ -29,8 +32,9 @@ export default function Inspector(p: Props) {
   const toHex = (color: string): string => {
     const m = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
     if (m) return "#" + m.slice(1).map((v) => (+v).toString(16).padStart(2, "0")).join("");
-    return /^#[0-9a-fA-F]{6}$/.test(color) ? color : "#ffffff";
+    return /^#[0-9a-fA-F]{6}/.test(color) ? color.slice(0, 7) : "#ffffff";
   };
+  const hex6 = (color: string) => toHex(color);
 
   return (
     <aside className="inspector">
@@ -112,6 +116,58 @@ export default function Inspector(p: Props) {
           )}
         </>
       )}
+
+      <h4>控件类型</h4>
+      <div className="row"><label>类型</label>
+        <select value={n.ctrl?.type ?? ""}
+          onChange={(e) => {
+            const t = e.target.value;
+            if (t) set("ctrl", { ...(n.ctrl ?? {}), type: t as CtrlType });
+            else set("ctrl", undefined);
+          }}>
+          <option value="">未标记</option>
+          {CTRL_TYPES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+        </select></div>
+      {n.ctrl?.type === "button" && (
+        <div className="row"><label>交互模板</label>
+          <select value={n.ctrl.templateId ?? ""}
+            onChange={(e) => set("ctrl", { ...n.ctrl!, templateId: e.target.value || undefined })}>
+            <option value="">（无）</option>
+            {p.templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select></div>
+      )}
+      <h4>交互模板</h4>
+      <div className="tpl-list">
+        {p.templates.length === 0 && <p className="hint">还没有模板，新建一个</p>}
+        {p.templates.map((t) => (
+          <div key={t.id} className="tpl">
+            <div className="tpl-head">
+              <input value={t.name} title="模板名"
+                onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, name: e.target.value } : x))} />
+              <button className="icon" title="删除模板"
+                onClick={() => p.onTemplates(p.templates.filter((x) => x.id !== t.id))}>✕</button>
+            </div>
+            <div className="row"><label>点击缩放</label>
+              <input type="number" step={0.05} min={0.5} max={1.5} value={t.pressScale}
+                onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressScale: +e.target.value || 1 } : x))} /></div>
+            <div className="row"><label>点击透明度</label>
+              <input type="number" step={0.1} min={0} max={1} value={t.pressOpacity}
+                onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressOpacity: +e.target.value || 1 } : x))} /></div>
+            <div className="row"><label>点击高亮色</label>
+              <input type="color" value={t.pressTint ? hex6(t.pressTint) : "#ffffff"}
+                onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressTint: e.target.value + "40" } : x))} />
+              <button className="icon" onClick={() => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressTint: null } : x))}
+                title="清除高亮">✕</button></div>
+            <div className="row"><label>动画时长</label>
+              <input type="number" step={0.05} min={0} max={1} value={t.duration}
+                onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, duration: +e.target.value || 0.1 } : x))} /></div>
+          </div>
+        ))}
+      </div>
+      <button className="btn" onClick={() => p.onTemplates([...p.templates, {
+        id: "t" + Date.now(), name: "模板" + (p.templates.length + 1),
+        pressScale: 0.95, pressOpacity: 0.8, pressTint: null, duration: 0.1,
+      }])}>＋ 新建模板</button>
 
       <h4>Parent Anchor（改模式为 anchor 时生效）</h4>
       <div className="grid">
