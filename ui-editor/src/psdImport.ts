@@ -4,7 +4,7 @@
 // 坐标统一为 Top-Left 系统（PSD 本身就是）。
 
 import { readPsd, type Layer } from "ag-psd";
-import type { ListConfig, ListType, UINode, UIScene } from "./types";
+import type { CtrlType, ListConfig, ListType, UINode, UIScene } from "./types";
 
 let layerIdSeq = 1;
 
@@ -122,6 +122,23 @@ function inferList(children: UINode[], mergedW: number, mergedH: number): ListCo
   };
 }
 
+/** 按文件夹/图层命名推断默认控件类型（辅助标记，界面中的标记优先并覆盖） */
+function inferCtrl(name: string, isGroup: boolean, hasCanvas: boolean): CtrlType | undefined {
+  const nm = name.trim().toLowerCase();
+  if (isGroup) {
+    if (/^li\d*$/i.test(nm)) return "listitem";
+    if (nm === "list") return "list";
+    if (nm === "pbar") return "progress";
+    if (nm === "sbar") return "scrollbar";
+    if (nm === "btn") return "button";
+    if (nm === "input") return "input";
+    return undefined; // 其他文件夹：未标记（手动设空节点等）
+  }
+  if (hasCanvas) return "image";
+  if (nm) return "text"; // 文本图层（无像素）
+  return undefined;
+}
+
 function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: number,
   counter: { n: number }, warnings: string[], compCanvas: HTMLCanvasElement | null): UINode | null {
   const i = counter.n++;
@@ -143,9 +160,11 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
     // 锚点推断必须用「相对父组原点」的坐标（文档坐标 - baseX/baseY），否则组内定位跑偏
     const { px, py, ox, oy } = inferAnchor(merged.x - baseX, merged.y - baseY, merged.w, merged.h, refW, refH);
     const isList = /^list$/i.test(name);
+    const ctrlType = inferCtrl(name, true, false);
     return {
       ...base, image: null, children, zIndex: i,
       ...(isList ? { list: inferList(children, merged.w, merged.h) } : {}),
+      ...(ctrlType ? { ctrl: { type: ctrlType } } : {}),
       designRect: { x: merged.x - baseX, y: merged.y - baseY, width: merged.w, height: merged.h },
       anchor: { parentX: px, parentY: py, selfX: 0, selfY: 0, offsetX: ox, offsetY: oy, safeArea: false },
       adaptation: { mode: isFullscreen ? "stretch" : "anchor" },
@@ -170,7 +189,7 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
     const fsEst = h / 1.2;
     const fontSize = fsRaw > 0 && fsRaw >= fsEst / 2 ? fsRaw : fsEst;
     return {
-      ...base, image: null, text: {
+      ...base, image: null, ctrl: { type: "text" as CtrlType }, text: {
         content: layer.text.text,
         fontSize,
         color: textColor(layer),
@@ -200,7 +219,7 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
 
   if (img) {
     return {
-      ...base, image: img, zIndex: i,
+      ...base, image: img, ctrl: { type: "image" as CtrlType }, zIndex: i,
       designRect: { x: x - baseX, y: y - baseY, width: w, height: h },
       anchor: { parentX: px, parentY: py, selfX: 0, selfY: 0, offsetX: ox, offsetY: oy, safeArea: false },
       adaptation: { mode: isFullscreen ? "stretch" : "anchor" },
@@ -240,7 +259,11 @@ export function importPsd(buffer: ArrayBuffer): { scene: UIScene; warnings: stri
       continue;
     }
     const n = toNode(layer, 0, 0, psd.width, psd.height, counter, warnings, compCanvas);
-    if (n) nodes.push(n);
+    if (n) {
+      // 顶层文件夹 = 根节点（默认空节点，用于组织层级）
+      if (n.children?.length && !n.ctrl) n.ctrl = { type: "empty" };
+      nodes.push(n);
+    }
   }
   return {
     scene: { designWidth: psd.width, designHeight: psd.height, nodes, sliceSources },

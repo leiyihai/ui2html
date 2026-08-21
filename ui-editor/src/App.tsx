@@ -78,7 +78,7 @@ export default function App() {
   const [sliceApplied, setSliceApplied] = useState(false);
   const [sliceSelected, setSliceSelected] = useState<string | null>(null);
   const [panelTab, setPanelTab] = useState<"layers" | "slice">("layers");
-  const [workspace, setWorkspace] = useState<Workspace>("layout");
+  const [workspace, setWorkspace] = useState<Workspace>("controls");
   const [psdList, setPsdList] = useState<string[]>([]);
   const [exportMsg, setExportMsg] = useState("");
 

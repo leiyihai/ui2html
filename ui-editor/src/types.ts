@@ -25,10 +25,11 @@ export type TextMode = "auto" | "fixed" | "fit";
 
 /** 控件类型标签 */
 export type CtrlType =
-  | "button" | "image" | "text" | "panel"
-  | "list" | "listitem" | "progress" | "slider" | "input";
+  | "empty" | "button" | "image" | "text" | "panel"
+  | "list" | "listitem" | "progress" | "slider" | "scrollbar" | "input";
 
 export const CTRL_TYPES: { value: CtrlType; label: string }[] = [
+  { value: "empty", label: "空节点" },
   { value: "button", label: "按钮" },
   { value: "image", label: "图片" },
   { value: "text", label: "文本" },
@@ -37,6 +38,7 @@ export const CTRL_TYPES: { value: CtrlType; label: string }[] = [
   { value: "listitem", label: "列表项" },
   { value: "progress", label: "进度条" },
   { value: "slider", label: "滑动条" },
+  { value: "scrollbar", label: "滚动条" },
   { value: "input", label: "输入框" },
 ];
 

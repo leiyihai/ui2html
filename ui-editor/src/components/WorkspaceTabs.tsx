@@ -29,8 +29,8 @@ interface Props {
 /** 工作栏：工作区导航 + 当前工作区的上下文工具 + 视图设置 */
 export default function Workbar(p: Props) {
   const main: [Workspace, string, string][] = [
-    ["layout", "布局适配", "▦"],
     ["controls", "控件类型", "◎"],
+    ["layout", "布局适配", "▦"],
     ["animation", "动画", "▶"],
   ];
   const curPreset = PRESETS.find(([, w, h]) => w === p.viewport.width && h === p.viewport.height)?.[0] ?? "custom";
