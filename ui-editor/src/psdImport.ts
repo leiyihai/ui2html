@@ -131,6 +131,7 @@ function inferCtrl(name: string, isGroup: boolean, hasCanvas: boolean): CtrlType
     if (nm === "pbar") return "progress";
     if (nm === "sbar") return "scrollbar";
     if (nm === "btn") return "button";
+    if (nm === "toggle" || nm === "tgl") return "toggle";
     if (nm === "input") return "input";
     return undefined; // 其他文件夹：未标记（手动设空节点等）
   }

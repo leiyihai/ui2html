@@ -143,7 +143,7 @@ export default function Inspector(p: Props) {
           <option value="">未标记</option>
           {CTRL_TYPES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
         </select></div>
-      {n.ctrl?.type === "button" && (
+      {(n.ctrl?.type === "button" || n.ctrl?.type === "toggle") && (
         <div className="row"><label>交互模板</label>
           <select value={n.ctrl.templateId ?? ""}
             onChange={(e) => set("ctrl", { ...n.ctrl!, templateId: e.target.value || undefined })}>
