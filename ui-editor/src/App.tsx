@@ -9,7 +9,7 @@ import Workbar, { type Workspace } from "./components/WorkspaceTabs";
 import LayerPanel from "./components/LayerPanel";
 import Inspector from "./components/Inspector";
 import ControlsPanel from "./components/ControlsPanel";
-import { SliceEditor } from "./components/SlicePanel";
+import { SliceEditor, SliceList } from "./components/SlicePanel";
 
 export const PRESETS: [string, number, number][] = [
   ["16:9 (1920 × 1080)", 1920, 1080],
@@ -77,7 +77,6 @@ export default function App() {
   const [psdName, setPsdName] = useState<string | null>(null);
   const [sliceApplied, setSliceApplied] = useState(false);
   const [sliceSelected, setSliceSelected] = useState<string | null>(null);
-  const [panelTab, setPanelTab] = useState<"layers" | "slice">("layers");
   const [workspace, setWorkspace] = useState<Workspace>("controls");
   const [psdList, setPsdList] = useState<string[]>([]);
   const [exportMsg, setExportMsg] = useState("");
@@ -136,7 +135,7 @@ export default function App() {
     fit();
     window.addEventListener("resize", fit);
     return () => window.removeEventListener("resize", fit);
-  }, [layoutCtx, panelTab]);
+  }, [layoutCtx, workspace]);
 
   // ---- 状态变更统一入口（record=true 时压入历史）----
   const applyScene = useCallback((next: UIScene) => { sceneRef.current = next; setScene(next); }, []);
@@ -450,6 +449,7 @@ export default function App() {
       />
       <Workbar
         ws={workspace} onWs={setWorkspace} hasScene={!!scene}
+        lockLayout={!!scene && walkNodes(scene.nodes).some((n) => !n.ctrl)}
         sliceAvailable={(scene?.sliceSources?.length ?? 0) > 0} sliceApplied={sliceApplied}
         onReplaceSlice={replaceWithSlice} onToggleSlice={toggleSlice} onRestoreSlice={restoreSlice}
         viewport={viewport} onViewport={setViewport}
@@ -462,19 +462,22 @@ export default function App() {
         {workspace === "controls" ? (
           <ControlsPanel nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={setSelectedId}
             onSetCtrl={setCtrl} />
+        ) : workspace === "slice" ? (
+          <div className="layer-panel">
+            <h3>九宫格图片</h3>
+            <SliceList sources={scene?.sliceSources ?? []} selected={sliceSelected}
+              onSelect={(name) => setSliceSelected(sliceSelected === name ? null : name)} />
+          </div>
         ) : workspace === "layout" ? (
           <LayerPanel
             nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={setSelectedId}
             onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
             onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
-            sliceSources={scene?.sliceSources ?? []} sliceSelected={sliceSelected}
-            onSelectSlice={setSliceSelected}
-            tab={panelTab} onTab={setPanelTab}
           />
         ) : (
           <div className="ws-panel" />
         )}
-        {workspace === "layout" && panelTab === "slice" && (
+        {workspace === "slice" && (
           sliceSelected && scene ? (
             <SliceEditor
               key={sliceSelected}
@@ -493,7 +496,7 @@ export default function App() {
           <div className="ws-placeholder">导出设置（开发中）<br />目标：PSD → 自研引擎 UI 文件</div>
         ) : (
           <div className="canvas-wrap" ref={wrapRef}
-            style={workspace === "layout" && panelTab === "slice" ? { display: "none" } : undefined}>
+            style={workspace === "slice" ? { display: "none" } : undefined}>
             <div className="canvas-stack">
               <canvas ref={uiRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp} />
               <canvas ref={ovRef} style={{ pointerEvents: "none" }} />
