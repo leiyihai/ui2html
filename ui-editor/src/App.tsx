@@ -450,6 +450,7 @@ export default function App() {
       <Workbar
         ws={workspace} onWs={setWorkspace} hasScene={!!scene}
         lockLayout={!!scene && walkNodes(scene.nodes).some((n) => !n.ctrl)}
+        onLocked={() => setExportMsg("请先在「控件类型」工作区完成所有节点的标记")}
         sliceAvailable={(scene?.sliceSources?.length ?? 0) > 0} sliceApplied={sliceApplied}
         onReplaceSlice={replaceWithSlice} onToggleSlice={toggleSlice} onRestoreSlice={restoreSlice}
         viewport={viewport} onViewport={setViewport}

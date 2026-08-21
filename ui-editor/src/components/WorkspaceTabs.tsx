@@ -9,6 +9,8 @@ interface Props {
   hasScene: boolean;
   /** 存在未标记控件类型的节点：锁定九宫格/布局适配工作区 */
   lockLayout: boolean;
+  /** 点击被锁定工作区时的提示回调 */
+  onLocked: () => void;
   // 九宫格工作区上下文
   sliceAvailable: boolean;
   sliceApplied: boolean;
@@ -42,10 +44,9 @@ export default function Workbar(p: Props) {
     <div className="workbar">
       <nav className="ws-tabs">
         {main.map(([w, label, icon, locked]) => (
-          <button key={w} className={p.ws === w ? "on" : ""}
-            disabled={locked}
+          <button key={w} className={(p.ws === w ? "on" : "") + (locked ? " locked" : "")}
             title={locked ? lockTip : ""}
-            onClick={() => p.onWs(w)}>
+            onClick={() => { if (locked) p.onLocked(); else p.onWs(w); }}>
             <span className="ws-ic">{locked ? "🔒" : icon}</span>{label}
           </button>
         ))}

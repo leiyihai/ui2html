@@ -57,6 +57,8 @@ body {
 }
 .ws-tabs button:hover { color: #d7dee7; }
 .ws-tabs button.on { color: #fff; border-bottom-color: #4a90d9; }
+.ws-tabs button.locked { color: #5f6c7c; cursor: not-allowed; }
+.ws-tabs button.locked:hover { color: #8fa1b5; }
 .ws-tabs .ws-ic { font-size: 12px; opacity: .8; }
 .ws-ctx { display: inline-flex; gap: 4px; padding-left: 10px; border-left: 1px solid #2a313b; }
 .ws-spacer { flex: 1; }
