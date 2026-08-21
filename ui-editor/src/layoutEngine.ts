@@ -68,9 +68,10 @@ export class LayoutEngine {
   private layoutList(n: UINode, scaleX: number, scaleY: number, lx: number, ly: number,
     sa: { left: number; top: number; width: number; height: number },
     ctx: LayoutContext, parentRect?: LayoutResult["nodes"][0]["rect"],
-    parentVisible = true): LayoutResult["nodes"] {
+    parentVisible = true, parentOpacity = 1): LayoutResult["nodes"] {
     const cfg = n.list!;
     const effVisible = n.visible && parentVisible;
+    const effOpacity = n.opacity * parentOpacity;
     // li 项按 PSD 视觉位置排序（水平按 x、垂直/格子按 y），重排后保持原视觉顺序
     let lis = n.children!.filter((c) => c.children && c.name.toLowerCase() !== "list");
     lis = [...lis].sort((a, b) => cfg.type === "vertical"
@@ -89,7 +90,7 @@ export class LayoutEngine {
       width: n.designRect.width * scaleX,
       height: n.designRect.height * scaleY,
     };
-    const out: LayoutResult["nodes"] = [{ node: n, rect, visible: effVisible }];
+    const out: LayoutResult["nodes"] = [{ node: n, rect, visible: effVisible, opacity: effOpacity }];
     let accX = pad.left * scaleX, accY = pad.top * scaleY;
     const cellW = Math.max(0, ...liDims.map((d) => d.w));
     const cellH = Math.max(0, ...liDims.map((d) => d.h));
@@ -105,11 +106,11 @@ export class LayoutEngine {
         liY = pad.top * scaleY + Math.floor(i / cols) * (cellH + spY);
       }
       const liRect = { x: rect.x + liX, y: rect.y + liY, width: d.w, height: d.h };
-      out.push(...this.layoutNode(li, scaleX, scaleY, lx, ly, sa, ctx, liRect, liRect, effVisible, rect));
+      out.push(...this.layoutNode(li, scaleX, scaleY, lx, ly, sa, ctx, liRect, liRect, effVisible, rect, effOpacity));
       i++;
     }
     // 非 li 子节点（含嵌套 list）：保持相对容器的偏移定位
-    for (const o of others) out.push(...this.layoutNode(o, scaleX, scaleY, lx, ly, sa, ctx, rect, undefined, effVisible, rect));
+    for (const o of others) out.push(...this.layoutNode(o, scaleX, scaleY, lx, ly, sa, ctx, rect, undefined, effVisible, rect, effOpacity));
     return out;
   }
 
@@ -117,9 +118,11 @@ export class LayoutEngine {
     sa: { left: number; top: number; width: number; height: number },
     ctx: LayoutContext, parentRect?: LayoutResult["nodes"][0]["rect"],
     fixedRect?: LayoutResult["nodes"][0]["rect"],
-    parentVisible = true, clipRect?: LayoutResult["nodes"][0]["rect"]): LayoutResult["nodes"] {
+    parentVisible = true, clipRect?: LayoutResult["nodes"][0]["rect"],
+    parentOpacity = 1): LayoutResult["nodes"] {
     const dw = n.designRect.width, dh = n.designRect.height;
     const effVisible = n.visible && parentVisible; // 组隐藏 → 后代全部隐藏
+    const effOpacity = n.opacity * parentOpacity; // 组透明度 → 后代累乘
     let rect: LayoutResult["nodes"][0]["rect"];
 
     if (fixedRect) {
@@ -170,13 +173,13 @@ export class LayoutEngine {
     }
 
     if (n.children?.length) {
-      if (n.list) return this.layoutList(n, scaleX, scaleY, lx, ly, sa, ctx, parentRect, effVisible);
-      // 组节点自身也进入结果（可选中/拖动整体），不绘制；子节点带父组矩形参照，继承外层裁剪
-      const childOut: LayoutResult["nodes"] = [{ node: n, rect, visible: effVisible }];
-      for (const c of n.children) childOut.push(...this.layoutNode(c, scaleX, scaleY, lx, ly, sa, ctx, rect, undefined, effVisible, clipRect));
+      if (n.list) return this.layoutList(n, scaleX, scaleY, lx, ly, sa, ctx, parentRect, effVisible, effOpacity);
+      // 组节点自身也进入结果（可选中/拖动整体），不绘制；子节点带父组矩形参照，继承外层裁剪/透明度
+      const childOut: LayoutResult["nodes"] = [{ node: n, rect, visible: effVisible, opacity: effOpacity }];
+      for (const c of n.children) childOut.push(...this.layoutNode(c, scaleX, scaleY, lx, ly, sa, ctx, rect, undefined, effVisible, clipRect, effOpacity));
       return childOut;
     }
-    return [{ node: n, rect, parent: parentRect, visible: effVisible, clipRect }];
+    return [{ node: n, rect, parent: parentRect, visible: effVisible, clipRect, opacity: effOpacity }];
   }
 }
 

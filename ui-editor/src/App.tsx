@@ -265,15 +265,28 @@ export default function App() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (!(e.ctrlKey || e.metaKey)) return;
       const t = e.target as HTMLElement;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
-      if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
-      else if (e.key === "x" || e.key === "X") { e.preventDefault(); redo(); }
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
+        else if (e.key === "x" || e.key === "X") { e.preventDefault(); redo(); }
+        return;
+      }
+      // 方向键微调选中图层位置（Shift=10px，默认1px）
+      if (!selectedId) return;
+      const step = e.shiftKey ? 10 : 1;
+      let dx = 0, dy = 0;
+      if (e.key === "ArrowLeft") dx = -step;
+      else if (e.key === "ArrowRight") dx = step;
+      else if (e.key === "ArrowUp") dy = -step;
+      else if (e.key === "ArrowDown") dy = step;
+      if (!dx && !dy) return;
+      e.preventDefault();
+      updateSelected((n) => { n.anchor.offsetX += dx; n.anchor.offsetY += dy; });
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [undo, redo]);
+  }, [undo, redo, selectedId, updateSelected]);
 
   // 命中检测 + 拖动（文档 §17：拖动只改 offset，不碰 designRect）
   const toLogical = (clientX: number, clientY: number) => {

@@ -99,6 +99,8 @@ export interface LayoutResultNode {
   parent?: UIRect;
   /** 有效可见性（组不可见时其后代也为 false） */
   visible: boolean;
+  /** 有效透明度（父组透明度 × 自身透明度，累乘） */
+  opacity: number;
   /** 所属 list 容器的矩形：超出部分渲染时裁切 */
   clipRect?: UIRect;
 }

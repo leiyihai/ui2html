@@ -7,7 +7,7 @@ import { fitFontSize, wrapText, LINE_HEIGHT } from "./textMeasure";
 export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const nodes = [...result.nodes].sort((a, b) => a.node.zIndex - b.node.zIndex); // zIndex 小(底)先画
-  for (const { node, rect, visible, clipRect } of nodes) {
+  for (const { node, rect, visible, clipRect, opacity } of nodes) {
     if (!visible) continue; // 有效可见性：组隐藏时其后代也不显示
     ctx.save();
     if (clipRect) {
@@ -16,7 +16,7 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult) {
       ctx.rect(clipRect.x, clipRect.y, clipRect.width, clipRect.height);
       ctx.clip();
     }
-    ctx.globalAlpha = node.opacity;
+    ctx.globalAlpha = opacity; // 有效透明度：父组 × 自身
     if (node.image) {
       ctx.drawImage(node.image, rect.x, rect.y, rect.width, rect.height);
     } else if (node.text) {
