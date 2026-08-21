@@ -4,11 +4,11 @@ import { importPsd } from "./psdImport";
 import { renderOverlay, renderUi } from "./renderer";
 import { buildExportHtml } from "./exportHtml";
 import type { CtrlType, InteractionTemplate, LayoutContext, ScaleMode, UINode, UIScene } from "./types";
-import Toolbar from "./components/Toolbar";
+import Appbar from "./components/Toolbar";
+import Workbar, { type Workspace } from "./components/WorkspaceTabs";
 import LayerPanel from "./components/LayerPanel";
 import Inspector from "./components/Inspector";
 import ControlsPanel from "./components/ControlsPanel";
-import WorkspaceTabs, { type Workspace } from "./components/WorkspaceTabs";
 import { SliceEditor } from "./components/SlicePanel";
 
 export const PRESETS: [string, number, number][] = [
@@ -415,20 +415,21 @@ export default function App() {
 
   return (
     <div className="app">
-      <Toolbar
-        onLoadFile={loadPsd} viewport={viewport} onViewport={setViewport}
+      <Appbar
+        onLoadFile={loadPsd} psdList={psdList} onLoadPsdFromFolder={loadPsdFromFolder}
+        hasScene={!!scene} canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
+        onExportAnchors={exportAnchors} onExportHtml={exportHtml} onGlobalFont={applyGlobalFont}
+      />
+      <Workbar
+        ws={workspace} onWs={setWorkspace} hasScene={!!scene}
+        sliceAvailable={(scene?.sliceSources?.length ?? 0) > 0} sliceApplied={sliceApplied}
+        onReplaceSlice={replaceWithSlice} onToggleSlice={toggleSlice} onRestoreSlice={restoreSlice}
+        viewport={viewport} onViewport={setViewport}
         safeArea={safeArea} onSafeArea={setSafeArea}
         scaleMode={scaleMode} onScaleMode={setScaleMode}
         showSafeArea={showSafeArea} onShowSafeArea={setShowSafeArea}
         showDesignBorder={showDesignBorder} onShowDesignBorder={setShowDesignBorder}
-        warnings={warnings} hasScene={!!scene} onExportAnchors={exportAnchors} onExportHtml={exportHtml}
-        canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
-        psdList={psdList} onLoadPsdFromFolder={loadPsdFromFolder} exportMsg={exportMsg}
-        onGlobalFont={applyGlobalFont}
-        sliceAvailable={(scene?.sliceSources?.length ?? 0) > 0} sliceApplied={sliceApplied}
-        onReplaceSlice={replaceWithSlice} onToggleSlice={toggleSlice} onRestoreSlice={restoreSlice}
       />
-      <WorkspaceTabs ws={workspace} onWs={setWorkspace} />
       <div className="body">
         {workspace === "controls" ? (
           <ControlsPanel nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={setSelectedId}
@@ -488,6 +489,14 @@ export default function App() {
           />
         )}
       </div>
+      <footer className="statusbar">
+        {warnings.length > 0 && (
+          <span className="warn" title={warnings.join("\n")}>⚠ {warnings.length} 个图层被跳过</span>
+        )}
+        <span className="grow" />
+        {exportMsg && <span className="ok">{exportMsg}</span>}
+        {!scene && <span className="hint">打开 PSD 开始编辑</span>}
+      </footer>
     </div>
   );
 }
