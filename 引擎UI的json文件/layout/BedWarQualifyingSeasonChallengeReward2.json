@@ -1,0 +1,264 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarQualifyingSeasonChallengeReward2",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,136},{0,164}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarQualifyingSeasonChallengeReward2-Bg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,5},{0,116},{0,125}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_1.json image:img_0_itembd_blue"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarQualifyingSeasonChallengeReward2-Image",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,13},{0,100},{0,113}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarQualifyingSeasonChallengeReward2-Count",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0,30}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "x1"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "TextShadow",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarQualifyingSeasonChallengeReward2-Effect",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,-76},{0,132},{0,64}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_effect_ui_shenzhuan_2.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarQualifyingSeasonChallengeReward2-Mask",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,5},{0,116},{0,125}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0 0 0 0.607843"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarQualifyingSeasonChallengeReward2-Received",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-10},{0,-10},{0,32},{0,24}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_common_part.json image:img_0_selected02"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarQualifyingSeasonChallengeReward2-Selected",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,2},{0,118},{0,127}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "25 25 25 25"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_1.json image:img_0_selected"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarQualifyingSeasonChallengeReward2-Score-Bg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,61},{0,26}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_1.json image:img_0_bardot_normal"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarQualifyingSeasonChallengeReward2-Score",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "10"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,890 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "GameScoreActivityPanel",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "VerticalAlignment",
+                    "Value": "Bottom"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Right"
+                },
+                {
+                    "Name": "Font",
+                    "Value": "HT16"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityPanel-Bg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,2},{0,5},{1.2,2},{1.5,5}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_8.json image:img_0_bg"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "GameScoreActivityPanel-Actor-Slide-Block",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,-207},{1,-200}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityPanel-Title",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,287},{0,26},{0,727},{0,93}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_8.json image:text_zh_CN"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameScoreActivityPanel-Question",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-62},{0,0},{0,-26},{0,39}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:game_activity_score_8.json image:btn_0_rule"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameScoreActivityPanel-TimeIcon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "DrawColor",
+                                    "Value": "0.00784314 0.901961 0.941177 1"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{1,0},{0,20},{1,20}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_icon.json image:img_0_time"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "GameScoreActivityPanel-Time",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{1,8},{0,0},{1,158},{1,0}}"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "00:00:00"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT16"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.027451 0.929412 0.952941 1"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityPanel-ScoreIconBg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,208},{0,-16},{0,258},{0,34}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ClipChild",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_8.json image:img_0_expmaskbd"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameScoreActivityPanel-ScoreIconEffect",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,4},{0,90},{0,48}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "EffectFileName",
+                                    "Value": "img_0_activity_star_1.effect"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityPanel-ScoreIconMask",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullNone"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,194},{0,-1},{0,274},{0,79}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_8.json image:img_0_expmask"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "GameScoreActivityPanel-RewardPanel",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,256},{0,-22},{1,0},{0,147}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ClipChild",
+                            "Value": "true"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "ProgressBar",
+                            "Name": "GameScoreActivityPanel-Score-Progress",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullNone"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-10},{1,0},{0,6}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "2 2 2 2"
+                                },
+                                {
+                                    "Name": "Progress",
+                                    "Value": "0"
+                                },
+                                {
+                                    "Name": "ProgressBackImage",
+                                    "Value": "set:game_activity_score_8.json image:pbar_9_bg"
+                                },
+                                {
+                                    "Name": "ProgressImage",
+                                    "Value": "set:game_activity_score_8.json image:pbar_9_schedule"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityPanel-ScoreIconFg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,208},{0,-16},{0,260},{0,36}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ClipChild",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_8.json image:img_0_icon_fg"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "GameScoreActivityPanel-OneKeyReceive",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-10},{0,-225},{0,185},{0,-161}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "兑换"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "BtnTextColor",
+                            "Value": "0.784314 0.423529 0.00784314 1"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:game_activity_score_8.json image:btn_0_exchange"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:game_activity_score_8.json image:btn_0_exchange"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityPanel-Center",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,23},{0,-188},{0,673},{0,-110}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "GameScoreActivityPanel-Name",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,11},{0,115},{0,111},{0,145}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Flame ball"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT18"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "GameScoreActivityPanel-TaskPanel-Clip",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-17},{0,37},{0,334},{0,381}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ClipChild",
+                            "Value": "true"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Layout",
+                            "Name": "GameScoreActivityPanel-TaskPanel-Touch",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,28},{0,-48},{0,1588},{0,1122}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "Visible",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameScoreActivityPanel-TaskPanel",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,351},{0,344}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "4 4 4 4"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:game_activity_score_8.json image:img_9_task_bg"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "GameScoreActivityPanel-Task-Time",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,-2},{1,-6},{0,26}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT16"
+                                        },
+                                        {
+                                            "Name": "BackgroundColor",
+                                            "Value": "0.117647 0.137255 0.239216 0.941176"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "GameScoreActivityPanel-DailyTaskText",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,10},{0,0},{1,0},{1,0}}"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "每日任务"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT12"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0.290196 0.513726 0.835294 1"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "GameScoreActivityPanel-Task-Time-Icon",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "DrawColor",
+                                                    "Value": "1 0 0 1"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,-85},{0,0},{0,-69},{0,16}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Right"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT16"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:bed_war_3_icon.json image:img_0_time"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "GameScoreActivityPanel-Task-Time-Text",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0,80},{1,0}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Right"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "23:59:59"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "DEFAULT_HT12"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0.945098 0.207843 0.207843 1"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Layout",
+                                    "Name": "GameScoreActivityPanel-TaskContent",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,10},{0,330},{0,315}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT16"
+                                        },
+                                        {
+                                            "Name": "MiddleLayoutChild",
+                                            "Value": "true"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityPanel-Image",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullNone"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,15},{0,-46},{0,195},{0,134}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameScoreActivityPanel-Image-Back",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "DrawColor",
+                                    "Value": "0 0 0 0.3"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,180},{0,180}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "Alpha",
+                                    "Value": "0.3"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:icon_haojiao.json image:yaoshi"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "GameScoreActivityPanel-Image-Top",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,-5},{0,-5},{0,175},{0,175}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT16"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:icon_haojiao.json image:yaoshi"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameScoreActivityPanel-Image-Effect",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "DrawColor",
+                                    "Value": "0 0 0 0.3"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-5},{0,-95},{0,175},{0,85}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "Alpha",
+                                    "Value": "0.3"
+                                },
+                                {
+                                    "Name": "EffectFileName",
+                                    "Value": "g1046_haolingkuang.effect"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "ActorWindow",
+                    "Name": "GameScoreActivityPanel-Actor",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,17},{0,115},{0,237},{0,115}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

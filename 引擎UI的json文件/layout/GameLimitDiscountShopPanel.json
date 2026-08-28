@@ -1,0 +1,208 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "GameLimitDiscountShopPanel",
+            "Property": [
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                },
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:game_activity_limit_discount.json image:img_0_bg"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameLimitDiscountShopPanel-Title-Img",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,233},{0,15},{0,929},{0,65}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_limit_discount.json image:text_en_US"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameLimitDiscountShopPanel-Tip-Icon",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-40},{0,2},{0,-11.2},{0,33.2}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:game_activity.json image:btn_0_rule"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameLimitDiscountShopPanel-Title",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "愚人节限定"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT24"
+                                },
+                                {
+                                    "Name": "EnableTextColorRect",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextColorLeftTop",
+                                    "Value": "0.396078 0.980392 1 1"
+                                },
+                                {
+                                    "Name": "TextColorRightTop",
+                                    "Value": "0.396078 0.980392 1 1"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextWordWrap",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextLineExtraSpace",
+                                    "Value": "-5"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameLimitDiscountShopPanel-Count-Down-Icon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-38},{1,2},{0,-17},{1,23}}"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_icon.json image:img_0_time"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "GameLimitDiscountShopPanel-Count-Down",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{1,8},{0,0},{1,208},{1,0}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "text"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameLimitDiscountShopPanel-Bg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.035,0},{-0.0555556,0},{0.766562,0},{0.556944,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_limit_discount.json image:img_0_display_stand"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Layout",
+                            "Name": "GameLimitDiscountShopPanel-Content",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-8},{0,0},{0.849756,-8},{1,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

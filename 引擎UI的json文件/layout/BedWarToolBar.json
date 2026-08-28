@@ -1,0 +1,660 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarToolBar",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{0,58}}"
+                },
+                {
+                    "Name": "Font",
+                    "Value": "HT16"
+                },
+                {
+                    "Name": "BackgroundColor",
+                    "Value": "0 0 0 0.376471"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarToolBar-TeamInfo-Bg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,395},{0,0},{1,-280},{1,0}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "0 15 0 0"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Layout",
+                            "Name": "BedWarToolBar-TeamInfo-Layout",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "CheckBox",
+                    "Name": "BedWarToolBar-Menu-Setting",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,10},{0,4},{0,68},{0,54}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_toolbar.json image:menu_setting"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_toolbar.json image:menu_setting_select"
+                        }
+                    ]
+                },
+                {
+                    "Type": "CheckBox",
+                    "Name": "BedWarToolBar-Chat",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,74},{0,4},{0,132},{0,54}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_toolbar.json image:menu_chat"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_toolbar.json image:menu_chat_select"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarToolBar-Camera",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,138},{0,4},{0,196},{0,54}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "10 10 0 0"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bedwar_toolbar.json image:camera_bg"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Button",
+                            "Name": "BedWarToolBar-Camera-Change",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,44},{0,44}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "TopBottom"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bedwar_toolbar.json image:change_camera_1"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bedwar_toolbar.json image:change_camera_1"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "CheckBox",
+                    "Name": "BedWarToolBar-Action",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,202},{0,4},{0,260},{0,54}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_toolbar.json image:menu_action"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_toolbar.json image:menu_action_select"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarToolBar-VersionNotice",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,266},{0,4},{0,324},{0,54}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "10 10 0 0"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bedwar_toolbar.json image:camera_bg"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarToolBar-VersionNotice-Img",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-1},{0,0},{0,43},{0,44}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "TopBottom"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:version_notice.json image:img_0_announcement"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarToolBar-Friends",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,330},{0,4},{0,388},{0,54}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_friends"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_friends"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarToolBar-Video",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,394},{0,4},{0,451},{0,53}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_video"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_video"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarToolBar-Community",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-450},{0,4},{0,-392},{0,54}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "10 10 0 0"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bedwar_toolbar.json image:camera_bg"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarToolBar-Community-Img",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,34},{0,35}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "TopBottom"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bedwar_toolbar.json image:img_0_community_icon"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarToolBar-Menu-Questionnaire",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-390},{0,1},{0,-344},{0,61}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_toolbar.json image:img_0_questionnaire01"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_toolbar.json image:img_0_questionnaire01"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarToolBar-Menu-Shop",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-16},{0,4},{0,42},{0,54}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_toolbar.json image:menu_shop"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_toolbar.json image:menu_shop"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "BedWarToolBar-ScoreBoard-Info-KillNum",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-350},{0,0},{0,-330},{0,20}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT20"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarToolBar-ScoreBoard-Info-KillIcon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-40},{0,0},{0,-8},{0,34}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bedwar_toolbar.json image:sb_kill"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarToolBar-Back-Hall",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-10},{0,68},{0,90},{0,118}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "TextShadow",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextBorder",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_toolbar.json image:camera_bg"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_toolbar.json image:camera_bg"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarToolBar-Play-Again",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-10},{0,128},{0,90},{0,178}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "TextShadow",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextBorder",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_toolbar.json image:camera_bg"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_toolbar.json image:camera_bg"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarToolBar-Dress",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-327},{0,5},{0,-270},{0,54}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_dress"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_dress"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarToolBar-Money",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-80},{0,0},{0,159},{0,50}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

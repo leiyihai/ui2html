@@ -1,0 +1,130 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "ChallengeRewardIntroduce",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{0,215}}"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "ChallengeRewardIntroduce-icon_bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0.1,0},{0,83},{0.1,83}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_lottery.json image:item_precious_bg_small"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "StaticImage",
+                    "Window": [
+                        {
+                            "Name": "ChallengeRewardIntroduce-icon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,71},{0,71}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Type": "StaticImage"
+                        },
+                        {
+                            "Name": "ChallengeRewardIntroduce-icon_name",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,15},{0,1},{0,16}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT18"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0 0.94902 0.94902 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Type": "StaticText"
+                        }
+                    ]
+                },
+                {
+                    "Name": "ChallengeRewardIntroduce-text",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0.65,0},{0.8,0},{1,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextWordWrap",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ],
+                    "Type": "StaticText"
+                }
+            ]
+        }
+    }
+}

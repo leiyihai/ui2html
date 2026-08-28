@@ -1,0 +1,330 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "CommonActivityPanel",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,952},{0,550}}"
+                },
+                {
+                    "Name": "VerticalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:common_activity_bg.json image:img_0_luckyboard"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticText",
+                    "Name": "CommonActivityPanel-Title",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{0,60}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "    Must-have turntable"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT28"
+                        },
+                        {
+                            "Name": "EnableTextColorRect",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextColorLeftTop",
+                            "Value": "1 1 0.839216 1"
+                        },
+                        {
+                            "Name": "TextColorRightTop",
+                            "Value": "1 1 0.839216 1"
+                        },
+                        {
+                            "Name": "TextColorLeftBottom",
+                            "Value": "1 0.839216 0.270588 1"
+                        },
+                        {
+                            "Name": "TextColorRightBottom",
+                            "Value": "1 0.839216 0.270588 1"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0 0 0 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextWordWrap",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "CommonActivityPanel-Desc",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,20},{0,0},{0.45929,0},{0,82}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "The prizes won in the draw will no longer be obtai ned, and the number of cubes required for each d raw will increase."
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT14"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0.968628 0.917647 0.760784 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextWordWrap",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "ActorWindow",
+                    "Name": "CommonActivityPanel-Actor",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.204832,0},{0.2,0},{0.204832,150},{0.2,1}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ActorWindowSkillName",
+                            "Value": "idle"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "CommonActivityPanel-Name",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,197},{0,-117},{0,397},{0,-87}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Pet: Bed Bull"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT22"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "CommonActivityPanel-Reward-Desc",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,50},{0,50},{0,100},{0,100}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "CommonActivityPanel-Image-Body",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.226563,0},{0,0},{-0.226563,150},{0,150}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "CommonActivityPanel-Image",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Visible",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "CommonActivityPanel-Actor-Slide-Block",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,180},{0,0},{0,430},{0,250}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "CommonActivityPanel-Price-Icon",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.325,0},{-0.21,0},{-0.325,28},{-0.21,32}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:common_activity.json image:img_0_gcube_line"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "CommonActivityPanel-Price",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1.4,0},{0.4,0},{1.4,0},{0.4,3}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "1000"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT20"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextShadow",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

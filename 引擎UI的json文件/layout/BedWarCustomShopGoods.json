@@ -1,0 +1,686 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarCustomShopGoods",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,142},{0,260}}"
+                },
+                {
+                    "Name": "Touchable",
+                    "Value": "false"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarCustomShopGoods-Counter",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-18},{0,207},{4,-18},{0,255}}"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "LeftRight"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "100 100 0 0"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_dress_store.json image:img_0_shop04"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarCustomShopGoods-Content",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,30},{0,142},{0,214}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "10 10 10 40"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bed_war_3_common_part.json image:img_0_shop05"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarCustomShopGoods-Image",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-20},{0,100},{0,80}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarCustomShopGoods-Name",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-14},{1,0},{0,21}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.262745 0.352941 0.403922 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextWordWrap",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextLineExtraSpace",
+                                    "Value": "-8"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarCustomShopGoods-Use-Icon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-10},{0,10},{0,18},{0,38}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "Visible",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_common_part.json image:img_0_selected01"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarCustomShopGoods-Use-Select-Icon",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0,30},{0,24}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_common_part.json image:img_0_selected02"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarCustomShopGoods-Lock-Mask",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0 0 0.294118"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "10 10 10 10"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarCustomShopGoods-Lock-Icon",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,-10},{0,10},{0,33},{0,58}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Right"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_icon.json image:img_0_lock"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "BedWarCustomShopGoods-Price-Box-1",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.25,4},{0,50},{0.75,12},{0,100}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarCustomShopGoods-Price-Bg-1",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,13},{0,10},{0,76},{0,24}}"
+                                        },
+                                        {
+                                            "Name": "StretchType",
+                                            "Value": "NineGrid"
+                                        },
+                                        {
+                                            "Name": "StretchOffset",
+                                            "Value": "4 4 4 4"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_dress_store.json image:img_9_shop01"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "BedWarCustomShopGoods-Price-Text-1",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,5},{0,-1},{1,0},{1,-1}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT12"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0.290196 0.156863 0.00784314 1"
+                                                },
+                                                {
+                                                    "Name": "TextHorzAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarCustomShopGoods-Price-Icon-1",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,4},{0,24},{0,28}}"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_icon.json image:img_0_magic_cube"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarCustomShopGoods-Price-Off-Bg-1",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,12},{0,27},{0,83},{0,43}}"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_dress_store.json image:img_9_shop03"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "BedWarCustomShopGoods-Price-Off-Text-1",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,-1},{1,0},{1,-1}}"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT12"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0.615686 0.552941 0.639216 1"
+                                                },
+                                                {
+                                                    "Name": "TextHorzAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarCustomShopGoods-Price-Off-Line-1",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0,45},{0,1.5}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.615686 0.552941 0.639216 1"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "BedWarCustomShopGoods-Price-Box-2",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{-0.25,-4},{0,50},{0.25,4},{0,100}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarCustomShopGoods-Price-Bg-2",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,13},{0,10},{0,76},{0,24}}"
+                                        },
+                                        {
+                                            "Name": "StretchType",
+                                            "Value": "NineGrid"
+                                        },
+                                        {
+                                            "Name": "StretchOffset",
+                                            "Value": "4 4 4 4"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_dress_store.json image:img_9_shop01"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "BedWarCustomShopGoods-Price-Text-2",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,5},{0,-2},{1,0},{1,-2}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT12"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0.290196 0.156863 0.00784314 1"
+                                                },
+                                                {
+                                                    "Name": "TextHorzAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarCustomShopGoods-Price-Icon-2",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,4},{0,24},{0,28}}"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_icon.json image:img_0_magic_cube"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarCustomShopGoods-Price-Off-Bg-2",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,12},{0,27},{0,83},{0,43}}"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_dress_store.json image:img_9_shop03"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "BedWarCustomShopGoods-Price-Off-Text-2",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT12"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0.615686 0.552941 0.639216 1"
+                                                },
+                                                {
+                                                    "Name": "TextHorzAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarCustomShopGoods-Price-Off-Line-2",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0,45},{0,1.5}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.615686 0.552941 0.639216 1"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarCustomShopGoods-Select",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,1},{0,-55},{0,181},{0,119}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "15 15 15 15"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_img_0_sel.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarCustomShopGoods-TimeIcon",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "DrawColor",
+                            "Value": "0.992157 0.894118 0.0627451 1"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-50},{0,3},{0,-31},{0,22}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_icon.json image:img_0_time"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarCustomShopGoods-Time",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,6},{0,0},{2,6},{1,0}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "6day 18:59:33"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.992157 0.894118 0.0627451 1"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

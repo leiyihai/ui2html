@@ -1,0 +1,186 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "CreateTeamApplyList",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "BackgroundColor",
+                    "Value": "0 0 0 0.392157"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Button",
+                    "Name": "CreateTeamApplyList-Team-Apply",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,30},{0,139},{0,77},{0,196}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_teaming"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_teaming"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "CreateTeamApplyList-Team-Invite",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,30},{0,139},{0,77},{0,196}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_teaming"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_teaming"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "CreateTeamApplyList-Friend-Apply",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,30},{0,225},{0,77},{0,282}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_add04"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_add04"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "CreateTeamApplyList-Apply-Content",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,106},{0,139},{0,796},{0,465}}"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "10 10 10 10"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bed_war_3_create_team.json image:img_9_teaming03"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "CreateTeamApplyList-Apply-Name",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,20},{0,8},{1,-20},{0,40}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Friendship Application List"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "1 0.835294 0.431373 1"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "CreateTeamApplyList-Line",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,2},{1,0},{0,4}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "BackgroundColor",
+                                            "Value": "1 0.835294 0.431373 1"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "CreateTeamApplyList-No-Apply-Text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,56},{1,-44},{1,-20}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "No apply msg"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

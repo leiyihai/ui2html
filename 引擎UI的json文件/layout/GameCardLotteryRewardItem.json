@@ -1,0 +1,64 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "GameCardLotteryRewardItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,50},{0,50}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameCardLotteryRewardItem-Bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0.24,0},{1.94,0},{1.96,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_card_1.json image:img_0_itembd_s"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameCardLotteryRewardItem-Icon",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

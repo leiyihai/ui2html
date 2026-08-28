@@ -1,0 +1,852 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "GameDiscountShopActivityPanel",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "VerticalAlignment",
+                    "Value": "Bottom"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Right"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameDiscountShopActivityPanel-Bg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_discount_shop_1.json image:img_0_bg"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameDiscountShopActivityPanel-Effect",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,-400},{0,800},{0,400}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_Xmas_ui_snowflake.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "GameDiscountShopActivityPanel-Content",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,103},{0,0},{0,1176},{1,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Layout",
+                            "Name": "GameDiscountShopActivityPanel-Right",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,520},{0,665}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "GameDiscountShopActivityPanel-Mesa",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0,500},{0,227}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:game_activity_discount_shop_1.json image:img_0_iceboard"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "GameDiscountShopActivityPanel-Tag1",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,27},{0,-93},{0,172},{0,9}}"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:game_activity_discount_shop_1.json image:img_0_itembd_left"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "GameDiscountShopActivityPanel-Tag2",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,180},{0,-93},{0,320},{0,9}}"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:game_activity_discount_shop_1.json image:img_0_itembd_center"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "GameDiscountShopActivityPanel-Tag3",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,327},{0,-93},{0,472},{0,9}}"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:game_activity_discount_shop_1.json image:img_0_itembd_right"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "ProgressBar",
+                                            "Name": "GameDiscountShopActivityPanel-DiscountProgress",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,41},{1,-60},{0,57}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "StretchType",
+                                                    "Value": "NineGrid"
+                                                },
+                                                {
+                                                    "Name": "StretchOffset",
+                                                    "Value": "15 15 0 0"
+                                                },
+                                                {
+                                                    "Name": "Progress",
+                                                    "Value": "0"
+                                                },
+                                                {
+                                                    "Name": "ProgressBackImage",
+                                                    "Value": "set:game_activity_score_1.json image:pbar_9_bg"
+                                                },
+                                                {
+                                                    "Name": "ProgressImage",
+                                                    "Value": "set:game_activity_score_1.json image:pbar_9_schedule"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticImage",
+                                                    "Name": "GameDiscountShopActivityPanel-Star1",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Material",
+                                                            "Value": "CullBackLinear"
+                                                        },
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0.33,-15},{0,0},{0.33,15},{0,30}}"
+                                                        },
+                                                        {
+                                                            "Name": "VerticalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "ImageName",
+                                                            "Value": "set:game_activity_discount_shop_1.json image:img_0_dot_activity"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "StaticImage",
+                                                            "Name": "GameDiscountShopActivityPanel-Discount1",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Material",
+                                                                    "Value": "CullBackLinear"
+                                                                },
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{0,-14},{0,35},{0,36},{0,60}}"
+                                                                },
+                                                                {
+                                                                    "Name": "HorizontalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "ImageName",
+                                                                    "Value": "set:game_activity_discount_shop_1.json image:lbl_0_55"
+                                                                }
+                                                            ],
+                                                            "Window": [
+                                                                {
+                                                                    "Type": "StaticImage",
+                                                                    "Name": "GameDiscountShopActivityPanel-Off1",
+                                                                    "Property": [
+                                                                        {
+                                                                            "Name": "Material",
+                                                                            "Value": "CullBackLinear"
+                                                                        },
+                                                                        {
+                                                                            "Name": "Area",
+                                                                            "Value": "{{1,0},{0,0},{1,25},{0,17}}"
+                                                                        },
+                                                                        {
+                                                                            "Name": "VerticalAlignment",
+                                                                            "Value": "Bottom"
+                                                                        },
+                                                                        {
+                                                                            "Name": "ImageName",
+                                                                            "Value": "set:game_activity_discount_shop_1.json image:lbl_0_off"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticImage",
+                                                    "Name": "GameDiscountShopActivityPanel-Star2",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Material",
+                                                            "Value": "CullBackLinear"
+                                                        },
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0.667,-15},{0,0},{0.667,15},{0,30}}"
+                                                        },
+                                                        {
+                                                            "Name": "VerticalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "ImageName",
+                                                            "Value": "set:game_activity_discount_shop_1.json image:img_0_dot_normal"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "StaticImage",
+                                                            "Name": "GameDiscountShopActivityPanel-Discount2",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Material",
+                                                                    "Value": "CullBackLinear"
+                                                                },
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{0,-14},{0,35},{0,36},{0,60}}"
+                                                                },
+                                                                {
+                                                                    "Name": "HorizontalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "ImageName",
+                                                                    "Value": "set:game_activity_discount_shop_1.json image:lbl_0_65"
+                                                                }
+                                                            ],
+                                                            "Window": [
+                                                                {
+                                                                    "Type": "StaticImage",
+                                                                    "Name": "GameDiscountShopActivityPanel-Off2",
+                                                                    "Property": [
+                                                                        {
+                                                                            "Name": "Material",
+                                                                            "Value": "CullBackLinear"
+                                                                        },
+                                                                        {
+                                                                            "Name": "Area",
+                                                                            "Value": "{{1,0},{0,0},{1,25},{0,17}}"
+                                                                        },
+                                                                        {
+                                                                            "Name": "VerticalAlignment",
+                                                                            "Value": "Bottom"
+                                                                        },
+                                                                        {
+                                                                            "Name": "ImageName",
+                                                                            "Value": "set:game_activity_discount_shop_1.json image:lbl_0_off"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticImage",
+                                                    "Name": "GameDiscountShopActivityPanel-Star3",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Material",
+                                                            "Value": "CullBackLinear"
+                                                        },
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{1,-15},{0,0},{1,15},{0,30}}"
+                                                        },
+                                                        {
+                                                            "Name": "VerticalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "ImageName",
+                                                            "Value": "set:game_activity_discount_shop_1.json image:img_0_dot_normal"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "StaticImage",
+                                                            "Name": "GameDiscountShopActivityPanel-Discount3",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Material",
+                                                                    "Value": "CullBackLinear"
+                                                                },
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{0,-24},{0,34},{0,26},{0,59}}"
+                                                                },
+                                                                {
+                                                                    "Name": "HorizontalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "ImageName",
+                                                                    "Value": "set:game_activity_discount_shop_1.json image:lbl_0_75"
+                                                                }
+                                                            ],
+                                                            "Window": [
+                                                                {
+                                                                    "Type": "StaticImage",
+                                                                    "Name": "GameDiscountShopActivityPanel-Off3",
+                                                                    "Property": [
+                                                                        {
+                                                                            "Name": "Material",
+                                                                            "Value": "CullBackLinear"
+                                                                        },
+                                                                        {
+                                                                            "Name": "Area",
+                                                                            "Value": "{{1,0},{0,0},{1,25},{0,17}}"
+                                                                        },
+                                                                        {
+                                                                            "Name": "VerticalAlignment",
+                                                                            "Value": "Bottom"
+                                                                        },
+                                                                        {
+                                                                            "Name": "ImageName",
+                                                                            "Value": "set:game_activity_discount_shop_1.json image:lbl_0_off"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "Layout",
+                                            "Name": "GameDiscountShopActivityPanel-PriceLayout",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,21},{0,-31},{0,261},{0,23}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Bottom"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0 0.282353 0.568627 0.784314"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticImage",
+                                                    "Name": "GameDiscountShopActivityPanel-PriceIcon",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Material",
+                                                            "Value": "CullBackLinear"
+                                                        },
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,22},{0,0},{0,50},{0,32}}"
+                                                        },
+                                                        {
+                                                            "Name": "VerticalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "ImageName",
+                                                            "Value": "set:common_activity.json image:img_0_gcube_line"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "GameDiscountShopActivityPanel-DiscountPrice",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,60},{0,0},{0,135},{0,50}}"
+                                                        },
+                                                        {
+                                                            "Name": "VerticalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "0"
+                                                        },
+                                                        {
+                                                            "Name": "Font",
+                                                            "Value": "HT24"
+                                                        },
+                                                        {
+                                                            "Name": "TextColor",
+                                                            "Value": "0.952941 0.898039 0 1"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "StaticText",
+                                                            "Name": "GameDiscountShopActivityPanel-RealPrice",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,6},{0,0},{1,70},{0,50}}"
+                                                                },
+                                                                {
+                                                                    "Name": "Text",
+                                                                    "Value": "0"
+                                                                },
+                                                                {
+                                                                    "Name": "Font",
+                                                                    "Value": "HT20"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                }
+                                                            ],
+                                                            "Window": [
+                                                                {
+                                                                    "Type": "Layout",
+                                                                    "Name": "GameDiscountShopActivityPanel-Line",
+                                                                    "Property": [
+                                                                        {
+                                                                            "Name": "Area",
+                                                                            "Value": "{{0,0},{0,2},{1,4},{0,3}}"
+                                                                        },
+                                                                        {
+                                                                            "Name": "VerticalAlignment",
+                                                                            "Value": "Centre"
+                                                                        },
+                                                                        {
+                                                                            "Name": "HorizontalAlignment",
+                                                                            "Value": "Centre"
+                                                                        },
+                                                                        {
+                                                                            "Name": "BackgroundColor",
+                                                                            "Value": "1 0 0 1"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "Button",
+                                            "Name": "GameDiscountShopActivityPanel-Buy",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,-21},{0,-27},{0,194},{0,35}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Bottom"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Right"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "PURCHASE"
+                                                },
+                                                {
+                                                    "Name": "BtnTextColor",
+                                                    "Value": "0.423529 0.133333 0.027451 1"
+                                                },
+                                                {
+                                                    "Name": "NormalImage",
+                                                    "Value": "set:game_activity_score_1.json image:btn_0_received_all"
+                                                },
+                                                {
+                                                    "Name": "PushedImage",
+                                                    "Value": "set:game_activity_score_1.json image:btn_0_received_all"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "Layout",
+                                            "Name": "GameDiscountShopActivityPanel-SelectGoods",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,1},{0,-251},{0,446},{0,9}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameDiscountShopActivityPanel-Shop",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-11},{0,0},{0,551},{0,665}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:game_activity_discount_shop_1.json image:img_0_listbd"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "GameDiscountShopActivityPanel-Question",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,-110},{0,23},{0,-74},{0,62}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Right"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:game_activity_score_2.json image:btn_0_rule"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Layout",
+                                    "Name": "GameDiscountShopActivityPanel-TimeLayout",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,107},{0,69},{0,396},{0,94}}"
+                                        },
+                                        {
+                                            "Name": "BackgroundColor",
+                                            "Value": "0.384314 0 0 0.501961"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "Layout",
+                                            "Name": "GameDiscountShopActivityPanel-TimeIconLayout",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0,33},{1,0}}"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0 0 0 1"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticImage",
+                                                    "Name": "GameDiscountShopActivityPanel-TimeIcon",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Material",
+                                                            "Value": "CullBackLinear"
+                                                        },
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0,22},{0,22}}"
+                                                        },
+                                                        {
+                                                            "Name": "VerticalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "HorizontalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "Touchable",
+                                                            "Value": "false"
+                                                        },
+                                                        {
+                                                            "Name": "ImageName",
+                                                            "Value": "set:bed_war_3_icon.json image:img_0_time"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "GameDiscountShopActivityPanel-Time",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,17},{0,0},{1,-16},{1,0}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "00:00:00"
+                                                },
+                                                {
+                                                    "Name": "Touchable",
+                                                    "Value": "false"
+                                                },
+                                                {
+                                                    "Name": "TextHorzAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Layout",
+                                    "Name": "GameDiscountShopActivityPanel-Goods",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,72},{0,183},{0,488},{0,585}}"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "GameDiscountShopActivityPanel-TipLayout",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{1,4},{0,68},{1,485},{0,156}}"
+                                        },
+                                        {
+                                            "Name": "RotateX",
+                                            "Value": "20"
+                                        },
+                                        {
+                                            "Name": "StretchType",
+                                            "Value": "NineGrid"
+                                        },
+                                        {
+                                            "Name": "StretchOffset",
+                                            "Value": "45 5 10 20"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:game_activity_discount_shop_1.json image:img_9_txtbd"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "GameDiscountShopActivityPanel-Desc",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,12},{0,0},{1,-58},{1,-10}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "单次购买更多物品，优惠力度更多喔~"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT18"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0.0980392 0.152941 0.243137 1"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextWordWrap",
+                                                    "Value": "true"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "GameDiscountShopActivityPanel-TitleImage",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,86},{0,13},{0,415},{0,68}}"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:game_activity_discount_shop_1.json image:text_zh_CN"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

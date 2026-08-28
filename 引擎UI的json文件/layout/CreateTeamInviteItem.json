@@ -1,0 +1,242 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "CreateTeamInviteItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,648},{0,106}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "StretchOffset",
+                    "Value": "15 15 15 15"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_3_common_part.json image:img_9_information01"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticText",
+                    "Name": "CreateTeamInviteItem-Tip",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,28},{0,0},{0,178},{0,40}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "· Qualifying ·"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0.964706 0.772549 0.172549 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "CreateTeamInviteItem-Header",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,32},{0,-18},{0,77},{0,27}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "CreateTeamInviteItem-Sex",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,15},{0,-2},{1,35},{0,19}}"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_icon.json image:img_0_gender01"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "CreateTeamInviteItem-Name",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{1,5},{0,0},{1,155},{1,0}}"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Name...namena"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT14"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "CreateTeamInviteItem-Honor-Icon",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,20},{0,5},{1,44.5},{0,30}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "CreateTeamInviteItem-Honor-Text",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{1,5},{0,0},{1,105},{1,0}}"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Baiyin"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.529412 0.592157 0.623529 1"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "CreateTeamInviteItem-Rejection",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-22},{0,24},{0,104},{0,81}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Rejection"
+                        },
+                        {
+                            "Name": "TextBorder",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextBorderColor",
+                            "Value": "0.34902 0.486275 0.592157 1"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_9_general02"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_9_general02"
+                        },
+                        {
+                            "Name": "TextRenderOffset",
+                            "Value": "0 -6"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "CreateTeamInviteItem-OK",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-168},{0,24},{0,-42},{0,81}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "OK"
+                        },
+                        {
+                            "Name": "TextBorder",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextBorderColor",
+                            "Value": "0.0235294 0.52549 0.556863 1"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_9_general01"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_9_general01"
+                        },
+                        {
+                            "Name": "TextRenderOffset",
+                            "Value": "0 -6"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,428 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarQualifyingSeasonReward",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "Font",
+                    "Value": "HT16"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_season_reward.json image:img_0_bg"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarQualifyingSeasonReward-panel",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.028125,0},{-0.0208333,0},{1.00391,-36},{0.566667,15}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "180 20 10 10"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bed_war_season_reward.json image:img_9_list_bd"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarQualifyingSeasonReward-NormalIcon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,32},{-0.253425,0},{0,138},{-0.253425,152}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_season_reward.json image:img_0_icon_normal"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarQualifyingSeasonReward-NormalTxtBg",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0.197368,0},{1.32075,0},{0.592105,-30}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT16"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_season_reward.json image:img_0_namebd_normal"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "BedWarQualifyingSeasonReward-NormalTxt",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0.25,0},{0.566667,0}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "普通"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT16"
+                                                },
+                                                {
+                                                    "Name": "TextHorzAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarQualifyingSeasonReward-HighIcon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,32},{0.242009,0},{0,138},{0.242009,152}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_season_reward.json image:img_0_icon_specail"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarQualifyingSeasonReward-HighTxtBg",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0.197368,0},{1.32075,0},{0.592105,-30}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT16"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_season_reward.json image:img_0_namebd_specail"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "BedWarQualifyingSeasonReward-HighTxt",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0.25,0},{0.566667,0}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "高级"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT16"
+                                                },
+                                                {
+                                                    "Name": "TextHorzAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarQualifyingSeasonReward-LockImg",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0.301887,0},{0.243421,0}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT16"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_icon.json image:img_0_lock"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "BedWarQualifyingSeasonReward-RewardPanel",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,178},{0,12},{0.97939,0},{0.97032,0}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarQualifyingSeasonReward-boyIcon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.150866,-10},{0,-236},{0.150866,320},{0,16}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_season_reward.json image:img_0_npc"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarQualifyingSeasonReward-DescTxt",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.055235,0},{-1.02968,0},{0.30338,0},{-0.883561,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "价值6000/n仅需299"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "TextWordWrap",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarQualifyingSeasonReward-TitleImg",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.0321517,0},{-1.20548,0},{0.234955,0},{-0.986302,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_season_reward.json image:text_zh_CN"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "BedWarQualifyingSeasonReward-ReceiveReward",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{-0.0338005,0},{-1.01598,0},{0.150865,0},{-0.851596,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "一键领取"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT22"
+                                },
+                                {
+                                    "Name": "TextBorder",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_9_buy01"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_9_buy01"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "0 -5"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

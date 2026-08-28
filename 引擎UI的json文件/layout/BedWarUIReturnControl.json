@@ -1,0 +1,108 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarUIReturnControl",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,260},{0,110}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarUIReturnControl-Bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,50},{0.309091,0},{1,0},{0.990909,0}}"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "0 15 0 0"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_common_part.json image:bg_0_title"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarUIReturnControl-Icon",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,24},{0,22},{0,92},{0,102}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_button.json image:btn_0_back"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "BedWarUIReturnControl-Text",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,96},{0,20},{1,-4},{0,58}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT26"
+                        },
+                        {
+                            "Name": "EnableTextColorRect",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextColorLeftBottom",
+                            "Value": "0.752941 0.745098 0.87451 1"
+                        },
+                        {
+                            "Name": "TextColorRightBottom",
+                            "Value": "0.752941 0.745098 0.87451 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextBorder",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextBorderColor",
+                            "Value": "0.160784 0.211765 0.482353 1"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarUIReturnControl-Btn",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,240},{0,100}}"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

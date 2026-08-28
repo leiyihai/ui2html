@@ -1,0 +1,384 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "StaticImage",
+            "Name": "GameScoreActivityRewardItem2",
+            "Property": [
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                },
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,150},{0,164}}"
+                },
+                {
+                    "Name": "Font",
+                    "Value": "HT16"
+                },
+                {
+                    "Name": "ImageName",
+                    "Value": "set:game_activity_score_2.json image:img_0_item_bg_blue"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityRewardItem2-Image",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,32},{0,80},{0,112}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bedwar_xindaoju.json image:g1008_dragon_knight"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "GameScoreActivityRewardItem2-Count",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-10},{0,-39},{0,40},{0,-9}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "x100"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT14"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "TextShadow",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityRewardItem2-LimitIcon",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-50},{0,2},{0,-25},{0,25}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_2.json image:img_0_icon_limit"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameScoreActivityRewardItem2-Limit",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,2},{0,0},{1,32},{1,0}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "10/10"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextBorder",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityRewardItem2-ScoreIcon",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,10},{0,-10},{0,30},{0,10}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_2.json image:img_0_icon_stone"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameScoreActivityRewardItem2-Score",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,4},{0,-2},{1,54},{1,-2}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "2000"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "GameScoreActivityRewardItem2-Add",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,3},{0,-8},{0,23},{0,18}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "+"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0.952941 0.278431 1 1"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityRewardItem2-PriceIcon",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,20},{0,-9},{0,40},{0,11}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_2.json image:img_0_icon_stone"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameScoreActivityRewardItem2-Price",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,4},{0,-2},{1,54},{1,-2}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "2000"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.784314 0.839216 0.937255 1"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "GameScoreActivityRewardItem2-Mask",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0 0 0 0.588235"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameScoreActivityRewardItem2-Yes",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,42},{0,34}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_common_part.json image:img_0_selected02"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameScoreActivityRewardItem2-Selected",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "12 12 12 12"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_score_2.json image:img_0_selected"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

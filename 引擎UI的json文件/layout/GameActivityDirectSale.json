@@ -1,0 +1,688 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "GameActivityDirectSale",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "VerticalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "Font",
+                    "Value": "HT16"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameActivityDirectSale-Bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_direct_sale_1.json image:img_0_bg"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "GameActivityDirectSale-Title",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,266},{0,23},{0,430},{0,65}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "text"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT28"
+                        },
+                        {
+                            "Name": "EnableTextColorRect",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextColorLeftTop",
+                            "Value": "0.972549 0.505882 0.027451 1"
+                        },
+                        {
+                            "Name": "TextColorRightTop",
+                            "Value": "0.976471 0.505882 0.027451 1"
+                        },
+                        {
+                            "Name": "TextColorLeftBottom",
+                            "Value": "0.988235 0.964706 0.141176 1"
+                        },
+                        {
+                            "Name": "TextColorRightBottom",
+                            "Value": "0.976471 0.964706 0.141176 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameActivityDirectSale-CountDown-Icon",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,264},{0,77},{0,285},{0,98}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_icon.json image:img_0_time"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameActivityDirectSale-Time",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,30},{0,0},{0,121},{0,19}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "00:00:00"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "ActorWindow",
+                    "Name": "GameActivityDirectSale-Actor",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,60},{0,70},{0,252},{0,220}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "GameActivityDirectSale-Desc",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,239},{0,-128},{0,492},{0,-106}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "text"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0.988235 0.976471 0.792157 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameActivityDirectSale-Discount",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-44},{0,-118},{0,100},{0,-76}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_direct_sale_1.json image:img_0_sale"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameActivityDirectSale-Effect-Gem-Left",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.353906,0},{0.280556,0},{0.467969,0},{0.463889,0}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_kaijiazhigou_baoshi.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameActivityDirectSale-Effect-Gem-Right",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.257031,0},{0.280556,0},{-0.142968,0},{0.463889,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_kaijiazhigou_baoshi.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameActivityDirectSale-Effect-Fire1",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.145313,0},{0.0555556,0},{0.307032,0},{0.325,0}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_kaijiazhigou_huoyan.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameActivityDirectSale-Effect-Fire2",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.329688,0},{0.0555556,0},{0.491407,0},{0.325,0}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_kaijiazhigou_huoyan.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameActivityDirectSale-Effect-Fire3",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.229687,0},{0.0555556,0},{-0.067968,0},{0.325,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_kaijiazhigou_huoyan.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameActivityDirectSale-Effect-Fire4",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.05,0},{0.0555556,0},{0.111719,0},{0.325,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_kaijiazhigou_huoyan.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameActivityDirectSale-Effect-Screen",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,58},{0,5},{0.2,58},{0.3,5}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_kaijiazhigou_shanxing.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "GameActivityDirectSale-Actor-Slide",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.046875,0},{0,0},{0.746875,0},{1,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "GameActivityDirectSale-Buy",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-41},{0,-18},{0,215},{0,76}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:game_activity_direct_sale_1.json image:btn_0_buy"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:game_activity_direct_sale_1.json image:btn_0_buy"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameActivityDirectSale-GCube",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-30},{0,-10},{0,2},{0,22}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_icon.json image:toolbar_magic_cube"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "GameActivityDirectSale-Price",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,45},{0,0},{0,145},{0,31}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "text"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT20"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextBorder",
+                                            "Value": "true"
+                                        },
+                                        {
+                                            "Name": "TextBorderColor",
+                                            "Value": "0.266667 0.160784 0.603922 1"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameActivityDirectSale-OriginPrice",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,15},{0,52},{0,34}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.160784 0.168627 0.588235 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "GameActivityDirectSale-line",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{1,10},{0,3}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT16"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "BackgroundColor",
+                                            "Value": "0.160784 0.168627 0.588235 1"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameActivityDirectSale-Have-Buy",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-5},{0,150},{0,45}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT16"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.494118 0.494118 0.494118 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextBorder",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextBorderColor",
+                                    "Value": "0.266667 0.160784 0.603922 1"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "GameActivityDirectSale-Items",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,227},{0,-20},{0,639},{0,79}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

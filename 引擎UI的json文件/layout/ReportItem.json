@@ -1,0 +1,92 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "ReportItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,329},{0,34}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "ReportItem-SelectBg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,42},{0,0},{0,74},{0,32}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_common_part.json image:img_0_selected01"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "ReportItem-Select",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-3},{0,-2},{0,32},{0,28}}"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_common_part.json image:img_0_selected02"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "ReportItem-Lang",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,85},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "He cheated"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT14"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0.780392 0.831373 0.937255 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextWordWrap",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

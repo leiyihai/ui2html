@@ -1,0 +1,64 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "SurvivalPacketArmorItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,34},{0,34}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "StretchOffset",
+                    "Value": "5 5 5 5"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:survival_main.json image:img_9_equipbd"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "SurvivalPacketArmorItem-Type-Bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:survival_main.json image:img_0_equipbd_shoes"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "SurvivalPacketArmorItem-Weapon-Image",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0.8,0},{0.8,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,62 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarNewStoreTab",
+            "Property": [
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                },
+                {
+                    "Name": "Area",
+                    "Value": "{{0,64},{0,67},{0,249},{0,140}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "LeftRight"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_3_store_1.json image:chb_0_tool"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticText",
+                    "Name": "BedWarNewStoreTab-Title",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,98},{1,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Kostenloses Geschenk"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextWordWrap",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

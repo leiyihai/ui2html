@@ -1,0 +1,18 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "StaticImage",
+            "Name": "BedWarHallChatEmojiItem",
+            "Property": [
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                },
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,50},{0,50}}"
+                }
+            ]
+        }
+    }
+}

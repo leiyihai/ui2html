@@ -1,0 +1,110 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "VoicePack",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,60},{0,200},{0,410},{0,415}}"
+                },
+                {
+                    "Name": "Touchable",
+                    "Value": "false"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "VoicePack-Bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "25 25 70 25"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:voice_pack.json image:img_9_voicedikt"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "VoicePack-Tag",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,12},{0,50},{0,54}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:voice_pack.json image:btn_0_voicet2"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "VoicePack-Content",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-2},{0,65},{1,-22},{1,-15}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "VoicePack-Btn",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-50},{0,0},{0,-9},{0,40}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:voice_pack.json image:btn_0_voicet1"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:voice_pack.json image:btn_0_voicet1"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

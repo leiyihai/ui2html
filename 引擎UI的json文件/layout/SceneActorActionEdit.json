@@ -1,0 +1,424 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "SceneActorActionEdit",
+            "Property": [
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                },
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,1000},{0,600}}"
+                },
+                {
+                    "Name": "VerticalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_2_qualifying_bg.json image:img_0_qualifying01"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "ActorWindow",
+                    "Name": "SceneActorActionEdit-Actor",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,282},{0,398},{0,382},{0,399}}"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "SceneActorActionEdit-Left",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,200},{1,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0 0 0 0.784314"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "SceneActorActionEdit-Left-Title",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0,40}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "模型动作列表"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0.501961 0.752941 0.784314"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "SceneActorActionEdit-Left-Action",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,40},{1,0},{1,0}}"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "SceneActorActionEdit-Left-Action-Time",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,0},{0,0},{1,138},{0,30}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "time"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0 0 0.392157"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "SceneActorActionEdit-Right",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,54},{0,246},{1,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0 0 0 0.588235"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "SceneActorActionEdit-Right-Title",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0,40}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "当前动作列表"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0.501961 0.752941 0.784314"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "SceneActorActionEdit-Select-Time",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-150},{0,-40},{0,0},{0,-10}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "cur:"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0 0 0.392157"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "SceneActorActionEdit-Total-Time",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-150},{0,0},{0,0},{0,30}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "total:"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0 0 0.392157"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "SceneActorActionEdit-Right-Action",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,40},{1,0},{1,0}}"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "SceneActorActionEdit-Close",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,41},{0,46}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "1 0 0 0.784314"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_battle_info.json image:close"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "SceneActorActionEdit-Add",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,686},{0,69},{0,751},{0,143}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_increase"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_increase"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "SceneActorActionEdit-Delete",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,685},{0,154},{0,750},{0,228}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_reduse"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_reduse"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "SceneActorActionEdit-Up",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,696},{0,237},{0,743},{0,294}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_select01"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_select01"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "SceneActorActionEdit-Down",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,696},{0,304},{0,743},{0,361}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_select"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_select"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "SceneActorActionEdit-Preview",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,698},{0,371},{0,741},{0,416}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_licensetask.json image:btn_refresh"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_licensetask.json image:btn_refresh"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "SceneActorActionEdit-Scale-Add",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,399},{0,474},{0,447},{0,528}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_adjust_increace"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_adjust_increace"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "SceneActorActionEdit-Scale-Sub",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,228},{0,474},{0,276},{0,528}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_adjust_reduce"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_adjust_reduce"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

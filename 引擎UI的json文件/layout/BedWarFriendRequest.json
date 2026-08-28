@@ -1,0 +1,408 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarFriendRequest",
+            "Property": [
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                },
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,931},{0,185}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "StretchOffset",
+                    "Value": "10 10 10 10"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_3_friends.json image:img_0_friends04"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarFriendRequest-Head-Item",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.0633727,0},{0,15},{0.0633727,100},{0,115}}"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarFriendRequest-Lv",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,23},{0,0},{1,93},{0,25}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT22"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.109804 0.513726 0.458824 1"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "BedWarFriendRequest-Name",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0,270},{1,0}}"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Player_Name"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT20"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.254902 0.345098 0.392157 1"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarFriendRequest-Country",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,23},{0,0},{0,356},{0.221239,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Status"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.529412 0.592157 0.627451 1"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "BedWarFriendRequest-Lang",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{1,37},{0,0},{0,477},{1,0}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Status"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.529412 0.592157 0.627451 1"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarFriendRequest-Slash",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{1,15},{0,0},{1,29},{1.44,0}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_common_part.json image:img_0_line01"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarFriendRequest-Sex",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,23},{0,0},{1,51},{0,30}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarFriendRequest-Segment",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,59},{0,0},{1,92},{0,33}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarFriendRequest-Vip",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,107},{0,0},{1,235},{0,36}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "BedWarFriendRequest-Msg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.037594,0},{-0.12973,0},{0.746509,-35},{-0.0864868,24}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "text"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT18"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0.505882 0.952941 0.917647 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "true"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarFriendRequest-Btns",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.0665951,0},{0.118919,0},{0.0687429,0},{0.767568,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Button",
+                            "Name": "BedWarFriendRequest-Agree-Btn",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0.475,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_9_general01"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_9_general01"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "0 -5"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "BedWarFriendRequest-Refuse-Btn",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0.475,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_9_general02"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_9_general02"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "0 -5"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarFriendRequest-Status-Bg",
+                    "Property": [
+                        {
+                            "Name": "DrawColor",
+                            "Value": "0.380392 0.501961 0.564706 1"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-20},{-0.12973,0},{0.237379,-20},{0.07027,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_friends.json image:img_0_friends06"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarFriendRequest-Status",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-10},{0,0},{1,-20},{1,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT18"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

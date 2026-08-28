@@ -1,0 +1,278 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarGameMain",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "Touchable",
+                    "Value": "false"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarGameMain-Screen-Effect",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{-0.5,1},{0.5,0},{0.5,1}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_radar_ui.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarGameMain-Store-Btn",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-24},{0,70},{0,46},{0,140}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_toolbar.json image:img_0_shop01"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_toolbar.json image:img_0_shop01"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarGameMain-UpgradeStore-Btn",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-24},{0,160},{0,46},{0,230}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_toolbar.json image:img_0_shop02"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_toolbar.json image:img_0_shop02"
+                        }
+                    ]
+                },
+                {
+                    "Type": "CheckBox",
+                    "Name": "BedWarGameMain-MenuList-ShortMessage",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,10},{0,140},{0,67},{0,195}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwar_toolbar.json image:shortMessage_normal"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwar_toolbar.json image:shortMessage_select"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarGameMain-MenuList-ShortMessage-mask",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "DrawColor",
+                                    "Value": "1 1 1 0.55"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "Visible",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "Alpha",
+                                    "Value": "0.55"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bedwar_toolbar.json image:CommandMask"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarGameMain-PersonView",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.164063,0},{-0.0333333,0},{-0.164063,64},{-0.0333333,64}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarGameMain-PersonView-Image",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:view_state.json image:btn_0_perspective1_normal"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarGameMain-Trigger-Gift-Effect-Bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-116},{0,38},{0,-52},{0,102}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1008_img_0_recommend.effect"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "BedWarGameMain-Trigger-Gift",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-116},{0,70},{0,-52},{0,134}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_icon.json image:img_0_recommend"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_icon.json image:img_0_recommend"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarGameMain-Trigger-Gift-Effect",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-42},{1,0},{0,33}}"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "EffectFileName",
+                                    "Value": "g1008_img_0_turntable_2.effect"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

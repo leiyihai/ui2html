@@ -1,0 +1,328 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "UseCustomGoodsTicketContent",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,691},{0,253}}"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "UseCustomGoodsTicketContent-TicketBg",
+                    "Property": [
+                        {
+                            "Name": "DrawColor",
+                            "Value": "1 1 1 0.9"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,41},{0,-5},{0,209},{0,196}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Alpha",
+                            "Value": "0.9"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_store.json image:img_0_item_bd"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "UseCustomGoodsTicketContent-TicketBorder",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,57},{0,-8},{0,196},{0,126}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_dress_store.json image:img_0_ticket_1"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "UseCustomGoodsTicketContent-TicketImage",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,95},{0,95}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:dress_shop.json image:g1008_pickaxe_24_b"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "UseCustomGoodsTicketContent-TicketTag",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-4},{0,4},{0,84},{0,39}}"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_dress_store.json image:img_0_label_1"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "UseCustomGoodsTicketContent-TicketTime",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,5},{0,71},{0,31}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "1 Day"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextShadow",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "UseCustomGoodsTicketContent-Hint",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,242},{0,29},{1,0},{0,59}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Are you sure to purchase this item?"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "UseCustomGoodsTicketContent-SubOne",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,242},{0,74},{0,290},{0,128}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_store.json image:btn_0_adjust_reduce"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_store.json image:btn_0_adjust_reduce"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "UseCustomGoodsTicketContent-Count",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,300},{0,75},{0,498},{0,124}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "1"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT18"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0 0 0 0.698039"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "UseCustomGoodsTicketContent-AddOne",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,508},{0,74},{0,556},{0,128}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_store.json image:btn_0_adjust_increace"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_store.json image:btn_0_adjust_increace"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "UseCustomGoodsTicketContent-AddTen",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,572},{0,74},{0,653},{0,128}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "+10"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "YSB26"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "16 16 16 20"
+                        },
+                        {
+                            "Name": "BtnTextColor",
+                            "Value": "0.52549 0.196078 0.00392157 1"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_adjust_num"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_adjust_num"
+                        },
+                        {
+                            "Name": "TextRenderOffset",
+                            "Value": "0 -3"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "UseCustomGoodsTicketContent-Use",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-37},{0,-35},{0,374},{0,30}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Use"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT20"
+                        },
+                        {
+                            "Name": "BtnTextColor",
+                            "Value": "0.34902 0.188235 0.12549 1"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_shop_buy"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_0_shop_buy"
+                        },
+                        {
+                            "Name": "TextRenderOffset",
+                            "Value": "0 -3"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

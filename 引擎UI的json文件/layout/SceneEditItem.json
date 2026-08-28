@@ -1,0 +1,34 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "StaticText",
+            "Name": "GUISceneEditItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,80},{0,37}}"
+                },
+                {
+                    "Name": "Font",
+                    "Value": "HT14"
+                },
+                {
+                    "Name": "BackgroundColor",
+                    "Value": "0.501961 0.501961 0.501961 0.392157"
+                },
+                {
+                    "Name": "TextHorzAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "TextVertAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "TextAutoOmission",
+                    "Value": "false"
+                }
+            ]
+        }
+    }
+}

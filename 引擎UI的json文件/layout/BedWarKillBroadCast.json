@@ -1,0 +1,424 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "BedWarKillBroadCast",
+            "Property": [
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                },
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,300},{0,100}}"
+                },
+                {
+                    "Name": "VerticalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "Touchable",
+                    "Value": "false"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "BedWarKillBroadCast-skin",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{-0.15,0},{2.14,0},{3,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bedwar_broadcast_skin.json image:g1008_broadcast_2"
+                        }
+                    ],
+                    "Type": "StaticImage"
+                },
+                {
+                    "Name": "BedWarKillBroadCast-content",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1.25667,0},{0.73,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        }
+                    ],
+                    "Type": "StaticImage",
+                    "Window": [
+                        {
+                            "Name": "BedWarKillBroadCast-kill_head",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0.193634,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Type": "Layout",
+                            "Window": [
+                                {
+                                    "Name": "BedWarKillBroadCast-headshot",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                        }
+                                    ],
+                                    "Type": "Layout"
+                                },
+                                {
+                                    "Name": "BedWarKillBroadCast-pet",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{1.75342,0},{1.75342,0}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "StretchType",
+                                            "Value": "NineGrid"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:pet_headshot.json image:g1008_icon_petFace_8"
+                                        }
+                                    ],
+                                    "Type": "StaticImage"
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "BedWarKillBroadCast-dead_head",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0.193634,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Type": "Layout"
+                        },
+                        {
+                            "Name": "BedWarKillBroadCast-dead_sign",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0.193634,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bedwar_headshotbox.json image:hsb_green"
+                                }
+                            ],
+                            "Type": "StaticImage",
+                            "Window": [
+                                {
+                                    "Name": "BedWarKillBroadCast-kill_icon",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0,120},{0,75}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "Rotate",
+                                            "Value": "-315"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bedwar_shortMessage.json image:redline"
+                                        }
+                                    ],
+                                    "Type": "StaticImage"
+                                },
+                                {
+                                    "Name": "BedWarKillBroadCast-bigKill",
+                                    "Property": [
+                                        {
+                                            "Name": "DrawColor",
+                                            "Value": "1 1 1 0.6"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0,240},{0,150}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "Alpha",
+                                            "Value": "0.6"
+                                        },
+                                        {
+                                            "Name": "Rotate",
+                                            "Value": "-315"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bedwar_shortMessage.json image:redline"
+                                        },
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        }
+                                    ],
+                                    "Type": "StaticImage"
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "BedWarKillBroadCast-text",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0.5,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Type": "StaticText"
+                        },
+                        {
+                            "Name": "BedWarKillBroadCast-helpkill_bg",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0.835616,0},{0.514589,0},{1.34246,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "7 7 7 7"
+                                },
+                                {
+                                    "Name": "LayoutBackImage",
+                                    "Value": "set:bedwar_shortMessage.json image:message_child"
+                                }
+                            ],
+                            "Type": "Layout",
+                            "Window": [
+                                {
+                                    "Name": "BedWarKillBroadCast-help_icon",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0.0824742,0},{0.135135,0},{0.201031,0},{0.837838,0}}"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bedwar_shortMessage.json image:helpkill_icon"
+                                        }
+                                    ],
+                                    "Type": "StaticImage"
+                                },
+                                {
+                                    "Name": "BedWarKillBroadCast-helplist",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0.25,0},{0,3},{1,0},{0.8,3}}"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "ClipChild",
+                                            "Value": "true"
+                                        },
+                                        {
+                                            "Name": "ScrollableAtNotFull",
+                                            "Value": "false"
+                                        }
+                                    ],
+                                    "Type": "ListHorizontal"
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "BedWarKillBroadCast-effect",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0.5,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Type": "StaticImage"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

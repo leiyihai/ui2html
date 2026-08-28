@@ -1,0 +1,88 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarSetting",
+            "Property": [
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                },
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_3_setting.json image:btn_0_setting_bg"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarSetting-Content",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.235,0},{0.14,0},{0.935,0},{0.967,0}}"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarSetting-Tabs",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "DrawColor",
+                            "Value": "1 1 1 0.498039"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.0421875,0},{0.0819444,0},{0.166406,0},{0.995833,0}}"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bed_war_3_common_part.json image:img_0_bg01"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "ListHorizontal",
+                            "Name": "BedWarSetting-Tab-List",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0.0851064,0},{1.7044,0},{0.985106,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ClipChild",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "ScrollableAtNotFull",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

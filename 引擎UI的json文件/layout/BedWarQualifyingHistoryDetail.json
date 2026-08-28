@@ -1,0 +1,310 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarQualifyingHistoryDetail",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,9},{0,570},{0,369}}"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Right"
+                },
+                {
+                    "Name": "Level",
+                    "Value": "51"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "StretchOffset",
+                    "Value": "20 20 20 20"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_2_qualifying_history.json image:img_9_spread_bg"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarQualifyingHistoryDetail-Title",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{0,76}}"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "200 200 20 0"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_2_qualifying_history.json image:img_9_spread_bg_top"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarQualifyingHistoryDetail-Rank-Text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.04,0},{0,4},{0.52,0},{0,29}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Ranked  1"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.752941 0.745098 0.8 1"
+                                },
+                                {
+                                    "Name": "TextLineExtraSpace",
+                                    "Value": "-5"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarQualifyingHistoryDetail-WinTimes-Text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.04,0},{0,26},{0.52,0},{0,51}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Win per match 1"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.752941 0.745098 0.8 1"
+                                },
+                                {
+                                    "Name": "TextLineExtraSpace",
+                                    "Value": "-5"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarQualifyingHistoryDetail-WinRate-Text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.04,0},{0,49},{0.52,0},{0,74}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Win Rate 1"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.752941 0.745098 0.8 1"
+                                },
+                                {
+                                    "Name": "TextLineExtraSpace",
+                                    "Value": "-5"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarQualifyingHistoryDetail-WinStreak-Text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.52,0},{0,25},{1,0},{0,50}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Win continue 1"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.752941 0.745098 0.8 1"
+                                },
+                                {
+                                    "Name": "TextLineExtraSpace",
+                                    "Value": "-5"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarQualifyingHistoryDetail-MVP-Text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.52,0},{0,4},{1,0},{0,29}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "MVP 1"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.752941 0.745098 0.8 1"
+                                },
+                                {
+                                    "Name": "TextLineExtraSpace",
+                                    "Value": "-5"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarQualifyingHistoryDetail-GoldMedal-Text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.52,0},{0,49},{1,0},{0,74}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Gold medal 1"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.752941 0.745098 0.8 1"
+                                },
+                                {
+                                    "Name": "TextWordWrap",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextLineExtraSpace",
+                                    "Value": "-5"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarQualifyingHistoryDetail-Content",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.02,6},{0,-8},{1,-6},{1,-98}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarQualifyingHistoryDetail-Empty",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-35},{0,106},{0,78}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_icon.json image:img_0_vacancies"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "BedWarQualifyingHistoryDetail-Empty-Text",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{1,0},{1,0},{1,30}}"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "No data"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

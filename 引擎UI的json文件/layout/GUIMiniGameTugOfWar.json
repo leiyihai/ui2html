@@ -1,0 +1,128 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "GUIMiniGameTugOfWar",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Button",
+                    "Name": "GUIMiniGameTugOfWar-Left-Pull",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,100},{0,-100},{0,215},{0,15}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT32"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:tug_of_war.json image:btn_0_pull"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:tug_of_war.json image:btn_0_pull_click"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GUIMiniGameTugOfWar-Left-Effect",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{-0.5,0},{1,0},{0.5,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "EffectFileName",
+                                    "Value": "g1008_effect_ui_buttonlight.effect"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "GUIMiniGameTugOfWar-Right-Pull",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-100},{0,-100},{0,15},{0,15}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT32"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:tug_of_war.json image:btn_0_pull"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:tug_of_war.json image:btn_0_pull_click"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GUIMiniGameTugOfWar-Right-Effect",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{-0.5,0},{1,0},{0.5,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "EffectFileName",
+                                    "Value": "g1008_effect_ui_buttonlight.effect"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

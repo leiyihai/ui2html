@@ -1,0 +1,432 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarQualifyingSegmentIntroduction",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "BackgroundColor",
+                    "Value": "0 0 0 0.392157"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Button",
+                    "Name": "BedWarQualifyingSegmentIntroduction-Close-Mask",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarQualifyingSegmentIntroduction-Main",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,1050},{0,535}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "10 10 80 30"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bed_war_upgrade_store.json image:bg"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Layout",
+                            "Name": "BedWarQualifyingSegmentIntroduction-Content",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,68},{1,0},{0.987,0}}"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "15 15 15 15"
+                                },
+                                {
+                                    "Name": "LayoutBackImage",
+                                    "Value": "set:bed_war_2_qualifying_bg.json image:img_0_dan_introduced_bg"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarQualifyingSegmentIntroduction-Pre",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,20},{0,0},{0,39},{0,30}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_2_qualifying.json image:img_0_change_left"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarQualifyingSegmentIntroduction-Center",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "DrawColor",
+                                            "Value": "1 1 1 0.5"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0.4,0},{0.85,0}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Alpha",
+                                            "Value": "0.5"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_2_qualifying.json image:img_0_dan_bg"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarQualifyingSegmentIntroduction-Next",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,-20},{0,0},{0,-1},{0,30}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Right"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_2_qualifying.json image:img_0_change_right"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Layout",
+                                    "Name": "BedWarQualifyingSegmentIntroduction-Star",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,96},{0,244},{0,345}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "AlwaysOnTop",
+                                            "Value": "true"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarQualifyingSegmentIntroduction-Star1",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0.037,0},{-0.104,0},{0.201,0},{0.046,0}}"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:bed_war_2_qualifying_history.json image:img_0_start2"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "BedWarQualifyingSegmentIntroduction-StarNumber",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{1,10},{0,0},{2,10},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Font",
+                                                            "Value": "HT24"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarQualifyingSegmentIntroduction-Star2",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0.217,0},{-0.211,0},{0.381,0},{-0.061,0}}"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:bed_war_2_qualifying_history.json image:img_0_start2"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarQualifyingSegmentIntroduction-Star3",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0.418,0},{-0.286,0},{0.582,0},{-0.136,0}}"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:bed_war_2_qualifying_history.json image:img_0_start2"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarQualifyingSegmentIntroduction-Star4",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0.619,0},{-0.211,0},{0.783,0},{-0.061,0}}"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:bed_war_2_qualifying_history.json image:img_0_start2"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarQualifyingSegmentIntroduction-Star5",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0.8,0},{-0.103,0},{0.964,0},{0.047,0}}"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:bed_war_2_qualifying_history.json image:img_0_start2"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "BedWarQualifyingSegmentIntroduction-Title",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0,68}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Dan is introduced"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT24"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextShadow",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "BedWarQualifyingSegmentIntroduction-Close",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-15},{0,7},{0,36},{0,61}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_upgrade_store.json image:close"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_upgrade_store.json image:close"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "BedWarQualifyingSegmentIntroduction-Tip-Bg",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-24},{0,612},{0,14}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "12 12 12 12"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_2_qualifying.json image:img_9_txt_bg"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "BedWarQualifyingSegmentIntroduction-Tip",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "You are more powerful than 90% of your players"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "1 0.894118 0 1"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

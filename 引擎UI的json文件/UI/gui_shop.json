@@ -1,0 +1,2688 @@
+{
+  "Dialog": {
+    "Window": {
+      "Type": "Layout",
+      "Name": "root",
+      "Property": [
+        {
+          "Name": "WindowType",
+          "Value": "Layout"
+        },
+        {
+          "Name": "WindowName",
+          "Value": "root"
+        },
+        {
+          "Name": "Enabled",
+          "Value": "true"
+        },
+        {
+          "Name": "Visible",
+          "Value": "true"
+        },
+        {
+          "Name": "Area",
+          "Value": "{{0,-743},{0,-466},{0,1280},{0,720}}"
+        },
+        {
+          "Name": "Alpha",
+          "Value": "1"
+        },
+        {
+          "Name": "Material",
+          "Value": "CullBack"
+        },
+        {
+          "Name": "Level",
+          "Value": "50"
+        },
+        {
+          "Name": "VerticalAlignment",
+          "Value": "Top"
+        },
+        {
+          "Name": "HorizontalAlignment",
+          "Value": "Left"
+        },
+        {
+          "Name": "Touchable",
+          "Value": "true"
+        },
+        {
+          "Name": "AutoSize",
+          "Value": "false"
+        }
+      ],
+      "Window": [
+        {
+          "Type": "Layout",
+          "Name": "mask",
+          "Property": [
+            {
+              "Name": "WindowType",
+              "Value": "Layout"
+            },
+            {
+              "Name": "WindowName",
+              "Value": "mask"
+            },
+            {
+              "Name": "Enabled",
+              "Value": "true"
+            },
+            {
+              "Name": "Visible",
+              "Value": "true"
+            },
+            {
+              "Name": "Area",
+              "Value": "{{0,0},{0,0},{0,1280},{0,720}}"
+            },
+            {
+              "Name": "Alpha",
+              "Value": "0.699999988079071"
+            },
+            {
+              "Name": "Material",
+              "Value": "CullBack"
+            },
+            {
+              "Name": "Level",
+              "Value": "50"
+            },
+            {
+              "Name": "VerticalAlignment",
+              "Value": "Top"
+            },
+            {
+              "Name": "HorizontalAlignment",
+              "Value": "Left"
+            },
+            {
+              "Name": "Touchable",
+              "Value": "true"
+            },
+            {
+              "Name": "AutoSize",
+              "Value": "false"
+            }
+          ]
+        },
+        {
+          "Type": "Layout",
+          "Name": "windowCommon",
+          "Property": [
+            {
+              "Name": "WindowType",
+              "Value": "Layout"
+            },
+            {
+              "Name": "WindowName",
+              "Value": "windowCommon"
+            },
+            {
+              "Name": "Enabled",
+              "Value": "true"
+            },
+            {
+              "Name": "Visible",
+              "Value": "true"
+            },
+            {
+              "Name": "Area",
+              "Value": "{{0,320},{0,130},{0,640},{0,460}}"
+            },
+            {
+              "Name": "Alpha",
+              "Value": "1"
+            },
+            {
+              "Name": "Material",
+              "Value": "CullBack"
+            },
+            {
+              "Name": "Level",
+              "Value": "50"
+            },
+            {
+              "Name": "VerticalAlignment",
+              "Value": "Top"
+            },
+            {
+              "Name": "HorizontalAlignment",
+              "Value": "Left"
+            },
+            {
+              "Name": "Touchable",
+              "Value": "true"
+            },
+            {
+              "Name": "AutoSize",
+              "Value": "false"
+            }
+          ],
+          "Window": [
+            {
+              "Type": "StaticImage",
+              "Name": "img_window_bd",
+              "Property": [
+                {
+                  "Name": "WindowType",
+                  "Value": "StaticImage"
+                },
+                {
+                  "Name": "WindowName",
+                  "Value": "img_window_bd"
+                },
+                {
+                  "Name": "Enabled",
+                  "Value": "true"
+                },
+                {
+                  "Name": "Visible",
+                  "Value": "true"
+                },
+                {
+                  "Name": "Area",
+                  "Value": "{{0,0},{0,0},{0,640},{0,460}}"
+                },
+                {
+                  "Name": "Alpha",
+                  "Value": "1"
+                },
+                {
+                  "Name": "Material",
+                  "Value": "CullBack"
+                },
+                {
+                  "Name": "Level",
+                  "Value": "50"
+                },
+                {
+                  "Name": "VerticalAlignment",
+                  "Value": "Top"
+                },
+                {
+                  "Name": "HorizontalAlignment",
+                  "Value": "Left"
+                },
+                {
+                  "Name": "Touchable",
+                  "Value": "true"
+                },
+                {
+                  "Name": "AutoSize",
+                  "Value": "false"
+                },
+                {
+                  "Name": "ImageName",
+                  "Value": "set:gui_shopss.json image:img_window_bd"
+                }
+              ],
+              "Window": [
+                {
+                  "Type": "StaticImage",
+                  "Name": "Rectangle",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "StaticImage"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "Rectangle"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,0},{0,0},{0,162},{0,146}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    },
+                    {
+                      "Name": "ImageName",
+                      "Value": "set:gui_shopss.json image:Rectangle"
+                    }
+                  ]
+                },
+                {
+                  "Type": "StaticImage",
+                  "Name": "Rectangle",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "StaticImage"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "Rectangle"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,162},{0,0},{0,316},{0,146}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    },
+                    {
+                      "Name": "ImageName",
+                      "Value": "set:gui_shopss.json image:Rectangle"
+                    }
+                  ]
+                },
+                {
+                  "Type": "StaticImage",
+                  "Name": "Rectangle",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "StaticImage"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "Rectangle"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,478},{0,0},{0,162},{0,146}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    },
+                    {
+                      "Name": "ImageName",
+                      "Value": "set:gui_shopss.json image:Rectangle"
+                    }
+                  ]
+                },
+                {
+                  "Type": "StaticImage",
+                  "Name": "Rectangle",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "StaticImage"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "Rectangle"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,0},{0,146},{0,162},{0,208}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    },
+                    {
+                      "Name": "ImageName",
+                      "Value": "set:gui_shopss.json image:Rectangle"
+                    }
+                  ]
+                },
+                {
+                  "Type": "StaticImage",
+                  "Name": "Rectangle",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "StaticImage"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "Rectangle"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,162},{0,146},{0,316},{0,208}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    },
+                    {
+                      "Name": "ImageName",
+                      "Value": "set:gui_shopss.json image:Rectangle"
+                    }
+                  ]
+                },
+                {
+                  "Type": "StaticImage",
+                  "Name": "Rectangle",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "StaticImage"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "Rectangle"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,478},{0,146},{0,162},{0,208}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    },
+                    {
+                      "Name": "ImageName",
+                      "Value": "set:gui_shopss.json image:Rectangle"
+                    }
+                  ]
+                },
+                {
+                  "Type": "StaticImage",
+                  "Name": "Rectangle",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "StaticImage"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "Rectangle"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,0},{0,354},{0,162},{0,106}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    },
+                    {
+                      "Name": "ImageName",
+                      "Value": "set:gui_shopss.json image:Rectangle"
+                    }
+                  ]
+                },
+                {
+                  "Type": "StaticImage",
+                  "Name": "Rectangle",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "StaticImage"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "Rectangle"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,162},{0,354},{0,316},{0,106}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    },
+                    {
+                      "Name": "ImageName",
+                      "Value": "set:gui_shopss.json image:Rectangle"
+                    }
+                  ]
+                },
+                {
+                  "Type": "StaticImage",
+                  "Name": "Rectangle",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "StaticImage"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "Rectangle"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,478},{0,354},{0,162},{0,106}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    },
+                    {
+                      "Name": "ImageName",
+                      "Value": "set:gui_shopss.json image:Rectangle"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Type": "Layout",
+              "Name": "btn_close",
+              "Property": [
+                {
+                  "Name": "WindowType",
+                  "Value": "Layout"
+                },
+                {
+                  "Name": "WindowName",
+                  "Value": "btn_close"
+                },
+                {
+                  "Name": "Enabled",
+                  "Value": "true"
+                },
+                {
+                  "Name": "Visible",
+                  "Value": "true"
+                },
+                {
+                  "Name": "Area",
+                  "Value": "{{0,571},{0,3},{0,54},{0,54}}"
+                },
+                {
+                  "Name": "Alpha",
+                  "Value": "1"
+                },
+                {
+                  "Name": "Material",
+                  "Value": "CullBack"
+                },
+                {
+                  "Name": "Level",
+                  "Value": "50"
+                },
+                {
+                  "Name": "VerticalAlignment",
+                  "Value": "Top"
+                },
+                {
+                  "Name": "HorizontalAlignment",
+                  "Value": "Left"
+                },
+                {
+                  "Name": "Touchable",
+                  "Value": "true"
+                },
+                {
+                  "Name": "AutoSize",
+                  "Value": "false"
+                }
+              ],
+              "Window": [
+                {
+                  "Type": "StaticImage",
+                  "Name": "btn_close",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "StaticImage"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "btn_close"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,0},{0,0},{0,54},{0,54}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    },
+                    {
+                      "Name": "ImageName",
+                      "Value": "set:gui_shopss.json image:btn_close"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Type": "StaticText",
+              "Name": "title",
+              "Property": [
+                {
+                  "Name": "WindowType",
+                  "Value": "StaticText"
+                },
+                {
+                  "Name": "WindowName",
+                  "Value": "title"
+                },
+                {
+                  "Name": "Enabled",
+                  "Value": "true"
+                },
+                {
+                  "Name": "Visible",
+                  "Value": "true"
+                },
+                {
+                  "Name": "Area",
+                  "Value": "{{0,262},{0,17},{0,116},{0,29}}"
+                },
+                {
+                  "Name": "Alpha",
+                  "Value": "1"
+                },
+                {
+                  "Name": "Material",
+                  "Value": "CullBack"
+                },
+                {
+                  "Name": "Level",
+                  "Value": "50"
+                },
+                {
+                  "Name": "VerticalAlignment",
+                  "Value": "Top"
+                },
+                {
+                  "Name": "HorizontalAlignment",
+                  "Value": "Left"
+                },
+                {
+                  "Name": "Touchable",
+                  "Value": "true"
+                },
+                {
+                  "Name": "AutoSize",
+                  "Value": "false"
+                },
+                {
+                  "Name": "Text",
+                  "Value": "Test title"
+                },
+                {
+                  "Name": "Font",
+                  "Value": "HT16"
+                },
+                {
+                  "Name": "TextColor",
+                  "Value": "1 1 1 1"
+                }
+              ]
+            },
+            {
+              "Type": "Layout",
+              "Name": "Slot",
+              "Property": [
+                {
+                  "Name": "WindowType",
+                  "Value": "Layout"
+                },
+                {
+                  "Name": "WindowName",
+                  "Value": "Slot"
+                },
+                {
+                  "Name": "Enabled",
+                  "Value": "true"
+                },
+                {
+                  "Name": "Visible",
+                  "Value": "true"
+                },
+                {
+                  "Name": "Area",
+                  "Value": "{{0,51},{0,80},{0,538},{0,337}}"
+                },
+                {
+                  "Name": "Alpha",
+                  "Value": "1"
+                },
+                {
+                  "Name": "Material",
+                  "Value": "CullBack"
+                },
+                {
+                  "Name": "Level",
+                  "Value": "50"
+                },
+                {
+                  "Name": "VerticalAlignment",
+                  "Value": "Top"
+                },
+                {
+                  "Name": "HorizontalAlignment",
+                  "Value": "Left"
+                },
+                {
+                  "Name": "Touchable",
+                  "Value": "true"
+                },
+                {
+                  "Name": "AutoSize",
+                  "Value": "false"
+                }
+              ],
+              "Window": [
+                {
+                  "Type": "Layout",
+                  "Name": "btnCommon",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "Layout"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "btnCommon"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,64},{0,271},{0,165},{0,66}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    }
+                  ],
+                  "Window": [
+                    {
+                      "Type": "StaticImage",
+                      "Name": "btn_common_red",
+                      "Property": [
+                        {
+                          "Name": "WindowType",
+                          "Value": "StaticImage"
+                        },
+                        {
+                          "Name": "WindowName",
+                          "Value": "btn_common_red"
+                        },
+                        {
+                          "Name": "Enabled",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "Visible",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "Area",
+                          "Value": "{{0,0},{0,0},{0,165},{0,66}}"
+                        },
+                        {
+                          "Name": "Alpha",
+                          "Value": "1"
+                        },
+                        {
+                          "Name": "Material",
+                          "Value": "CullBack"
+                        },
+                        {
+                          "Name": "Level",
+                          "Value": "50"
+                        },
+                        {
+                          "Name": "VerticalAlignment",
+                          "Value": "Top"
+                        },
+                        {
+                          "Name": "HorizontalAlignment",
+                          "Value": "Left"
+                        },
+                        {
+                          "Name": "Touchable",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "AutoSize",
+                          "Value": "false"
+                        },
+                        {
+                          "Name": "ImageName",
+                          "Value": "set:gui_shopss.json image:btn_common_red"
+                        }
+                      ],
+                      "Window": [
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,0},{0,0},{0,60},{0,20}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,60},{0,0},{0,45},{0,20}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,105},{0,0},{0,60},{0,20}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,0},{0,20},{0,60},{0,6}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,60},{0,20},{0,45},{0,6}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,105},{0,20},{0,60},{0,6}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,0},{0,26},{0,60},{0,40}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,60},{0,26},{0,45},{0,40}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,105},{0,26},{0,60},{0,40}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Type": "Layout",
+                      "Name": "Frame 1",
+                      "Property": [
+                        {
+                          "Name": "WindowType",
+                          "Value": "Layout"
+                        },
+                        {
+                          "Name": "WindowName",
+                          "Value": "Frame 1"
+                        },
+                        {
+                          "Name": "Enabled",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "Visible",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "Area",
+                          "Value": "{{0,38},{0,19},{0,90},{0,29}}"
+                        },
+                        {
+                          "Name": "Alpha",
+                          "Value": "1"
+                        },
+                        {
+                          "Name": "Material",
+                          "Value": "CullBack"
+                        },
+                        {
+                          "Name": "Level",
+                          "Value": "50"
+                        },
+                        {
+                          "Name": "VerticalAlignment",
+                          "Value": "Top"
+                        },
+                        {
+                          "Name": "HorizontalAlignment",
+                          "Value": "Left"
+                        },
+                        {
+                          "Name": "Touchable",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "AutoSize",
+                          "Value": "false"
+                        }
+                      ],
+                      "Window": [
+                        {
+                          "Type": "StaticText",
+                          "Name": "text",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticText"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "text"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,0},{0,0},{0,90},{0,29}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "Text",
+                              "Value": "Cancel"
+                            },
+                            {
+                              "Name": "Font",
+                              "Value": "HT16"
+                            },
+                            {
+                              "Name": "TextColor",
+                              "Value": "1 1 1 1"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Type": "Layout",
+                  "Name": "btnCommon",
+                  "Property": [
+                    {
+                      "Name": "WindowType",
+                      "Value": "Layout"
+                    },
+                    {
+                      "Name": "WindowName",
+                      "Value": "btnCommon"
+                    },
+                    {
+                      "Name": "Enabled",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Visible",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "Area",
+                      "Value": "{{0,309},{0,271},{0,165},{0,66}}"
+                    },
+                    {
+                      "Name": "Alpha",
+                      "Value": "1"
+                    },
+                    {
+                      "Name": "Material",
+                      "Value": "CullBack"
+                    },
+                    {
+                      "Name": "Level",
+                      "Value": "50"
+                    },
+                    {
+                      "Name": "VerticalAlignment",
+                      "Value": "Top"
+                    },
+                    {
+                      "Name": "HorizontalAlignment",
+                      "Value": "Left"
+                    },
+                    {
+                      "Name": "Touchable",
+                      "Value": "true"
+                    },
+                    {
+                      "Name": "AutoSize",
+                      "Value": "false"
+                    }
+                  ],
+                  "Window": [
+                    {
+                      "Type": "StaticImage",
+                      "Name": "btn_common_green",
+                      "Property": [
+                        {
+                          "Name": "WindowType",
+                          "Value": "StaticImage"
+                        },
+                        {
+                          "Name": "WindowName",
+                          "Value": "btn_common_green"
+                        },
+                        {
+                          "Name": "Enabled",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "Visible",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "Area",
+                          "Value": "{{0,0},{0,0},{0,164},{0,66}}"
+                        },
+                        {
+                          "Name": "Alpha",
+                          "Value": "1"
+                        },
+                        {
+                          "Name": "Material",
+                          "Value": "CullBack"
+                        },
+                        {
+                          "Name": "Level",
+                          "Value": "50"
+                        },
+                        {
+                          "Name": "VerticalAlignment",
+                          "Value": "Top"
+                        },
+                        {
+                          "Name": "HorizontalAlignment",
+                          "Value": "Left"
+                        },
+                        {
+                          "Name": "Touchable",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "AutoSize",
+                          "Value": "false"
+                        },
+                        {
+                          "Name": "ImageName",
+                          "Value": "set:gui_shopss.json image:btn_common_green"
+                        }
+                      ],
+                      "Window": [
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,0},{0,0},{0,60},{0,20}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,60},{0,0},{0,44},{0,20}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,104},{0,0},{0,60},{0,20}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,0},{0,20},{0,60},{0,6}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,60},{0,20},{0,44},{0,6}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,104},{0,20},{0,60},{0,6}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,0},{0,26},{0,60},{0,40}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,60},{0,26},{0,44},{0,40}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticImage",
+                          "Name": "Rectangle",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticImage"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "Rectangle"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,104},{0,26},{0,60},{0,40}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "ImageName",
+                              "Value": "set:gui_shopss.json image:Rectangle"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Type": "Layout",
+                      "Name": "Frame 1",
+                      "Property": [
+                        {
+                          "Name": "WindowType",
+                          "Value": "Layout"
+                        },
+                        {
+                          "Name": "WindowName",
+                          "Value": "Frame 1"
+                        },
+                        {
+                          "Name": "Enabled",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "Visible",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "Area",
+                          "Value": "{{0,37},{0,13},{0,92},{0,40}}"
+                        },
+                        {
+                          "Name": "Alpha",
+                          "Value": "1"
+                        },
+                        {
+                          "Name": "Material",
+                          "Value": "CullBack"
+                        },
+                        {
+                          "Name": "Level",
+                          "Value": "50"
+                        },
+                        {
+                          "Name": "VerticalAlignment",
+                          "Value": "Top"
+                        },
+                        {
+                          "Name": "HorizontalAlignment",
+                          "Value": "Left"
+                        },
+                        {
+                          "Name": "Touchable",
+                          "Value": "true"
+                        },
+                        {
+                          "Name": "AutoSize",
+                          "Value": "false"
+                        }
+                      ],
+                      "Window": [
+                        {
+                          "Type": "Layout",
+                          "Name": "icon_gcube",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "Layout"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "icon_gcube"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,0},{0,0},{0,40},{0,40}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            }
+                          ],
+                          "Window": [
+                            {
+                              "Type": "StaticImage",
+                              "Name": "icon_gcube",
+                              "Property": [
+                                {
+                                  "Name": "WindowType",
+                                  "Value": "StaticImage"
+                                },
+                                {
+                                  "Name": "WindowName",
+                                  "Value": "icon_gcube"
+                                },
+                                {
+                                  "Name": "Enabled",
+                                  "Value": "true"
+                                },
+                                {
+                                  "Name": "Visible",
+                                  "Value": "true"
+                                },
+                                {
+                                  "Name": "Area",
+                                  "Value": "{{0,0},{0,0},{0,40},{0,40}}"
+                                },
+                                {
+                                  "Name": "Alpha",
+                                  "Value": "1"
+                                },
+                                {
+                                  "Name": "Material",
+                                  "Value": "CullBack"
+                                },
+                                {
+                                  "Name": "Level",
+                                  "Value": "50"
+                                },
+                                {
+                                  "Name": "VerticalAlignment",
+                                  "Value": "Top"
+                                },
+                                {
+                                  "Name": "HorizontalAlignment",
+                                  "Value": "Left"
+                                },
+                                {
+                                  "Name": "Touchable",
+                                  "Value": "true"
+                                },
+                                {
+                                  "Name": "AutoSize",
+                                  "Value": "false"
+                                },
+                                {
+                                  "Name": "ImageName",
+                                  "Value": "set:gui_shopss.json image:icon_gcube"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Type": "StaticText",
+                          "Name": "text",
+                          "Property": [
+                            {
+                              "Name": "WindowType",
+                              "Value": "StaticText"
+                            },
+                            {
+                              "Name": "WindowName",
+                              "Value": "text"
+                            },
+                            {
+                              "Name": "Enabled",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Visible",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "Area",
+                              "Value": "{{0,44},{0,6},{0,48},{0,29}}"
+                            },
+                            {
+                              "Name": "Alpha",
+                              "Value": "1"
+                            },
+                            {
+                              "Name": "Material",
+                              "Value": "CullBack"
+                            },
+                            {
+                              "Name": "Level",
+                              "Value": "50"
+                            },
+                            {
+                              "Name": "VerticalAlignment",
+                              "Value": "Top"
+                            },
+                            {
+                              "Name": "HorizontalAlignment",
+                              "Value": "Left"
+                            },
+                            {
+                              "Name": "Touchable",
+                              "Value": "true"
+                            },
+                            {
+                              "Name": "AutoSize",
+                              "Value": "false"
+                            },
+                            {
+                              "Name": "Text",
+                              "Value": "200"
+                            },
+                            {
+                              "Name": "Font",
+                              "Value": "HT16"
+                            },
+                            {
+                              "Name": "TextColor",
+                              "Value": "1 1 1 1"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Type": "StaticText",
+              "Name": "text",
+              "Property": [
+                {
+                  "Name": "WindowType",
+                  "Value": "StaticText"
+                },
+                {
+                  "Name": "WindowName",
+                  "Value": "text"
+                },
+                {
+                  "Name": "Enabled",
+                  "Value": "true"
+                },
+                {
+                  "Name": "Visible",
+                  "Value": "true"
+                },
+                {
+                  "Name": "Area",
+                  "Value": "{{0,50},{0,97},{0,539},{0,213}}"
+                },
+                {
+                  "Name": "Alpha",
+                  "Value": "1"
+                },
+                {
+                  "Name": "Material",
+                  "Value": "CullBack"
+                },
+                {
+                  "Name": "Level",
+                  "Value": "50"
+                },
+                {
+                  "Name": "VerticalAlignment",
+                  "Value": "Top"
+                },
+                {
+                  "Name": "HorizontalAlignment",
+                  "Value": "Left"
+                },
+                {
+                  "Name": "Touchable",
+                  "Value": "true"
+                },
+                {
+                  "Name": "AutoSize",
+                  "Value": "false"
+                },
+                {
+                  "Name": "Text",
+                  "Value": "This is the test interface"
+                },
+                {
+                  "Name": "Font",
+                  "Value": "HT16"
+                },
+                {
+                  "Name": "TextColor",
+                  "Value": "1 1 1 1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

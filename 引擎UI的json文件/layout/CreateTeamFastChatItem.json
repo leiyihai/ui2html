@@ -1,0 +1,54 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "StaticText",
+            "Name": "CreateTeamFastChatItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{0,38}}"
+                },
+                {
+                    "Name": "Text",
+                    "Value": "You guys keep playing."
+                },
+                {
+                    "Name": "TextColor",
+                    "Value": "0.501961 0.521569 0.737255 1"
+                },
+                {
+                    "Name": "TextHorzAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "TextVertAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "TextAutoOmission",
+                    "Value": "false"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "CreateTeamFastChatItem-Bottom-Line",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,2},{1,0},{0,4}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_create_team.json image:img_9_teaming04"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

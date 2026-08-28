@@ -1,0 +1,1578 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "CustomSceneEditTool",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "BackgroundColor",
+                    "Value": "0.501961 0.501961 0.501961 0"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "CustomSceneEditTool-Left",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,300},{1,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0 0 0 0.901961"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Button",
+                            "Name": "CustomSceneEditTool-Left-Save",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,10},{0,0},{0,120},{0,37}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "保存配置"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0.501961 0.501961 0.501961 0.392157"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "CustomSceneEditTool-Left-Type",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,75},{1,0},{0,187}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0 0 0.196078"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "CustomSceneEditTool-Left-Common",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,235},{1,-20},{0,318}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Button",
+                                    "Name": "CustomSceneEditTool-Left-Del",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,-70},{0,0},{0,40},{0,37}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "删除选中"
+                                        },
+                                        {
+                                            "Name": "BackgroundColor",
+                                            "Value": "0.501961 0.501961 0.501961 0.392157"
+                                        },
+                                        {
+                                            "Name": "BtnTextColor",
+                                            "Value": "1 0 0 1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Button",
+                                    "Name": "CustomSceneEditTool-Left-Select",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,70},{0,0},{0,180},{0,37}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "选中最近"
+                                        },
+                                        {
+                                            "Name": "BackgroundColor",
+                                            "Value": "0.501961 0.501961 0.501961 0.392157"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Button",
+                                    "Name": "CustomSceneEditTool-Left-Copy",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,-70},{0,40},{0,40},{0,77}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "复制"
+                                        },
+                                        {
+                                            "Name": "BackgroundColor",
+                                            "Value": "0.501961 0.501961 0.501961 0.392157"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Button",
+                                    "Name": "CustomSceneEditTool-Left-New",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,70},{0,40},{0,180},{0,77}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "新建"
+                                        },
+                                        {
+                                            "Name": "BackgroundColor",
+                                            "Value": "0.501961 0.501961 0.501961 0.392157"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "CustomSceneEditTool-Left-Close",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,303},{0,1},{0,344},{0,47}}"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "1 0 0 0.784314"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_battle_info.json image:close"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_battle_info.json image:close"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "CustomSceneEditTool-Left-Hide",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,300},{0,0},{0,348},{0,96}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0 0 0.392157"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_0_receive"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_0_receive"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "CustomSceneEditTool-Left-Type-Title",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,40},{1,0},{0,70}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "选择类型"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0.25098 0.501961 0.784314"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "CustomSceneEditTool-Left-Fun-Title",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,194},{1,0},{0,224}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "常用功能"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0.25098 0.501961 0.784314"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "CustomSceneEditTool-Left-Item-List-Title",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,320},{1,0},{0,350}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "对象列表"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0.25098 0.501961 0.784314"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "CustomSceneEditTool-Left-Item-List",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{1,0},{1,0},{1,370}}"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "CustomSceneEditTool-Left-Move",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-10},{0,0},{0,100},{0,37}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "传送"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0.501961 0.501961 0.501961 0.392157"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "CustomSceneEditTool-Right",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,400},{1,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0 0 0 0.901961"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Button",
+                            "Name": "CustomSceneEditTool-Right-Hide",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-48},{0,0},{0,0},{0,96}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0 0 0.392157"
+                                },
+                                {
+                                    "Name": "Rotate",
+                                    "Value": "180"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_0_receive"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_0_receive"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "CustomSceneEditTool-Right-Base-Title",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0,40}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "基础属性"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0.25098 0.501961 0.784314"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "CustomSceneEditTool-Right-Base",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,40},{1,0},{0,317}}"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "Layout",
+                                            "Name": "CustomSceneEditTool-Name-Tab",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,5},{1,-8},{0,45}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.752941 0.752941 0.752941 0.196078"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-Name-Name",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0,89},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "名称 :"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-Name-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,0},{1,267},{1,-4}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "Font",
+                                                                    "Value": "HT18"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "Layout",
+                                            "Name": "CustomSceneEditTool-Pos-Tab",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,50},{1,-8},{0,90}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.501961 0.501961 0.501961 0.196078"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-Pos-Name",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0,60},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "坐标 |"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-Pos-X",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,62},{0,0},{0,92},{0,40}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "X:"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-Pos-X-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,-1},{1,60},{1,-5}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "Font",
+                                                                    "Value": "HT12"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-Pos-Y",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,162},{0,0},{0,192},{0,40}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "Y:"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-Pos-Y-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,0},{1,60},{1,-4}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "Font",
+                                                                    "Value": "HT12"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-Pos-Z",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,262},{0,0},{0,292},{0,40}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "Z:"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-Pos-Z-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,0},{1,60},{1,-4}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "Font",
+                                                                    "Value": "HT12"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "Layout",
+                                            "Name": "CustomSceneEditTool-Scale-Tab",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,95},{1,-8},{0,135}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.501961 0.501961 0.501961 0.196078"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-Scale-Name",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0,60},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "比例 :"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-Scale-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,0},{1,115},{1,-4}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "Layout",
+                                            "Name": "CustomSceneEditTool-Rotate-Tab",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,145},{1,-8},{0,185}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.501961 0.501961 0.501961 0.196078"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-Rotate-Name",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0,60},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "旋转 |"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-Yaw",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,62},{0,0},{0,112},{0,40}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "yaw:"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-Yaw-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,0},{1,50},{1,-4}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "Font",
+                                                                    "Value": "HT12"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-Pitch",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,172},{0,0},{0,227},{0,40}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "pitch:"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-Pitch-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,-1},{1,50},{1,-5}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "Font",
+                                                                    "Value": "HT12"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-Roll",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,282},{0,0},{0,332},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "roll:"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-Roll-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,0},{1,50},{1,-4}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "Font",
+                                                                    "Value": "HT12"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "Layout",
+                                            "Name": "CustomSceneEditTool-Time-Tab",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,190},{1,-8},{0,230}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.501961 0.501961 0.501961 0.196078"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-StartTime-Name",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0,60},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "出现 时间"
+                                                        },
+                                                        {
+                                                            "Name": "Font",
+                                                            "Value": "HT14"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextWordWrap",
+                                                            "Value": "true"
+                                                        },
+                                                        {
+                                                            "Name": "TextLineExtraSpace",
+                                                            "Value": "-5"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-StartTime-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,-1},{1,100},{1,-5}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-EndTime-Name",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,180},{0,0},{0,240},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "结束 时间"
+                                                        },
+                                                        {
+                                                            "Name": "Font",
+                                                            "Value": "HT14"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextWordWrap",
+                                                            "Value": "true"
+                                                        },
+                                                        {
+                                                            "Name": "TextLineExtraSpace",
+                                                            "Value": "-5"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-EndTime-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,0},{1,100},{1,-4}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "Layout",
+                                            "Name": "CustomSceneEditTool-DemandLoad-Tab",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,235},{1,-8},{0,275}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.501961 0.501961 0.501961 0.196078"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "CustomSceneEditTool-DemandLoad-Name",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0,120},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "按需加载 :"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Edit",
+                                                            "Name": "CustomSceneEditTool-DemandLoad-Edit",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{1,0},{0,0},{1,115},{1,-4}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "BackgroundColor",
+                                                                    "Value": "0.752941 0.752941 0.752941 0.392157"
+                                                                },
+                                                                {
+                                                                    "Name": "ClipChild",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "MaxTextLength",
+                                                                    "Value": "100"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "CustomSceneEditTool-Right-Custom-Title",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,321},{1,0},{0,361}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "自定义属性"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0.25098 0.501961 0.784314"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "CustomSceneEditTool-Right-Custom",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,1},{0,45},{1,1},{0,395}}"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "CustomSceneEditTool-Init-Box",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,450},{0,450}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0 0 0 0.941176"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "CustomSceneEditTool-Init-Title",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0,30}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "新建"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0.25098 0.501961 0.784314"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "CustomSceneEditTool-Init-Sure",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-10},{0,100},{0,20}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "确定"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0.752941 0.752941 0.752941 0.784314"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "CustomSceneEditTool-Init-Close",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,30},{0,30}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "1 0 0 0.784314"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_battle_info.json image:close"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_battle_info.json image:close"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "CustomSceneEditTool-Init-Param-Box",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-5},{1,-10},{1,-85}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

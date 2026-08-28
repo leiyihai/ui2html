@@ -1,0 +1,64 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "TugOfWarFlyText",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,50},{0,50},{0,152},{0,108}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "TugOfWarFlyText-Image",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,43},{0,48}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:tug_of_war.json image:img_0_pullicon"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "TugOfWarFlyText-Text",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,50},{0,0},{0,100},{0,50}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "+1"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "YSB26"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "1 1 0 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextBorder",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

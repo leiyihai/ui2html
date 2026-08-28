@@ -1,0 +1,60 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "GUIGameBlindBoxScrollList",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,300},{0,64},{0,520}}"
+                },
+                {
+                    "Name": "Font",
+                    "Value": "HT16"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "GUIGameBlindBoxScrollList-Star",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,-64},{0,54},{0,-10}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_blind_3.json image:img_0_star_bd"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "GUIGameBlindBoxScrollList-ScrollList",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,2},{1,0},{0,194}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

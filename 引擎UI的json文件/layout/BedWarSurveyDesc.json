@@ -1,0 +1,158 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "BedWarSurveyDesc",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,1},{1,0},{1,1}}"
+                },
+                {
+                    "Name": "BackgroundColor",
+                    "Value": "0 0 0 0.588235"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "BedWarSurveyDesc-Bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,1014},{0,648}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "50 50 110 30"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bed_war_probability_dialog.json image:bg"
+                        }
+                    ],
+                    "Type": "Layout",
+                    "Window": [
+                        {
+                            "Name": "BedWarSurveyDesc-Title-Icon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,34},{0,12},{0,72},{0,58}}"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_block_shop.json image:icon_cube"
+                                }
+                            ],
+                            "Type": "StaticImage"
+                        },
+                        {
+                            "Name": "BedWarSurveyDesc-Title",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,90},{0,10},{0,770},{0,40}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT18"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextBorder",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Type": "StaticText"
+                        },
+                        {
+                            "Name": "BedWarSurveyDesc-Tip",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,90},{0,42},{0,770},{0,62}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Type": "StaticText"
+                        },
+                        {
+                            "Name": "BedWarSurveyDesc-Close",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-14},{0,10},{0,37},{0,64}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_probability_dialog.json image:close"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_probability_dialog.json image:close"
+                                }
+                            ],
+                            "Type": "Button"
+                        },
+                        {
+                            "Name": "BedWarSurveyDesc-Items",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0.0462963,0},{0.940828,0},{0.841049,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Type": "Layout"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

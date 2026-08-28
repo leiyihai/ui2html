@@ -1,0 +1,106 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "ProbabilityItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{0,57}}"
+                },
+                {
+                    "Name": "AlwaysOnTop",
+                    "Value": "true"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "StretchOffset",
+                    "Value": "5 5 5 5"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_probability_dialog.json image:text_bg"
+                },
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "ProbabilityItem-Name",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,15},{0,0},{0.75,-15},{1,0}}"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0 0 0 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ],
+                    "Type": "StaticText"
+                },
+                {
+                    "Name": "ProbabilityItem-Probability",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0.25,0},{1,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0 0 0 1"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ],
+                    "Type": "StaticText"
+                },
+                {
+                    "Name": "ProbabilityItem-Line",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.75,0},{0,0},{0.75,2},{1,0}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_probability_dialog.json image:line"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "StaticImage"
+                }
+            ]
+        }
+    }
+}

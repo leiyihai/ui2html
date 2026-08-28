@@ -1,0 +1,60 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "StaticImage",
+            "Name": "BedWarHallChatItemContentImage",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,76},{0,76}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "StretchOffset",
+                    "Value": "8 8 8 8"
+                },
+                {
+                    "Name": "ImageName",
+                    "Value": "set:bed_war_3_chat.json image:img_9_conversation01"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarHallChatItemContentImage-Arrow",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-18},{0,5.5},{0,1},{0,37.5}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_chat.json image:img_9_conversation02"
+                        }
+                    ]
+                },
+                {
+                    "Type": "UrlImage",
+                    "Name": "BedWarHallChatItemContentImage-Image",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,-4},{1,-4}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

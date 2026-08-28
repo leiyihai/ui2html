@@ -1,0 +1,270 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "ItemSkillMain",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "Touchable",
+                    "Value": "false"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Button",
+                    "Name": "ItemSkillMain-Skill-Release-btn",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.15625,0},{-0.277778,0},{-0.15625,120},{-0.277778,120}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bedwarsmall.json image:free_skill"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bedwarsmall.json image:free_skill"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "ItemSkillMain-Skill-Choice-Team-Layout",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.15625,0},{-0.277778,0},{-0.15625,220},{-0.277778,220}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Button",
+                            "Name": "ItemSkillMain-Skill-Team1",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,32},{0,36},{0,86},{0,90}}"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "5 5 5 5"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_item_solt.json image:item_nor"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_item_solt.json image:item_press"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "ItemSkillMain-Skill-Team1-Icon",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0,33},{0,35}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_battle_info.json image:tab_yellow"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "ItemSkillMain-Skill-Team2",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,135},{0,16},{0,189},{0,70}}"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "5 5 5 5"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_item_solt.json image:item_nor"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_item_solt.json image:item_press"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "ItemSkillMain-Skill-Team2-Icon",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0,33},{0,35}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_battle_info.json image:tab_yellow"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "ItemSkillMain-Skill-Team3",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,10},{0,130},{0,64},{0,184}}"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "5 5 5 5"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_item_solt.json image:item_nor"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_item_solt.json image:item_press"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "ItemSkillMain-Skill-Team3-Icon",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0,33},{0,35}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_battle_info.json image:tab_yellow"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "ItemSkillMain-Effect",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,-500},{0,1000},{0,500}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "EffectFileName",
+                            "Value": "g1046_minigame_ski_props_squid.effect"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

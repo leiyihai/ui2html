@@ -1,0 +1,140 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "BedWarLotteryItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0.035,-1},{0.012,0},{1.035,-1},{0.012,58}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "StretchOffset",
+                    "Value": "20 20 0 0"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_lottery2.json image:describe_bg"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "BedWarLotteryItem-image_bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.0851562,0},{0.1,0},{0.0851562,46},{0.1,46}}"
+                        }
+                    ],
+                    "Type": "StaticImage",
+                    "Window": [
+                        {
+                            "Name": "BedWarLotteryItem-enchant_bg",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{-0.2,0},{-0.2,0},{1.2,0},{1.2,0}}"
+                                },
+                                {
+                                    "Name": "Visible",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "9 9 9 9"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:gui_material.json image:wupinkuang_fumo_layer"
+                                }
+                            ],
+                            "Type": "StaticImage"
+                        },
+                        {
+                            "Name": "BedWarLotteryItem-image",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                }
+                            ],
+                            "Type": "StaticImage"
+                        }
+                    ]
+                },
+                {
+                    "Name": "BedWarLotteryItem-name",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.3,0},{0.07,0},{0.9,0},{0.47,0}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT12"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextShadow",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ],
+                    "Type": "StaticText"
+                },
+                {
+                    "Name": "BedWarLotteryItem-desc",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.3,0},{0.45,0},{1,0},{0.9,0}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT12"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextWordWrap",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextShadow",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextScale",
+                            "Value": "0.8"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ],
+                    "Type": "StaticText"
+                }
+            ]
+        }
+    }
+}

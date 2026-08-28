@@ -1,0 +1,814 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarFriends",
+            "Property": [
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                },
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_3_common_part.json image:img_0_friends01"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarFriends-Content",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.0328125,0},{0.1375,0},{0.701563,42},{1.10833,-99}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Layout",
+                            "Name": "BedWarFriends-Content-Friend",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0.918534,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "BedWarFriends-Content-Recommend",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,-33},{1,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "BedWarFriends-Recommend-List",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{1,0},{0.73,0}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Layout",
+                                    "Name": "BedWarFriends-Recommend-Top",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{1,0},{0.235,0}}"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarFriends-Line",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{1,0},{0,3}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.505882 0.952941 0.917647 0.4"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarFriends-Search",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{1,0},{0.404255,0}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Bottom"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "BedWarFriends-Search-Text",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "text"
+                                                        },
+                                                        {
+                                                            "Name": "Font",
+                                                            "Value": "HT22"
+                                                        },
+                                                        {
+                                                            "Name": "Visible",
+                                                            "Value": "false"
+                                                        },
+                                                        {
+                                                            "Name": "TextColor",
+                                                            "Value": "0.505882 0.952941 0.917647 1"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "Button",
+                                                    "Name": "BedWarFriends-Change-Btn",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0.132771,0},{0.929825,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "VerticalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "HorizontalAlignment",
+                                                            "Value": "Right"
+                                                        },
+                                                        {
+                                                            "Name": "NormalImage",
+                                                            "Value": "set:bed_war_3_button.json image:btn_9_general01"
+                                                        },
+                                                        {
+                                                            "Name": "PushedImage",
+                                                            "Value": "set:bed_war_3_button.json image:btn_9_general01"
+                                                        },
+                                                        {
+                                                            "Name": "TextRenderOffset",
+                                                            "Value": "0 -4"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "Edit",
+                                                    "Name": "BedWarFriends-Search-Input",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0.407798,0},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "VerticalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "StretchType",
+                                                            "Value": "NineGrid"
+                                                        },
+                                                        {
+                                                            "Name": "StretchOffset",
+                                                            "Value": "10 10 10 10"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        },
+                                                        {
+                                                            "Name": "EditBackImage",
+                                                            "Value": "set:bed_war_3_common_part.json image:ipt_9_search"
+                                                        },
+                                                        {
+                                                            "Name": "TextOffset",
+                                                            "Value": "10"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "Button",
+                                                            "Name": "BedWarFriends-Search-Btn",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{0,0},{0,0},{0,47},{0,53}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "HorizontalAlignment",
+                                                                    "Value": "Right"
+                                                                },
+                                                                {
+                                                                    "Name": "NormalImage",
+                                                                    "Value": "set:bed_war_3_button.json image:btn_0_search"
+                                                                },
+                                                                {
+                                                                    "Name": "PushedImage",
+                                                                    "Value": "set:bed_war_3_button.json image:btn_0_search"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarFriends-Screen",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{1,0},{0.404255,0}}"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "Layout",
+                                                    "Name": "BedWarFriends-Segment",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0.251844,0},{1,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "Visible",
+                                                            "Value": "false"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "Layout",
+                                                    "Name": "BedWarFriends-Lang",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0.251844,0},{1,0}}"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "Layout",
+                                                    "Name": "BedWarFriends-Sex",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0.288725,0},{0,0},{0.540569,0},{1,0}}"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "Button",
+                                                    "Name": "BedWarFriends-Screen-Btn",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,0},{0.132771,0},{0.929825,0}}"
+                                                        },
+                                                        {
+                                                            "Name": "VerticalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "HorizontalAlignment",
+                                                            "Value": "Right"
+                                                        },
+                                                        {
+                                                            "Name": "NormalImage",
+                                                            "Value": "set:bed_war_3_button.json image:btn_9_general02"
+                                                        },
+                                                        {
+                                                            "Name": "PushedImage",
+                                                            "Value": "set:bed_war_3_button.json image:btn_9_general02"
+                                                        },
+                                                        {
+                                                            "Name": "TextRenderOffset",
+                                                            "Value": "0 -4"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "BedWarFriends-Content-Request",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0.948065,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "BedWarFriends-Content-Subscribe",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0.918534,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "BedWarFriends-Subscribe-List",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Layout",
+                                    "Name": "BedWarFriends-Subscribe-Tabs",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0.0443459,0},{-0.136667,0},{0.476719,0},{-0.136667,52}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Right"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "Button",
+                                            "Name": "BedWarFriends-Subscribe-Focus",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0.5,0},{1,0}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "NormalImage",
+                                                    "Value": "set:bed_war_3_button.json image:btn_0_non_current04"
+                                                },
+                                                {
+                                                    "Name": "PushedImage",
+                                                    "Value": "set:bed_war_3_button.json image:btn_0_non_current04"
+                                                },
+                                                {
+                                                    "Name": "TextRenderOffset",
+                                                    "Value": "0 -4"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "Button",
+                                            "Name": "BedWarFriends-Subscribe-Fans",
+                                            "Property": [
+                                                {
+                                                    "Name": "Material",
+                                                    "Value": "CullBackLinear"
+                                                },
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0.5,0},{1,0}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Right"
+                                                },
+                                                {
+                                                    "Name": "NormalImage",
+                                                    "Value": "set:bed_war_3_button.json image:btn_0_non_current04"
+                                                },
+                                                {
+                                                    "Name": "TextRenderOffset",
+                                                    "Value": "0 -4"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "BedWarFriends-No-Friend-Tip",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "BedWarFriends-No-Friend-Tip-Icon",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,-50},{0,106},{0,63}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_icon.json image:img_0_vacancies"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "BedWarFriends-No-Friend-Tip-Text",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{1,0},{5,0},{1,50}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "text"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0.505882 0.952941 0.917647 1"
+                                                },
+                                                {
+                                                    "Name": "TextHorzAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextWordWrap",
+                                                    "Value": "true"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarFriends-Tabs",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.0421875,0},{0.0819444,0},{0.208594,-54},{1.07778,-59}}"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bed_war_3_common_part.json image:img_0_bg01"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "ListHorizontal",
+                            "Name": "BedWarFriends-Tab-List",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0.1,0},{1.7044,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ClipChild",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "ScrollableAtNotFull",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Button",
+                                    "Name": "BedWarFriends-Friend-Tab",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{1,0},{0.103041,0}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Friend"
+                                        },
+                                        {
+                                            "Name": "BtnTextColor",
+                                            "Value": "0.152941 0.176471 0.360784 1"
+                                        },
+                                        {
+                                            "Name": "NormalImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current01"
+                                        },
+                                        {
+                                            "Name": "PushedImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current01"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarFriends-Friend-Line",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,-10},{0.527675,0},{0,-8}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Bottom"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.792157 0.87451 0.94902 1"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Button",
+                                    "Name": "BedWarFriends-Recommend-Tab",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0.131757,0},{1,0},{0.234798,0}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Friend"
+                                        },
+                                        {
+                                            "Name": "BtnTextColor",
+                                            "Value": "0.152941 0.176471 0.360784 1"
+                                        },
+                                        {
+                                            "Name": "NormalImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current01"
+                                        },
+                                        {
+                                            "Name": "PushedImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current01"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarFriends-Recommend-Line",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,-10},{0.527675,0},{0,-8}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Bottom"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.792157 0.87451 0.94902 1"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Button",
+                                    "Name": "BedWarFriends-Request-Tab",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0.263514,0},{1,0},{0.366555,0}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Friend"
+                                        },
+                                        {
+                                            "Name": "BtnTextColor",
+                                            "Value": "0.152941 0.176471 0.360784 1"
+                                        },
+                                        {
+                                            "Name": "NormalImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current01"
+                                        },
+                                        {
+                                            "Name": "PushedImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current01"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarFriends-Request-Line",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,-10},{0.527675,0},{0,-8}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Bottom"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.792157 0.87451 0.94902 1"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Button",
+                                    "Name": "BedWarFriends-Subscribe-Tab",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0.39527,0},{1,0},{0.498311,0}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Friend"
+                                        },
+                                        {
+                                            "Name": "BtnTextColor",
+                                            "Value": "0.152941 0.176471 0.360784 1"
+                                        },
+                                        {
+                                            "Name": "NormalImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current01"
+                                        },
+                                        {
+                                            "Name": "PushedImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current01"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "BedWarFriends-Subscribe-Line",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,-10},{0.527675,0},{0,-8}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Bottom"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "BackgroundColor",
+                                                    "Value": "0.701961 0.690196 0.945098 1"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,92 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "ReportPlayerItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,452},{0,48}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "ReportPlayerItem-Team",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,9},{0,0},{0,39},{0,32}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_battle_info.json image:tab_blue"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "ReportPlayerItem-Line",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,45},{0,0},{0,47},{1,-12}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0.282353 0.34902 0.576471 1"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "ReportPlayerItem-Header",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,57},{0,0},{0,82},{0,25}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "ReportPlayerItem-Name",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,92},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Name"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "true"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

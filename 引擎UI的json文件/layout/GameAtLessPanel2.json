@@ -1,0 +1,518 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "GameAtLessPanel2",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "VerticalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "GameAtLessPanel2-Bg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,1536},{0,1152}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:game_activity_at_less_2.json image:img_0_bg"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "GameAtLessPanel2-Time",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,555},{0,-300},{0,655},{0,-290}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "17 Day"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextShadow",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextShadowColor",
+                            "Value": "1 1 1 1"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameAtLessPanel2-Reward-Time-Icon",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{-1,-8},{0,0},{-1,11},{0,19}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:game_activity.json image:img_0_time"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameAtLessPanel2-Daily-Text-Bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-125},{0,310},{0,438},{0,345}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "0 0 10 10"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_at_less_2.json image:img_0_surplus_1"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "GameAtLessPanel2-Daily-Text-Bg2",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-12},{0,0},{0,-4},{1,0}}"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:game_activity_at_less_2.json image:img_0_surplus"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameAtLessPanel2-Daily-Text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,21},{0,0},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Number of bonus games left today:"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.435294 0.435294 0.435294 1"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextWordWrap",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "GameAtLessPanel2-Jump",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,480},{0,310},{0,698},{0,370}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Go to"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT22"
+                        },
+                        {
+                            "Name": "BtnTextColor",
+                            "Value": "0.694118 0.309804 0 1"
+                        },
+                        {
+                            "Name": "TextShadow",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextShadowColor",
+                            "Value": "0.694118 0.309804 0 1"
+                        },
+                        {
+                            "Name": "TextBorderColor",
+                            "Value": "1 1 1 1"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:game_activity_at_less_2.json image:btn_0_goto"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:game_activity_at_less_2.json image:btn_0_goto"
+                        },
+                        {
+                            "Name": "TextRenderOffset",
+                            "Value": "0 -5"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameAtLessPanel2-Title-Image",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,76},{0,-219},{0,684},{0,-53}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_at_less_2.json image:text_en_US"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "GameAtLessPanel2-Desc",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,68},{0,-111},{0,498},{0,-36}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "The following rewards can be obtainedin the first 5 games of each day !"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextWordWrap",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "GameAtLessPanel2-Reward-Image",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,105},{0,65},{0,837},{0,369}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:game_activity_at_less_2.json image:img_0_reward"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameAtLessPanel2-Reward-Name1",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,27},{0,100},{0,177},{0,140}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.807843 0.807843 0.807843 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameAtLessPanel2-Reward-Name2",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,297},{0,101},{0,447},{0,141}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.807843 0.807843 0.807843 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameAtLessPanel2-Reward-Name3",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,560},{0,102},{0,710},{0,142}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.807843 0.807843 0.807843 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameAtLessPanel2-Reward-Name4",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,26},{0,265},{0,176},{0,305}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.807843 0.807843 0.807843 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameAtLessPanel2-Reward-Name5",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,293},{0,264},{0,443},{0,304}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.807843 0.807843 0.807843 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "GameAtLessPanel2-Reward-Name6",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,571},{0,266},{0,721},{0,306}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.807843 0.807843 0.807843 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

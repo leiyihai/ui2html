@@ -1,0 +1,154 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "CommandDetailContent",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,576},{0,280}}"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "CommandDetailContent-effectbox",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{0,232}}"
+                        }
+                    ],
+                    "Type": "StaticImage",
+                    "Window": [
+                        {
+                            "Name": "CommandDetailContent-bg",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,322},{1,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Type": "StaticImage"
+                        },
+                        {
+                            "Name": "CommandDetailContent-effect_bullet",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,30},{0,30}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Type": "StaticImage"
+                        }
+                    ]
+                },
+                {
+                    "Name": "CommandDetailContent-effect",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,80},{0,35},{0,115}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        }
+                    ],
+                    "Type": "StaticImage"
+                },
+                {
+                    "Name": "CommandDetailContent-price_bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,-20},{0,35}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bedwar_window.json image:colorlump"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "Layout",
+                    "Window": [
+                        {
+                            "Name": "CommandDetailContent-money_icon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,256},{0,3},{0,284},{0,33}}"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_store.json image:cube"
+                                }
+                            ],
+                            "Type": "StaticImage"
+                        },
+                        {
+                            "Name": "CommandDetailContent-price_text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,295},{0,0},{0,395},{1,0}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT20"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0 0 0 1"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Type": "StaticText"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

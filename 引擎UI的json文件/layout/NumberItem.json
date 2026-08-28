@@ -1,0 +1,22 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "NumberItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,105},{0,139}}"
+                },
+                {
+                    "Name": "ImageName",
+                    "Value": "set:bed_war_number.json image:1"
+                },
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                }
+            ],
+            "Type": "StaticImage"
+        }
+    }
+}

@@ -1,0 +1,232 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "ReportPlayerContent",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,658},{0,308}}"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "BackgroundColor",
+                    "Value": "0 0 0 0.313726"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "ReportPlayerContent-PlayerList",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-36},{0,14},{0,416},{0,402}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Level",
+                            "Value": "49"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "6 6 6 6"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bed_war_3_create_team.json image:img_9_teaming02"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "ReportPlayerContent-Close",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,2560},{0,1440}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "ReportPlayerContent-Selected",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-36},{0,14},{0,416},{0,62}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Level",
+                            "Value": "49"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "6 6 6 6"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bed_war_3_create_team.json image:img_9_teaming02"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "ReportPlayerContent-Hint",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-130},{0,0},{0,-10},{1,0}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Report ID:"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT18"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "ReportPlayerContent-Team",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,9},{0,0},{0,39},{0,32}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_battle_info.json image:tab_blue"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "ReportPlayerContent-Line",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,45},{0,0},{0,47},{1,-12}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0.282353 0.34902 0.576471 1"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "ReportPlayerContent-Header",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,57},{0,0},{0,82},{0,25}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "ReportPlayerContent-Name",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,92},{0,0},{1,-43},{1,0}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Name"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "true"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "ReportPlayerContent-Arrow",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-10},{0,0},{0,15},{0,15}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_icon.json image:btn_0_drop_down"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

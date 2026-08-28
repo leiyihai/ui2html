@@ -1,0 +1,1108 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "MustLotteryPanel2",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "VerticalAlignment",
+                    "Value": "Bottom"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Right"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "MustLotteryPanel2-Bg",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,1},{0,2},{0,1561},{0,1172}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "LeftRight"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:game_activity_must_2_bg.json image:img_0_bg"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "MustLotteryPanel2-Big-Reward",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-2},{0,0},{1,-712},{1,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Layout",
+                            "Name": "MustLotteryPanel2-Actor1-Bg",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{-0.35,0},{0.13,0},{-0.35,187},{0.13,60}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "LeftRight"
+                                },
+                                {
+                                    "Name": "LayoutBackImage",
+                                    "Value": "set:game_activity_must_2.json image:img_0_stage"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "MustLotteryPanel2-Actor1",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{-0.5,0},{0,150},{-0.5,250}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Layout",
+                                    "Name": "MustLotteryPanel2-Actor-Effect1",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{-0.5,0},{0,120},{-0.5,120}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "MustLotteryPanel2-Actor1-Bg_c",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.32,0},{0.13,0},{0.32,187},{0.13,60}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "LeftRight"
+                                },
+                                {
+                                    "Name": "LayoutBackImage",
+                                    "Value": "set:game_activity_must_2.json image:img_0_stage"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "MustLotteryPanel2-Actor2",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{-0.5,0},{0,150},{-0.5,250}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Layout",
+                                    "Name": "MustLotteryPanel2-Actor-Effect2",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{-0.5,0},{0,120},{-0.5,120}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "MustLotteryPanel2-Actor1-Bg_c_c",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0.32,0},{0,445},{0.32,143}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "LeftRight"
+                                },
+                                {
+                                    "Name": "LayoutBackImage",
+                                    "Value": "set:game_activity_must_2.json image:img_0_stage"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "MustLotteryPanel2-Actor3",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0.67,0},{0,0}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Layout",
+                                    "Name": "MustLotteryPanel2-Actor-Effect3",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{-0.5,0},{0,300},{-0.5,300}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "MustLotteryPanel2-Big-Reward-Slide",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,220},{0.7,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "MustLotteryPanel2-Content",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,221},{0.025,0},{0,707},{0.025,488}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "10 10 10 10"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:game_activity_must_2.json image:img_0_board"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "MustLotteryPanel2-Title-Img",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,55},{-1,-20},{0,503},{-1,20}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "MustLotteryPanel2-Title",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,5},{0,-10},{0,605},{0,-10}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Must-have turntable"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT30"
+                                        },
+                                        {
+                                            "Name": "TextColorLeftTop",
+                                            "Value": "1 1 0.839216 1"
+                                        },
+                                        {
+                                            "Name": "TextColorRightTop",
+                                            "Value": "1 1 0.839216 1"
+                                        },
+                                        {
+                                            "Name": "TextColorLeftBottom",
+                                            "Value": "1 0.839216 0.270588 1"
+                                        },
+                                        {
+                                            "Name": "TextColorRightBottom",
+                                            "Value": "1 0.839216 0.270588 1"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.741176 0.133333 0.0980392 1"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Bottom"
+                                        },
+                                        {
+                                            "Name": "TextWordWrap",
+                                            "Value": "true"
+                                        },
+                                        {
+                                            "Name": "TextLineExtraSpace",
+                                            "Value": "-15"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "MustLotteryPanel2-Title_c",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,4},{0,0},{1,4},{1,0}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Bottom"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "Must-have turntable"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "YSB36"
+                                                },
+                                                {
+                                                    "Name": "Visible",
+                                                    "Value": "false"
+                                                },
+                                                {
+                                                    "Name": "TextColorLeftBottom",
+                                                    "Value": "1 0.839216 0.270588 1"
+                                                },
+                                                {
+                                                    "Name": "TextColorRightBottom",
+                                                    "Value": "1 0.839216 0.270588 1"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0.407843 0.847059 0.941177 1"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Bottom"
+                                                },
+                                                {
+                                                    "Name": "TextWordWrap",
+                                                    "Value": "true"
+                                                },
+                                                {
+                                                    "Name": "TextLineExtraSpace",
+                                                    "Value": "-25"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "MustLotteryPanel2-Title_c_c",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,-2},{1,0},{1,-2}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Bottom"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "Must-have turntable"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT30"
+                                                },
+                                                {
+                                                    "Name": "EnableTextColorRect",
+                                                    "Value": "true"
+                                                },
+                                                {
+                                                    "Name": "TextColorLeftBottom",
+                                                    "Value": "1 0.866667 0.25098 1"
+                                                },
+                                                {
+                                                    "Name": "TextColorRightBottom",
+                                                    "Value": "1 0.866667 0.25098 1"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0 0 0 1"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Bottom"
+                                                },
+                                                {
+                                                    "Name": "TextWordWrap",
+                                                    "Value": "true"
+                                                },
+                                                {
+                                                    "Name": "TextShadow",
+                                                    "Value": "true"
+                                                },
+                                                {
+                                                    "Name": "TextLineExtraSpace",
+                                                    "Value": "-15"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "MustLotteryPanel2-Rewards",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,12},{0,10},{1,-12},{1,-14}}"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "MustLotteryPanel2-Center",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,120},{0,222},{0,342}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "StretchType",
+                                            "Value": "NineGrid"
+                                        },
+                                        {
+                                            "Name": "StretchOffset",
+                                            "Value": "8 8 8 8"
+                                        },
+                                        {
+                                            "Name": "LayoutBackImage",
+                                            "Value": "set:game_activity_must_2.json image:img_0_giftbd"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "Layout",
+                                            "Name": "MustLotteryPanel2-Lottery-Panel",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                                }
+                                            ],
+                                            "Window": [
+                                                {
+                                                    "Type": "Button",
+                                                    "Name": "MustLotteryPanel2-Lottery",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Material",
+                                                            "Value": "CullBackLinear"
+                                                        },
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,170},{0,222},{0,228}}"
+                                                        },
+                                                        {
+                                                            "Name": "HorizontalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "Font",
+                                                            "Value": "HT20"
+                                                        },
+                                                        {
+                                                            "Name": "StretchType",
+                                                            "Value": "NineGrid"
+                                                        },
+                                                        {
+                                                            "Name": "TextBorder",
+                                                            "Value": "true"
+                                                        },
+                                                        {
+                                                            "Name": "TextBorderColor",
+                                                            "Value": "0.639216 0.278431 0.0627451 1"
+                                                        },
+                                                        {
+                                                            "Name": "NormalImage",
+                                                            "Value": "set:bed_war_3_button.json image:btn_0_buy_gift"
+                                                        },
+                                                        {
+                                                            "Name": "PushedImage",
+                                                            "Value": "set:bed_war_3_button.json image:btn_0_buy_gift"
+                                                        },
+                                                        {
+                                                            "Name": "TextRenderOffset",
+                                                            "Value": "0 -10"
+                                                        }
+                                                    ],
+                                                    "Window": [
+                                                        {
+                                                            "Type": "StaticText",
+                                                            "Name": "MustLotteryPanel2-Lottery-Text",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{0,0},{0,8},{0,97},{0,25}}"
+                                                                },
+                                                                {
+                                                                    "Name": "HorizontalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "Text",
+                                                                    "Value": "Sweepstakes"
+                                                                },
+                                                                {
+                                                                    "Name": "Font",
+                                                                    "Value": "HT12"
+                                                                },
+                                                                {
+                                                                    "Name": "Touchable",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "TextHorzAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextVertAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "TextBorder",
+                                                                    "Value": "true"
+                                                                },
+                                                                {
+                                                                    "Name": "TextBorderColor",
+                                                                    "Value": "0.639216 0.278431 0.0627451 1"
+                                                                },
+                                                                {
+                                                                    "Name": "TextAutoOmission",
+                                                                    "Value": "false"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "Type": "StaticImage",
+                                                            "Name": "MustLotteryPanel2-Lottery-Price-Icon",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Material",
+                                                                    "Value": "CullBackLinear"
+                                                                },
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{0,-30},{0,-5},{0,-5},{0,20}}"
+                                                                },
+                                                                {
+                                                                    "Name": "VerticalAlignment",
+                                                                    "Value": "Bottom"
+                                                                },
+                                                                {
+                                                                    "Name": "HorizontalAlignment",
+                                                                    "Value": "Centre"
+                                                                },
+                                                                {
+                                                                    "Name": "Touchable",
+                                                                    "Value": "false"
+                                                                },
+                                                                {
+                                                                    "Name": "ImageName",
+                                                                    "Value": "set:game_activity.json image:img_0_magic_cube"
+                                                                }
+                                                            ],
+                                                            "Window": [
+                                                                {
+                                                                    "Type": "StaticText",
+                                                                    "Name": "MustLotteryPanel2-Lottery-New-Price",
+                                                                    "Property": [
+                                                                        {
+                                                                            "Name": "Area",
+                                                                            "Value": "{{1,4},{0,-2},{1,16},{1,-2}}"
+                                                                        },
+                                                                        {
+                                                                            "Name": "Text",
+                                                                            "Value": "5"
+                                                                        },
+                                                                        {
+                                                                            "Name": "Touchable",
+                                                                            "Value": "false"
+                                                                        },
+                                                                        {
+                                                                            "Name": "TextVertAlignment",
+                                                                            "Value": "Centre"
+                                                                        },
+                                                                        {
+                                                                            "Name": "TextBorder",
+                                                                            "Value": "true"
+                                                                        },
+                                                                        {
+                                                                            "Name": "TextBorderColor",
+                                                                            "Value": "0.654902 0.278431 0.0627451 1"
+                                                                        },
+                                                                        {
+                                                                            "Name": "TextAutoOmission",
+                                                                            "Value": "false"
+                                                                        }
+                                                                    ],
+                                                                    "Window": [
+                                                                        {
+                                                                            "Type": "StaticText",
+                                                                            "Name": "MustLotteryPanel2-Lottery-Old-Price",
+                                                                            "Property": [
+                                                                                {
+                                                                                    "Name": "Area",
+                                                                                    "Value": "{{1,8},{0,3},{1,28},{1,3}}"
+                                                                                },
+                                                                                {
+                                                                                    "Name": "Text",
+                                                                                    "Value": "10"
+                                                                                },
+                                                                                {
+                                                                                    "Name": "Font",
+                                                                                    "Value": "HT12"
+                                                                                },
+                                                                                {
+                                                                                    "Name": "Touchable",
+                                                                                    "Value": "false"
+                                                                                },
+                                                                                {
+                                                                                    "Name": "TextColor",
+                                                                                    "Value": "0.694118 0 0 1"
+                                                                                },
+                                                                                {
+                                                                                    "Name": "TextHorzAlignment",
+                                                                                    "Value": "Centre"
+                                                                                },
+                                                                                {
+                                                                                    "Name": "TextVertAlignment",
+                                                                                    "Value": "Centre"
+                                                                                },
+                                                                                {
+                                                                                    "Name": "TextBorderColor",
+                                                                                    "Value": "0.639216 0.278431 0.0627451 1"
+                                                                                },
+                                                                                {
+                                                                                    "Name": "TextAutoOmission",
+                                                                                    "Value": "false"
+                                                                                }
+                                                                            ],
+                                                                            "Window": [
+                                                                                {
+                                                                                    "Type": "Layout",
+                                                                                    "Name": "MustLotteryPanel2-Lottery-Old-Price-Line",
+                                                                                    "Property": [
+                                                                                        {
+                                                                                            "Name": "Area",
+                                                                                            "Value": "{{0,0},{0,1},{1,5},{0,3}}"
+                                                                                        },
+                                                                                        {
+                                                                                            "Name": "VerticalAlignment",
+                                                                                            "Value": "Centre"
+                                                                                        },
+                                                                                        {
+                                                                                            "Name": "HorizontalAlignment",
+                                                                                            "Value": "Centre"
+                                                                                        },
+                                                                                        {
+                                                                                            "Name": "Touchable",
+                                                                                            "Value": "false"
+                                                                                        },
+                                                                                        {
+                                                                                            "Name": "BackgroundColor",
+                                                                                            "Value": "0.694118 0 0 1"
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "Type": "Layout",
+                                                            "Name": "MustLotteryPanel2-Lottery-Discount-Hint",
+                                                            "Property": [
+                                                                {
+                                                                    "Name": "Area",
+                                                                    "Value": "{{0,0},{0,-10},{0,60},{0,11}}"
+                                                                },
+                                                                {
+                                                                    "Name": "HorizontalAlignment",
+                                                                    "Value": "Right"
+                                                                },
+                                                                {
+                                                                    "Name": "StretchType",
+                                                                    "Value": "NineGrid"
+                                                                },
+                                                                {
+                                                                    "Name": "StretchOffset",
+                                                                    "Value": "3 3 3 3"
+                                                                },
+                                                                {
+                                                                    "Name": "LayoutBackImage",
+                                                                    "Value": "set:game_activity.json image:img_9_discount"
+                                                                }
+                                                            ],
+                                                            "Window": [
+                                                                {
+                                                                    "Type": "StaticText",
+                                                                    "Name": "MustLotteryPanel2-Lottery-Discount-Text",
+                                                                    "Property": [
+                                                                        {
+                                                                            "Name": "Area",
+                                                                            "Value": "{{0,0},{0,-1},{1,0},{1,-1}}"
+                                                                        },
+                                                                        {
+                                                                            "Name": "Text",
+                                                                            "Value": "-50%"
+                                                                        },
+                                                                        {
+                                                                            "Name": "Font",
+                                                                            "Value": "HT14"
+                                                                        },
+                                                                        {
+                                                                            "Name": "TextHorzAlignment",
+                                                                            "Value": "Centre"
+                                                                        },
+                                                                        {
+                                                                            "Name": "TextVertAlignment",
+                                                                            "Value": "Centre"
+                                                                        },
+                                                                        {
+                                                                            "Name": "TextShadow",
+                                                                            "Value": "true"
+                                                                        },
+                                                                        {
+                                                                            "Name": "TextAutoOmission",
+                                                                            "Value": "false"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "StaticText",
+                                                    "Name": "MustLotteryPanel2-Center-Tip",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,15},{0,117},{0,34}}"
+                                                        },
+                                                        {
+                                                            "Name": "HorizontalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "Text",
+                                                            "Value": "Tip"
+                                                        },
+                                                        {
+                                                            "Name": "Font",
+                                                            "Value": "HT14"
+                                                        },
+                                                        {
+                                                            "Name": "TextHorzAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextVertAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "TextAutoOmission",
+                                                            "Value": "false"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "Type": "Layout",
+                                                    "Name": "MustLotteryPanel2-Main-Reward",
+                                                    "Property": [
+                                                        {
+                                                            "Name": "Area",
+                                                            "Value": "{{0,0},{0,-10},{0,94},{0,89}}"
+                                                        },
+                                                        {
+                                                            "Name": "VerticalAlignment",
+                                                            "Value": "Centre"
+                                                        },
+                                                        {
+                                                            "Name": "HorizontalAlignment",
+                                                            "Value": "Centre"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "MustLotteryPanel2-Center-Hint",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextHorzAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextWordWrap",
+                                                    "Value": "true"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "MustLotteryPanel2-Time",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-5},{0,-25},{0,75},{0,-25}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "17 Day"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextShadowColor",
+                                    "Value": "1 1 1 1"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "MustLotteryPanel2-Time-Icon",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{-1,-10},{0,0},{-1,9},{0,19}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Right"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:game_activity.json image:img_0_time"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "MustLotteryPanel2-Help",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,2},{0,-65},{0,42},{0,-18}}"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:game_activity.json image:btn_0_description"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:game_activity.json image:btn_0_description"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "MustLotteryPanel2-Desc",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{1,20},{0,530},{1,102}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "The prizes won in the draw will no longer be obtai ned, and the number of cubes required for each d raw will increase. "
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.172549 0.784314 0.941177 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextWordWrap",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "MustLotteryPanel2-Anim-Mask",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,1560},{0,1170}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "LeftRight"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:game_activity_must_2.json image:img_0_mask"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

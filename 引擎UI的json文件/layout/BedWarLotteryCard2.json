@@ -1,0 +1,226 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "BedWarLotteryCard2",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,151},{0,180}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "BedWarLotteryCard2-Actor",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "ActorWindowScale",
+                            "Value": "1"
+                        }
+                    ],
+                    "Type": "ActorWindow"
+                },
+                {
+                    "Name": "BedWarLotteryCard2-background",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        }
+                    ],
+                    "Type": "Layout",
+                    "Window": [
+                        {
+                            "Name": "BedWarLotteryCard2-price_bg",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.2,0},{0.435,0},{0.8,0},{0.585,0}}"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "5 5 0 0"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_lottery2.json image:key_cost_num_bg"
+                                },
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                }
+                            ],
+                            "Type": "StaticImage",
+                            "Window": [
+                                {
+                                    "Name": "BedWarLotteryCard2-price_key",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0.0549451,0},{0.0740741,0},{0.293956,0},{0.953704,0}}"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_lottery2.json image:key"
+                                        },
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        }
+                                    ],
+                                    "Type": "StaticImage"
+                                },
+                                {
+                                    "Name": "BedWarLotteryCard2-price_text",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0.3,0},{0.1,0},{0.8,0},{0.9,0}}"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextShadow",
+                                            "Value": "true"
+                                        }
+                                    ],
+                                    "Type": "StaticText"
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "BedWarLotteryCard2-free_bg",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.2,0},{0.435,0},{0.8,0},{0.585,0}}"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "5 5 0 0"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_lottery2.json image:free_bg"
+                                },
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                }
+                            ],
+                            "Type": "StaticImage",
+                            "Window": [
+                                {
+                                    "Name": "BedWarLotteryCard2-free_text",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0.1,0},{1,0},{0.9,0}}"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextShadow",
+                                            "Value": "true"
+                                        }
+                                    ],
+                                    "Type": "StaticText"
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "BedWarLotteryCard2-button",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                }
+                            ],
+                            "Type": "Button"
+                        }
+                    ]
+                },
+                {
+                    "Name": "BedWarLotteryCard2-Image",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.331126,0},{0.295,0},{0.662252,0},{0.572778,0}}"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        }
+                    ],
+                    "Type": "EffectViewOfObtainment"
+                },
+                {
+                    "Name": "BedWarLotteryCard2-num",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.25,0},{0.74,0},{0.75,0},{0.84,0}}"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextShadow",
+                            "Value": "true"
+                        }
+                    ],
+                    "Type": "StaticText"
+                }
+            ]
+        }
+    }
+}

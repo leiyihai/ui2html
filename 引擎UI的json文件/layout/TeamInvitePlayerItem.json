@@ -1,0 +1,248 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "TeamInvitePlayerItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,430},{0,78}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "TeamInvitePlayerItem-Bottom-Line",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,2},{1,0},{0,4}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0.258824 0.278431 0.376471 1"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "TeamInvitePlayerItem-Header",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,12},{0,0},{0,62},{0,50}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "TeamInvitePlayerItem-Name",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,16},{0,-7},{1,181},{0,13}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "aaa"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "true"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "TeamInvitePlayerItem-Sex",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,16},{0,2},{1,35},{0,22}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_icon.json image:img_0_gender01"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "TeamInvitePlayerItem-Honor",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{1,8},{0,-1},{1,58},{1,-1}}"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Honor"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT12"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "TeamInvitePlayerItem-Status",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1,16},{0,6},{1,181},{0,26}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Free"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT12"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "TeamInvitePlayerItem-Rejected",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-18},{0,0},{0,82},{0,30}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Rejected (30s)"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0.65098 0.65098 0.65098 1"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "TeamInvitePlayerItem-Invite",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-16},{0,0},{0.325,0},{0,54}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Invitation"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT18"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "15 15 15 30"
+                        },
+                        {
+                            "Name": "TextBorder",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextBorderColor",
+                            "Value": "0.00784314 0.541176 0.572549 1"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_3_button.json image:btn_9_general01"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_3_button.json image:btn_9_general01"
+                        },
+                        {
+                            "Name": "TextRenderOffset",
+                            "Value": "0 -6"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

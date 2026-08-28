@@ -1,0 +1,240 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "PersonalHomeCreditScore",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "PersonalHomeCreditScore-Current-Level",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.0348214,0},{0.056686,0},{0.359821,0},{0.94186,0}}"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "PersonalHomeCreditScore-Current-Level-Stage",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-59},{0,434},{0,464}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_credit_score.json image:img_0_stage"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "PersonalHomeCreditScore-Current-Level-Bg",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,6},{0,54},{0,358},{0,327}}"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_credit_score.json image:img_0_big_badge"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "PersonalHomeCreditScore-Current-Level-Level",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-1},{0,123},{0,127},{0,251}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_credit_score.json image:img_0_lettres_s"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "PersonalHomeCreditScore-Current-Level-desc",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,440},{0,200},{0,470}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT18"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0 0 0 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "PersonalHomeCreditScore-Score-Bg",
+                            "Property": [
+                                {
+                                    "Name": "DrawColor",
+                                    "Value": "1 1 1 0.6"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,483},{0,266},{0,555}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Alpha",
+                                    "Value": "0.6"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "10 10 10 10"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_common_part.json image:img_9_information03"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "PersonalHomeCreditScore-Level-List",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.151786,0},{0.161337,0},{0.745536,0},{0.933139,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ClipChild",
+                            "Value": "true"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "PersonalHomeCreditScore-Desc-Bt",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.360714,0},{0.0959302,0},{0.394308,0},{0.15843,0}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_2_qualifying.json image:btn_0_instructions"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_2_qualifying.json image:btn_0_instructions"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "PersonalHomeCreditScore-Desc-Text",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.405357,0},{0.0915698,0},{0.95,0},{0.149709,0}}"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT18"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0.25098 0.345098 0.392157 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextWordWrap",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

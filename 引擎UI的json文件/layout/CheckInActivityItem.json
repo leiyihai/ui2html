@@ -1,0 +1,498 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "CheckInActivityItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "CheckInActivityItem-Background",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:check_in.json image:img_0_bg_2"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "CheckInActivityItem-Title",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.234375,0},{0.0430556,0},{0.847656,0},{0.110899,0}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "title"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT28"
+                        },
+                        {
+                            "Name": "EnableTextColorRect",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextColorLeftTop",
+                            "Value": "0.976471 1 0.603922 1"
+                        },
+                        {
+                            "Name": "TextColorRightTop",
+                            "Value": "0.976471 1 0.603922 1"
+                        },
+                        {
+                            "Name": "TextColorLeftBottom",
+                            "Value": "1 0.631373 0.0509804 1"
+                        },
+                        {
+                            "Name": "TextColorRightBottom",
+                            "Value": "1 0.631373 0.0509804 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "CheckInActivityItem-Description",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.234375,0},{0.123611,0},{0.725,0},{0.193055,0}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "description"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextWordWrap",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "CheckInActivityItem-RewardsLayout",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.375,-218},{0.4,-118},{0.375,319},{0.4,366}}"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "GridView",
+                            "Name": "CheckInActivityItem-RewardsGridView",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ClipChild",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "ItemAlignment",
+                                    "Value": "Left"
+                                },
+                                {
+                                    "Name": "ScrollableAtNotFull",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "CheckInActivityItem-CountDown",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-73},{0,-14},{0,227},{0,13.9099}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "remaining time"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "CheckInActivityItem-LastDayLayout",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.8,-136},{0.4,-96},{0.8,196},{0.4,366}}"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "CheckInActivityItem-LastDayBackground",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,309},{0,331},{0,390}}"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:check_in.json image:img_0_sevenbd"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "CheckInActivityItem-LastDayItemImgBg",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-114},{0,150},{0,36}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "CheckInActivityItem-LastDayItemShadow",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "DrawColor",
+                                            "Value": "0 0 0 1"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,5},{0,5},{1,5},{1,5}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bedwar_new_license.json image:si_yaoshi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "CheckInActivityItem-LastDayItemImg",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bedwar_new_license.json image:si_yaoshi"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "CheckInActivityItem-LastDayDate",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,3},{0,230},{0,203},{0,258}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "第x天"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.588235 0.882353 0.976471 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextWordWrap",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticText",
+                            "Name": "CheckInActivityItem-LastDayItemName",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,3},{0,262},{0,203},{0,290}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "text"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "CheckInActivityItem-LastDayButton",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,48},{0,0},{0,290},{0,60}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "check in"
+                                },
+                                {
+                                    "Name": "Visible",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "BtnTextColor",
+                                    "Value": "0.529412 0.168627 0.0588235 1"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_0_buy_gift"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_3_button.json image:btn_0_buy_gift"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "0 -4"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "CheckInActivityItem-LastDayCheckInTipsBg",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,18},{0,0},{0,321},{0,50}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:check_in.json image:img_0_gradient"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticText",
+                                    "Name": "CheckInActivityItem-LastDayCheckInTips",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,3},{0,0},{0,203},{0,50}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "待签到"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT14"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.741176 0.741176 0.741176 1"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "ActorWindow",
+                            "Name": "CheckInActivityItem-LastDayItemActor",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,210},{0,189},{0,211}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ActorWindowActorName",
+                                    "Value": "g1008_skin2.actor"
+                                },
+                                {
+                                    "Name": "ActorWindowSkillName",
+                                    "Value": "idle"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "CheckInActivityItem-LastDayActorSlide",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0.6,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "CheckInActivityItem-BlueSquareEffect",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-10},{0,348},{0,338}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Touchable",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "EffectFileName",
+                                    "Value": "g1008_effect_ui_bluesquare.effect"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

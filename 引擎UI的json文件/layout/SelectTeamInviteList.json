@@ -1,0 +1,366 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "SelectTeamInviteList",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "Touchable",
+                    "Value": "false"
+                },
+                {
+                    "Name": "Level",
+                    "Value": "49"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "SelectTeamInviteList-Invite",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0.335,0},{1,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "SelectTeamInviteList-Invite-Count",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,62},{1,0},{0,86}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "  Friends: 5/40"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0.145098 0.137255 0.321569 1"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "SelectTeamInviteList-Invite-Tabs",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,0},{0,62}}"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0.313726 0.415686 0.658824 1"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "SelectTeamInviteList-Tab-Line1",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0.33,0},{0,3},{0.33,2},{1,-17}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "BackgroundColor",
+                                            "Value": "0.686275 0.780392 0.917647 1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Layout",
+                                    "Name": "SelectTeamInviteList-Tab-Line2",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0.665,0},{0,3},{0.665,2},{1,-17}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "BackgroundColor",
+                                            "Value": "0.686275 0.780392 0.917647 1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "CheckBox",
+                                    "Name": "SelectTeamInviteList-Invite-Tab-Friend",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0.33,2},{0,66}}"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Friends"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT24"
+                                        },
+                                        {
+                                            "Name": "BtnTextColor",
+                                            "Value": "0.152941 0.176471 0.360784 1"
+                                        },
+                                        {
+                                            "Name": "PushedImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current02"
+                                        },
+                                        {
+                                            "Name": "TextRenderOffset",
+                                            "Value": "0 -5"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "CheckBox",
+                                    "Name": "SelectTeamInviteList-Invite-Tab-Tribe",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,1},{0,0},{0.33,5},{0,66}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Tribe"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT20"
+                                        },
+                                        {
+                                            "Name": "BtnTextColor",
+                                            "Value": "0.686275 0.780392 0.917647 1"
+                                        },
+                                        {
+                                            "Name": "PushedImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current02"
+                                        },
+                                        {
+                                            "Name": "TextRenderOffset",
+                                            "Value": "0 -2"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "CheckBox",
+                                    "Name": "SelectTeamInviteList-Invite-Tab-Recent",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0.33,2},{0,66}}"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Right"
+                                        },
+                                        {
+                                            "Name": "Text",
+                                            "Value": "Recent"
+                                        },
+                                        {
+                                            "Name": "Font",
+                                            "Value": "HT20"
+                                        },
+                                        {
+                                            "Name": "BtnTextColor",
+                                            "Value": "0.686275 0.780392 0.917647 1"
+                                        },
+                                        {
+                                            "Name": "PushedImage",
+                                            "Value": "set:bed_war_3_button.json image:btn_0_current02"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "SelectTeamInviteList-Invite-List",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,86},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0.109804 0.12549 0.231373 1"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "SelectTeamInviteList-Invite-Refresh",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-2},{0,64},{0,30},{0,96}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_3_icon.json image:img_0_refresh"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_3_icon.json image:img_0_refresh"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "SelectTeamInviteList-No-Friend-Tip",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,86},{1,0},{1,0}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "SelectTeamInviteList-No-Friend-Tip-Icon",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,-52},{0,106},{0,61}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:bed_war_3_icon.json image:img_0_vacancies"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "SelectTeamInviteList-No-Friend-Tip-Text",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{1,0},{4,0},{1,50}}"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "text"
+                                                },
+                                                {
+                                                    "Name": "TextColor",
+                                                    "Value": "0.505882 0.952941 0.917647 1"
+                                                },
+                                                {
+                                                    "Name": "TextHorzAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextWordWrap",
+                                                    "Value": "true"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "SelectTeamInviteList-Arrow",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-36},{0,0},{0,-12},{0,48}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Rotate",
+                                    "Value": "180"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_3_button.json image:btn_0_receive"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Button",
+                    "Name": "SelectTeamInviteList-Close",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0.665,0},{1,0}}"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

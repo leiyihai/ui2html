@@ -1,0 +1,142 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "VisitorsInfoItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,686},{0,101}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "StretchOffset",
+                    "Value": "20 20 20 20"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_3_common_part.json image:img_9_information01"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "VisitorsInfoItem-Head-Shot",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,30},{0,0},{0,95},{0,65}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "VisitorsInfoItem-Name",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,150},{0,19},{0,253},{0,42}}"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "Name"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "VisitorsInfoItem-Sex",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,116},{0,16},{0,144},{0,46}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_3_icon.json image:img_0_gender01"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "VisitorsInfoItem-Rank",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,121},{0,55},{0,151},{0,85}}"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticText",
+                            "Name": "VisitorsInfoItem-Rank-Name",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,37},{0,0},{0,87},{1,0}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "Honor"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.411765 0.443137 0.54902 1"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticText",
+                    "Name": "VisitorsInfoItem-Time",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-16},{0,7},{0,84},{0,37}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0.501961 0.521569 0.737255 1"
+                        },
+                        {
+                            "Name": "TextHorzAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

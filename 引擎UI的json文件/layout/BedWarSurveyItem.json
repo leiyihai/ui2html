@@ -1,0 +1,570 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "BedWarSurveyItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,962},{0,146}}"
+                },
+                {
+                    "Name": "BackgroundColor",
+                    "Value": "0.52549 0.721569 0.988235 1"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "BedWarSurveyItem-Item-Bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,10},{0,12},{0,118},{0,140}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_custom_shop.json image:item_bg"
+                        }
+                    ],
+                    "Type": "StaticImage",
+                    "Window": [
+                        {
+                            "Name": "BedWarSurveyItem-Item",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-10},{0,80},{0,70}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Type": "StaticImage"
+                        }
+                    ]
+                },
+                {
+                    "Name": "BedWarSurveyItem-Name",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,134},{0,16},{0,461},{0,41}}"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0 0 0 1"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ],
+                    "Type": "StaticText"
+                },
+                {
+                    "Name": "BedWarSurveyItem-Desc",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,134},{0,43},{0,897},{0,98}}"
+                        },
+                        {
+                            "Name": "TextColor",
+                            "Value": "0.141176 0.223529 0.321569 1"
+                        },
+                        {
+                            "Name": "TextWordWrap",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextAutoOmission",
+                            "Value": "false"
+                        }
+                    ],
+                    "Type": "StaticText"
+                },
+                {
+                    "Name": "BedWarSurveyItem-Type-Bg",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-11},{0,11},{0,91},{0,39}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "BackgroundColor",
+                            "Value": "0.32549 0.376471 0.560784 1"
+                        }
+                    ],
+                    "Type": "StaticImage",
+                    "Window": [
+                        {
+                            "Name": "BedWarSurveyItem-Type-Text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-2},{1,0},{1,-2}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "0.717647 0.776471 0.941177 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextAutoOmission",
+                                    "Value": "false"
+                                }
+                            ],
+                            "Type": "StaticText"
+                        }
+                    ]
+                },
+                {
+                    "Name": "BedWarSurveyItem-Select-Box",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,134},{0,100},{0,954},{0,140}}"
+                        }
+                    ],
+                    "Type": "Layout",
+                    "Window": [
+                        {
+                            "Name": "BedWarSurveyItem-CheckBox1",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,124},{0,38}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "10 10 10 10"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_survey.json image:not_select"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_survey.json image:select"
+                                }
+                            ],
+                            "Type": "CheckBox",
+                            "Window": [
+                                {
+                                    "Name": "BedWarSurveyItem-CheckBox1-Name",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,-2},{1,0},{1,-2}}"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.141176 0.223529 0.321569 1"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ],
+                                    "Type": "StaticText"
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "BedWarSurveyItem-CheckBox2",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,138},{0,0},{0,262},{0,38}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "10 10 10 10"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_survey.json image:not_select"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_survey.json image:select"
+                                }
+                            ],
+                            "Type": "CheckBox",
+                            "Window": [
+                                {
+                                    "Name": "BedWarSurveyItem-CheckBox2-Name",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,-2},{1,0},{1,-2}}"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.141176 0.223529 0.321569 1"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ],
+                                    "Type": "StaticText"
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "BedWarSurveyItem-CheckBox3",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,276},{0,0},{0,400},{0,38}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "10 10 10 10"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_survey.json image:not_select"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_survey.json image:select"
+                                }
+                            ],
+                            "Type": "CheckBox",
+                            "Window": [
+                                {
+                                    "Name": "BedWarSurveyItem-CheckBox3-Name",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,-2},{1,0},{1,-2}}"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.141176 0.223529 0.321569 1"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ],
+                                    "Type": "StaticText"
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "BedWarSurveyItem-CheckBox4",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,414},{0,0},{0,538},{0,38}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "10 10 10 10"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_survey.json image:not_select"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_survey.json image:select"
+                                }
+                            ],
+                            "Type": "CheckBox",
+                            "Window": [
+                                {
+                                    "Name": "BedWarSurveyItem-CheckBox4-Name",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,-2},{1,0},{1,-2}}"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.141176 0.223529 0.321569 1"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ],
+                                    "Type": "StaticText"
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "BedWarSurveyItem-CheckBox5",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,552},{0,0},{0,676},{0,38}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "10 10 10 10"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_survey.json image:not_select"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_survey.json image:select"
+                                }
+                            ],
+                            "Type": "CheckBox",
+                            "Window": [
+                                {
+                                    "Name": "BedWarSurveyItem-CheckBox5-Name",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,-2},{1,0},{1,-2}}"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.141176 0.223529 0.321569 1"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ],
+                                    "Type": "StaticText"
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "BedWarSurveyItem-CheckBox6",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,690},{0,0},{0,814},{0,38}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "10 10 10 10"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bed_war_survey.json image:not_select"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bed_war_survey.json image:select"
+                                }
+                            ],
+                            "Type": "CheckBox",
+                            "Window": [
+                                {
+                                    "Name": "BedWarSurveyItem-CheckBox6-Name",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,-2},{1,0},{1,-2}}"
+                                        },
+                                        {
+                                            "Name": "Touchable",
+                                            "Value": "false"
+                                        },
+                                        {
+                                            "Name": "TextColor",
+                                            "Value": "0.141176 0.223529 0.321569 1"
+                                        },
+                                        {
+                                            "Name": "TextHorzAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextVertAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextAutoOmission",
+                                            "Value": "false"
+                                        }
+                                    ],
+                                    "Type": "StaticText"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Name": "BedWarSurveyItem-Flash",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "DrawColor",
+                            "Value": "1 1 1 0"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "55 55 55 55"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_survey.json image:flash_tip"
+                        }
+                    ],
+                    "Type": "StaticImage"
+                }
+            ]
+        }
+    }
+}

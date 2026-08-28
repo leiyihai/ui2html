@@ -1,0 +1,198 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "BedWarFirstRecharge",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "LayoutBackImage",
+                    "Value": "set:bed_war_first_recharge.json image:bg"
+                },
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "BedWarFirstRecharge-Title",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.0421875,0},{0.0597222,0},{0.425001,0},{0.221944,0}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_first_recharge.json image:title"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "StaticImage",
+                    "Window": [
+                        {
+                            "Name": "BedWarFirstRecharge-Desc",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.0179592,0},{1.28205,0},{1.03796,0},{2.26496,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "BackgroundColor",
+                                    "Value": "0 0 0 0.117647"
+                                }
+                            ],
+                            "Type": "Layout",
+                            "Window": [
+                                {
+                                    "Name": "BedWarFirstRecharge-Desc-Text",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,0},{0.94,0},{0.73913,0}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "TextWordWrap",
+                                            "Value": "true"
+                                        }
+                                    ],
+                                    "Type": "StaticText"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Name": "BedWarFirstRecharge-Reward-Border",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.0419727,0},{-0.0119424,0},{0.451207,0},{0.491655,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "20 20 20 20"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:bed_war_first_recharge.json image:goods_list"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "Layout",
+                    "Window": [
+                        {
+                            "Name": "BedWarFirstRecharge-Rewards",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0.820513,0},{0.75,0}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Type": "Layout"
+                        }
+                    ]
+                },
+                {
+                    "Name": "BedWarFirstRecharge-Recharge",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.0629591,0},{-0.107914,0},{0.23085,0},{0.0323741,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT24"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "15 25 0 0"
+                        },
+                        {
+                            "Name": "BtnTextColor",
+                            "Value": "0.980392 0.952941 0.85098 1"
+                        },
+                        {
+                            "Name": "TextShadow",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "TextShadowColor",
+                            "Value": "0.980392 0.952941 0.85098 1"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_first_recharge.json image:recharge"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_first_recharge.json image:recharge"
+                        },
+                        {
+                            "Name": "TextRenderOffset",
+                            "Value": "0 -3"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "Button"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "StaticText",
+            "Name": "CreateTeamChatItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{0,30}}"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "TextVertAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "TextWordWrap",
+                    "Value": "true"
+                },
+                {
+                    "Name": "TextAutoOmission",
+                    "Value": "false"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "GridView",
+            "Name": "SlideText",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "ClipChild",
+                    "Value": "true"
+                },
+                {
+                    "Name": "ItemAlignment",
+                    "Value": "Left"
+                },
+                {
+                    "Name": "ScrollableAtNotFull",
+                    "Value": "false"
+                }
+            ]
+        }
+    }
+}

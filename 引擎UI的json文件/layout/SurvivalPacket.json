@@ -1,0 +1,130 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "SurvivalPacket",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "Touchable",
+                    "Value": "false"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "DefaultWindow",
+                    "Name": "SurvivalPacket-Content",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,736},{0,66}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "SurvivalPacket-Content-Left-Bg",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{0,385},{0,66}}"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "40 10 0 0"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:survival_main.json image:img_9_itembd_left"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "SurvivalPacket-Content-Left",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,37},{0,1},{0,381},{0,56}}"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "StaticImage",
+                            "Name": "SurvivalPacket-Content-Right-Bg",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,-385},{0,66}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "10 50 0 0"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:survival_main.json image:img_9_itembd_right"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Layout",
+                                    "Name": "SurvivalPacket-Content-Right",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,12},{0,2},{0,302},{0,57}}"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "SurvivalPacket-Content-Armor",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,115},{-1,-5},{0,285},{-1,27}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

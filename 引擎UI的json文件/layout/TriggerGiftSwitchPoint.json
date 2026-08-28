@@ -1,0 +1,80 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "CheckBox",
+            "Name": "TriggerGiftSwitchPoint",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,93},{0,48}}"
+                },
+                {
+                    "Name": "Font",
+                    "Value": "HT16"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "TriggerGiftSwitchPoint-Img",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,93},{0,48}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "Touchable",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:trigger_gift.json image:chb_0_normal"
+                        }
+                    ]
+                },
+                {
+                    "Type": "StaticImage",
+                    "Name": "TriggerGiftSwitchPoint-Tab-Image",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,-19},{0,0},{0,23},{0,44}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Right"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT16"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:trigger_gift.json image:icon_0_gift1"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

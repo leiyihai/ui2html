@@ -1,0 +1,328 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "BoxLotteryItem",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,5},{1,0},{1,5}}"
+                },
+                {
+                    "Name": "Touchable",
+                    "Value": "false"
+                },
+                {
+                    "Name": "AlwaysOnTop",
+                    "Value": "true"
+                },
+                {
+                    "Name": "StretchType",
+                    "Value": "NineGrid"
+                },
+                {
+                    "Name": "StretchOffset",
+                    "Value": "10 10 10 10"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "BoxLotteryItem-Integral-Icon",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.3,0},{-0.06,0},{0.3,60},{-0.06,60}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:box.json image:integral"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "StaticImage",
+                    "Window": [
+                        {
+                            "Name": "BoxLotteryItem-Integral-Text",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,60},{0,10},{0,60},{0,55}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT22"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextBorder",
+                                    "Value": "true"
+                                }
+                            ],
+                            "Type": "StaticText"
+                        }
+                    ]
+                },
+                {
+                    "Name": "BoxLotteryItem-Key-Icon",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{-0.08,0},{0.98,1},{-0.08,56.25},{0.98,57.25}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:box.json image:key"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "StaticImage",
+                    "Window": [
+                        {
+                            "Name": "BoxLotteryItem-Key-Num",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1.3,0},{0.2,0},{1.3,0},{0.2,35}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT20"
+                                },
+                                {
+                                    "Name": "TextColor",
+                                    "Value": "1 1 0 1"
+                                },
+                                {
+                                    "Name": "TextHorzAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "TextBorder",
+                                    "Value": "true"
+                                }
+                            ],
+                            "Type": "StaticText"
+                        },
+                        {
+                            "Name": "BoxLotteryItem-Open-Num",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{1.75,0},{0.2,0},{1.75,0},{0.2,35}}"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT20"
+                                },
+                                {
+                                    "Name": "TextVertAlignment",
+                                    "Value": "Centre"
+                                }
+                            ],
+                            "Type": "StaticText"
+                        }
+                    ]
+                },
+                {
+                    "Name": "BoxLotteryItem-Actor",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{-0.1,-15},{0.2,0},{0.25,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "ActorWindowScale",
+                            "Value": "1"
+                        }
+                    ],
+                    "Type": "ActorWindow"
+                },
+                {
+                    "Name": "BoxLotteryItem-Question",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.3,0},{-0.35,-1},{0.3,56},{-0.35,55}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:box.json image:question"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:box.json image:question"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "Button"
+                },
+                {
+                    "Name": "BoxLotteryItem-Open",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,1},{0.80,0},{0.4,1},{0.995,0}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Font",
+                            "Value": "HT20"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "40 40 20 20"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:dress.json image:btn_green"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:dress.json image:btn_green"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "Button"
+                },
+                {
+                    "Name": "BoxLotteryItem-Actor-Shield",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{-0.1,0},{0.2,0},{0.25,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        }
+                    ],
+                    "Type": "Button"
+                },
+                {
+                    "Name": "BoxLotteryItem-Video-Ad",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{-0.25,5},{0.4,0},{-0.075,0}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Bottom"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "16 16 16 16"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:bed_war_cube_vedio_ad.json image:btn_ad"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:bed_war_cube_vedio_ad.json image:btn_ad"
+                        },
+                        {
+                            "Name": "TextRenderOffset",
+                            "Value": "10 0"
+                        },
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        }
+                    ],
+                    "Type": "Button",
+                    "Window": [
+                        {
+                            "Name": "BoxLotteryItem-Ad-Icon",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,10},{0,0},{0,40},{0,40}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:bed_war_cube_vedio_ad.json image:small_ad"
+                                },
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                }
+                            ],
+                            "Type": "StaticImage"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "StaticImage",
+            "Name": "FishingFlyText",
+            "Property": [
+                {
+                    "Name": "Material",
+                    "Value": "CullBackLinear"
+                },
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,182},{0,109}}"
+                },
+                {
+                    "Name": "ImageName",
+                    "Value": "set:bed_war_fishing.json image:fishing_add"
+                }
+            ]
+        }
+    }
+}

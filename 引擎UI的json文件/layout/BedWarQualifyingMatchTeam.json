@@ -1,0 +1,40 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "BedWarQualifyingMatchTeam",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{0,398},{0,110}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "StaticImage",
+                    "Name": "BedWarQualifyingMatchTeam-Icon",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,16},{0,48},{0,67}}"
+                        },
+                        {
+                            "Name": "ImageName",
+                            "Value": "set:bed_war_battle_info.json image:tab_red"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "BedWarQualifyingMatchTeam-Players",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,60},{0,0},{1,0},{1,0}}"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

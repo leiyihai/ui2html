@@ -1,0 +1,776 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "VideoMain",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "HorizontalAlignment",
+                    "Value": "Centre"
+                },
+                {
+                    "Name": "Touchable",
+                    "Value": "false"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Layout",
+                    "Name": "VideoMain-HandleList",
+                    "Property": [
+                        {
+                            "Name": "Material",
+                            "Value": "CullBackLinear"
+                        },
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,615},{0,90}}"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "25 25 10 25"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "StaticImage",
+                            "Name": "VideoMain-BackImage",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,-1},{1,0},{0,132}}"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "25 25 0 0"
+                                },
+                                {
+                                    "Name": "ImageName",
+                                    "Value": "set:plugin_video.json image:img_0_board"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "VideoMain-HideSettingList",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-70},{0,65},{0,84},{0,195}}"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "Visible",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "25 25 10 25"
+                                },
+                                {
+                                    "Name": "LayoutBackImage",
+                                    "Value": "set:plugin_video.json image:img_9_board"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "Button",
+                                    "Name": "VideoMain-HideName",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,18},{0,20},{0,39},{0,41}}"
+                                        },
+                                        {
+                                            "Name": "NormalImage",
+                                            "Value": "set:plugin_video.json image:tgl_0_off"
+                                        },
+                                        {
+                                            "Name": "PushedImage",
+                                            "Value": "set:plugin_video.json image:tgl_0_off"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "VideoMain-HideNameText",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,109},{0,0},{0,215},{0,19}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Right"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "隐藏名字"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT14"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "VideoMain-HideNameCircle",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0,21},{0,21}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Visible",
+                                                    "Value": "false"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:plugin_video.json image:tgl_0_on"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Button",
+                                    "Name": "VideoMain-HideOtherPlayer",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,18},{0,53},{0,39},{0,74}}"
+                                        },
+                                        {
+                                            "Name": "NormalImage",
+                                            "Value": "set:plugin_video.json image:tgl_0_off"
+                                        },
+                                        {
+                                            "Name": "PushedImage",
+                                            "Value": "set:plugin_video.json image:tgl_0_off"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "VideoMain-HideOtherPlayerText",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,109},{0,0},{0,215},{0,19}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Right"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "隐藏玩家"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT14"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "VideoMain-HideOtherPlayerCircle",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0,21},{0,21}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Visible",
+                                                    "Value": "false"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:plugin_video.json image:tgl_0_on"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "Button",
+                                    "Name": "VideoMain-HideSelf",
+                                    "Property": [
+                                        {
+                                            "Name": "Material",
+                                            "Value": "CullBackLinear"
+                                        },
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,18},{0,88},{0,39},{0,109}}"
+                                        },
+                                        {
+                                            "Name": "NormalImage",
+                                            "Value": "set:plugin_video.json image:tgl_0_off"
+                                        },
+                                        {
+                                            "Name": "PushedImage",
+                                            "Value": "set:plugin_video.json image:tgl_0_off"
+                                        }
+                                    ],
+                                    "Window": [
+                                        {
+                                            "Type": "StaticText",
+                                            "Name": "VideoMain-HideSelfText",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,109},{0,0},{0,215},{0,19}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Right"
+                                                },
+                                                {
+                                                    "Name": "Text",
+                                                    "Value": "隐藏自己"
+                                                },
+                                                {
+                                                    "Name": "Font",
+                                                    "Value": "HT14"
+                                                },
+                                                {
+                                                    "Name": "TextVertAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "TextAutoOmission",
+                                                    "Value": "false"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Type": "StaticImage",
+                                            "Name": "VideoMain-HideSelfCircle",
+                                            "Property": [
+                                                {
+                                                    "Name": "Area",
+                                                    "Value": "{{0,0},{0,0},{0,21},{0,21}}"
+                                                },
+                                                {
+                                                    "Name": "VerticalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "HorizontalAlignment",
+                                                    "Value": "Centre"
+                                                },
+                                                {
+                                                    "Name": "Visible",
+                                                    "Value": "false"
+                                                },
+                                                {
+                                                    "Name": "ImageName",
+                                                    "Value": "set:plugin_video.json image:tgl_0_on"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "VideoMain-Effect",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-160},{0,0},{0,-8},{0,54}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "特效"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "25 25 5 5"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:plugin_video.json image:btn_9_white"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:plugin_video.json image:btn_9_white"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "0 -2"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "VideoMain-HideUI",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-1},{0,0},{0,151},{0,54}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "隐藏UI"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "25 25 5 5"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:plugin_video.json image:btn_9_white"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:plugin_video.json image:btn_9_white"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "0 -2"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "VideoMain-HideSetting",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,159},{0,0},{0,311},{0,54}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "隐藏设置"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "25 25 5 5"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:plugin_video.json image:btn_9_white"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:plugin_video.json image:btn_9_white"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "-6 -2"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "VideoMain-HideSettingArrow",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,-11},{0,-2},{0,4},{0,12}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Right"
+                                        },
+                                        {
+                                            "Name": "StretchType",
+                                            "Value": "NineGrid"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:plugin_video.json image:img_0_arrow1_down"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "VideoMain-Hide",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,3},{0,43},{0,158},{0,88}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Bottom"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "StretchType",
+                                    "Value": "NineGrid"
+                                },
+                                {
+                                    "Name": "StretchOffset",
+                                    "Value": "20 20 0 0"
+                                }
+                            ],
+                            "Window": [
+                                {
+                                    "Type": "StaticImage",
+                                    "Name": "VideoMain-HideArrow",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{0,0},{0,-3},{0,29},{0,16}}"
+                                        },
+                                        {
+                                            "Name": "VerticalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "HorizontalAlignment",
+                                            "Value": "Centre"
+                                        },
+                                        {
+                                            "Name": "Rotate",
+                                            "Value": "180"
+                                        },
+                                        {
+                                            "Name": "ImageName",
+                                            "Value": "set:plugin_video.json image:img_0_arrow2_down"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "VideoMain-Video",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,12},{0,-2},{0,64},{0,51}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "Font",
+                                    "Value": "HT14"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:plugin_video.json image:btn_0_record"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:plugin_video.json image:btn_0_record"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "0 -2"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "VideoMain-ExitBtn",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,-12},{0,-1},{0,40},{0,52}}"
+                                },
+                                {
+                                    "Name": "VerticalAlignment",
+                                    "Value": "Centre"
+                                },
+                                {
+                                    "Name": "HorizontalAlignment",
+                                    "Value": "Right"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:plugin_video.json image:btn_0_quitvideo"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:plugin_video.json image:btn_0_quitvideo"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "Layout",
+                    "Name": "VideoMain-EffectListPanel",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,368},{1,0}}"
+                        },
+                        {
+                            "Name": "Visible",
+                            "Value": "false"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "0 0 5 5"
+                        },
+                        {
+                            "Name": "LayoutBackImage",
+                            "Value": "set:plugin_video.json image:img_9_gradientbd"
+                        }
+                    ],
+                    "Window": [
+                        {
+                            "Type": "Layout",
+                            "Name": "VideoMain-CloseEffect",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,0},{1,1200},{1,0}}"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "VideoMain-TabFilter",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,140},{0,127},{0,209}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "滤镜"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:plugin_video.json image:chb_0_eff_click"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:plugin_video.json image:chb_0_eff_click"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "-6 -2"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "VideoMain-TabWeather",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,220},{0,127},{0,289}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "天气"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:plugin_video.json image:chb_0_eff"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:plugin_video.json image:chb_0_eff"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "-6 -3"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Button",
+                            "Name": "VideoMain-TabScreenEffect",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,0},{0,301},{0,127},{0,370}}"
+                                },
+                                {
+                                    "Name": "Text",
+                                    "Value": "屏幕特效"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:plugin_video.json image:chb_0_eff"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:plugin_video.json image:chb_0_eff"
+                                },
+                                {
+                                    "Name": "TextRenderOffset",
+                                    "Value": "-6 -3"
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "Layout",
+                            "Name": "VideoMain-TabDataList",
+                            "Property": [
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0,126},{0,30},{0,281},{1,0}}"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,70 @@
+{
+    "Dialog": {
+        "Window": {
+            "Name": "BWSumRechargeMain",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                },
+                {
+                    "Name": "Touchable",
+                    "Value": "false"
+                }
+            ],
+            "Type": "Layout",
+            "Window": [
+                {
+                    "Name": "BWSumRechargeMain-Left-Layout",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,0},{0,0},{0,422},{0,45}}"
+                        }
+                    ],
+                    "Type": "Layout",
+                    "Window": [
+                        {
+                            "Name": "BWSumRechargeMain-Icon",
+                            "Property": [
+                                {
+                                    "Name": "Material",
+                                    "Value": "CullBackLinear"
+                                },
+                                {
+                                    "Name": "Area",
+                                    "Value": "{{0.57109,0},{1.4,0},{0.703791,0},{2.64444,0}}"
+                                },
+                                {
+                                    "Name": "Visible",
+                                    "Value": "false"
+                                },
+                                {
+                                    "Name": "NormalImage",
+                                    "Value": "set:bedwar_toolbar.json image:menu_firstcharge"
+                                },
+                                {
+                                    "Name": "PushedImage",
+                                    "Value": "set:bedwar_toolbar.json image:menu_firstcharge"
+                                }
+                            ],
+                            "Type": "Button",
+                            "Window": [
+                                {
+                                    "Name": "BWSumRechargeMain-Effect",
+                                    "Property": [
+                                        {
+                                            "Name": "Area",
+                                            "Value": "{{-0.178571,0},{-0.767857,0},{1.23214,0},{0.535713,0}}"
+                                        }
+                                    ],
+                                    "Type": "StaticImage"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
