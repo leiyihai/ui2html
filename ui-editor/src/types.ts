@@ -25,22 +25,24 @@ export type TextMode = "auto" | "fixed" | "fit";
 
 /** 控件类型标签 */
 export type CtrlType =
-  | "empty" | "button" | "toggle" | "image" | "text" | "panel"
-  | "list" | "listitem" | "progress" | "slider" | "scrollbar" | "input";
+  | "empty" | "Button" | "CheckBox" | "Edit" | "GridView" | "Layout"
+  | "List" | "ListHorizontal" | "ProgressBar" | "RadioButton" | "Slider"
+  | "StaticImage" | "StaticText";
 
 export const CTRL_TYPES: { value: CtrlType; label: string }[] = [
   { value: "empty", label: "空节点" },
-  { value: "button", label: "按钮" },
-  { value: "toggle", label: "开关" },
-  { value: "image", label: "图片" },
-  { value: "text", label: "文本" },
-  { value: "panel", label: "面板" },
-  { value: "list", label: "列表" },
-  { value: "listitem", label: "列表项" },
-  { value: "progress", label: "进度条" },
-  { value: "slider", label: "滑动条" },
-  { value: "scrollbar", label: "滚动条" },
-  { value: "input", label: "输入框" },
+  { value: "Button", label: "按钮" },
+  { value: "CheckBox", label: "复选框" },
+  { value: "Edit", label: "编辑框" },
+  { value: "GridView", label: "网格视图" },
+  { value: "Layout", label: "布局" },
+  { value: "List", label: "列表" },
+  { value: "ListHorizontal", label: "横向列表" },
+  { value: "ProgressBar", label: "进度条" },
+  { value: "RadioButton", label: "单选框" },
+  { value: "Slider", label: "滑动条" },
+  { value: "StaticImage", label: "静态图片" },
+  { value: "StaticText", label: "静态文本" },
 ];
 
 /** 交互样式模板（可交互控件引用，改模板批量生效） */

@@ -68,7 +68,7 @@ function Row(p: { n: UINode; depth: number; selectedId: string | null; onSelect:
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">{ICONS[type]}</svg>
         </span>
         <span className="name">{p.n.name}</span>
-        <span className="type-tag">{type === "list" ? "list" : type === "text" ? "txt" : ""}</span>
+        <span className="type-tag">{type === "list" ? "list" : ""}</span>
         <button className="icon" title="可见"
           onClick={(e) => { e.stopPropagation(); p.onToggleVisible(p.n.id); }}>
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">

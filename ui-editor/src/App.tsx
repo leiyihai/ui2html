@@ -297,7 +297,15 @@ export default function App() {
 
   /** 控件类型标签 */
   const setCtrl = useCallback((id: string, type: CtrlType | null) => {
-    updateNode(id, (n) => { if (type) n.ctrl = { ...n.ctrl, type }; else n.ctrl = undefined; });
+    updateNode(id, (n) => {
+      if (type) n.ctrl = { ...n.ctrl, type };
+      else n.ctrl = undefined;
+      if (type === "Layout" || type === "empty") n.list = undefined;
+      if (type === "List" || type === "ListHorizontal" || type === "GridView") {
+        n.list = n.list ?? { type: type === "ListHorizontal" ? "horizontal" : type === "GridView" ? "grid" : "vertical", spacing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 }, columns: 3 };
+        n.list.type = type === "ListHorizontal" ? "horizontal" : type === "GridView" ? "grid" : "vertical";
+      }
+    });
   }, [updateNode]);
 
   /** 交互模板（随场景 json 导出） */

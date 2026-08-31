@@ -126,19 +126,22 @@ function inferList(children: UINode[], mergedW: number, mergedH: number): ListCo
 function inferCtrl(name: string, isGroup: boolean, hasCanvas: boolean): CtrlType | undefined {
   const nm = name.trim().toLowerCase();
   if (isGroup) {
-    if (/^li\d*$/i.test(nm)) return "listitem";
-    if (nm === "list") return "list";
-    if (nm === "pbar") return "progress";
-    if (nm === "sbar") return "scrollbar";
-    if (nm === "btn") return "button";
-    if (nm === "toggle" || nm === "tgl") return "toggle";
-    if (nm === "input") return "input";
+    if (/^(li\d*|listitem\d*)$/i.test(nm)) return "Layout";
+    if (/^listh(?:_|$)/i.test(nm)) return "ListHorizontal";
+    if (/^listv(?:_|$)/i.test(nm)) return "List";
+    if (/^grid(?:_|$)/i.test(nm)) return "GridView";
+    if (/^layout(?:_|$)/i.test(nm)) return "Layout";
+    if (/^pbar(?:_|$)/i.test(nm)) return "ProgressBar";
+    if (/^btn(?:_|$)/i.test(nm)) return "Button";
+    if (/^chb(?:_|$)/i.test(nm)) return "CheckBox";
+    if (/^radio(?:_|$)/i.test(nm)) return "RadioButton";
+    if (/^slider(?:_|$)/i.test(nm)) return "Slider";
+    if (/^edit(?:_|$)/i.test(nm)) return "Edit";
     return undefined; // 其他文件夹：未标记（手动设空节点等）
   }
-  if (hasCanvas) return "image";
+  if (hasCanvas) return "StaticImage";
   // icon/img 开头的图层名也默认图片
-  if (/^(icon|img)/i.test(nm)) return "image";
-  if (nm) return "text"; // 文本图层（无像素）
+  if (/^(icon|img)(_|$)/i.test(nm)) return "StaticImage";
   return undefined;
 }
 
@@ -162,11 +165,13 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
     const isFullscreen = merged.x <= 0 && merged.y <= 0 && merged.w >= refW && merged.h >= refH;
     // 锚点推断必须用「相对父组原点」的坐标（文档坐标 - baseX/baseY），否则组内定位跑偏
     const { px, py, ox, oy } = inferAnchor(merged.x - baseX, merged.y - baseY, merged.w, merged.h, refW, refH);
-    const isList = /^list$/i.test(name);
+    const listMatch = name.trim().toLowerCase().match(/^(listv|listh|grid)(?:_|$)/);
     const ctrlType = inferCtrl(name, true, false);
+    const listType: ListType | undefined = listMatch?.[1] === "listh" ? "horizontal"
+      : listMatch?.[1] === "grid" ? "grid" : listMatch?.[1] === "listv" ? "vertical" : undefined;
     return {
       ...base, image: null, children, zIndex: i,
-      ...(isList ? { list: inferList(children, merged.w, merged.h) } : {}),
+      ...(listType ? { list: { ...inferList(children, merged.w, merged.h), type: listType } } : {}),
       ...(ctrlType ? { ctrl: { type: ctrlType } } : {}),
       designRect: { x: merged.x - baseX, y: merged.y - baseY, width: merged.w, height: merged.h },
       anchor: { parentX: px, parentY: py, selfX: 0, selfY: 0, offsetX: ox, offsetY: oy, safeArea: false },
@@ -192,7 +197,7 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
     const fsEst = h / 1.2;
     const fontSize = fsRaw > 0 && fsRaw >= fsEst / 2 ? fsRaw : fsEst;
     return {
-      ...base, image: null, ctrl: { type: "text" as CtrlType }, text: {
+      ...base, image: null, ctrl: { type: "StaticText" as CtrlType }, text: {
         content: layer.text.text,
         fontSize,
         color: textColor(layer),
@@ -222,7 +227,7 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
 
   if (img) {
     return {
-      ...base, image: img, ctrl: { type: "image" as CtrlType }, zIndex: i,
+      ...base, image: img, ctrl: { type: "StaticImage" as CtrlType }, zIndex: i,
       designRect: { x: x - baseX, y: y - baseY, width: w, height: h },
       anchor: { parentX: px, parentY: py, selfX: 0, selfY: 0, offsetX: ox, offsetY: oy, safeArea: false },
       adaptation: { mode: isFullscreen ? "stretch" : "anchor" },
