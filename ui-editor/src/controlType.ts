@@ -11,6 +11,17 @@ export function defaultFolderCtrlType(): CtrlType {
   return "Layout";
 }
 
+/** Edit 控件默认显示文本；旧工程缺少该字段时属性面板也使用同一默认值。 */
+export function createDefaultEditText(): NonNullable<UINode["text"]> {
+  return {
+    content: "",
+    fontSize: 20,
+    color: "#ffffff",
+    mode: "fixed",
+    minFontSize: 12,
+  };
+}
+
 /** 应用控件类型标记，并清理与目标类型冲突的结构配置。 */
 export function markControlType(node: UINode, type: CtrlType | null): UINode {
   const hasChildren = Boolean(node.children?.length);
@@ -47,6 +58,7 @@ export function markControlType(node: UINode, type: CtrlType | null): UINode {
     ...node,
     ctrl: type ? { type, ...(templateId ? { templateId } : {}) } : undefined,
   };
+  if (type === "Edit" && !marked.text) marked.text = createDefaultEditText();
   const listType = type ? LIST_TYPES[type] : undefined;
   if (listType) {
     marked.list = node.list ?? {

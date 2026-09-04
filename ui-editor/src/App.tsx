@@ -10,6 +10,7 @@ import LayerPanel from "./components/LayerPanel";
 import Inspector from "./components/Inspector";
 import ControlsPanel from "./components/ControlsPanel";
 import TypePieMenu from "./components/TypePieMenu";
+import QuickActionMenu from "./components/QuickActionMenu";
 import { SliceEditor, SliceList } from "./components/SlicePanel";
 import { markControlType } from "./controlType";
 import { hasResourceSlots, planResourceBindings, resourceSlotDefinitions } from "./resourceBinding";
@@ -18,6 +19,7 @@ import { restoreSceneSnapshot, serializeScene, type SavedProjectView } from "./s
 import { prepareSceneAssets } from "./projectAssets";
 import { openProject, projectFileName, saveProject } from "./projectApi";
 import { canvasFromImageFile, createImageNode } from "./imageImport";
+import { applySelection, createSelectionIntent, flattenLayerIds, type SelectionIntent } from "./selection";
 
 export const PRESETS: [string, number, number][] = [
   ["16:9 (1920 × 1080)", 1920, 1080],
@@ -129,6 +131,7 @@ const snapScene = (s: UIScene): Snapshot => s.nodes.map(cloneNode);
 const applySnap = (snap: Snapshot): UINode[] => snap.map(cloneNode);
 
 const HISTORY_LIMIT = 50; // 步数不用保留太多
+const STATUS_MESSAGE_DURATION_MS = 4000;
 
 export default function App() {
   const [scene, setScene] = useState<UIScene | null>(null);
@@ -151,6 +154,7 @@ export default function App() {
   const [workspace, setWorkspace] = useState<Workspace>("controls");
   const [exportMsg, setExportMsg] = useState("");
   const [typeMenu, setTypeMenu] = useState<{ x: number; y: number } | null>(null);
+  const [quickActionMenu, setQuickActionMenu] = useState<{ x: number; y: number } | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
 
   const uiRef = useRef<HTMLCanvasElement>(null);
@@ -161,6 +165,7 @@ export default function App() {
   const sceneRef = useRef<UIScene | null>(null); // 同步引用（事件中立即更新）
   const historyRef = useRef<Snapshot[]>([]);
   const futureRef = useRef<Snapshot[]>([]);
+  const selectionAnchorRef = useRef<string | null>(null);
 
   const layoutCtx: LayoutContext | null = useMemo(
     () => (scene ? {
@@ -177,6 +182,13 @@ export default function App() {
     () => (scene && layoutCtx ? new LayoutEngine().layoutScene(scene, layoutCtx) : null),
     [scene, layoutCtx],
   );
+
+  // 右下角操作结果只作短暂反馈；新消息出现时重新计时。
+  useEffect(() => {
+    if (!exportMsg) return;
+    const timer = window.setTimeout(() => setExportMsg(""), STATUS_MESSAGE_DURATION_MS);
+    return () => window.clearTimeout(timer);
+  }, [exportMsg]);
 
   // 画布尺寸（含 devicePixelRatio）与渲染
   useEffect(() => {
@@ -257,6 +269,7 @@ export default function App() {
     setViewport({ width: 1280, height: 720 });
     setSafeArea({ left: 0, right: 0, top: 0, bottom: 0 });
     setScaleMode("cover");
+    selectionAnchorRef.current = null;
     setSelectedId(null);
     setSelectedIds([]);
     setWarnings([]);
@@ -281,6 +294,7 @@ export default function App() {
       setScaleMode(view?.scaleMode ?? "cover");
       setShowSafeArea(view?.showSafeArea ?? false);
       setShowDesignBorder(view?.showDesignBorder ?? true);
+      selectionAnchorRef.current = null;
       setSelectedId(null);
       setSelectedIds([]);
       setWarnings(restored.missingAssets.map((asset) => `资源缺失：${asset}`));
@@ -334,8 +348,10 @@ export default function App() {
       }
       setPsdName(name);
       setWarnings(imported.warnings);
-      setSelectedIds(imported.scene.nodes.map((node) => node.id));
-      setSelectedId(imported.scene.nodes.at(-1)?.id ?? null);
+      const importedIds = imported.scene.nodes.map((node) => node.id);
+      selectionAnchorRef.current = importedIds.at(-1) ?? null;
+      setSelectedIds(importedIds);
+      setSelectedId(importedIds.at(-1) ?? null);
       setDirty(true);
       setExportMsg(`已从 ${name} 导入 ${walkNodes(imported.scene.nodes).length} 个节点`);
     } catch (error) {
@@ -389,8 +405,10 @@ export default function App() {
     } else {
       mutateScene((source) => ({ ...source, nodes: [...source.nodes, ...imported] }));
     }
-    setSelectedIds(imported.map((node) => node.id));
-    setSelectedId(imported.at(-1)?.id ?? null);
+    const importedIds = imported.map((node) => node.id);
+    selectionAnchorRef.current = importedIds.at(-1) ?? null;
+    setSelectedIds(importedIds);
+    setSelectedId(importedIds.at(-1) ?? null);
     setWarnings(failed.map((item) => `图片导入失败：${item}`));
     setDirty(true);
     setExportMsg(`已导入 ${imported.length} 张图片${failed.length ? `，${failed.length} 张失败` : ""}`);
@@ -428,6 +446,7 @@ export default function App() {
     setDirty(false);
     setRenamingId(null);
     setSelectedId(null);
+    selectionAnchorRef.current = null;
     setSelectedIds([]);
     setWarnings([]);
     setSliceSelected(null);
@@ -540,6 +559,7 @@ export default function App() {
       for (const item of assignments) node.resources[item.slot] = item.binding;
     });
     mutateScene((s) => ({ ...s, nodes: nextNodes }));
+    selectionAnchorRef.current = target.node.id;
     setSelectedIds([target.node.id]);
     setSelectedId(target.node.id);
     const skipped = plan.skipped.length;
@@ -566,6 +586,7 @@ export default function App() {
     const maxIndex = parent?.children?.length ?? nextNodes.length;
     nextNodes = insertAtPath(nextNodes, parentPath, Math.min(binding.sourceIndex, maxIndex), cloneNode(binding.sourceNode));
     mutateScene((s) => ({ ...s, nodes: nextNodes }));
+    selectionAnchorRef.current = binding.id;
     setSelectedIds([binding.id]);
     setSelectedId(binding.id);
     setExportMsg(`已解除「${binding.name}」的资源绑定`);
@@ -629,13 +650,14 @@ export default function App() {
     mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, selectedId!, patch) }), record);
   }, [selectedId, mutateScene]);
 
-  const selectNode = useCallback((id: string, additive = false) => {
+  const selectNode = useCallback((id: string, intent?: SelectionIntent) => {
     setSelectedIds((current) => {
-      const next = additive
-        ? current.includes(id) ? current.filter((x) => x !== id) : [...current, id]
-        : [id];
-      setSelectedId(next.length ? next[next.length - 1] : null);
-      return next;
+      const next = applySelection(current, id, selectionAnchorRef.current, intent ?? {
+        additive: false, range: false, orderedIds: current,
+      });
+      selectionAnchorRef.current = next.anchorId;
+      setSelectedId(next.primaryId);
+      return next.ids;
     });
   }, []);
 
@@ -732,6 +754,7 @@ export default function App() {
     );
     if (!originalSiblings) return;
     mutateScene((s) => ({ ...s, nodes: nextNodes }));
+    selectionAnchorRef.current = group.id;
     setSelectedIds([group.id]);
     setSelectedId(group.id);
     setExportMsg(`已将 ${children.length} 个节点整理到「${group.name}」`);
@@ -778,6 +801,7 @@ export default function App() {
     const nextNodes = insertManyAtPath(removed, parentPath, groupIndex, children);
     mutateScene((s) => ({ ...s, nodes: nextNodes }));
     const first = children[0];
+    selectionAnchorRef.current = first?.id ?? null;
     setSelectedIds(first ? [first.id] : []);
     setSelectedId(first?.id ?? null);
     setExportMsg(`已取消「${group.name}」打组`);
@@ -886,6 +910,11 @@ export default function App() {
         setTypeMenu(null);
         return;
       }
+      if (e.key === "Escape" && quickActionMenu) {
+        e.preventDefault();
+        setQuickActionMenu(null);
+        return;
+      }
       if (e.altKey && (e.key === "g" || e.key === "G")) {
         e.preventDefault();
         ungroupSelected();
@@ -897,7 +926,11 @@ export default function App() {
         return;
       }
       if (e.ctrlKey || e.metaKey) {
-        if (e.key === "s" || e.key === "S") { e.preventDefault(); void saveCurrentProject(); }
+        if (e.key === "s" || e.key === "S") {
+          e.preventDefault();
+          setTypeMenu(null);
+          setQuickActionMenu(pointerRef.current);
+        }
         else if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
         else if (e.key === "x" || e.key === "X") { e.preventDefault(); redo(); }
         else if (e.key === "]") { e.preventDefault(); moveSelectedLayer("up"); }
@@ -928,7 +961,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [undo, redo, selectedId, selectedIds, typeMenu, updateSelected, saveCurrentProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject]);
+  }, [undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject]);
 
   // 命中检测 + 拖动（文档 §17：拖动只改 offset，不碰 designRect）
   const toLogical = (clientX: number, clientY: number) => {
@@ -947,15 +980,17 @@ export default function App() {
       .find((n) => n.visible && p.x >= n.rect.x && p.x <= n.rect.x + n.rect.width
         && p.y >= n.rect.y && p.y <= n.rect.y + n.rect.height);
     const additive = e.ctrlKey || e.metaKey;
+    const current = sceneRef.current;
     if (!hit) {
       if (!additive) {
+        selectionAnchorRef.current = null;
         setSelectedId(null);
         setSelectedIds([]);
       }
       return;
     }
-    selectNode(hit.node.id, additive);
-    if (additive) return;
+    selectNode(hit.node.id, createSelectionIntent(e, flattenLayerIds(current?.nodes ?? [])));
+    if (additive || e.shiftKey) return;
     if (hit.node.locked) return;
     pushHistory(sceneRef.current!); // 拖动前记录一次，撤销回退整个拖动
     dragRef.current = { id: hit.node.id, startX: e.clientX, startY: e.clientY };
@@ -1015,7 +1050,8 @@ export default function App() {
           </div>
         ) : workspace === "layout" ? (
           <LayerPanel
-            nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={(id) => { if (id) selectNode(id); }}
+            nodes={scene?.nodes ?? []} selectedId={selectedId} selectedIds={selectedIds}
+            onSelect={(id, intent) => selectNode(id, intent)}
             onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
             onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
           />
@@ -1067,6 +1103,20 @@ export default function App() {
           />
         )}
       </div>
+      {quickActionMenu && (
+        <QuickActionMenu
+          x={quickActionMenu.x}
+          y={quickActionMenu.y}
+          hasScene={!!scene}
+          onNew={createNewProject}
+          onOpenProject={openSavedProject}
+          onImportPsd={loadPsd}
+          onImportImages={importImages}
+          onSave={() => { void saveCurrentProject(); }}
+          onSaveAs={() => { void saveCurrentProject(true); }}
+          onClose={() => setQuickActionMenu(null)}
+        />
+      )}
       {typeMenu && pieNode && (
         <TypePieMenu
           x={typeMenu.x}

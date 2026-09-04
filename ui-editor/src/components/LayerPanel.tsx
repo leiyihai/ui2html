@@ -1,10 +1,12 @@
 import { useState } from "react";
 import type { UINode } from "../types";
+import { createSelectionIntent, flattenLayerIds, type SelectionIntent } from "../selection";
 
 interface Props {
   nodes: UINode[];
   selectedId: string | null;
-  onSelect: (id: string | null) => void;
+  selectedIds: string[];
+  onSelect: (id: string, intent: SelectionIntent) => void;
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
 }
@@ -47,14 +49,14 @@ const TYPE_CLASS: Record<NodeType, string> = {
   group: "t-group", list: "t-list", image: "t-image", text: "t-text",
 };
 
-function Row(p: { n: UINode; depth: number; selectedId: string | null; onSelect: (id: string) => void; onToggleVisible: (id: string) => void; onToggleLock: (id: string) => void }) {
+function Row(p: { n: UINode; depth: number; selectedId: string | null; selectedIds: string[]; orderedIds: string[]; onSelect: (id: string, intent: SelectionIntent) => void; onToggleVisible: (id: string) => void; onToggleLock: (id: string) => void }) {
   const [collapsed, setCollapsed] = useState(false);
   const isGroup = !!p.n.children?.length;
   const type = nodeType(p.n);
   return (
     <>
-      <li key={p.n.id} className={p.n.id === p.selectedId ? "sel" : ""}
-        onClick={() => p.onSelect(p.n.id)} style={{ paddingLeft: 8 + p.depth * 16 }}>
+      <li key={p.n.id} className={p.selectedIds.includes(p.n.id) ? "sel" : ""}
+        onClick={(e) => p.onSelect(p.n.id, createSelectionIntent(e, p.orderedIds))} style={{ paddingLeft: 8 + p.depth * 16 }}>
         {p.depth > 0 && <span className="indent-line" style={{ left: 4 + p.depth * 16 }} />}
         <button className="fold" title={collapsed ? "展开" : "折叠"}
           onClick={(e) => { e.stopPropagation(); if (isGroup) setCollapsed(!collapsed); }}>
@@ -86,6 +88,7 @@ function Row(p: { n: UINode; depth: number; selectedId: string | null; onSelect:
       </li>
       {!collapsed && [...(p.n.children ?? [])].sort((a, b) => b.zIndex - a.zIndex).map((c) => (
         <Row key={c.id} n={c} depth={p.depth + 1} selectedId={p.selectedId}
+          selectedIds={p.selectedIds} orderedIds={p.orderedIds}
           onSelect={p.onSelect} onToggleVisible={p.onToggleVisible} onToggleLock={p.onToggleLock} />
       ))}
     </>
@@ -94,12 +97,13 @@ function Row(p: { n: UINode; depth: number; selectedId: string | null; onSelect:
 
 export default function LayerPanel(p: Props) {
   const sorted = [...p.nodes].sort((a, b) => b.zIndex - a.zIndex); // 上层在前
+  const orderedIds = flattenLayerIds(p.nodes);
   return (
     <aside className="layer-panel">
       <h3>图层</h3>
       <ul>
         {sorted.map((n) => (
-          <Row key={n.id} n={n} depth={0} selectedId={p.selectedId} onSelect={p.onSelect}
+          <Row key={n.id} n={n} depth={0} selectedId={p.selectedId} selectedIds={p.selectedIds} orderedIds={orderedIds} onSelect={p.onSelect}
             onToggleVisible={p.onToggleVisible} onToggleLock={p.onToggleLock} />
         ))}
       </ul>

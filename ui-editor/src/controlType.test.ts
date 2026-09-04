@@ -85,4 +85,16 @@ describe("control type marking", () => {
     expect(markControlType(source, "StaticImage").ctrl).toEqual({ type: "StaticImage" });
     expect(markControlType(source, "CheckBox").ctrl).toEqual({ type: "CheckBox", templateId: "press" });
   });
+
+  it("initializes editable text when a node becomes an Edit control", () => {
+    const marked = markControlType(node(), "Edit");
+
+    expect(marked.text).toEqual({
+      content: "",
+      fontSize: 20,
+      color: "#ffffff",
+      mode: "fixed",
+      minFontSize: 12,
+    });
+  });
 });

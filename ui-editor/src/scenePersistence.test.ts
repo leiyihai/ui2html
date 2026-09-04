@@ -101,4 +101,16 @@ describe("independent UI project snapshots", () => {
     expect(saved.view.viewport).toEqual({ width: 1920, height: 1080 });
     expect(saved.view.scaleMode).toBe("contain");
   });
+
+  it("round-trips the text displayed by an Edit control", () => {
+    const edit = node("edit", "输入框");
+    edit.ctrl = { type: "Edit" };
+    edit.text = { content: "请输入名称", fontSize: 20, color: "#ffffff", mode: "fixed", minFontSize: 12 };
+
+    const saved = serializeScene({ designWidth: 100, designHeight: 100, nodes: [edit] });
+    const restored = restoreSceneSnapshot(saved, new Map()).scene.nodes[0];
+
+    expect(saved.nodes[0].text?.content).toBe("请输入名称");
+    expect(restored.text?.content).toBe("请输入名称");
+  });
 });

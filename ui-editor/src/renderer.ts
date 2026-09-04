@@ -1,8 +1,38 @@
 // Canvas Renderer：只负责把 LayoutResult 画出来，不做布局计算
 // uiCanvas：UI 图片；overlayCanvas：选中框 / 锚点 / Safe Area / 网格 / 设计分辨率边框
 
-import type { LayoutResult, LayoutContext } from "./types";
+import type { LayoutResult, LayoutContext, ResourceSlot, UINode } from "./types";
 import { fitFontSize, wrapText, LINE_HEIGHT } from "./textMeasure";
+
+function boundImage(node: UINode, slot: ResourceSlot): HTMLCanvasElement | null {
+  return node.resources?.[slot]?.image ?? null;
+}
+
+/** 返回编辑状态下当前应显示的控件资源层，顺序为从底到顶。 */
+export function visibleControlResourceImages(node: UINode): HTMLCanvasElement[] {
+  const compact = (images: (HTMLCanvasElement | null)[]) => images.filter((image): image is HTMLCanvasElement => Boolean(image));
+  switch (node.ctrl?.type) {
+    case "Layout":
+      return compact([boundImage(node, "LayoutBackImage")]);
+    case "StaticImage":
+      return compact([boundImage(node, "ImageName")]);
+    case "Button":
+    case "CheckBox":
+    case "RadioButton":
+      return compact([boundImage(node, "NormalImage") ?? boundImage(node, "PushedImage")]);
+    case "ProgressBar":
+    case "Slider":
+      return compact([
+        boundImage(node, "ProgressBackImage"),
+        boundImage(node, "ProgressImage"),
+        boundImage(node, "ProgressHeaderImage"),
+      ]);
+    case "Edit":
+      return compact([boundImage(node, "EditBackImage")]);
+    default:
+      return [];
+  }
+}
 
 /** 九宫格拉伸绘制：四角原尺寸、四边单轴拉伸、中心双轴拉伸 */
 export function draw9Slice(ctx: CanvasRenderingContext2D, img: HTMLCanvasElement,
@@ -53,11 +83,8 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
       ctx.clip();
     }
     ctx.globalAlpha = opacity; // 有效透明度：父组 × 自身
-    const layoutBackground = node.ctrl?.type === "Layout"
-      ? node.resources?.LayoutBackImage?.image
-      : undefined;
-    if (layoutBackground) {
-      ctx.drawImage(layoutBackground, rect.x, rect.y, rect.width, rect.height);
+    for (const resourceImage of visibleControlResourceImages(node)) {
+      ctx.drawImage(resourceImage, rect.x, rect.y, rect.width, rect.height);
     }
     if (useSlice && node.sliceImage && node.slice) {
       // 九宫格替换图：按 slice 边距九宫格拉伸绘制

@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { ImageBinding, InteractionTemplate, ResourceSlot, UINode, UIRect } from "../types";
 import { CTRL_TYPES, type CtrlType } from "../types";
 import { resourceSlotDefinitions } from "../resourceBinding";
+import { createDefaultEditText } from "../controlType";
 
 const PARENT_GRID: [string, number, number][] = [
   ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
@@ -97,6 +98,7 @@ export default function Inspector(p: Props) {
   const isInteractive = n.ctrl?.type === "Button" || n.ctrl?.type === "CheckBox";
   const resourceSlots = resourceSlotDefinitions(n.ctrl?.type);
   const boundResourceCount = resourceSlots.filter((slot) => n.resources?.[slot.key]).length;
+  const editableText = n.text ?? (n.ctrl?.type === "Edit" ? createDefaultEditText() : null);
 
   return (
     <aside className="inspector">
@@ -133,27 +135,27 @@ export default function Inspector(p: Props) {
         <NumRow label="旋转" value={n.rotation} set={(v) => set("rotation", v || 0)} />
       </InspectorSection>
 
-      {n.text && (
-        <InspectorSection title="文本内容" summary={`${Math.round(n.text.fontSize)} px`}>
-          <textarea rows={2} value={n.text.content}
-            onChange={(e) => set("text", { ...n.text!, content: e.target.value })} />
+      {editableText && (
+        <InspectorSection title={n.ctrl?.type === "Edit" ? "输入框文本" : "文本内容"} summary={`${Math.round(editableText.fontSize)} px`}>
+          <textarea rows={2} value={editableText.content} placeholder={n.ctrl?.type === "Edit" ? "输入框中显示的文字" : undefined}
+            onChange={(e) => set("text", { ...editableText, content: e.target.value })} />
           <div className="row"><label>排版</label>
-            <select value={n.text.mode}
-              onChange={(e) => set("text", { ...n.text!, mode: e.target.value as any })}>
+            <select value={editableText.mode}
+              onChange={(e) => set("text", { ...editableText, mode: e.target.value as any })}>
               <option value="auto">单行延伸</option>
               <option value="fixed">固定框（换行+裁切）</option>
               <option value="fit">自适应字号</option>
             </select></div>
-          <NumRow label="字号" value={n.text.fontSize}
-            set={(v) => set("text", { ...n.text!, fontSize: Math.max(1, v || 1) })} />
-          {n.text.mode === "fit" && (
-            <NumRow label="最小字号" value={n.text.minFontSize}
-              set={(v) => set("text", { ...n.text!, minFontSize: Math.max(1, v || 1) })} />
+          <NumRow label="字号" value={editableText.fontSize}
+            set={(v) => set("text", { ...editableText, fontSize: Math.max(1, v || 1) })} />
+          {editableText.mode === "fit" && (
+            <NumRow label="最小字号" value={editableText.minFontSize}
+              set={(v) => set("text", { ...editableText, minFontSize: Math.max(1, v || 1) })} />
           )}
           <div className="row"><label>颜色</label>
-            <input type="color" value={toHex(n.text.color)}
-              onChange={(e) => set("text", { ...n.text!, color: e.target.value })} /></div>
-          {n.text.mode !== "auto" && <p className="hint">文本框宽高在“布局与适配”中调整。</p>}
+            <input type="color" value={toHex(editableText.color)}
+              onChange={(e) => set("text", { ...editableText, color: e.target.value })} /></div>
+          {editableText.mode !== "auto" && <p className="hint">文本框宽高在“布局与适配”中调整。</p>}
         </InspectorSection>
       )}
 

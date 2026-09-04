@@ -14,6 +14,39 @@ function node(id: string, zIndex: number, children?: UINode[]): UINode {
 }
 
 describe("layer order shortcuts", () => {
+  it("moves a sibling into the adjacent Layout when moving downward", () => {
+    const exp = node("EXP", 4);
+    const experience = node("experience", 3, [node("value", 2), node("bar", 1)]);
+    experience.ctrl = { type: "Layout" };
+
+    const result = moveLayerOrder([exp, experience], ["EXP"], "down");
+
+    expect(result.changed).toBe(true);
+    expect(result.newParentId).toBe("experience");
+    expect(result.nodes.map((n) => n.id)).toEqual(["experience"]);
+    expect(result.nodes[0].children?.map((n) => n.id)).toEqual(["EXP", "value", "bar"]);
+  });
+
+  it("moves a sibling into an empty adjacent Layout", () => {
+    const layout = node("empty-layout", 2, []);
+    layout.ctrl = { type: "Layout" };
+
+    const result = moveLayerOrder([node("label", 3), layout], ["label"], "down");
+
+    expect(result.newParentId).toBe("empty-layout");
+    expect(result.nodes[0].children?.map((n) => n.id)).toEqual(["label"]);
+  });
+
+  it("moves a lower sibling into the bottom of an adjacent Layout when moving upward", () => {
+    const layout = node("layout", 3, [node("first", 2)]);
+    layout.ctrl = { type: "Layout" };
+
+    const result = moveLayerOrder([layout, node("label", 1)], ["label"], "up");
+
+    expect(result.newParentId).toBe("layout");
+    expect(result.nodes[0].children?.map((n) => n.id)).toEqual(["first", "label"]);
+  });
+
   it("moves a child upward and then out of its folder at the boundary", () => {
     const folder = node("folder", 4, [node("a", 3), node("b", 2), node("c", 1)]);
     const first = moveLayerOrder([folder], ["c"], "up");

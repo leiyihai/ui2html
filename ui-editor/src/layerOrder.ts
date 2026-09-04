@@ -71,6 +71,13 @@ function samePath(a: number[], b: number[]): boolean {
   return a.length === b.length && a.every((value, index) => value === b[index]);
 }
 
+function acceptsLayerChildren(node: UINode | undefined): node is UINode {
+  return node?.ctrl?.type === "Layout"
+    || node?.ctrl?.type === "List"
+    || node?.ctrl?.type === "ListHorizontal"
+    || node?.ctrl?.type === "GridView";
+}
+
 /**
  * 按层级面板的堆叠顺序移动节点。移动到当前父级边界后跨出父级，根级不再继续跨出。
  * 返回的新树已经把 zIndex 与层级面板顺序重新对齐。
@@ -102,8 +109,21 @@ export function moveLayerOrder(nodes: UINode[], selectedIds: string[], direction
   let newParentPath = parentPath;
   const minIndex = Math.min(...selectedIndexes);
   const maxIndex = Math.max(...selectedIndexes);
+  const adjacentContainer = direction === "up"
+    ? siblings[minIndex - 1]
+    : siblings[maxIndex + 1];
 
-  if (direction === "up" && minIndex > 0) {
+  if (acceptsLayerChildren(adjacentContainer)) {
+    // Photoshop 风格：向相邻容器方向移动时先进入容器，而不是整块越过容器。
+    // 从上方向下进入时放到容器最上层；从下方向上进入时放到最底层。
+    nextNodes = replaceChildrenAtPath(normalized, parentPath, remaining);
+    const containerPath = findPath(nextNodes, adjacentContainer.id);
+    if (!containerPath) return { nodes, changed: false, newParentId: null };
+    const children = nodeAtPath(nextNodes, containerPath)?.children ?? [];
+    const inserted = direction === "down" ? [...selected, ...children] : [...children, ...selected];
+    nextNodes = replaceChildrenAtPath(nextNodes, containerPath, inserted);
+    newParentPath = containerPath;
+  } else if (direction === "up" && minIndex > 0) {
     const beforeSelected = siblings.slice(0, minIndex).filter((node) => !selectedSet.has(node.id)).length;
     remaining.splice(Math.max(0, beforeSelected - 1), 0, ...selected);
     nextNodes = replaceChildrenAtPath(normalized, parentPath, remaining);

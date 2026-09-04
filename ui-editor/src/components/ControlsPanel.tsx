@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { CtrlType, UINode } from "../types";
+import { createSelectionIntent, flattenLayerIds, type SelectionIntent } from "../selection";
 
 interface Props {
   nodes: UINode[];
   selectedIds: string[];
-  onSelect: (id: string, additive: boolean) => void;
+  onSelect: (id: string, intent: SelectionIntent) => void;
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
   renamingId: string | null;
@@ -130,7 +131,8 @@ function Row(p: {
   depth: number;
   selected: boolean;
   selectedIds: string[];
-  onSelect: (id: string, additive: boolean) => void;
+  onSelect: (id: string, intent: SelectionIntent) => void;
+  orderedIds: string[];
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
   renamingId: string | null;
@@ -142,7 +144,7 @@ function Row(p: {
 
   return (
     <>
-      <li className={p.selected ? "sel" : ""} onClick={(e) => p.onSelect(p.n.id, e.ctrlKey || e.metaKey)}
+      <li className={p.selected ? "sel" : ""} onClick={(e) => p.onSelect(p.n.id, createSelectionIntent(e, p.orderedIds))}
         style={{ paddingLeft: 8 + p.depth * 16 }}>
         <button
           className="fold"
@@ -196,6 +198,7 @@ function Row(p: {
           depth={p.depth + 1}
           selected={p.selectedIds.includes(child.id)}
           selectedIds={p.selectedIds}
+          orderedIds={p.orderedIds}
           onSelect={p.onSelect}
           onToggleVisible={p.onToggleVisible}
           onToggleLock={p.onToggleLock}
@@ -211,6 +214,7 @@ function Row(p: {
 /** 控件工作区：仅提供类似游戏引擎的层级管理，并展示节点当前控件类型图标。 */
 export default function ControlsPanel(p: Props) {
   const sorted = [...p.nodes].sort((a, b) => b.zIndex - a.zIndex);
+  const orderedIds = flattenLayerIds(p.nodes);
   const [width, setWidth] = useState(280);
   const resizing = useRef<{ startX: number; startWidth: number } | null>(null);
   const startResize = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -243,6 +247,7 @@ export default function ControlsPanel(p: Props) {
             depth={0}
             selected={p.selectedIds.includes(node.id)}
             selectedIds={p.selectedIds}
+            orderedIds={orderedIds}
             onSelect={p.onSelect}
             onToggleVisible={p.onToggleVisible}
             onToggleLock={p.onToggleLock}

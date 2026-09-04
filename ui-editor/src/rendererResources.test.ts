@@ -1,7 +1,116 @@
 import { describe, expect, it, vi } from "vitest";
 import { renderUi } from "./renderer";
 
-describe("layout resource rendering", () => {
+function renderBoundControl(type: string, slotNames: string[]): HTMLCanvasElement[] {
+  const drawImage = vi.fn();
+  const context = {
+    canvas: { width: 800, height: 600 },
+    clearRect: vi.fn(),
+    save: vi.fn(),
+    restore: vi.fn(),
+    drawImage,
+    globalAlpha: 1,
+  } as unknown as CanvasRenderingContext2D;
+  const resources = Object.fromEntries(slotNames.map((slot) => [slot, {
+    id: slot,
+    name: slot,
+    image: { name: slot } as unknown as HTMLCanvasElement,
+  }]));
+  const node = {
+    id: type,
+    name: type,
+    image: null,
+    ctrl: { type },
+    resources,
+    designRect: { x: 0, y: 0, width: 100, height: 30 },
+    anchor: { parentX: 0, parentY: 0, selfX: 0, selfY: 0 },
+    scale: { x: 1, y: 1 },
+    rotation: 0,
+    opacity: 1,
+    visible: true,
+    zIndex: 1,
+    children: [],
+  };
+  const render = renderUi as unknown as (...args: unknown[]) => void;
+  render(context, {
+    nodes: [{ node, rect: { x: 10, y: 20, width: 100, height: 30 }, visible: true, opacity: 1 }],
+    scaleX: 1,
+    scaleY: 1,
+    letterbox: { x: 0, y: 0, width: 800, height: 600 },
+  });
+  return drawImage.mock.calls.map(([image]) => image as HTMLCanvasElement);
+}
+
+describe("bound resource rendering", () => {
+  it("draws the images bound to a ProgressBar instead of making them disappear", () => {
+    const drawImage = vi.fn();
+    const context = {
+      canvas: { width: 800, height: 600 },
+      clearRect: vi.fn(),
+      save: vi.fn(),
+      restore: vi.fn(),
+      drawImage,
+      globalAlpha: 1,
+    } as unknown as CanvasRenderingContext2D;
+    const background = { name: "progress background" } as unknown as HTMLCanvasElement;
+    const progress = { name: "progress fill" } as unknown as HTMLCanvasElement;
+    const progressNode = {
+      id: "progress",
+      name: "pbar",
+      image: null,
+      ctrl: { type: "ProgressBar" },
+      resources: {
+        ProgressBackImage: { id: "back", name: "back", image: background },
+        ProgressImage: { id: "fill", name: "fill", image: progress },
+      },
+      designRect: { x: 0, y: 0, width: 337, height: 24 },
+      anchor: { parentX: 0, parentY: 0, selfX: 0, selfY: 0 },
+      scale: { x: 1, y: 1 },
+      rotation: 0,
+      opacity: 1,
+      visible: true,
+      zIndex: 1,
+      children: [],
+    };
+
+    const render = renderUi as unknown as (...args: unknown[]) => void;
+    render(context, {
+      nodes: [{
+        node: progressNode,
+        rect: { x: 100, y: 50, width: 337, height: 24 },
+        visible: true,
+        opacity: 1,
+      }],
+      scaleX: 1,
+      scaleY: 1,
+      letterbox: { x: 0, y: 0, width: 800, height: 600 },
+    });
+
+    expect(drawImage.mock.calls.map(([image]) => image)).toEqual([background, progress]);
+  });
+
+  it("renders the visible resource slots for every bindable control type", () => {
+    const cases = [
+      ["StaticImage", ["ImageName"], ["ImageName"]],
+      ["Button", ["NormalImage", "PushedImage"], ["NormalImage"]],
+      ["CheckBox", ["NormalImage", "PushedImage"], ["NormalImage"]],
+      ["RadioButton", ["NormalImage", "PushedImage"], ["NormalImage"]],
+      ["ProgressBar", ["ProgressBackImage", "ProgressImage", "ProgressHeaderImage"], ["ProgressBackImage", "ProgressImage", "ProgressHeaderImage"]],
+      ["Slider", ["ProgressBackImage", "ProgressImage", "ProgressHeaderImage"], ["ProgressBackImage", "ProgressImage", "ProgressHeaderImage"]],
+      ["Edit", ["EditBackImage"], ["EditBackImage"]],
+    ] as const;
+
+    for (const [type, slots, expected] of cases) {
+      const drawn = renderBoundControl(type, [...slots]);
+      expect(drawn.map((image) => (image as unknown as { name: string }).name), type).toEqual(expected);
+    }
+  });
+
+  it("falls back to the pushed image when an interactive control has no normal image", () => {
+    const drawn = renderBoundControl("Button", ["PushedImage"]);
+    expect((drawn[0] as unknown as { name: string }).name).toBe("PushedImage");
+  });
+
   it("draws the LayoutBackImage resource bound to a layout", () => {
     const drawImage = vi.fn();
     const context = {
