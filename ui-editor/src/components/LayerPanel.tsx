@@ -84,7 +84,7 @@ function Row(p: { n: UINode; depth: number; selectedId: string | null; onSelect:
           </svg>
         </button>
       </li>
-      {!collapsed && p.n.children?.map((c) => (
+      {!collapsed && [...(p.n.children ?? [])].sort((a, b) => b.zIndex - a.zIndex).map((c) => (
         <Row key={c.id} n={c} depth={p.depth + 1} selectedId={p.selectedId}
           onSelect={p.onSelect} onToggleVisible={p.onToggleVisible} onToggleLock={p.onToggleLock} />
       ))}

@@ -77,6 +77,7 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
 
 export interface OverlayOptions {
   selectedId: string | null;
+  selectedIds?: string[];
   showGrid: boolean;
   showSafeArea: boolean;
   showDesignBorder: boolean;
@@ -107,13 +108,20 @@ export function renderOverlay(ctx: CanvasRenderingContext2D, result: LayoutResul
     ctx.strokeRect(sa.left, sa.top, w, h);
   }
 
-  // 选中框 + 锚点
+  // 多选框；主选中节点使用更醒目的颜色并显示尺寸标签与锚点
+  const selectedIds = opt.selectedIds?.length ? opt.selectedIds : opt.selectedId ? [opt.selectedId] : [];
+  for (const selectedId of selectedIds) {
+    const item = result.nodes.find((n) => n.node.id === selectedId);
+    if (!item) continue;
+    ctx.strokeStyle = selectedId === opt.selectedId ? "#4a90d9" : "rgba(74,144,217,0.55)";
+    ctx.lineWidth = selectedId === opt.selectedId ? 2 : 1;
+    ctx.strokeRect(item.rect.x - 1, item.rect.y - 1, item.rect.width + 2, item.rect.height + 2);
+  }
+
+  // 主选中节点的尺寸标签与锚点
   const sel = result.nodes.find((n) => n.node.id === opt.selectedId);
   if (sel) {
     const { rect, node } = sel;
-    ctx.strokeStyle = "#4a90d9";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(rect.x - 1, rect.y - 1, rect.width + 2, rect.height + 2);
     // 尺寸标签
     ctx.fillStyle = "rgba(74,144,217,0.9)";
     ctx.fillText(

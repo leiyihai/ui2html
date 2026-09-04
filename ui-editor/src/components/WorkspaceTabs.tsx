@@ -30,16 +30,16 @@ interface Props {
   onShowDesignBorder: (b: boolean) => void;
 }
 
-/** 工作栏：工作区导航（流程：控件类型 → 九宫格 → 布局适配 → 动画）+ 上下文工具 */
+/** 工作栏：工作区导航（流程：层级 → 九宫格 → 布局适配 → 动画）+ 上下文工具 */
 export default function Workbar(p: Props) {
   const main: [Workspace, string, string, boolean][] = [
-    ["controls", "控件类型", "◎", false],
+    ["controls", "层级", "◎", false],
     ["slice", "九宫格", "❒", p.lockLayout],
     ["layout", "布局适配", "▦", p.lockLayout],
     ["animation", "动画", "▶", false],
   ];
   const curPreset = PRESETS.find(([, w, h]) => w === p.viewport.width && h === p.viewport.height)?.[0] ?? "custom";
-  const lockTip = "请先在「控件类型」工作区完成所有节点的标记";
+  const lockTip = "请先在「层级」工作区选中节点，并在右侧属性面板完成控件类型标记";
   return (
     <div className="workbar">
       <nav className="ws-tabs">

@@ -45,6 +45,21 @@ export const CTRL_TYPES: { value: CtrlType; label: string }[] = [
   { value: "StaticText", label: "静态文本" },
 ];
 
+/** 控件可绑定的图片资源槽位（字段名与目标引擎保持一致）。 */
+export type ResourceSlot =
+  | "LayoutBackImage" | "ImageName" | "NormalImage" | "PushedImage"
+  | "ProgressBackImage" | "ProgressImage" | "ProgressHeaderImage" | "EditBackImage";
+
+export interface ImageBinding {
+  /** 原图片节点身份，用于解除绑定后恢复层级。 */
+  id: string;
+  name: string;
+  image: HTMLCanvasElement;
+  sourceNode: UINode;
+  sourceParentId: string | null;
+  sourceIndex: number;
+}
+
 /** 交互样式模板（可交互控件引用，改模板批量生效） */
 export interface InteractionTemplate {
   id: string;
@@ -63,6 +78,8 @@ export interface UINode {
   id: string;
   name: string;
   image: HTMLCanvasElement | null;
+  /** 工程 `.assets` 目录内的相对资源路径；PSD/外部图片导入后在首次保存时生成。 */
+  assetPath?: string;
   /** 文本节点内容（image 为 null 时按文本绘制） */
   text?: {
     content: string;
@@ -84,6 +101,8 @@ export interface UINode {
   sliceImage?: HTMLCanvasElement | null;
   /** 控件类型标签 + 交互模板引用 */
   ctrl?: { type: CtrlType; templateId?: string };
+  /** 已从层级树移入控件属性槽位的图片资源。 */
+  resources?: Partial<Record<ResourceSlot, ImageBinding>>;
 
   /** PSD 导入时的原始布局（只在导入时写入，编辑不改它） */
   designRect: UIRect;

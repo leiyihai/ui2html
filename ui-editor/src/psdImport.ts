@@ -4,7 +4,9 @@
 // 坐标统一为 Top-Left 系统（PSD 本身就是）。
 
 import { readPsd, type Layer } from "ag-psd";
-import type { CtrlType, ListConfig, ListType, UINode, UIScene } from "./types";
+import type { CtrlType, UINode, UIScene } from "./types";
+import { defaultFolderCtrlType } from "./controlType";
+import { cropImportedSceneImages } from "./imageImport";
 
 let layerIdSeq = 1;
 
@@ -94,57 +96,6 @@ function rasterizeVector(layer: Layer, w: number, h: number): HTMLCanvasElement 
   return c;
 }
 
-/** list 配置推断：文件夹名为 list 时，按 li 项的 PSD 分布推断类型/间距/边距 */
-function inferList(children: UINode[], mergedW: number, mergedH: number): ListConfig {
-  const lis = children.filter((c) => c.children && c.name.toLowerCase() !== "list");
-  const xs = lis.map((l) => l.designRect.x), ys = lis.map((l) => l.designRect.y);
-  const x2 = lis.map((l) => l.designRect.x + l.designRect.width);
-  const y2 = lis.map((l) => l.designRect.y + l.designRect.height);
-  const horizSpread = Math.max(...x2) - Math.min(...xs);
-  const vertSpread = Math.max(...y2) - Math.min(...ys);
-  const sortedX = [...lis].sort((a, b) => a.designRect.x - b.designRect.x);
-  const gapsX = sortedX.slice(1).map((l, i) => l.designRect.x - (sortedX[i].designRect.x + sortedX[i].designRect.width));
-  const sortedY = [...lis].sort((a, b) => a.designRect.y - b.designRect.y);
-  const gapsY = sortedY.slice(1).map((l, i) => l.designRect.y - (sortedY[i].designRect.y + sortedY[i].designRect.height));
-  const avg = (a: number[]) => (a.length ? a.reduce((s, v) => s + v, 0) / a.length : 0);
-  const type: ListType = vertSpread > horizSpread ? "vertical" : "horizontal";
-  const spacing = Math.max(0, Math.round(type === "vertical" ? avg(gapsY) : avg(gapsX)));
-  return {
-    type,
-    spacing,
-    padding: {
-      left: Math.max(0, Math.round(Math.min(...xs))),
-      right: Math.max(0, Math.round(mergedW - Math.max(...x2))),
-      top: Math.max(0, Math.round(Math.min(...ys))),
-      bottom: Math.max(0, Math.round(mergedH - Math.max(...y2))),
-    },
-    columns: 3,
-  };
-}
-
-/** 按文件夹/图层命名推断默认控件类型（辅助标记，界面中的标记优先并覆盖） */
-function inferCtrl(name: string, isGroup: boolean, hasCanvas: boolean): CtrlType | undefined {
-  const nm = name.trim().toLowerCase();
-  if (isGroup) {
-    if (/^(li\d*|listitem\d*)$/i.test(nm)) return "Layout";
-    if (/^listh(?:_|$)/i.test(nm)) return "ListHorizontal";
-    if (/^listv(?:_|$)/i.test(nm)) return "List";
-    if (/^grid(?:_|$)/i.test(nm)) return "GridView";
-    if (/^layout(?:_|$)/i.test(nm)) return "Layout";
-    if (/^pbar(?:_|$)/i.test(nm)) return "ProgressBar";
-    if (/^btn(?:_|$)/i.test(nm)) return "Button";
-    if (/^chb(?:_|$)/i.test(nm)) return "CheckBox";
-    if (/^radio(?:_|$)/i.test(nm)) return "RadioButton";
-    if (/^slider(?:_|$)/i.test(nm)) return "Slider";
-    if (/^edit(?:_|$)/i.test(nm)) return "Edit";
-    return undefined; // 其他文件夹：未标记（手动设空节点等）
-  }
-  if (hasCanvas) return "StaticImage";
-  // icon/img 开头的图层名也默认图片
-  if (/^(icon|img)(_|$)/i.test(nm)) return "StaticImage";
-  return undefined;
-}
-
 function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: number,
   counter: { n: number }, warnings: string[], compCanvas: HTMLCanvasElement | null): UINode | null {
   const i = counter.n++;
@@ -153,26 +104,18 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
     opacity: layer.opacity ?? 1, visible: !(layer.hidden ?? false) };
 
   // 文件夹 → 组节点
-  if (layer.children && layer.children.length) {
+  if (layer.children) {
     const rects: { x: number; y: number; w: number; h: number }[] = [];
     collectRects(layer.children, rects);
-    const merged = mergeRects(rects);
-    if (!merged) { warnings.push(`跳过空文件夹「${name}」`); return null; }
+    const merged = mergeRects(rects) ?? { x: baseX, y: baseY, w: 0, h: 0 };
     const children = layer.children
-      .map((ch) => toNode(ch, merged.x, merged.y, merged.w, merged.h, counter, warnings, compCanvas))
+      .map((ch) => toNode(ch, merged.x, merged.y, Math.max(1, merged.w), Math.max(1, merged.h), counter, warnings, compCanvas))
       .filter((n): n is UINode => !!n);
-    if (!children.length) { warnings.push(`跳过文件夹「${name}」：无可显示图层`); return null; }
     const isFullscreen = merged.x <= 0 && merged.y <= 0 && merged.w >= refW && merged.h >= refH;
     // 锚点推断必须用「相对父组原点」的坐标（文档坐标 - baseX/baseY），否则组内定位跑偏
     const { px, py, ox, oy } = inferAnchor(merged.x - baseX, merged.y - baseY, merged.w, merged.h, refW, refH);
-    const listMatch = name.trim().toLowerCase().match(/^(listv|listh|grid)(?:_|$)/);
-    const ctrlType = inferCtrl(name, true, false);
-    const listType: ListType | undefined = listMatch?.[1] === "listh" ? "horizontal"
-      : listMatch?.[1] === "grid" ? "grid" : listMatch?.[1] === "listv" ? "vertical" : undefined;
     return {
-      ...base, image: null, children, zIndex: i,
-      ...(listType ? { list: { ...inferList(children, merged.w, merged.h), type: listType } } : {}),
-      ...(ctrlType ? { ctrl: { type: ctrlType } } : {}),
+      ...base, image: null, children, ctrl: { type: defaultFolderCtrlType() }, zIndex: i,
       designRect: { x: merged.x - baseX, y: merged.y - baseY, width: merged.w, height: merged.h },
       anchor: { parentX: px, parentY: py, selfX: 0, selfY: 0, offsetX: ox, offsetY: oy, safeArea: false },
       adaptation: { mode: isFullscreen ? "stretch" : "anchor" },
@@ -257,37 +200,14 @@ export function importPsd(buffer: ArrayBuffer): { scene: UIScene; warnings: stri
   const warnings: string[] = [];
   const counter = { n: 0 };
   const compCanvas = psd.canvas ?? null; // PSD 合成图（含图层样式效果）
-  // "9" 文件夹（设计约定）：内部的图片是九宫格替换源，不进入场景布局
-  const sliceSources: { name: string; canvas: HTMLCanvasElement }[] = [];
   const topLayers = psd.children ?? [];
   const nodes: UINode[] = [];
   for (const layer of topLayers) {
-    if (layer.children?.length && /^9$/.test((layer.name ?? "").trim())) {
-      collectSliceSources(layer.children, sliceSources, warnings);
-      continue;
-    }
     const n = toNode(layer, 0, 0, psd.width, psd.height, counter, warnings, compCanvas);
     if (n) {
-      // 顶层文件夹 = 根节点（默认空节点，用于组织层级）
-      if (n.children?.length && !n.ctrl) n.ctrl = { type: "empty" };
       nodes.push(n);
     }
   }
-  return {
-    scene: { designWidth: psd.width, designHeight: psd.height, nodes, sliceSources },
-    warnings,
-  };
-}
-
-/** 收集 "9" 文件夹内的图片（叶子 canvas，递归嵌套） */
-function collectSliceSources(layers: Layer[], out: { name: string; canvas: HTMLCanvasElement }[], warnings: string[]) {
-  for (const l of layers) {
-    if (l.children?.length) {
-      collectSliceSources(l.children, out, warnings);
-    } else if (l.canvas) {
-      out.push({ name: l.name ?? "unnamed", canvas: l.canvas });
-    } else {
-      warnings.push(`九宫格源「${l.name}」无像素数据，跳过`);
-    }
-  }
+  const scene = cropImportedSceneImages({ designWidth: psd.width, designHeight: psd.height, nodes, sliceSources: [] }, warnings);
+  return { scene, warnings };
 }

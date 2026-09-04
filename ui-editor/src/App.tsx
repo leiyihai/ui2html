@@ -3,13 +3,21 @@ import { LayoutEngine, reanchor } from "./layoutEngine";
 import { importPsd } from "./psdImport";
 import { renderOverlay, renderUi } from "./renderer";
 import { buildExportHtml } from "./exportHtml";
-import type { CtrlType, InteractionTemplate, LayoutContext, ScaleMode, UINode, UIScene } from "./types";
+import type { CtrlType, ImageBinding, InteractionTemplate, LayoutContext, ResourceSlot, ScaleMode, UINode, UIScene } from "./types";
 import Appbar from "./components/Toolbar";
 import Workbar, { type Workspace } from "./components/WorkspaceTabs";
 import LayerPanel from "./components/LayerPanel";
 import Inspector from "./components/Inspector";
 import ControlsPanel from "./components/ControlsPanel";
+import TypePieMenu from "./components/TypePieMenu";
 import { SliceEditor, SliceList } from "./components/SlicePanel";
+import { markControlType } from "./controlType";
+import { hasResourceSlots, planResourceBindings, resourceSlotDefinitions } from "./resourceBinding";
+import { moveLayerOrder, type LayerOrderDirection } from "./layerOrder";
+import { restoreSceneSnapshot, serializeScene, type SavedProjectView } from "./scenePersistence";
+import { prepareSceneAssets } from "./projectAssets";
+import { openProject, projectFileName, saveProject } from "./projectApi";
+import { canvasFromImageFile, createImageNode } from "./imageImport";
 
 export const PRESETS: [string, number, number][] = [
   ["16:9 (1920 × 1080)", 1920, 1080],
@@ -32,34 +40,93 @@ function mapNodes(nodes: UINode[], id: string, fn: (n: UINode) => void): UINode[
     return n;
   });
 }
-function applySnap(nodes: UINode[], snap: Snapshot): UINode[] {
-  return nodes.map((n) => {
-    const c = snap[n.id] ? { ...n, ...snap[n.id] } : { ...n };
-    if (c.children) c.children = applySnap(c.children, snap);
-    return c;
+function findPath(nodes: UINode[], id: string, prefix: number[] = []): number[] | null {
+  for (let i = 0; i < nodes.length; i++) {
+    const n = nodes[i];
+    if (n.id === id) return [...prefix, i];
+    if (n.children) {
+      const found = findPath(n.children, id, [...prefix, i]);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+function nodeAtPath(nodes: UINode[], path: number[]): UINode | null {
+  let current: UINode[] | undefined = nodes;
+  let node: UINode | undefined;
+  for (const index of path) {
+    node = current?.[index];
+    if (!node) return null;
+    current = node.children;
+  }
+  return node ?? null;
+}
+function commonPath(paths: number[][]): number[] {
+  if (!paths.length) return [];
+  const out: number[] = [];
+  for (let i = 0; i < paths[0].length; i++) {
+    if (paths.every((path) => path[i] === paths[0][i])) out.push(paths[0][i]);
+    else break;
+  }
+  return out;
+}
+function nearestBindableAncestor(nodes: UINode[], imageIds: string[]): { node: UINode; path: number[] } | null {
+  const paths = imageIds.map((id) => findPath(nodes, id));
+  if (paths.some((path): path is null => path === null)) return null;
+  const parentPaths = (paths as number[][]).map((path) => path.slice(0, -1));
+  const shared = commonPath(parentPaths);
+  for (let length = shared.length; length >= 0; length--) {
+    const path = shared.slice(0, length);
+    const node = nodeAtPath(nodes, path);
+    if (node && hasResourceSlots(node.ctrl?.type)) return { node, path };
+  }
+  return null;
+}
+function removeNodes(nodes: UINode[], ids: Set<string>): UINode[] {
+  return nodes.flatMap((n) => {
+    if (ids.has(n.id)) return [];
+    return [{ ...n, children: n.children ? removeNodes(n.children, ids) : undefined }];
   });
 }
+function insertAtPath(nodes: UINode[], parentPath: number[], index: number, node: UINode): UINode[] {
+  if (!parentPath.length) return [...nodes.slice(0, index), node, ...nodes.slice(index)];
+  const [head, ...tail] = parentPath;
+  return nodes.map((n, i) => i === head
+    ? { ...n, children: insertAtPath(n.children ?? [], tail, index, node) }
+    : n);
+}
+function insertManyAtPath(nodes: UINode[], parentPath: number[], index: number, inserted: UINode[]): UINode[] {
+  if (!parentPath.length) return [...nodes.slice(0, index), ...inserted, ...nodes.slice(index)];
+  const [head, ...tail] = parentPath;
+  return nodes.map((n, i) => i === head
+    ? { ...n, children: insertManyAtPath(n.children ?? [], tail, index, inserted) }
+    : n);
+}
+function cloneNode(n: UINode): UINode {
+  const resources = n.resources
+    ? Object.fromEntries(Object.entries(n.resources).map(([slot, binding]) => [slot, binding ? {
+      ...binding,
+      sourceNode: cloneNode(binding.sourceNode),
+    } : binding])) as UINode["resources"]
+    : undefined;
+  return {
+    ...n,
+    scale: { ...n.scale },
+    designRect: { ...n.designRect },
+    anchor: { ...n.anchor },
+    ctrl: n.ctrl ? { ...n.ctrl } : undefined,
+    text: n.text ? { ...n.text } : undefined,
+    slice: n.slice ? { ...n.slice } : undefined,
+    list: n.list ? { ...n.list, padding: { ...n.list.padding } } : undefined,
+    resources,
+    children: n.children?.map(cloneNode),
+  };
+}
 
-// 撤销快照：存全部可变属性（image 是 canvas 不能序列化，sliceImage 存引用）
-type Snapshot = Record<string, {
-  anchor: UINode["anchor"]; adaptation: UINode["adaptation"];
-  visible: boolean; opacity: number; zIndex: number; rotation: number;
-  scale: { x: number; y: number }; name: string; locked?: boolean;
-  designRect?: UINode["designRect"];
-  ctrl?: UINode["ctrl"]; text?: UINode["text"]; slice?: UINode["slice"];
-  sliceImage?: UINode["sliceImage"]; list?: UINode["list"];
-}>;
-const snapScene = (s: UIScene): Snapshot => Object.fromEntries(walkNodes(s.nodes).map((n) => [n.id, {
-  anchor: { ...n.anchor }, adaptation: { ...n.adaptation }, visible: n.visible,
-  opacity: n.opacity, zIndex: n.zIndex, rotation: n.rotation,
-  scale: { ...n.scale }, name: n.name, locked: n.locked,
-  designRect: { ...n.designRect },
-  ctrl: n.ctrl ? { ...n.ctrl } : undefined,
-  text: n.text ? { ...n.text } : undefined,
-  slice: n.slice ? { ...n.slice } : undefined,
-  sliceImage: n.sliceImage,
-  list: n.list ? { ...n.list, padding: { ...n.list.padding } } : undefined,
-}]));
+// 撤销快照：保存完整树结构；canvas 引用保持不变，只复制节点配置。
+type Snapshot = UINode[];
+const snapScene = (s: UIScene): Snapshot => s.nodes.map(cloneNode);
+const applySnap = (snap: Snapshot): UINode[] => snap.map(cloneNode);
 
 const HISTORY_LIMIT = 50; // 步数不用保留太多
 
@@ -69,22 +136,27 @@ export default function App() {
   const [safeArea, setSafeArea] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
   const [scaleMode, setScaleMode] = useState<ScaleMode>("cover");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showSafeArea, setShowSafeArea] = useState(false);
   const [showDesignBorder, setShowDesignBorder] = useState(true);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [histLen, setHistLen] = useState(0);
   const [futureLen, setFutureLen] = useState(0);
   const [psdName, setPsdName] = useState<string | null>(null);
+  const [projectPath, setProjectPath] = useState<string | null>(null);
+  const [projectName, setProjectName] = useState("未命名.ui.json");
+  const [dirty, setDirty] = useState(false);
   const [sliceApplied, setSliceApplied] = useState(false);
   const [sliceSelected, setSliceSelected] = useState<string | null>(null);
   const [workspace, setWorkspace] = useState<Workspace>("controls");
-  const [psdList, setPsdList] = useState<string[]>([]);
   const [exportMsg, setExportMsg] = useState("");
+  const [typeMenu, setTypeMenu] = useState<{ x: number; y: number } | null>(null);
 
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ id: string; startX: number; startY: number } | null>(null);
+  const pointerRef = useRef({ x: 0, y: 0 });
   const sceneRef = useRef<UIScene | null>(null); // 同步引用（事件中立即更新）
   const historyRef = useRef<Snapshot[]>([]);
   const futureRef = useRef<Snapshot[]>([]);
@@ -118,9 +190,9 @@ export default function App() {
     }
     renderUi(ui.getContext("2d")!, result, sliceApplied);
     renderOverlay(ov.getContext("2d")!, result, layoutCtx, {
-      selectedId, showGrid: false, showSafeArea, showDesignBorder,
+      selectedId, selectedIds, showGrid: false, showSafeArea, showDesignBorder,
     });
-  }, [result, layoutCtx, selectedId, showSafeArea, showDesignBorder, sliceApplied]);
+  }, [result, layoutCtx, selectedId, selectedIds, showSafeArea, showDesignBorder, sliceApplied]);
 
   // 画布 CSS 尺寸：contain 到窗口（切回图层 tab 时重新计算）
   useEffect(() => {
@@ -162,115 +234,207 @@ export default function App() {
       lastHistoryRef.current = now;
     }
     applyScene(mutator(prev));
+    setDirty(true);
   }, [applyScene, pushHistory]);
 
-  // 读取 psd 文件夹列表（start.bat 同步到 public/psd/list.txt，可能是 GBK 或 UTF-8 编码）
-  useEffect(() => {
-    fetch("/psd/list.txt")
-      .then((r) => r.arrayBuffer())
-      .then((buf) => {
-        // 优先按 UTF-8 严格解码，失败（GBK 中文）回退 GBK
-        let t: string;
-        try { t = new TextDecoder("utf-8", { fatal: true }).decode(buf); }
-        catch { t = new TextDecoder("gbk").decode(buf); }
-        return t;
-      })
-      .then((t) => setPsdList(t.split(/\r?\n/).map((s) => s.trim()).filter(Boolean)))
-      .catch(() => { });
-  }, []);
-
-  const loadPsd = useCallback(async (buffer: ArrayBuffer, name: string) => {
-    const { scene: s, warnings: w } = importPsd(buffer);
-    // 打开 psd 时读取同名 json（锚点 + 九宫格），没有则用 PSD 推断
-    const base = name.replace(/\.psd$/i, "");
-    try {
-      const r = await fetch(`/psd/${base}.json`);
-      if (r.ok) {
-        const cfg = await r.json();
-        if (cfg.anchors) {
-          walkNodes(s.nodes).forEach((n) => {
-            const p = cfg.anchors[n.name];
-            if (p) {
-              n.anchor = { ...n.anchor, ...p };
-              if (p.mode) n.adaptation.mode = p.mode;
-            }
-          });
-        }
-        if (cfg.slices) {
-          for (const [k, v] of Object.entries(cfg.slices as Record<string, unknown>)) {
-            localStorage.setItem(`ui2html.slice.${name}.${k}`, JSON.stringify(v));
-          }
-        }
-        if (cfg.controls) {
-          walkNodes(s.nodes).forEach((n) => {
-            const c = (cfg.controls as Record<string, { type: CtrlType; templateId?: string }>)[n.name];
-            if (c) n.ctrl = { type: c.type, templateId: c.templateId };
-          });
-        }
-        if (cfg.templates) s.interactionTemplates = cfg.templates as InteractionTemplate[];
-      }
-    } catch { /* 无同名 json 则用 PSD 推断 */ }
+  const resetHistory = useCallback(() => {
     historyRef.current = [];
     futureRef.current = [];
-    setHistLen(0); setFutureLen(0);
-    applyScene(s);
-    setWarnings(w);
-    setPsdName(name);
-    setViewport({ width: s.designWidth, height: s.designHeight });
+    hasHistoryRef.current = false;
+    setHistLen(0);
+    setFutureLen(0);
+  }, []);
+
+  const createNewProject = useCallback(() => {
+    if (dirty && !window.confirm("当前工程有未保存修改，确定放弃并新建工程吗？")) return;
+    const next: UIScene = { designWidth: 1280, designHeight: 720, nodes: [], sliceSources: [], interactionTemplates: [] };
+    resetHistory();
+    applyScene(next);
+    setProjectPath(null);
+    setProjectName("未命名.ui.json");
+    setPsdName(null);
+    setViewport({ width: 1280, height: 720 });
+    setSafeArea({ left: 0, right: 0, top: 0, bottom: 0 });
+    setScaleMode("cover");
     setSelectedId(null);
-  }, [applyScene]);
+    setSelectedIds([]);
+    setWarnings([]);
+    setDirty(false);
+    setExportMsg("已新建空白工程");
+  }, [applyScene, dirty, resetHistory]);
 
-  // 从 psd 文件夹加载（下拉选择）
-  const loadPsdFromFolder = useCallback(async (name: string) => {
+  const openSavedProject = useCallback(async () => {
+    if (dirty && !window.confirm("当前工程有未保存修改，确定放弃并打开其他工程吗？")) return;
     try {
-      const r = await fetch(`/psd/${name}`);
-      if (!r.ok) throw 0;
-      await loadPsd(await r.arrayBuffer(), name);
-    } catch { setExportMsg(`无法加载 psd/${name}（请用 start.bat 启动）`); }
-  }, [loadPsd]);
-
-  const exportAnchors = useCallback(async () => {
-    if (!scene) return;
-    const anchors = Object.fromEntries(walkNodes(scene.nodes).map((n) => [n.name, {
-      parentX: n.anchor.parentX, parentY: n.anchor.parentY,
-      selfX: n.anchor.selfX, selfY: n.anchor.selfY,
-      offsetX: Math.round(n.anchor.offsetX * 10) / 10,
-      offsetY: Math.round(n.anchor.offsetY * 10) / 10,
-      mode: n.adaptation.mode,
-    }]));
-    // 汇总九宫格边距（各图独立，来自编辑器中的保存）
-    const slices: Record<string, { left: number; top: number; right: number; bottom: number }> = {};
-    for (const src of scene.sliceSources ?? []) {
-      const s = localStorage.getItem(`ui2html.slice.${psdName}.${src.name}`);
-      if (s) slices[src.name] = JSON.parse(s);
+      const opened = await openProject();
+      if (!opened) return;
+      const restored = restoreSceneSnapshot(opened.project, opened.assets);
+      const view = opened.project.view;
+      resetHistory();
+      applyScene(restored.scene);
+      setProjectPath(opened.path);
+      setProjectName(projectFileName(opened.path));
+      setPsdName(projectFileName(opened.path));
+      setViewport(view?.viewport ?? { width: restored.scene.designWidth, height: restored.scene.designHeight });
+      setSafeArea(view?.safeArea ?? { left: 0, right: 0, top: 0, bottom: 0 });
+      setScaleMode(view?.scaleMode ?? "cover");
+      setShowSafeArea(view?.showSafeArea ?? false);
+      setShowDesignBorder(view?.showDesignBorder ?? true);
+      setSelectedId(null);
+      setSelectedIds([]);
+      setWarnings(restored.missingAssets.map((asset) => `资源缺失：${asset}`));
+      setDirty(false);
+      setExportMsg(restored.missingAssets.length
+        ? `工程已打开，${restored.missingAssets.length} 个资源缺失`
+        : `已打开 ${projectFileName(opened.path)}`);
+    } catch (error) {
+      setExportMsg(error instanceof Error ? error.message : "打开工程失败");
     }
-    // 控件类型标签
-    const controls: Record<string, { type: CtrlType; templateId?: string }> = {};
-    walkNodes(scene.nodes).forEach((n) => { if (n.ctrl) controls[n.name] = n.ctrl; });
-    const data = { anchors, slices, controls, templates: scene.interactionTemplates ?? [] };
-    const base = (psdName ?? "ui").replace(/\.psd$/i, "");
+  }, [applyScene, dirty, resetHistory]);
+
+  const saveCurrentProject = useCallback(async (saveAs = false) => {
+    const current = sceneRef.current;
+    if (!current) return;
     try {
-      const r = await fetch("/save-export", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: base, json: data }),
+      const prepared = prepareSceneAssets(current);
+      const view: SavedProjectView = { viewport, safeArea, scaleMode, showSafeArea, showDesignBorder };
+      const saved = serializeScene(prepared.scene, view);
+      const nextPath = await saveProject({
+        path: projectPath,
+        suggestedName: projectName,
+        project: saved,
+        assets: prepared.assets,
+        saveAs,
       });
-      if (!r.ok) throw 0;
-      setExportMsg(`已保存 ${base}.json（锚点 + 九宫格）✓`);
-    } catch {
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${base}.json`;
-      a.click();
-      setExportMsg("已下载（未通过 start.bat 启动，无法写入 psd 文件夹）");
+      if (!nextPath) return;
+      applyScene(prepared.scene);
+      setProjectPath(nextPath);
+      setProjectName(projectFileName(nextPath));
+      setPsdName(projectFileName(nextPath));
+      setDirty(false);
+      setExportMsg(`已保存 ${projectFileName(nextPath)} ✓`);
+    } catch (error) {
+      setExportMsg(error instanceof Error ? error.message : "保存工程失败");
     }
-  }, [scene, psdName]);
+  }, [applyScene, projectName, projectPath, safeArea, scaleMode, showDesignBorder, showSafeArea, viewport]);
+
+  const loadPsd = useCallback(async (buffer: ArrayBuffer, name: string) => {
+    try {
+      const imported = importPsd(buffer);
+      const current = sceneRef.current;
+      if (current) {
+        mutateScene((source) => ({ ...source, nodes: [...source.nodes, ...imported.scene.nodes] }));
+      } else {
+        resetHistory();
+        applyScene(imported.scene);
+        setViewport({ width: imported.scene.designWidth, height: imported.scene.designHeight });
+        setProjectPath(null);
+        setProjectName(`${name.replace(/\.(psd|psb)$/i, "")}.ui.json`);
+      }
+      setPsdName(name);
+      setWarnings(imported.warnings);
+      setSelectedIds(imported.scene.nodes.map((node) => node.id));
+      setSelectedId(imported.scene.nodes.at(-1)?.id ?? null);
+      setDirty(true);
+      setExportMsg(`已从 ${name} 导入 ${walkNodes(imported.scene.nodes).length} 个节点`);
+    } catch (error) {
+      setExportMsg(error instanceof Error ? error.message : `无法导入 ${name}`);
+    }
+  }, [applyScene, mutateScene, resetHistory]);
+
+  const importImages = useCallback(async (files: File[]) => {
+    if (!files.length) return;
+    const baseScene = sceneRef.current ?? {
+      designWidth: 1280,
+      designHeight: 720,
+      nodes: [],
+      sliceSources: [],
+      interactionTemplates: [],
+    } satisfies UIScene;
+    const target = selectedId ? walkNodes(baseScene.nodes).find((node) => node.id === selectedId && node.ctrl?.type === "Layout") : undefined;
+    const width = target?.designRect.width || baseScene.designWidth;
+    const height = target?.designRect.height || baseScene.designHeight;
+    const imported: UINode[] = [];
+    const failed: string[] = [];
+    for (let index = 0; index < files.length; index++) {
+      const file = files[index];
+      try {
+        const cropped = await canvasFromImageFile(file);
+        if (!cropped) { failed.push(`${file.name}（图片完全透明）`); continue; }
+        const offset = index * 18;
+        const x = (width - cropped.sourceWidth) / 2 + cropped.offsetX + offset;
+        const y = (height - cropped.sourceHeight) / 2 + cropped.offsetY + offset;
+        imported.push(createImageNode(file.name, cropped, x, y, index));
+      } catch {
+        failed.push(file.name);
+      }
+    }
+    if (!imported.length) {
+      setExportMsg(`没有可导入的图片${failed.length ? `：${failed.join("、")}` : ""}`);
+      return;
+    }
+    if (!sceneRef.current) {
+      resetHistory();
+      const next = { ...baseScene, nodes: imported };
+      applyScene(next);
+      setProjectPath(null);
+      setProjectName(`${files[0].name.replace(/\.[^.]+$/, "")}.ui.json`);
+      setViewport({ width: next.designWidth, height: next.designHeight });
+    } else if (target) {
+      mutateScene((source) => ({
+        ...source,
+        nodes: mapNodes(source.nodes, target.id, (node) => { node.children = [...(node.children ?? []), ...imported]; }),
+      }));
+    } else {
+      mutateScene((source) => ({ ...source, nodes: [...source.nodes, ...imported] }));
+    }
+    setSelectedIds(imported.map((node) => node.id));
+    setSelectedId(imported.at(-1)?.id ?? null);
+    setWarnings(failed.map((item) => `图片导入失败：${item}`));
+    setDirty(true);
+    setExportMsg(`已导入 ${imported.length} 张图片${failed.length ? `，${failed.length} 张失败` : ""}`);
+  }, [applyScene, mutateScene, resetHistory, selectedId]);
+
+  /** F2：重命名当前选中的节点，名称会随 Ctrl+S 保存。 */
+  const renameSelected = useCallback(() => {
+    const current = sceneRef.current;
+    const node = current && selectedId
+      ? walkNodes(current.nodes).find((item) => item.id === selectedId)
+      : undefined;
+    if (!node || node.locked) return;
+    const nextName = window.prompt("重命名节点", node.name)?.trim();
+    if (!nextName || nextName === node.name) return;
+    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, node.id, (item) => { item.name = nextName; }) }));
+    setExportMsg(`已将节点重命名为「${nextName}」`);
+  }, [mutateScene, selectedId]);
+
+  /** Ctrl+W：关闭当前工程。 */
+  const closeProject = useCallback(() => {
+    if (!sceneRef.current) return;
+    if (dirty && !window.confirm("当前工程有未保存修改，确定放弃并关闭吗？")) return;
+    sceneRef.current = null;
+    setScene(null);
+    setPsdName(null);
+    setProjectPath(null);
+    setProjectName("未命名.ui.json");
+    setDirty(false);
+    setSelectedId(null);
+    setSelectedIds([]);
+    setWarnings([]);
+    setSliceSelected(null);
+    setSliceApplied(false);
+    setTypeMenu(null);
+    historyRef.current = [];
+    futureRef.current = [];
+    setHistLen(0);
+    setFutureLen(0);
+    setExportMsg("已关闭当前工程");
+  }, [dirty]);
 
   const exportHtml = useCallback(async () => {
     if (!scene) return;
     const html = buildExportHtml(scene, scaleMode, safeArea);
-    const base = (psdName ?? "ui").replace(/\.psd$/i, "");
+    const base = projectName.replace(/\.ui\.json$/i, "");
     try {
       const r = await fetch("/save-export", {
         method: "POST",
@@ -289,24 +453,114 @@ export default function App() {
       a.click();
       setExportMsg("已下载（未通过 start.bat 启动，无法写入 export 文件夹）");
     }
-  }, [scene, scaleMode, safeArea, psdName]);
+  }, [scene, scaleMode, safeArea, projectName]);
 
-  const updateNode = useCallback((id: string, patch: (n: UINode) => void) => {
-    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, patch) }));
+  const updateNode = useCallback((id: string, patch: (n: UINode) => void, record = true) => {
+    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, patch) }), record);
   }, [mutateScene]);
 
   /** 控件类型标签 */
   const setCtrl = useCallback((id: string, type: CtrlType | null) => {
-    updateNode(id, (n) => {
-      if (type) n.ctrl = { ...n.ctrl, type };
-      else n.ctrl = undefined;
-      if (type === "Layout" || type === "empty") n.list = undefined;
-      if (type === "List" || type === "ListHorizontal" || type === "GridView") {
-        n.list = n.list ?? { type: type === "ListHorizontal" ? "horizontal" : type === "GridView" ? "grid" : "vertical", spacing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 }, columns: 3 };
-        n.list.type = type === "ListHorizontal" ? "horizontal" : type === "GridView" ? "grid" : "vertical";
+    const current = sceneRef.current;
+    const source = current && walkNodes(current.nodes).find((node) => node.id === id);
+    if (!current || !source) return;
+
+    const supported = new Set(resourceSlotDefinitions(type ?? undefined).map((slot) => slot.key));
+    const stale = Object.entries(source.resources ?? {})
+      .filter(([slot, binding]) => Boolean(binding) && !supported.has(slot as ResourceSlot)) as [ResourceSlot, ImageBinding][];
+    let nextNodes = mapNodes(current.nodes, id, (node) => {
+      const converted = markControlType(node, type);
+      Object.assign(node, converted);
+      if (node.resources) {
+        const kept = Object.fromEntries(Object.entries(node.resources).filter(([slot]) => supported.has(slot as ResourceSlot)));
+        node.resources = Object.keys(kept).length ? kept : undefined;
       }
     });
-  }, [updateNode]);
+
+    // 目标类型没有对应槽位时，先解除这些资源，再按原父级/顺序恢复图片节点。
+    for (const [, binding] of stale.sort((a, b) => a[1].sourceIndex - b[1].sourceIndex)) {
+      const parentPath = binding.sourceParentId
+        ? findPath(nextNodes, binding.sourceParentId) ?? findPath(nextNodes, id) ?? []
+        : [];
+      const parent = nodeAtPath(nextNodes, parentPath);
+      const maxIndex = parent?.children?.length ?? nextNodes.length;
+      nextNodes = insertAtPath(nextNodes, parentPath, Math.min(binding.sourceIndex, maxIndex), cloneNode(binding.sourceNode));
+    }
+    mutateScene((s) => ({ ...s, nodes: nextNodes }));
+    if (stale.length) setExportMsg(`已切换类型，并恢复 ${stale.length} 个不兼容资源节点`);
+  }, [mutateScene]);
+
+  /** Ctrl+B：将选中的图片按名称/选择顺序填入共同控件祖先的空资源槽位。 */
+  const bindResources = useCallback(() => {
+    const current = sceneRef.current;
+    if (!current || !selectedIds.length) return;
+    const selected = selectedIds.map((id) => walkNodes(current.nodes).find((node) => node.id === id));
+    if (selected.some((node) => !node || !node.image)) {
+      setExportMsg("绑定已取消：选择中包含非图片节点");
+      return;
+    }
+    const images = selected.filter((node): node is UINode => Boolean(node));
+    const target = nearestBindableAncestor(current.nodes, selectedIds);
+    if (!target) {
+      setExportMsg("绑定失败：未找到共同的可绑定控件");
+      return;
+    }
+    const plan = planResourceBindings(target.node.ctrl?.type, images, target.node.resources);
+    if (!plan.assignments.length) {
+      setExportMsg("绑定失败：目标控件没有空资源槽位");
+      return;
+    }
+
+    const assignments = plan.assignments.map(({ slot, node }) => {
+      const path = findPath(current.nodes, node.id)!;
+      const parent = path.length > 1 ? nodeAtPath(current.nodes, path.slice(0, -1)) : null;
+      const binding: ImageBinding = {
+        id: node.id,
+        name: node.name,
+        image: node.image!,
+        sourceNode: cloneNode(node),
+        sourceParentId: parent?.id ?? null,
+        sourceIndex: path[path.length - 1],
+      };
+      return { slot, node, binding };
+    });
+    const assignedIds = new Set(assignments.map((item) => item.node.id));
+    const removed = removeNodes(current.nodes, assignedIds);
+    const nextNodes = mapNodes(removed, target.node.id, (node) => {
+      node.resources = { ...(node.resources ?? {}) };
+      for (const item of assignments) node.resources[item.slot] = item.binding;
+    });
+    mutateScene((s) => ({ ...s, nodes: nextNodes }));
+    setSelectedIds([target.node.id]);
+    setSelectedId(target.node.id);
+    const skipped = plan.skipped.length;
+    setExportMsg(`已绑定 ${assignments.length} 个资源槽位${skipped ? `，${skipped} 张图片未绑定` : ""}`);
+  }, [mutateScene, selectedIds]);
+
+  /** 解除控件资源槽位绑定，并按绑定时保存的父级与顺序恢复图片节点。 */
+  const unbindResource = useCallback((controlId: string, slot: ResourceSlot) => {
+    const current = sceneRef.current;
+    const control = current && walkNodes(current.nodes).find((node) => node.id === controlId);
+    const binding = control?.resources?.[slot];
+    if (!current || !control || !binding) return;
+    const controlPath = findPath(current.nodes, controlId);
+    if (!controlPath) return;
+    const parentPath = binding.sourceParentId
+      ? findPath(current.nodes, binding.sourceParentId) ?? controlPath
+      : [];
+    let nextNodes = mapNodes(current.nodes, controlId, (node) => {
+      const resources = { ...(node.resources ?? {}) };
+      delete resources[slot];
+      node.resources = Object.keys(resources).length ? resources : undefined;
+    });
+    const parent = nodeAtPath(nextNodes, parentPath);
+    const maxIndex = parent?.children?.length ?? nextNodes.length;
+    nextNodes = insertAtPath(nextNodes, parentPath, Math.min(binding.sourceIndex, maxIndex), cloneNode(binding.sourceNode));
+    mutateScene((s) => ({ ...s, nodes: nextNodes }));
+    setSelectedIds([binding.id]);
+    setSelectedId(binding.id);
+    setExportMsg(`已解除「${binding.name}」的资源绑定`);
+  }, [mutateScene]);
 
   /** 交互模板（随场景 json 导出） */
   const setTemplates = useCallback((t: InteractionTemplate[]) => {
@@ -366,13 +620,218 @@ export default function App() {
     mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, selectedId!, patch) }), record);
   }, [selectedId, mutateScene]);
 
+  const selectNode = useCallback((id: string, additive = false) => {
+    setSelectedIds((current) => {
+      const next = additive
+        ? current.includes(id) ? current.filter((x) => x !== id) : [...current, id]
+        : [id];
+      setSelectedId(next.length ? next[next.length - 1] : null);
+      return next;
+    });
+  }, []);
+
+  /** Ctrl+G：在最近共同父级下创建 Layout，并将一个或多个选中节点移动进去。 */
+  const groupSelected = useCallback(() => {
+    const current = sceneRef.current;
+    if (!current || selectedIds.length < 1 || !result) return;
+    const paths = selectedIds.map((id) => findPath(current.nodes, id));
+    if (paths.some((path): path is null => path === null)) return;
+    const validPaths = paths as number[][];
+    if (validPaths.some((path, i) => validPaths.some((other, j) => i !== j
+      && path.length < other.length && path.every((value, k) => value === other[k])))) {
+      setExportMsg("无法打组：不能同时选中父节点和它的子节点");
+      return;
+    }
+
+    const parentPath = commonPath(validPaths.map((path) => path.slice(0, -1)));
+    const targetParent = nodeAtPath(current.nodes, parentPath);
+    const selectedSet = new Set(selectedIds);
+    const entries = selectedIds.map((id) => ({
+      id,
+      node: walkNodes(current.nodes).find((n) => n.id === id)!,
+      rect: result.nodes.find((r) => r.node.id === id)?.rect,
+      path: validPaths[selectedIds.indexOf(id)],
+    }));
+    if (entries.some((entry) => !entry.rect)) {
+      setExportMsg("无法打组：选中节点没有可用布局位置");
+      return;
+    }
+    const rects = entries.map((entry) => entry.rect!);
+    const minX = Math.min(...rects.map((rect) => rect.x));
+    const minY = Math.min(...rects.map((rect) => rect.y));
+    const maxX = Math.max(...rects.map((rect) => rect.x + rect.width));
+    const maxY = Math.max(...rects.map((rect) => rect.y + rect.height));
+    const scaleX = result.scaleX || 1;
+    const scaleY = result.scaleY || 1;
+    const groupWidth = Math.max(1, (maxX - minX) / scaleX);
+    const groupHeight = Math.max(1, (maxY - minY) / scaleY);
+    const parentRect = parentPath.length
+      ? result.nodes.find((r) => r.node.id === targetParent?.id)?.rect
+      : null;
+    const baseX = parentRect?.x ?? (layoutCtx && layoutCtx.scaleMode === "cover" ? 0 : result.letterbox.x);
+    const baseY = parentRect?.y ?? (layoutCtx && layoutCtx.scaleMode === "cover" ? 0 : result.letterbox.y);
+    const names = new Set(walkNodes(current.nodes).map((n) => n.name));
+    let groupName = "Layout";
+    let suffix = 2;
+    while (names.has(groupName)) groupName = `Layout ${suffix++}`;
+
+    const children = [...entries]
+      .sort((a, b) => a.path.join(".").localeCompare(b.path.join("."), undefined, { numeric: true }))
+      .map((entry) => {
+        const child = cloneNode(entry.node);
+        child.anchor = {
+          ...child.anchor,
+          parentX: 0, parentY: 0, selfX: 0, selfY: 0,
+          offsetX: (entry.rect!.x - minX) / scaleX,
+          offsetY: (entry.rect!.y - minY) / scaleY,
+          safeArea: false,
+        };
+        child.adaptation = { mode: "anchor" };
+        return child;
+      });
+    const group: UINode = {
+      id: `group-${Date.now()}`,
+      name: groupName,
+      image: null,
+      children,
+      ctrl: { type: "Layout" },
+      designRect: { x: 0, y: 0, width: groupWidth, height: groupHeight },
+      anchor: {
+        parentX: 0, parentY: 0, selfX: 0, selfY: 0,
+        offsetX: (minX - baseX) / scaleX,
+        offsetY: (minY - baseY) / scaleY,
+        safeArea: false,
+      },
+      scale: { x: 1, y: 1 },
+      rotation: 0,
+      opacity: 1,
+      visible: true,
+      zIndex: Math.min(...entries.map((entry) => entry.node.zIndex)) - 0.01,
+      adaptation: { mode: "anchor" },
+      psd: { layerId: -Date.now(), originalX: minX, originalY: minY, originalWidth: groupWidth, originalHeight: groupHeight },
+    };
+    const originalSiblings = targetParent?.children ?? current.nodes;
+    const commonLength = parentPath.length;
+    const insertionAt = Math.min(...validPaths.map((path) => path[commonLength]));
+    const removedBefore = validPaths.filter((path) => path.length === commonLength + 1
+      && path[commonLength] < insertionAt).length;
+    const nextNodes = insertAtPath(
+      removeNodes(current.nodes, selectedSet),
+      parentPath,
+      Math.max(0, insertionAt - removedBefore),
+      group,
+    );
+    if (!originalSiblings) return;
+    mutateScene((s) => ({ ...s, nodes: nextNodes }));
+    setSelectedIds([group.id]);
+    setSelectedId(group.id);
+    setExportMsg(`已将 ${children.length} 个节点整理到「${group.name}」`);
+  }, [layoutCtx, mutateScene, result, selectedIds]);
+
+  /** Alt+G：释放当前分组的直接子节点，并保持它们当前画面位置。 */
+  const ungroupSelected = useCallback(() => {
+    const current = sceneRef.current;
+    if (!current || !selectedId || !result) return;
+    const paths = findPath(current.nodes, selectedId);
+    const group = walkNodes(current.nodes).find((node) => node.id === selectedId);
+    if (!paths || !group?.children?.length) return;
+    if (group.locked) {
+      setExportMsg("节点已锁定，无法取消打组");
+      return;
+    }
+
+    const parentPath = paths.slice(0, -1);
+    const groupIndex = paths[paths.length - 1];
+    const parent = nodeAtPath(current.nodes, parentPath);
+    const scaleX = result.scaleX || 1;
+    const scaleY = result.scaleY || 1;
+    const parentRect = parentPath.length
+      ? result.nodes.find((entry) => entry.node.id === parent?.id)?.rect
+      : null;
+    const baseX = parentRect?.x ?? (layoutCtx && layoutCtx.scaleMode === "cover" ? 0 : result.letterbox.x);
+    const baseY = parentRect?.y ?? (layoutCtx && layoutCtx.scaleMode === "cover" ? 0 : result.letterbox.y);
+    const children = group.children.map((source) => {
+      const child = cloneNode(source);
+      const rect = result.nodes.find((entry) => entry.node.id === source.id)?.rect;
+      if (rect) {
+        child.anchor = {
+          ...child.anchor,
+          parentX: 0, parentY: 0, selfX: 0, selfY: 0,
+          offsetX: (rect.x - baseX) / scaleX,
+          offsetY: (rect.y - baseY) / scaleY,
+          safeArea: false,
+        };
+        child.adaptation = { mode: "anchor" };
+      }
+      return child;
+    });
+    const removed = removeNodes(current.nodes, new Set([selectedId]));
+    const nextNodes = insertManyAtPath(removed, parentPath, groupIndex, children);
+    mutateScene((s) => ({ ...s, nodes: nextNodes }));
+    const first = children[0];
+    setSelectedIds(first ? [first.id] : []);
+    setSelectedId(first?.id ?? null);
+    setExportMsg(`已取消「${group.name}」打组`);
+  }, [layoutCtx, mutateScene, result, selectedId]);
+
+  /** Photoshop 风格的层级调整：Ctrl+] 向上，Ctrl+[ 向下；到文件夹边界时跨出文件夹。 */
+  const moveSelectedLayer = useCallback((direction: LayerOrderDirection) => {
+    const current = sceneRef.current;
+    if (!current || !result || !layoutCtx || !selectedIds.length) return;
+    const firstPath = findPath(current.nodes, selectedIds[0]);
+    if (!firstPath) return;
+    const oldParent = firstPath.length > 1 ? nodeAtPath(current.nodes, firstPath.slice(0, -1)) : null;
+    const selectedNodes = walkNodes(current.nodes).filter((node) => selectedIds.includes(node.id));
+    if (selectedNodes.some((node) => node.locked)) {
+      setExportMsg("节点已锁定，无法调整层级");
+      return;
+    }
+
+    const moved = moveLayerOrder(current.nodes, selectedIds, direction);
+    if (!moved.changed) {
+      setExportMsg("已到达当前方向的层级边界");
+      return;
+    }
+
+    let nextNodes = moved.nodes;
+    if ((oldParent?.id ?? null) !== moved.newParentId) {
+      const newParentRect = moved.newParentId
+        ? result.nodes.find((entry) => entry.node.id === moved.newParentId)?.rect
+        : null;
+      const baseX = newParentRect?.x ?? (layoutCtx.scaleMode === "cover" ? 0 : result.letterbox.x);
+      const baseY = newParentRect?.y ?? (layoutCtx.scaleMode === "cover" ? 0 : result.letterbox.y);
+      const scaleX = result.scaleX || 1;
+      const scaleY = result.scaleY || 1;
+      for (const id of selectedIds) {
+        const rect = result.nodes.find((entry) => entry.node.id === id)?.rect;
+        if (!rect) continue;
+        nextNodes = mapNodes(nextNodes, id, (node) => {
+          node.anchor = {
+            ...node.anchor,
+            parentX: 0, parentY: 0, selfX: 0, selfY: 0,
+            offsetX: (rect.x - baseX) / scaleX,
+            offsetY: (rect.y - baseY) / scaleY,
+            safeArea: false,
+          };
+          node.adaptation = { mode: "anchor" };
+        });
+      }
+    }
+
+    mutateScene((s) => ({ ...s, nodes: nextNodes }));
+    const directionLabel = direction === "up" ? "向上" : "向下";
+    const crossedFolder = (oldParent?.id ?? null) !== moved.newParentId;
+    setExportMsg(crossedFolder ? `已${directionLabel}调整层级并移出当前文件夹` : `已${directionLabel}调整层级`);
+  }, [layoutCtx, mutateScene, result, selectedIds]);
+
   // ---- 撤销 / 重做（Ctrl+Z 后退，Ctrl+X 前进）----
   const undo = useCallback(() => {
     const snap = historyRef.current.pop();
     if (!snap) return;
     futureRef.current.push(snapScene(sceneRef.current!));
     const s = sceneRef.current!;
-    applyScene({ ...s, nodes: applySnap(s.nodes, snap) });
+    applyScene({ ...s, nodes: applySnap(snap) });
+    setDirty(true);
     setHistLen(historyRef.current.length);
     setFutureLen(futureRef.current.length);
   }, [applyScene]);
@@ -382,19 +841,60 @@ export default function App() {
     if (!snap) return;
     historyRef.current.push(snapScene(sceneRef.current!));
     const s = sceneRef.current!;
-    applyScene({ ...s, nodes: applySnap(s.nodes, snap) });
+    applyScene({ ...s, nodes: applySnap(snap) });
+    setDirty(true);
     setHistLen(historyRef.current.length);
     setFutureLen(futureRef.current.length);
   }, [applyScene]);
 
   useEffect(() => {
+    const onPointerMove = (e: PointerEvent) => {
+      pointerRef.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener("pointermove", onPointerMove);
+    return () => window.removeEventListener("pointermove", onPointerMove);
+  }, []);
+
+  useEffect(() => {
+    setTypeMenu(null);
+  }, [selectedId, selectedIds]);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+      if (e.key === "Escape" && typeMenu) {
+        e.preventDefault();
+        setTypeMenu(null);
+        return;
+      }
+      if (e.altKey && (e.key === "g" || e.key === "G")) {
+        e.preventDefault();
+        ungroupSelected();
+        return;
+      }
+      if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key === "F2") {
+        e.preventDefault();
+        renameSelected();
+        return;
+      }
       if (e.ctrlKey || e.metaKey) {
-        if (e.key === "s" || e.key === "S") { e.preventDefault(); exportAnchors(); } // Ctrl+S 保存配置
+        if (e.key === "w" || e.key === "W") { e.preventDefault(); closeProject(); }
+        else if (e.key === "s" || e.key === "S") { e.preventDefault(); void saveCurrentProject(); }
         else if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
         else if (e.key === "x" || e.key === "X") { e.preventDefault(); redo(); }
+        else if (e.key === "]") { e.preventDefault(); moveSelectedLayer("up"); }
+        else if (e.key === "[") { e.preventDefault(); moveSelectedLayer("down"); }
+        else if (e.key === "b" || e.key === "B") { e.preventDefault(); bindResources(); }
+        else if (e.key === "g" || e.key === "G") { e.preventDefault(); groupSelected(); }
+        return;
+      }
+      if (!e.altKey && (e.key === "t" || e.key === "T") && selectedIds.length === 1 && selectedId) {
+        const selected = sceneRef.current && walkNodes(sceneRef.current.nodes).find((node) => node.id === selectedId);
+        if (selected && !selected.locked) {
+          e.preventDefault();
+          setTypeMenu(pointerRef.current);
+        }
         return;
       }
       // 方向键微调选中图层位置（Shift=10px，默认1px）
@@ -411,7 +911,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [undo, redo, selectedId, updateSelected, exportAnchors]);
+  }, [undo, redo, selectedId, selectedIds, typeMenu, updateSelected, saveCurrentProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, renameSelected, closeProject]);
 
   // 命中检测 + 拖动（文档 §17：拖动只改 offset，不碰 designRect）
   const toLogical = (clientX: number, clientY: number) => {
@@ -422,14 +922,23 @@ export default function App() {
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
+    pointerRef.current = { x: e.clientX, y: e.clientY };
     if (!result || !layoutCtx) return;
     const p = toLogical(e.clientX, e.clientY);
     const hit = [...result.nodes]
       .sort((a, b) => b.node.zIndex - a.node.zIndex)
       .find((n) => n.visible && p.x >= n.rect.x && p.x <= n.rect.x + n.rect.width
         && p.y >= n.rect.y && p.y <= n.rect.y + n.rect.height);
-    if (!hit) { setSelectedId(null); return; }
-    setSelectedId(hit.node.id);
+    const additive = e.ctrlKey || e.metaKey;
+    if (!hit) {
+      if (!additive) {
+        setSelectedId(null);
+        setSelectedIds([]);
+      }
+      return;
+    }
+    selectNode(hit.node.id, additive);
+    if (additive) return;
     if (hit.node.locked) return;
     pushHistory(sceneRef.current!); // 拖动前记录一次，撤销回退整个拖动
     dragRef.current = { id: hit.node.id, startX: e.clientX, startY: e.clientY };
@@ -440,7 +949,7 @@ export default function App() {
     const start = { x: (d.startX - (uiRef.current!.getBoundingClientRect().left)) * (layoutCtx.viewportWidth / uiRef.current!.getBoundingClientRect().width), y: (d.startY - uiRef.current!.getBoundingClientRect().top) * (layoutCtx.viewportHeight / uiRef.current!.getBoundingClientRect().height) };
     const p = toLogical(e.clientX, e.clientY);
     const dx = p.x - start.x, dy = p.y - start.y;
-    updateSelected((n) => {
+    updateNode(d.id, (n) => {
       if (n.adaptation.mode !== "anchor") n.adaptation.mode = "anchor"; // 拖动 → 锚点模式
       n.anchor.offsetX += dx / result.scaleX;   // 预览位移 → 设计 offset（÷scale 等比）
       n.anchor.offsetY += dy / result.scaleY;
@@ -448,18 +957,24 @@ export default function App() {
     dragRef.current = { ...d, startX: e.clientX, startY: e.clientY };
   };
   const onPointerUp = () => { dragRef.current = null; };
+  const pieNode = typeMenu && selectedId
+    ? walkNodes(scene?.nodes ?? []).find((node) => node.id === selectedId) ?? null
+    : null;
 
   return (
     <div className="app">
       <Appbar
-        onLoadFile={loadPsd} psdList={psdList} onLoadPsdFromFolder={loadPsdFromFolder}
+        projectName={projectName} dirty={dirty}
+        onNew={createNewProject} onOpenProject={openSavedProject}
+        onImportPsd={loadPsd} onImportImages={importImages}
         hasScene={!!scene} canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
-        onExportAnchors={exportAnchors} onExportHtml={exportHtml} onGlobalFont={applyGlobalFont}
+        onSave={() => { void saveCurrentProject(); }} onSaveAs={() => { void saveCurrentProject(true); }}
+        onExportHtml={exportHtml} onGlobalFont={applyGlobalFont}
       />
       <Workbar
         ws={workspace} onWs={setWorkspace} hasScene={!!scene}
         lockLayout={!!scene && walkNodes(scene.nodes).some((n) => !n.ctrl)}
-        onLocked={() => setExportMsg("请先在「控件类型」工作区完成所有节点的标记")}
+        onLocked={() => setExportMsg("请先在「层级」工作区选中节点，并在右侧属性面板完成控件类型标记")}
         sliceAvailable={(scene?.sliceSources?.length ?? 0) > 0} sliceApplied={sliceApplied}
         onReplaceSlice={replaceWithSlice} onToggleSlice={toggleSlice} onRestoreSlice={restoreSlice}
         viewport={viewport} onViewport={setViewport}
@@ -470,8 +985,10 @@ export default function App() {
       />
       <div className="body">
         {workspace === "controls" ? (
-          <ControlsPanel nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={setSelectedId}
-            onSetCtrl={setCtrl} />
+          <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode}
+            onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
+            onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
+          />
         ) : workspace === "slice" ? (
           <div className="layer-panel">
             <h3>九宫格图片</h3>
@@ -480,7 +997,7 @@ export default function App() {
           </div>
         ) : workspace === "layout" ? (
           <LayerPanel
-            nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={setSelectedId}
+            nodes={scene?.nodes ?? []} selectedId={selectedId} onSelect={(id) => { if (id) selectNode(id); }}
             onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
             onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
           />
@@ -521,22 +1038,33 @@ export default function App() {
             rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
             viewport={viewport}
             onUpdate={updateSelected}
+            onSetCtrl={setCtrl}
             onReanchor={(a) => updateSelected((n) => {
               const r = result!.nodes.find((x) => x.node.id === n.id)!.rect;
               reanchor(n, scene!.designWidth, scene!.designHeight, r, layoutCtx!, result!, a);
             })}
             templates={scene?.interactionTemplates ?? []}
             onTemplates={setTemplates}
+            onUnbindResource={unbindResource}
           />
         )}
       </div>
+      {typeMenu && pieNode && (
+        <TypePieMenu
+          x={typeMenu.x}
+          y={typeMenu.y}
+          node={pieNode}
+          onChoose={(type) => { setCtrl(pieNode.id, type); setTypeMenu(null); }}
+          onClose={() => setTypeMenu(null)}
+        />
+      )}
       <footer className="statusbar">
         {warnings.length > 0 && (
           <span className="warn" title={warnings.join("\n")}>⚠ {warnings.length} 个图层被跳过</span>
         )}
         <span className="grow" />
         {exportMsg && <span className="ok">{exportMsg}</span>}
-        {!scene && <span className="hint">打开 PSD 开始编辑</span>}
+        {!scene && <span className="hint">新建或打开工程，也可以直接导入 PSD / 图片</span>}
       </footer>
     </div>
   );
