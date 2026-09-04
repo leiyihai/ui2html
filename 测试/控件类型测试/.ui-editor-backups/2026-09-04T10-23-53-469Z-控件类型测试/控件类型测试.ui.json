@@ -1,0 +1,3338 @@
+{
+  "schemaVersion": 3,
+  "designWidth": 1280,
+  "designHeight": 720,
+  "nodes": [
+    {
+      "id": "node-1",
+      "name": "layout",
+      "children": [
+        {
+          "id": "node-82",
+          "name": "bag",
+          "children": [
+            {
+              "id": "node-90",
+              "name": "icon_bag",
+              "assetPath": "图标.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 36,
+                "y": 16,
+                "width": 31,
+                "height": 26
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 36,
+                "offsetY": 16,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 86,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-89",
+              "name": "Bag",
+              "text": {
+                "content": "Bag",
+                "fontSize": 20,
+                "color": "rgb(255,255,255)",
+                "font": "NotoSansHans-Black",
+                "mode": "auto",
+                "minFontSize": 10
+              },
+              "ctrl": {
+                "type": "StaticText"
+              },
+              "designRect": {
+                "x": 77,
+                "y": 20,
+                "width": 37,
+                "height": 21
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 77,
+                "offsetY": 20,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 85,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-84",
+              "name": "list",
+              "children": [
+                {
+                  "id": "node-85",
+                  "name": "layout_item",
+                  "children": [
+                    {
+                      "id": "node-88",
+                      "name": "10",
+                      "text": {
+                        "content": "10",
+                        "fontSize": 20,
+                        "color": "rgb(255,255,255)",
+                        "font": "NotoSansHans-Black",
+                        "mode": "auto",
+                        "minFontSize": 10
+                      },
+                      "ctrl": {
+                        "type": "StaticText"
+                      },
+                      "designRect": {
+                        "x": 51,
+                        "y": 58,
+                        "width": 23,
+                        "height": 16
+                      },
+                      "anchor": {
+                        "parentX": 1,
+                        "parentY": 1,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -33,
+                        "offsetY": -26,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 82,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-87",
+                      "name": "2",
+                      "assetPath": "2.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 16,
+                        "y": 12,
+                        "width": 52,
+                        "height": 62
+                      },
+                      "anchor": {
+                        "parentX": 0,
+                        "parentY": 1,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": 16,
+                        "offsetY": -72,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 81,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-86",
+                      "name": "矩形 2 拷贝",
+                      "assetPath": "矩形 2 拷贝.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 84,
+                        "height": 84
+                      },
+                      "anchor": {
+                        "parentX": 0,
+                        "parentY": 0,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": 0,
+                        "offsetY": 0,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 80,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    }
+                  ],
+                  "ctrl": {
+                    "type": "Layout"
+                  },
+                  "designRect": {
+                    "x": 0,
+                    "y": 0,
+                    "width": 84,
+                    "height": 84
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 83,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                }
+              ],
+              "list": {
+                "type": "grid",
+                "spacing": 0,
+                "padding": {
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                  "bottom": 0
+                },
+                "columns": 3
+              },
+              "ctrl": {
+                "type": "GridView"
+              },
+              "designRect": {
+                "x": 16,
+                "y": 60,
+                "width": 260,
+                "height": 324
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 16,
+                "offsetY": 60,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 84,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            }
+          ],
+          "ctrl": {
+            "type": "Layout"
+          },
+          "designRect": {
+            "x": 955,
+            "y": 182,
+            "width": 296,
+            "height": 404
+          },
+          "anchor": {
+            "parentX": 1,
+            "parentY": 1,
+            "selfX": 0,
+            "selfY": 0,
+            "offsetX": -325,
+            "offsetY": -538,
+            "safeArea": false
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "opacity": 1,
+          "visible": true,
+          "zIndex": 87,
+          "adaptation": {
+            "mode": "anchor"
+          },
+          "resources": {
+            "LayoutBackImage": {
+              "id": "node-83",
+              "name": "img_panel_bd",
+              "sourceParentId": "node-82",
+              "sourceIndex": 0,
+              "sourceNode": {
+                "id": "node-83",
+                "name": "img_panel_bd",
+                "assetPath": "img_panel_bd_2.png",
+                "ctrl": {
+                  "type": "StaticImage"
+                },
+                "designRect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 296,
+                  "height": 404
+                },
+                "anchor": {
+                  "parentX": 0,
+                  "parentY": 0,
+                  "selfX": 0,
+                  "selfY": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "safeArea": false
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                },
+                "rotation": 0,
+                "opacity": 1,
+                "visible": true,
+                "zIndex": 82,
+                "adaptation": {
+                  "mode": "anchor"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "node-60",
+          "name": "func",
+          "children": [
+            {
+              "id": "node-79",
+              "name": "title",
+              "children": [
+                {
+                  "id": "node-81",
+                  "name": "icon_func",
+                  "assetPath": "icon_func.png",
+                  "ctrl": {
+                    "type": "StaticImage"
+                  },
+                  "designRect": {
+                    "x": 0,
+                    "y": 0,
+                    "width": 28,
+                    "height": 28
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 77,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-80",
+                  "name": "Func",
+                  "text": {
+                    "content": "Func",
+                    "fontSize": 20,
+                    "color": "rgb(255,255,255)",
+                    "font": "NotoSansHans-Black",
+                    "mode": "auto",
+                    "minFontSize": 10
+                  },
+                  "ctrl": {
+                    "type": "StaticText"
+                  },
+                  "designRect": {
+                    "x": 37,
+                    "y": 7,
+                    "width": 48,
+                    "height": 17
+                  },
+                  "anchor": {
+                    "parentX": 1,
+                    "parentY": 1,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": -48,
+                    "offsetY": -21,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 76,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                }
+              ],
+              "ctrl": {
+                "type": "Layout"
+              },
+              "designRect": {
+                "x": 40,
+                "y": 13,
+                "width": 85,
+                "height": 28
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 40,
+                "offsetY": 13,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 78,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-62",
+              "name": "列表",
+              "children": [
+                {
+                  "id": "node-75",
+                  "name": "地图",
+                  "children": [
+                    {
+                      "id": "node-78",
+                      "name": "img_arrow",
+                      "assetPath": "img_arrow.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 196,
+                        "y": 14,
+                        "width": 32,
+                        "height": 36
+                      },
+                      "anchor": {
+                        "parentX": 1,
+                        "parentY": 1,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -32,
+                        "offsetY": -49,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 73,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-77",
+                      "name": "地图",
+                      "text": {
+                        "content": "地图",
+                        "fontSize": 22.08453,
+                        "color": "rgb(255,255,255)",
+                        "font": "NotoSansHans-Black",
+                        "mode": "auto",
+                        "minFontSize": 11
+                      },
+                      "ctrl": {
+                        "type": "StaticText"
+                      },
+                      "designRect": {
+                        "x": 83,
+                        "y": 21,
+                        "width": 100,
+                        "height": 20
+                      },
+                      "anchor": {
+                        "parentX": 0.5,
+                        "parentY": 0.5,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -31,
+                        "offsetY": -10.5,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 72,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-76",
+                      "name": "icon_map",
+                      "assetPath": "icon_map.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 63,
+                        "height": 63
+                      },
+                      "anchor": {
+                        "parentX": 0,
+                        "parentY": 0,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": 0,
+                        "offsetY": 0,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 71,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    }
+                  ],
+                  "ctrl": {
+                    "type": "Button"
+                  },
+                  "designRect": {
+                    "x": 1,
+                    "y": 0,
+                    "width": 228,
+                    "height": 63
+                  },
+                  "anchor": {
+                    "parentX": 1,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": -228,
+                    "offsetY": 0,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 74,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-71",
+                  "name": "合成",
+                  "children": [
+                    {
+                      "id": "node-74",
+                      "name": "img_arrow",
+                      "assetPath": "img_arrow.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 196,
+                        "y": 14,
+                        "width": 32,
+                        "height": 36
+                      },
+                      "anchor": {
+                        "parentX": 1,
+                        "parentY": 1,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -32,
+                        "offsetY": -49,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 69,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-73",
+                      "name": "武器强化",
+                      "text": {
+                        "content": "合成",
+                        "fontSize": 22.08453,
+                        "color": "rgb(255,255,255)",
+                        "font": "NotoSansHans-Black",
+                        "mode": "auto",
+                        "minFontSize": 11
+                      },
+                      "ctrl": {
+                        "type": "StaticText"
+                      },
+                      "designRect": {
+                        "x": 84,
+                        "y": 21,
+                        "width": 100,
+                        "height": 21
+                      },
+                      "anchor": {
+                        "parentX": 0.5,
+                        "parentY": 0.5,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -30,
+                        "offsetY": -10.5,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 68,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-72",
+                      "name": "icon_merge",
+                      "assetPath": "icon_merge.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 63,
+                        "height": 63
+                      },
+                      "anchor": {
+                        "parentX": 0,
+                        "parentY": 0,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": 0,
+                        "offsetY": 0,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 67,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    }
+                  ],
+                  "ctrl": {
+                    "type": "Button"
+                  },
+                  "designRect": {
+                    "x": 1,
+                    "y": 237,
+                    "width": 228,
+                    "height": 63
+                  },
+                  "anchor": {
+                    "parentX": 1,
+                    "parentY": 1,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": -228,
+                    "offsetY": -63,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 70,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-67",
+                  "name": "任务",
+                  "children": [
+                    {
+                      "id": "node-70",
+                      "name": "img_arrow",
+                      "assetPath": "img_arrow.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 197,
+                        "y": 14,
+                        "width": 32,
+                        "height": 36
+                      },
+                      "anchor": {
+                        "parentX": 1,
+                        "parentY": 1,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -32,
+                        "offsetY": -49,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 65,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-69",
+                      "name": "任务",
+                      "text": {
+                        "content": "任务",
+                        "fontSize": 22.08453,
+                        "color": "rgb(255,255,255)",
+                        "font": "NotoSansHans-Black",
+                        "mode": "auto",
+                        "minFontSize": 11
+                      },
+                      "ctrl": {
+                        "type": "StaticText"
+                      },
+                      "designRect": {
+                        "x": 84,
+                        "y": 22,
+                        "width": 100,
+                        "height": 19
+                      },
+                      "anchor": {
+                        "parentX": 0.5,
+                        "parentY": 0.5,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -30.5,
+                        "offsetY": -9.5,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 64,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-68",
+                      "name": "icon_task",
+                      "assetPath": "icon_task.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 63,
+                        "height": 63
+                      },
+                      "anchor": {
+                        "parentX": 0,
+                        "parentY": 0,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": 0,
+                        "offsetY": 0,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 63,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    }
+                  ],
+                  "ctrl": {
+                    "type": "Button"
+                  },
+                  "designRect": {
+                    "x": 0,
+                    "y": 79,
+                    "width": 229,
+                    "height": 63
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 0,
+                    "offsetY": 79,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 66,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-63",
+                  "name": "宠物",
+                  "children": [
+                    {
+                      "id": "node-66",
+                      "name": "img_arrow",
+                      "assetPath": "img_arrow.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 197,
+                        "y": 14,
+                        "width": 32,
+                        "height": 36
+                      },
+                      "anchor": {
+                        "parentX": 1,
+                        "parentY": 1,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -32,
+                        "offsetY": -49,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 61,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-65",
+                      "name": "宠物",
+                      "text": {
+                        "content": "宠物",
+                        "fontSize": 22.08453,
+                        "color": "rgb(255,255,255)",
+                        "font": "NotoSansHans-Black",
+                        "mode": "auto",
+                        "minFontSize": 11
+                      },
+                      "ctrl": {
+                        "type": "StaticText"
+                      },
+                      "designRect": {
+                        "x": 84,
+                        "y": 22,
+                        "width": 100,
+                        "height": 19
+                      },
+                      "anchor": {
+                        "parentX": 0.5,
+                        "parentY": 0.5,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -30.5,
+                        "offsetY": -9.5,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 60,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-64",
+                      "name": "icon_pet",
+                      "assetPath": "icon_pet.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 63,
+                        "height": 63
+                      },
+                      "anchor": {
+                        "parentX": 0,
+                        "parentY": 0,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": 0,
+                        "offsetY": 0,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 59,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    }
+                  ],
+                  "ctrl": {
+                    "type": "Button"
+                  },
+                  "designRect": {
+                    "x": 0,
+                    "y": 158,
+                    "width": 229,
+                    "height": 63
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 1,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 0,
+                    "offsetY": -142,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 62,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                }
+              ],
+              "list": {
+                "type": "vertical",
+                "spacing": 0,
+                "padding": {
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                  "bottom": 0
+                },
+                "columns": 3
+              },
+              "ctrl": {
+                "type": "GridView"
+              },
+              "designRect": {
+                "x": 24,
+                "y": 69,
+                "width": 229,
+                "height": 300
+              },
+              "anchor": {
+                "parentX": 1,
+                "parentY": 1,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": -252,
+                "offsetY": -335,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 75,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            }
+          ],
+          "ctrl": {
+            "type": "Layout"
+          },
+          "designRect": {
+            "x": 32,
+            "y": 182,
+            "width": 276,
+            "height": 404
+          },
+          "anchor": {
+            "parentX": 0,
+            "parentY": 1,
+            "selfX": 0,
+            "selfY": 0,
+            "offsetX": 32,
+            "offsetY": -538,
+            "safeArea": false
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "opacity": 1,
+          "visible": true,
+          "zIndex": 79,
+          "adaptation": {
+            "mode": "anchor"
+          },
+          "resources": {
+            "LayoutBackImage": {
+              "id": "node-61",
+              "name": "img_panel_bd",
+              "sourceParentId": "node-60",
+              "sourceIndex": 0,
+              "sourceNode": {
+                "id": "node-61",
+                "name": "img_panel_bd",
+                "assetPath": "img_panel_bd.png",
+                "ctrl": {
+                  "type": "StaticImage"
+                },
+                "designRect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 276,
+                  "height": 404
+                },
+                "anchor": {
+                  "parentX": 0,
+                  "parentY": 0,
+                  "selfX": 0,
+                  "selfY": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "safeArea": false
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                },
+                "rotation": 0,
+                "opacity": 1,
+                "visible": true,
+                "zIndex": 60,
+                "adaptation": {
+                  "mode": "anchor"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "node-46",
+          "name": "bottom-right",
+          "children": [
+            {
+              "id": "node-56",
+              "name": "标签3",
+              "children": [
+                {
+                  "id": "node-59",
+                  "name": "tab3",
+                  "text": {
+                    "content": "tab3",
+                    "fontSize": 20,
+                    "color": "rgb(255,255,255)",
+                    "font": "Montserrat-Bold",
+                    "mode": "auto",
+                    "minFontSize": 10
+                  },
+                  "ctrl": {
+                    "type": "StaticText"
+                  },
+                  "designRect": {
+                    "x": 50,
+                    "y": 25,
+                    "width": 46,
+                    "height": 16
+                  },
+                  "anchor": {
+                    "parentX": 0.5,
+                    "parentY": 0.5,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": -22.5,
+                    "offsetY": -6.5,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 56,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-58",
+                  "name": "矩形 2",
+                  "assetPath": "矩形 2.png",
+                  "ctrl": {
+                    "type": "StaticImage"
+                  },
+                  "designRect": {
+                    "x": 1,
+                    "y": 2,
+                    "width": 143,
+                    "height": 60
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 1,
+                    "offsetY": 2,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": false,
+                  "zIndex": 55,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-57",
+                  "name": "矩形 2545 拷贝",
+                  "assetPath": "矩形 2545 拷贝.png",
+                  "ctrl": {
+                    "type": "StaticImage"
+                  },
+                  "designRect": {
+                    "x": 1,
+                    "y": 2,
+                    "width": 143,
+                    "height": 60
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 1,
+                    "offsetY": 2,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 54,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                }
+              ],
+              "ctrl": {
+                "type": "CheckBox"
+              },
+              "designRect": {
+                "x": 309,
+                "y": 11,
+                "width": 145,
+                "height": 63
+              },
+              "anchor": {
+                "parentX": 1,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": -159,
+                "offsetY": 11,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 57,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-52",
+              "name": "标签2",
+              "children": [
+                {
+                  "id": "node-55",
+                  "name": "tab2",
+                  "text": {
+                    "content": "tab2",
+                    "fontSize": 20,
+                    "color": "rgb(255,255,255)",
+                    "font": "Montserrat-Bold",
+                    "mode": "auto",
+                    "minFontSize": 10
+                  },
+                  "ctrl": {
+                    "type": "StaticText"
+                  },
+                  "designRect": {
+                    "x": 51,
+                    "y": 25,
+                    "width": 46,
+                    "height": 16
+                  },
+                  "anchor": {
+                    "parentX": 0.5,
+                    "parentY": 0.5,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": -22,
+                    "offsetY": -6.5,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 52,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-54",
+                  "name": "矩形 2",
+                  "assetPath": "矩形 2.png",
+                  "ctrl": {
+                    "type": "StaticImage"
+                  },
+                  "designRect": {
+                    "x": 2,
+                    "y": 2,
+                    "width": 143,
+                    "height": 60
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 2,
+                    "offsetY": 2,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": false,
+                  "zIndex": 51,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-53",
+                  "name": "矩形 2545 拷贝",
+                  "assetPath": "矩形 2545 拷贝.png",
+                  "ctrl": {
+                    "type": "StaticImage"
+                  },
+                  "designRect": {
+                    "x": 2,
+                    "y": 2,
+                    "width": 143,
+                    "height": 60
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 2,
+                    "offsetY": 2,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 50,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                }
+              ],
+              "ctrl": {
+                "type": "CheckBox"
+              },
+              "designRect": {
+                "x": 161,
+                "y": 11,
+                "width": 146,
+                "height": 63
+              },
+              "anchor": {
+                "parentX": 0.5,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": -73,
+                "offsetY": 11,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 53,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-48",
+              "name": "标签1",
+              "children": [
+                {
+                  "id": "node-51",
+                  "name": "tab1",
+                  "text": {
+                    "content": "tab1",
+                    "fontSize": 20,
+                    "color": "rgb(255,255,255)",
+                    "font": "Montserrat-Bold",
+                    "mode": "auto",
+                    "minFontSize": 10
+                  },
+                  "ctrl": {
+                    "type": "StaticText"
+                  },
+                  "designRect": {
+                    "x": 53,
+                    "y": 25,
+                    "width": 41,
+                    "height": 16
+                  },
+                  "anchor": {
+                    "parentX": 0.5,
+                    "parentY": 0.5,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": -20,
+                    "offsetY": -6.5,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 48,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-50",
+                  "name": "矩形 2",
+                  "assetPath": "矩形 2.png",
+                  "ctrl": {
+                    "type": "StaticImage"
+                  },
+                  "designRect": {
+                    "x": 2,
+                    "y": 2,
+                    "width": 143,
+                    "height": 60
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 2,
+                    "offsetY": 2,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 47,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-49",
+                  "name": "矩形 2545 拷贝",
+                  "assetPath": "矩形 2545 拷贝.png",
+                  "ctrl": {
+                    "type": "StaticImage"
+                  },
+                  "designRect": {
+                    "x": 2,
+                    "y": 2,
+                    "width": 143,
+                    "height": 60
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 2,
+                    "offsetY": 2,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 46,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                }
+              ],
+              "ctrl": {
+                "type": "CheckBox"
+              },
+              "designRect": {
+                "x": 14,
+                "y": 11,
+                "width": 146,
+                "height": 63
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 14,
+                "offsetY": 11,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 49,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            }
+          ],
+          "ctrl": {
+            "type": "Layout"
+          },
+          "designRect": {
+            "x": 30,
+            "y": 618,
+            "width": 468,
+            "height": 89
+          },
+          "anchor": {
+            "parentX": 0,
+            "parentY": 1,
+            "selfX": 0,
+            "selfY": 0,
+            "offsetX": 30,
+            "offsetY": -102,
+            "safeArea": false
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "opacity": 1,
+          "visible": true,
+          "zIndex": 58,
+          "adaptation": {
+            "mode": "anchor"
+          },
+          "resources": {
+            "LayoutBackImage": {
+              "id": "node-47",
+              "name": "img_bd",
+              "sourceParentId": "node-46",
+              "sourceIndex": 0,
+              "sourceNode": {
+                "id": "node-47",
+                "name": "img_bd",
+                "assetPath": "img_bd_5.png",
+                "ctrl": {
+                  "type": "StaticImage"
+                },
+                "designRect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 468,
+                  "height": 89
+                },
+                "anchor": {
+                  "parentX": 0,
+                  "parentY": 0,
+                  "selfX": 0,
+                  "selfY": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "safeArea": false
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                },
+                "rotation": 0,
+                "opacity": 1,
+                "visible": true,
+                "zIndex": 46,
+                "adaptation": {
+                  "mode": "anchor"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "node-22",
+          "name": "bottom-right",
+          "children": [
+            {
+              "id": "group-1788514844783",
+              "name": "Layout",
+              "children": [
+                {
+                  "id": "node-29",
+                  "name": "单选",
+                  "children": [
+                    {
+                      "id": "node-41",
+                      "name": "layout_s3",
+                      "children": [
+                        {
+                          "id": "node-45",
+                          "name": "s3",
+                          "text": {
+                            "content": "s3",
+                            "fontSize": 20,
+                            "color": "rgb(255,255,255)",
+                            "font": "NotoSansHans-Black",
+                            "mode": "auto",
+                            "minFontSize": 10
+                          },
+                          "ctrl": {
+                            "type": "StaticText"
+                          },
+                          "designRect": {
+                            "x": 45,
+                            "y": 9,
+                            "width": 22,
+                            "height": 17
+                          },
+                          "anchor": {
+                            "parentX": 1,
+                            "parentY": 1,
+                            "selfX": 0,
+                            "selfY": 0,
+                            "offsetX": -22,
+                            "offsetY": -25,
+                            "safeArea": false
+                          },
+                          "scale": {
+                            "x": 1,
+                            "y": 1
+                          },
+                          "rotation": 0,
+                          "opacity": 1,
+                          "visible": true,
+                          "zIndex": 40,
+                          "adaptation": {
+                            "mode": "anchor"
+                          }
+                        },
+                        {
+                          "id": "node-42",
+                          "name": "radio_1",
+                          "children": [
+                            {
+                              "id": "node-44",
+                              "name": "img_radio2_on",
+                              "assetPath": "img_radio2_on.png",
+                              "ctrl": {
+                                "type": "StaticImage"
+                              },
+                              "designRect": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 34,
+                                "height": 34
+                              },
+                              "anchor": {
+                                "parentX": 0,
+                                "parentY": 0,
+                                "selfX": 0,
+                                "selfY": 0,
+                                "offsetX": 0,
+                                "offsetY": 0,
+                                "safeArea": false
+                              },
+                              "scale": {
+                                "x": 1,
+                                "y": 1
+                              },
+                              "rotation": 0,
+                              "opacity": 1,
+                              "visible": false,
+                              "zIndex": 38,
+                              "adaptation": {
+                                "mode": "anchor"
+                              }
+                            },
+                            {
+                              "id": "node-43",
+                              "name": "img_radio2_off",
+                              "assetPath": "img_radio2_off.png",
+                              "ctrl": {
+                                "type": "StaticImage"
+                              },
+                              "designRect": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 34,
+                                "height": 34
+                              },
+                              "anchor": {
+                                "parentX": 0,
+                                "parentY": 0,
+                                "selfX": 0,
+                                "selfY": 0,
+                                "offsetX": 0,
+                                "offsetY": 0,
+                                "safeArea": false
+                              },
+                              "scale": {
+                                "x": 1,
+                                "y": 1
+                              },
+                              "rotation": 0,
+                              "opacity": 1,
+                              "visible": true,
+                              "zIndex": 37,
+                              "adaptation": {
+                                "mode": "anchor"
+                              }
+                            }
+                          ],
+                          "ctrl": {
+                            "type": "Layout"
+                          },
+                          "designRect": {
+                            "x": 0,
+                            "y": 0,
+                            "width": 34,
+                            "height": 34
+                          },
+                          "anchor": {
+                            "parentX": 0,
+                            "parentY": 0,
+                            "selfX": 0,
+                            "selfY": 0,
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "safeArea": false
+                          },
+                          "scale": {
+                            "x": 1,
+                            "y": 1
+                          },
+                          "rotation": 0,
+                          "opacity": 1,
+                          "visible": true,
+                          "zIndex": 39,
+                          "adaptation": {
+                            "mode": "anchor"
+                          }
+                        }
+                      ],
+                      "ctrl": {
+                        "type": "Layout"
+                      },
+                      "designRect": {
+                        "x": 193,
+                        "y": 13,
+                        "width": 67,
+                        "height": 34
+                      },
+                      "anchor": {
+                        "parentX": 1,
+                        "parentY": 1,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -93,
+                        "offsetY": -44,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 41,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-36",
+                      "name": "layout_s2",
+                      "children": [
+                        {
+                          "id": "node-40",
+                          "name": "s2",
+                          "text": {
+                            "content": "s2",
+                            "fontSize": 20,
+                            "color": "rgb(255,255,255)",
+                            "font": "NotoSansHans-Black",
+                            "mode": "auto",
+                            "minFontSize": 10
+                          },
+                          "ctrl": {
+                            "type": "StaticText"
+                          },
+                          "designRect": {
+                            "x": 45,
+                            "y": 9,
+                            "width": 22,
+                            "height": 17
+                          },
+                          "anchor": {
+                            "parentX": 1,
+                            "parentY": 1,
+                            "selfX": 0,
+                            "selfY": 0,
+                            "offsetX": -22,
+                            "offsetY": -25,
+                            "safeArea": false
+                          },
+                          "scale": {
+                            "x": 1,
+                            "y": 1
+                          },
+                          "rotation": 0,
+                          "opacity": 1,
+                          "visible": true,
+                          "zIndex": 35,
+                          "adaptation": {
+                            "mode": "anchor"
+                          }
+                        },
+                        {
+                          "id": "node-37",
+                          "name": "radio_1",
+                          "children": [
+                            {
+                              "id": "node-39",
+                              "name": "img_radio2_on",
+                              "assetPath": "img_radio2_on.png",
+                              "ctrl": {
+                                "type": "StaticImage"
+                              },
+                              "designRect": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 34,
+                                "height": 34
+                              },
+                              "anchor": {
+                                "parentX": 0,
+                                "parentY": 0,
+                                "selfX": 0,
+                                "selfY": 0,
+                                "offsetX": 0,
+                                "offsetY": 0,
+                                "safeArea": false
+                              },
+                              "scale": {
+                                "x": 1,
+                                "y": 1
+                              },
+                              "rotation": 0,
+                              "opacity": 1,
+                              "visible": false,
+                              "zIndex": 33,
+                              "adaptation": {
+                                "mode": "anchor"
+                              }
+                            },
+                            {
+                              "id": "node-38",
+                              "name": "img_radio2_off",
+                              "assetPath": "img_radio2_off.png",
+                              "ctrl": {
+                                "type": "StaticImage"
+                              },
+                              "designRect": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 34,
+                                "height": 34
+                              },
+                              "anchor": {
+                                "parentX": 0,
+                                "parentY": 0,
+                                "selfX": 0,
+                                "selfY": 0,
+                                "offsetX": 0,
+                                "offsetY": 0,
+                                "safeArea": false
+                              },
+                              "scale": {
+                                "x": 1,
+                                "y": 1
+                              },
+                              "rotation": 0,
+                              "opacity": 1,
+                              "visible": true,
+                              "zIndex": 32,
+                              "adaptation": {
+                                "mode": "anchor"
+                              }
+                            }
+                          ],
+                          "ctrl": {
+                            "type": "Layout"
+                          },
+                          "designRect": {
+                            "x": 0,
+                            "y": 0,
+                            "width": 34,
+                            "height": 34
+                          },
+                          "anchor": {
+                            "parentX": 0,
+                            "parentY": 0,
+                            "selfX": 0,
+                            "selfY": 0,
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "safeArea": false
+                          },
+                          "scale": {
+                            "x": 1,
+                            "y": 1
+                          },
+                          "rotation": 0,
+                          "opacity": 1,
+                          "visible": true,
+                          "zIndex": 34,
+                          "adaptation": {
+                            "mode": "anchor"
+                          }
+                        }
+                      ],
+                      "ctrl": {
+                        "type": "Layout"
+                      },
+                      "designRect": {
+                        "x": 105,
+                        "y": 13,
+                        "width": 67,
+                        "height": 34
+                      },
+                      "anchor": {
+                        "parentX": 0.5,
+                        "parentY": 1,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": -38,
+                        "offsetY": -44,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 36,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-31",
+                      "name": "layout_s1",
+                      "children": [
+                        {
+                          "id": "node-35",
+                          "name": "s1",
+                          "text": {
+                            "content": "s1",
+                            "fontSize": 20,
+                            "color": "rgb(255,255,255)",
+                            "font": "NotoSansHans-Black",
+                            "mode": "auto",
+                            "minFontSize": 10
+                          },
+                          "ctrl": {
+                            "type": "StaticText"
+                          },
+                          "designRect": {
+                            "x": 45,
+                            "y": 9,
+                            "width": 22,
+                            "height": 17
+                          },
+                          "anchor": {
+                            "parentX": 1,
+                            "parentY": 1,
+                            "selfX": 0,
+                            "selfY": 0,
+                            "offsetX": -22,
+                            "offsetY": -25,
+                            "safeArea": false
+                          },
+                          "scale": {
+                            "x": 1,
+                            "y": 1
+                          },
+                          "rotation": 0,
+                          "opacity": 1,
+                          "visible": true,
+                          "zIndex": 30,
+                          "adaptation": {
+                            "mode": "anchor"
+                          }
+                        },
+                        {
+                          "id": "node-32",
+                          "name": "radio_1",
+                          "children": [
+                            {
+                              "id": "node-34",
+                              "name": "img_radio2_on",
+                              "assetPath": "img_radio2_on.png",
+                              "ctrl": {
+                                "type": "StaticImage"
+                              },
+                              "designRect": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 34,
+                                "height": 34
+                              },
+                              "anchor": {
+                                "parentX": 0,
+                                "parentY": 0,
+                                "selfX": 0,
+                                "selfY": 0,
+                                "offsetX": 0,
+                                "offsetY": 0,
+                                "safeArea": false
+                              },
+                              "scale": {
+                                "x": 1,
+                                "y": 1
+                              },
+                              "rotation": 0,
+                              "opacity": 1,
+                              "visible": true,
+                              "zIndex": 28,
+                              "adaptation": {
+                                "mode": "anchor"
+                              }
+                            },
+                            {
+                              "id": "node-33",
+                              "name": "img_radio2_off",
+                              "assetPath": "img_radio2_off.png",
+                              "ctrl": {
+                                "type": "StaticImage"
+                              },
+                              "designRect": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 34,
+                                "height": 34
+                              },
+                              "anchor": {
+                                "parentX": 0,
+                                "parentY": 0,
+                                "selfX": 0,
+                                "selfY": 0,
+                                "offsetX": 0,
+                                "offsetY": 0,
+                                "safeArea": false
+                              },
+                              "scale": {
+                                "x": 1,
+                                "y": 1
+                              },
+                              "rotation": 0,
+                              "opacity": 1,
+                              "visible": true,
+                              "zIndex": 27,
+                              "adaptation": {
+                                "mode": "anchor"
+                              }
+                            }
+                          ],
+                          "ctrl": {
+                            "type": "Layout"
+                          },
+                          "designRect": {
+                            "x": 0,
+                            "y": 0,
+                            "width": 34,
+                            "height": 34
+                          },
+                          "anchor": {
+                            "parentX": 0,
+                            "parentY": 0,
+                            "selfX": 0,
+                            "selfY": 0,
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "safeArea": false
+                          },
+                          "scale": {
+                            "x": 1,
+                            "y": 1
+                          },
+                          "rotation": 0,
+                          "opacity": 1,
+                          "visible": true,
+                          "zIndex": 29,
+                          "adaptation": {
+                            "mode": "anchor"
+                          }
+                        }
+                      ],
+                      "ctrl": {
+                        "type": "Layout"
+                      },
+                      "designRect": {
+                        "x": 17,
+                        "y": 13,
+                        "width": 67,
+                        "height": 34
+                      },
+                      "anchor": {
+                        "parentX": 0,
+                        "parentY": 1,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": 17,
+                        "offsetY": -44,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 31,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    }
+                  ],
+                  "list": {
+                    "type": "horizontal",
+                    "spacing": 20,
+                    "padding": {
+                      "left": 0,
+                      "right": 0,
+                      "top": 0,
+                      "bottom": 0
+                    },
+                    "columns": 3
+                  },
+                  "ctrl": {
+                    "type": "GridView"
+                  },
+                  "designRect": {
+                    "x": 396,
+                    "y": 16,
+                    "width": 286,
+                    "height": 57
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 42,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                }
+              ],
+              "ctrl": {
+                "type": "Layout"
+              },
+              "designRect": {
+                "x": 0,
+                "y": 0,
+                "width": 286,
+                "height": 57
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 396,
+                "offsetY": 17,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 44,
+              "adaptation": {
+                "mode": "anchor"
+              },
+              "resources": {
+                "LayoutBackImage": {
+                  "id": "node-30",
+                  "name": "img_bd",
+                  "sourceParentId": "group-1788514844783",
+                  "sourceIndex": 0,
+                  "sourceNode": {
+                    "id": "node-30",
+                    "name": "img_bd",
+                    "assetPath": "img_bd_4.png",
+                    "ctrl": {
+                      "type": "StaticImage"
+                    },
+                    "designRect": {
+                      "x": 0,
+                      "y": 0,
+                      "width": 286,
+                      "height": 57
+                    },
+                    "anchor": {
+                      "parentX": 0,
+                      "parentY": 0,
+                      "selfX": 0,
+                      "selfY": 0,
+                      "offsetX": 0,
+                      "offsetY": 0,
+                      "safeArea": false
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1
+                    },
+                    "rotation": 0,
+                    "opacity": 1,
+                    "visible": true,
+                    "zIndex": 43,
+                    "adaptation": {
+                      "mode": "anchor"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "id": "node-27",
+              "name": "btn_send",
+              "children": [
+                {
+                  "id": "node-28",
+                  "name": "btn_send",
+                  "assetPath": "btn_send.png",
+                  "ctrl": {
+                    "type": "StaticImage"
+                  },
+                  "designRect": {
+                    "x": 0,
+                    "y": 0,
+                    "width": 60,
+                    "height": 58
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 25,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                }
+              ],
+              "ctrl": {
+                "type": "Button"
+              },
+              "designRect": {
+                "x": 316,
+                "y": 15,
+                "width": 60,
+                "height": 58
+              },
+              "anchor": {
+                "parentX": 0.5,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": -32,
+                "offsetY": 15,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 26,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-24",
+              "name": "编辑",
+              "children": [
+                {
+                  "id": "node-26",
+                  "name": "Click to sms...",
+                  "text": {
+                    "content": "Click to sms...",
+                    "fontSize": 20,
+                    "color": "rgb(65,73,91)",
+                    "font": "Montserrat-Bold",
+                    "mode": "auto",
+                    "minFontSize": 10
+                  },
+                  "ctrl": {
+                    "type": "StaticText"
+                  },
+                  "designRect": {
+                    "x": 20,
+                    "y": 19,
+                    "width": 141,
+                    "height": 17
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0.5,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 20,
+                    "offsetY": -8.5,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 23,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-25",
+                  "name": "矩形 886",
+                  "assetPath": "矩形 886.png",
+                  "ctrl": {
+                    "type": "StaticImage"
+                  },
+                  "designRect": {
+                    "x": 2,
+                    "y": 2,
+                    "width": 300,
+                    "height": 52
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 2,
+                    "offsetY": 2,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 0.30196078431372547,
+                  "visible": true,
+                  "zIndex": 22,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                }
+              ],
+              "ctrl": {
+                "type": "Layout"
+              },
+              "designRect": {
+                "x": 11,
+                "y": 16,
+                "width": 303,
+                "height": 55
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 11,
+                "offsetY": 16,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 24,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-23",
+              "name": "img_bd",
+              "assetPath": "img_bd_3.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 0,
+                "y": 0,
+                "width": 696,
+                "height": 89
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 0,
+                "offsetY": 0,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 21,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            }
+          ],
+          "ctrl": {
+            "type": "Layout"
+          },
+          "designRect": {
+            "x": 553,
+            "y": 618,
+            "width": 696,
+            "height": 89
+          },
+          "anchor": {
+            "parentX": 1,
+            "parentY": 1,
+            "selfX": 0,
+            "selfY": 0,
+            "offsetX": -727,
+            "offsetY": -102,
+            "safeArea": false
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "opacity": 1,
+          "visible": true,
+          "zIndex": 45,
+          "adaptation": {
+            "mode": "anchor"
+          }
+        },
+        {
+          "id": "node-12",
+          "name": "top",
+          "children": [
+            {
+              "id": "node-21",
+              "name": "btn_close",
+              "assetPath": "btn_close.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 35,
+                "y": 30,
+                "width": 29,
+                "height": 29
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0.5,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 35,
+                "offsetY": -14.5,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 19,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-20",
+              "name": "MOSY MEADOW",
+              "text": {
+                "content": "MOSY MEADOW",
+                "fontSize": 48,
+                "color": "rgb(253,198,58)",
+                "font": "NotoSansHans-Black",
+                "mode": "auto",
+                "minFontSize": 24
+              },
+              "ctrl": {
+                "type": "StaticText"
+              },
+              "designRect": {
+                "x": 306,
+                "y": 29,
+                "width": 368,
+                "height": 38
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 1,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 306,
+                "offsetY": -60,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 18,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-19",
+              "name": "EXP",
+              "text": {
+                "content": "EXP",
+                "fontSize": 24,
+                "color": "rgb(255,255,255)",
+                "font": "NotoSansHans-Black",
+                "mode": "auto",
+                "minFontSize": 12
+              },
+              "ctrl": {
+                "type": "StaticText"
+              },
+              "designRect": {
+                "x": 791,
+                "y": 39,
+                "width": 46,
+                "height": 19
+              },
+              "anchor": {
+                "parentX": 0.5,
+                "parentY": 0.5,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 181.5,
+                "offsetY": -5.5,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 17,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-14",
+              "name": "经验",
+              "children": [
+                {
+                  "id": "node-18",
+                  "name": "720/1000",
+                  "text": {
+                    "content": "720/1000",
+                    "fontSize": 20,
+                    "color": "rgb(255,255,255)",
+                    "font": "NotoSansHans-Black",
+                    "mode": "auto",
+                    "minFontSize": 10
+                  },
+                  "ctrl": {
+                    "type": "StaticText"
+                  },
+                  "designRect": {
+                    "x": 115,
+                    "y": 3,
+                    "width": 93,
+                    "height": 21
+                  },
+                  "anchor": {
+                    "parentX": 0.5,
+                    "parentY": 1,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": -53.5,
+                    "offsetY": -21,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 15,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
+                {
+                  "id": "node-15",
+                  "name": "pbar",
+                  "children": [
+                    {
+                      "id": "node-17",
+                      "name": "矩形 998 拷贝",
+                      "assetPath": "矩形 998 拷贝.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 337,
+                        "height": 24
+                      },
+                      "anchor": {
+                        "parentX": 0,
+                        "parentY": 0,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": 0,
+                        "offsetY": 0,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 13,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    },
+                    {
+                      "id": "node-16",
+                      "name": "img_pbar",
+                      "assetPath": "img_pbar.png",
+                      "ctrl": {
+                        "type": "StaticImage"
+                      },
+                      "designRect": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 337,
+                        "height": 24
+                      },
+                      "anchor": {
+                        "parentX": 0,
+                        "parentY": 0,
+                        "selfX": 0,
+                        "selfY": 0,
+                        "offsetX": 0,
+                        "offsetY": 0,
+                        "safeArea": false
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "rotation": 0,
+                      "opacity": 1,
+                      "visible": true,
+                      "zIndex": 12,
+                      "adaptation": {
+                        "mode": "anchor"
+                      }
+                    }
+                  ],
+                  "ctrl": {
+                    "type": "Layout"
+                  },
+                  "designRect": {
+                    "x": 0,
+                    "y": 0,
+                    "width": 337,
+                    "height": 24
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 14,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                }
+              ],
+              "ctrl": {
+                "type": "Layout"
+              },
+              "designRect": {
+                "x": 854,
+                "y": 36,
+                "width": 337,
+                "height": 24
+              },
+              "anchor": {
+                "parentX": 1,
+                "parentY": 0.5,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": -365,
+                "offsetY": -8.5,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 16,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-13",
+              "name": "img_bd",
+              "assetPath": "img_bd_2.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 0,
+                "y": 0,
+                "width": 1219,
+                "height": 89
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 0,
+                "offsetY": 0,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 11,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            }
+          ],
+          "ctrl": {
+            "type": "Layout"
+          },
+          "designRect": {
+            "x": 30,
+            "y": 9,
+            "width": 1219,
+            "height": 89
+          },
+          "anchor": {
+            "parentX": 0,
+            "parentY": 0,
+            "selfX": 0,
+            "selfY": 0,
+            "offsetX": 30,
+            "offsetY": 9,
+            "safeArea": false
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "opacity": 1,
+          "visible": true,
+          "zIndex": 20,
+          "adaptation": {
+            "mode": "anchor"
+          }
+        },
+        {
+          "id": "node-3",
+          "name": "setting",
+          "children": [
+            {
+              "id": "node-11",
+              "name": "Music",
+              "text": {
+                "content": "Music",
+                "fontSize": 20,
+                "color": "rgb(255,255,255)",
+                "font": "NotoSansHans-Black",
+                "mode": "auto",
+                "minFontSize": 10
+              },
+              "ctrl": {
+                "type": "StaticText"
+              },
+              "designRect": {
+                "x": 17,
+                "y": 21,
+                "width": 57,
+                "height": 18
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0.5,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 17,
+                "offsetY": -9.5,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 9,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-10",
+              "name": "img_radio_on",
+              "assetPath": "img_radio_on.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 91,
+                "y": 12,
+                "width": 36,
+                "height": 36
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 91,
+                "offsetY": 12,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 8,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-9",
+              "name": "img_radio_off",
+              "assetPath": "img_radio_off.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 91,
+                "y": 12,
+                "width": 36,
+                "height": 36
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 91,
+                "offsetY": 12,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 7,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-8",
+              "name": "icon_volume",
+              "assetPath": "icon_volume.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 177,
+                "y": 15,
+                "width": 34,
+                "height": 32
+              },
+              "anchor": {
+                "parentX": 0.5,
+                "parentY": 1,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": -43,
+                "offsetY": -46,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 6,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-7",
+              "name": "矩形 995 拷贝",
+              "assetPath": "矩形 995 拷贝.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 296,
+                "y": 13,
+                "width": 38,
+                "height": 38
+              },
+              "anchor": {
+                "parentX": 1,
+                "parentY": 1,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": -144,
+                "offsetY": -48,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 5,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-6",
+              "name": "矩形 2 拷贝 3",
+              "assetPath": "矩形 2 拷贝 3.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 221,
+                "y": 24,
+                "width": 188,
+                "height": 17
+              },
+              "anchor": {
+                "parentX": 1,
+                "parentY": 0.5,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": -219,
+                "offsetY": -6.5,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 4,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-5",
+              "name": "矩形 7",
+              "assetPath": "矩形 7.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 216,
+                "y": 19,
+                "width": 198,
+                "height": 27
+              },
+              "anchor": {
+                "parentX": 1,
+                "parentY": 1,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": -224,
+                "offsetY": -42,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 3,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            },
+            {
+              "id": "node-4",
+              "name": "img_bd",
+              "assetPath": "img_bd.png",
+              "ctrl": {
+                "type": "StaticImage"
+              },
+              "designRect": {
+                "x": 0,
+                "y": 0,
+                "width": 440,
+                "height": 61
+              },
+              "anchor": {
+                "parentX": 0,
+                "parentY": 0,
+                "selfX": 0,
+                "selfY": 0,
+                "offsetX": 0,
+                "offsetY": 0,
+                "safeArea": false
+              },
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "rotation": 0,
+              "opacity": 1,
+              "visible": true,
+              "zIndex": 2,
+              "adaptation": {
+                "mode": "anchor"
+              }
+            }
+          ],
+          "ctrl": {
+            "type": "Layout"
+          },
+          "designRect": {
+            "x": 810,
+            "y": 111,
+            "width": 440,
+            "height": 61
+          },
+          "anchor": {
+            "parentX": 1,
+            "parentY": 0,
+            "selfX": 0,
+            "selfY": 0,
+            "offsetX": -470,
+            "offsetY": 111,
+            "safeArea": false
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "opacity": 1,
+          "visible": true,
+          "zIndex": 10,
+          "adaptation": {
+            "mode": "anchor"
+          }
+        },
+        {
+          "id": "node-2",
+          "name": "img_bg",
+          "assetPath": "img_bg.png",
+          "ctrl": {
+            "type": "StaticImage"
+          },
+          "designRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 720
+          },
+          "anchor": {
+            "parentX": 0,
+            "parentY": 0,
+            "selfX": 0,
+            "selfY": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "safeArea": false
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "opacity": 1,
+          "visible": true,
+          "zIndex": 1,
+          "adaptation": {
+            "mode": "stretch"
+          }
+        }
+      ],
+      "ctrl": {
+        "type": "Layout"
+      },
+      "designRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "anchor": {
+        "parentX": 0,
+        "parentY": 0,
+        "selfX": 0,
+        "selfY": 0,
+        "offsetX": 0,
+        "offsetY": 0,
+        "safeArea": false
+      },
+      "scale": {
+        "x": 1,
+        "y": 1
+      },
+      "rotation": 0,
+      "opacity": 1,
+      "visible": true,
+      "zIndex": 88,
+      "adaptation": {
+        "mode": "stretch"
+      }
+    }
+  ],
+  "templates": [],
+  "view": {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "safeArea": {
+      "left": 0,
+      "right": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "scaleMode": "cover",
+    "showSafeArea": false,
+    "showDesignBorder": true
+  }
+}

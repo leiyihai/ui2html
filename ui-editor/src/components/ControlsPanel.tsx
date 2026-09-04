@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CtrlType, UINode } from "../types";
 
 interface Props {
@@ -7,6 +7,9 @@ interface Props {
   onSelect: (id: string, additive: boolean) => void;
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
+  renamingId: string | null;
+  onRename: (id: string, name: string) => void;
+  onCancelRename: () => void;
 }
 
 export const TYPE_LABELS: Record<CtrlType, string> = {
@@ -77,6 +80,51 @@ export function TypeIcon({ type }: { type?: CtrlType }) {
   );
 }
 
+function InlineRename(p: { name: string; onCommit: (name: string) => void; onCancel: () => void }) {
+  const [value, setValue] = useState(p.name);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const finished = useRef(false);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+    inputRef.current?.select();
+  }, []);
+
+  const commit = () => {
+    if (finished.current) return;
+    finished.current = true;
+    p.onCommit(value);
+  };
+  const cancel = () => {
+    if (finished.current) return;
+    finished.current = true;
+    p.onCancel();
+  };
+
+  return (
+    <input
+      ref={inputRef}
+      className="inline-rename"
+      value={value}
+      aria-label={`重命名 ${p.name}`}
+      onChange={(event) => setValue(event.target.value)}
+      onClick={(event) => event.stopPropagation()}
+      onBlur={commit}
+      onKeyDown={(event) => {
+        event.stopPropagation();
+        if (event.nativeEvent.isComposing) return;
+        if (event.key === "Enter") {
+          event.preventDefault();
+          commit();
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          cancel();
+        }
+      }}
+    />
+  );
+}
+
 function Row(p: {
   n: UINode;
   depth: number;
@@ -85,6 +133,9 @@ function Row(p: {
   onSelect: (id: string, additive: boolean) => void;
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
+  renamingId: string | null;
+  onRename: (id: string, name: string) => void;
+  onCancelRename: () => void;
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const hasChildren = Boolean(p.n.children?.length);
@@ -108,7 +159,13 @@ function Row(p: {
           )}
         </button>
         <TypeIcon type={p.n.ctrl?.type} />
-        <span className="name" title={p.n.name}>{p.n.name}</span>
+        {p.renamingId === p.n.id ? (
+          <InlineRename
+            name={p.n.name}
+            onCommit={(name) => p.onRename(p.n.id, name)}
+            onCancel={p.onCancelRename}
+          />
+        ) : <span className="name" title={p.n.name}>{p.n.name}</span>}
         <button className="icon" title={p.n.visible === false ? "显示" : "隐藏"}
           onClick={(e) => {
             e.stopPropagation();
@@ -142,6 +199,9 @@ function Row(p: {
           onSelect={p.onSelect}
           onToggleVisible={p.onToggleVisible}
           onToggleLock={p.onToggleLock}
+          renamingId={p.renamingId}
+          onRename={p.onRename}
+          onCancelRename={p.onCancelRename}
         />
       ))}
     </>
@@ -174,7 +234,7 @@ export default function ControlsPanel(p: Props) {
         <h3>层级</h3>
         {p.selectedIds.length > 1 && <span className="selection-count">已选 {p.selectedIds.length}</span>}
       </div>
-      <p className="panel-hint">Ctrl/⌘ 多选 · Ctrl+G 打组 · Alt+G 取消 · Ctrl+[/] 调整层级 · F2 重命名 · T 转换 · Ctrl+B 绑定资源 · Ctrl+W 关闭</p>
+      <p className="panel-hint">Ctrl/⌘ 多选 · Ctrl+G 打组 · Alt+G 取消 · Ctrl+[/] 调整层级 · F2 重命名 · T 转换 · Ctrl+B 绑定资源 · Alt+W 关闭</p>
       <ul>
         {sorted.map((node) => (
           <Row
@@ -186,6 +246,9 @@ export default function ControlsPanel(p: Props) {
             onSelect={p.onSelect}
             onToggleVisible={p.onToggleVisible}
             onToggleLock={p.onToggleLock}
+            renamingId={p.renamingId}
+            onRename={p.onRename}
+            onCancelRename={p.onCancelRename}
           />
         ))}
       </ul>

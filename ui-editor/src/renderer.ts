@@ -27,7 +27,22 @@ export function draw9Slice(ctx: CanvasRenderingContext2D, img: HTMLCanvasElement
 
 export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, useSlice = false) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  const nodes = [...result.nodes].sort((a, b) => a.node.zIndex - b.node.zIndex); // zIndex 小(底)先画
+  const minimumDescendantZ = (node: LayoutResult["nodes"][number]["node"]): number => {
+    let minimum = Number.POSITIVE_INFINITY;
+    const visit = (children: typeof node.children) => {
+      for (const child of children ?? []) {
+        minimum = Math.min(minimum, child.zIndex);
+        visit(child.children);
+      }
+    };
+    visit(node.children);
+    return minimum;
+  };
+  const paintZ = ({ node }: LayoutResult["nodes"][number]) => node.ctrl?.type === "Layout"
+    && node.resources?.LayoutBackImage
+    ? Math.min(node.zIndex, minimumDescendantZ(node) - 0.001)
+    : node.zIndex;
+  const nodes = [...result.nodes].sort((a, b) => paintZ(a) - paintZ(b)); // zIndex 小(底)先画；Layout 底图先于自身后代
   for (const { node, rect, visible, clipRect, opacity } of nodes) {
     if (!visible) continue; // 有效可见性：组隐藏时其后代也不显示
     ctx.save();
@@ -38,6 +53,12 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
       ctx.clip();
     }
     ctx.globalAlpha = opacity; // 有效透明度：父组 × 自身
+    const layoutBackground = node.ctrl?.type === "Layout"
+      ? node.resources?.LayoutBackImage?.image
+      : undefined;
+    if (layoutBackground) {
+      ctx.drawImage(layoutBackground, rect.x, rect.y, rect.width, rect.height);
+    }
     if (useSlice && node.sliceImage && node.slice) {
       // 九宫格替换图：按 slice 边距九宫格拉伸绘制
       draw9Slice(ctx, node.sliceImage, rect, node.slice);

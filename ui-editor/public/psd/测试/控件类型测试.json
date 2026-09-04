@@ -1,0 +1,836 @@
+{
+  "anchors": {
+    "2": {
+      "parentX": 0,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 16,
+      "offsetY": -72,
+      "mode": "anchor"
+    },
+    "10": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -33,
+      "offsetY": -26,
+      "mode": "anchor"
+    },
+    "layout": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "stretch"
+    },
+    "img_bg": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "stretch"
+    },
+    "设置": {
+      "parentX": 1,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -470,
+      "offsetY": 111,
+      "mode": "anchor"
+    },
+    "img_bd": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "矩形 7": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -224,
+      "offsetY": -42,
+      "mode": "anchor"
+    },
+    "矩形 2 拷贝 3": {
+      "parentX": 1,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -219,
+      "offsetY": -6.5,
+      "mode": "anchor"
+    },
+    "矩形 995 拷贝": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -144,
+      "offsetY": -48,
+      "mode": "anchor"
+    },
+    "icon_volume": {
+      "parentX": 0.5,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -43,
+      "offsetY": -46,
+      "mode": "anchor"
+    },
+    "img_radio_off": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 91,
+      "offsetY": 12,
+      "mode": "anchor"
+    },
+    "img_radio_on": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 91,
+      "offsetY": 12,
+      "mode": "anchor"
+    },
+    "Music": {
+      "parentX": 0,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 17,
+      "offsetY": -9.5,
+      "mode": "anchor"
+    },
+    "顶栏": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 30,
+      "offsetY": 9,
+      "mode": "anchor"
+    },
+    "经验": {
+      "parentX": 1,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -365,
+      "offsetY": -8.5,
+      "mode": "anchor"
+    },
+    "pbar": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "img_pbar": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "矩形 998 拷贝": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "720/1000": {
+      "parentX": 0.5,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -53.5,
+      "offsetY": -21,
+      "mode": "anchor"
+    },
+    "EXP": {
+      "parentX": 0.5,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 181.5,
+      "offsetY": -5.5,
+      "mode": "anchor"
+    },
+    "MOSY MEADOW": {
+      "parentX": 0,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 306,
+      "offsetY": -60,
+      "mode": "anchor"
+    },
+    "btn_close": {
+      "parentX": 0,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 35,
+      "offsetY": -14.5,
+      "mode": "anchor"
+    },
+    "右下角": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -727,
+      "offsetY": -102,
+      "mode": "anchor"
+    },
+    "编辑": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 11,
+      "offsetY": 16,
+      "mode": "anchor"
+    },
+    "矩形 886": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "Click to sms...": {
+      "parentX": 0,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 20,
+      "offsetY": -8.5,
+      "mode": "anchor"
+    },
+    "发送": {
+      "parentX": 0.5,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -32,
+      "offsetY": 15,
+      "mode": "anchor"
+    },
+    "btn_send": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "单选": {
+      "parentX": 1,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -300,
+      "offsetY": 16,
+      "mode": "anchor"
+    },
+    "layout_s1": {
+      "parentX": 0,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 17,
+      "offsetY": -44,
+      "mode": "anchor"
+    },
+    "radio_1": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "img_radio2_off": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "img_radio2_on": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "s1": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -22,
+      "offsetY": -25,
+      "mode": "anchor"
+    },
+    "layout_s2": {
+      "parentX": 0.5,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -38,
+      "offsetY": -44,
+      "mode": "anchor"
+    },
+    "s2": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -22,
+      "offsetY": -25,
+      "mode": "anchor"
+    },
+    "layout_s3": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -93,
+      "offsetY": -44,
+      "mode": "anchor"
+    },
+    "s3": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -22,
+      "offsetY": -25,
+      "mode": "anchor"
+    },
+    "标签页": {
+      "parentX": 0,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 30,
+      "offsetY": -102,
+      "mode": "anchor"
+    },
+    "标签1": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 14,
+      "offsetY": 11,
+      "mode": "anchor"
+    },
+    "矩形 2545 拷贝": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "矩形 2": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "tab1": {
+      "parentX": 0.5,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -20,
+      "offsetY": -6.5,
+      "mode": "anchor"
+    },
+    "标签2": {
+      "parentX": 0.5,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -73,
+      "offsetY": 11,
+      "mode": "anchor"
+    },
+    "tab2": {
+      "parentX": 0.5,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -22,
+      "offsetY": -6.5,
+      "mode": "anchor"
+    },
+    "标签3": {
+      "parentX": 1,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -159,
+      "offsetY": 11,
+      "mode": "anchor"
+    },
+    "tab3": {
+      "parentX": 0.5,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -22.5,
+      "offsetY": -6.5,
+      "mode": "anchor"
+    },
+    "功能": {
+      "parentX": 0,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 32,
+      "offsetY": -538,
+      "mode": "anchor"
+    },
+    "img_panel_bd": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "列表": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -252,
+      "offsetY": -335,
+      "mode": "anchor"
+    },
+    "宠物": {
+      "parentX": 0.5,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -30.5,
+      "offsetY": -9.5,
+      "mode": "anchor"
+    },
+    "icon_pet": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "img_arrow": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -32,
+      "offsetY": -49,
+      "mode": "anchor"
+    },
+    "任务": {
+      "parentX": 0.5,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -30.5,
+      "offsetY": -9.5,
+      "mode": "anchor"
+    },
+    "icon_task": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "合成": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -228,
+      "offsetY": -63,
+      "mode": "anchor"
+    },
+    "icon_merge": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "武器强化": {
+      "parentX": 0.5,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -30,
+      "offsetY": -10.5,
+      "mode": "anchor"
+    },
+    "地图": {
+      "parentX": 0.5,
+      "parentY": 0.5,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -31,
+      "offsetY": -10.5,
+      "mode": "anchor"
+    },
+    "icon_map": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "标题": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 40,
+      "offsetY": 13,
+      "mode": "anchor"
+    },
+    "Func": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -48,
+      "offsetY": -21,
+      "mode": "anchor"
+    },
+    "icon_func": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "bag": {
+      "parentX": 1,
+      "parentY": 1,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": -325,
+      "offsetY": -538,
+      "mode": "anchor"
+    },
+    "list": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 16,
+      "offsetY": 60,
+      "mode": "anchor"
+    },
+    "layout_item": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "矩形 2 拷贝": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "mode": "anchor"
+    },
+    "Bag": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 77,
+      "offsetY": 20,
+      "mode": "anchor"
+    },
+    "图标": {
+      "parentX": 0,
+      "parentY": 0,
+      "selfX": 0,
+      "selfY": 0,
+      "offsetX": 36,
+      "offsetY": 16,
+      "mode": "anchor"
+    }
+  },
+  "slices": {},
+  "controls": {
+    "2": {
+      "type": "StaticImage"
+    },
+    "10": {
+      "type": "StaticText"
+    },
+    "layout": {
+      "type": "Layout"
+    },
+    "img_bg": {
+      "type": "StaticImage"
+    },
+    "设置": {
+      "type": "Layout"
+    },
+    "img_bd": {
+      "type": "StaticImage"
+    },
+    "矩形 7": {
+      "type": "StaticImage"
+    },
+    "矩形 2 拷贝 3": {
+      "type": "StaticImage"
+    },
+    "矩形 995 拷贝": {
+      "type": "StaticImage"
+    },
+    "icon_volume": {
+      "type": "StaticImage"
+    },
+    "img_radio_off": {
+      "type": "StaticImage"
+    },
+    "img_radio_on": {
+      "type": "StaticImage"
+    },
+    "Music": {
+      "type": "StaticText"
+    },
+    "顶栏": {
+      "type": "Layout"
+    },
+    "经验": {
+      "type": "Layout"
+    },
+    "pbar": {
+      "type": "Layout"
+    },
+    "img_pbar": {
+      "type": "StaticImage"
+    },
+    "矩形 998 拷贝": {
+      "type": "StaticImage"
+    },
+    "720/1000": {
+      "type": "StaticText"
+    },
+    "EXP": {
+      "type": "StaticText"
+    },
+    "MOSY MEADOW": {
+      "type": "StaticText"
+    },
+    "btn_close": {
+      "type": "StaticImage"
+    },
+    "右下角": {
+      "type": "Layout"
+    },
+    "编辑": {
+      "type": "Layout"
+    },
+    "矩形 886": {
+      "type": "StaticImage"
+    },
+    "Click to sms...": {
+      "type": "StaticText"
+    },
+    "发送": {
+      "type": "Layout"
+    },
+    "btn_send": {
+      "type": "StaticImage"
+    },
+    "单选": {
+      "type": "Layout"
+    },
+    "layout_s1": {
+      "type": "Layout"
+    },
+    "radio_1": {
+      "type": "Layout"
+    },
+    "img_radio2_off": {
+      "type": "StaticImage"
+    },
+    "img_radio2_on": {
+      "type": "StaticImage"
+    },
+    "s1": {
+      "type": "StaticText"
+    },
+    "layout_s2": {
+      "type": "Layout"
+    },
+    "s2": {
+      "type": "StaticText"
+    },
+    "layout_s3": {
+      "type": "Layout"
+    },
+    "s3": {
+      "type": "StaticText"
+    },
+    "标签页": {
+      "type": "Layout"
+    },
+    "标签1": {
+      "type": "Layout"
+    },
+    "矩形 2545 拷贝": {
+      "type": "StaticImage"
+    },
+    "矩形 2": {
+      "type": "StaticImage"
+    },
+    "tab1": {
+      "type": "StaticText"
+    },
+    "标签2": {
+      "type": "Layout"
+    },
+    "tab2": {
+      "type": "StaticText"
+    },
+    "标签3": {
+      "type": "Layout"
+    },
+    "tab3": {
+      "type": "StaticText"
+    },
+    "功能": {
+      "type": "Layout"
+    },
+    "img_panel_bd": {
+      "type": "StaticImage"
+    },
+    "列表": {
+      "type": "Layout"
+    },
+    "宠物": {
+      "type": "StaticText"
+    },
+    "icon_pet": {
+      "type": "StaticImage"
+    },
+    "img_arrow": {
+      "type": "StaticImage"
+    },
+    "任务": {
+      "type": "StaticText"
+    },
+    "icon_task": {
+      "type": "StaticImage"
+    },
+    "合成": {
+      "type": "Layout"
+    },
+    "icon_merge": {
+      "type": "StaticImage"
+    },
+    "武器强化": {
+      "type": "StaticText"
+    },
+    "地图": {
+      "type": "StaticText"
+    },
+    "icon_map": {
+      "type": "StaticImage"
+    },
+    "标题": {
+      "type": "Layout"
+    },
+    "Func": {
+      "type": "StaticText"
+    },
+    "icon_func": {
+      "type": "StaticImage"
+    },
+    "bag": {
+      "type": "Layout"
+    },
+    "list": {
+      "type": "GridView"
+    },
+    "layout_item": {
+      "type": "Layout"
+    },
+    "矩形 2 拷贝": {
+      "type": "StaticImage"
+    },
+    "Bag": {
+      "type": "StaticText"
+    },
+    "图标": {
+      "type": "StaticImage"
+    }
+  },
+  "templates": []
+}

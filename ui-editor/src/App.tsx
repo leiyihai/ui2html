@@ -151,6 +151,7 @@ export default function App() {
   const [workspace, setWorkspace] = useState<Workspace>("controls");
   const [exportMsg, setExportMsg] = useState("");
   const [typeMenu, setTypeMenu] = useState<{ x: number; y: number } | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
 
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
@@ -395,20 +396,27 @@ export default function App() {
     setExportMsg(`已导入 ${imported.length} 张图片${failed.length ? `，${failed.length} 张失败` : ""}`);
   }, [applyScene, mutateScene, resetHistory, selectedId]);
 
-  /** F2：重命名当前选中的节点，名称会随 Ctrl+S 保存。 */
-  const renameSelected = useCallback(() => {
+  /** F2：让当前单选节点进入层级树内联重命名状态。 */
+  const beginRenameSelected = useCallback(() => {
     const current = sceneRef.current;
     const node = current && selectedId
       ? walkNodes(current.nodes).find((item) => item.id === selectedId)
       : undefined;
-    if (!node || node.locked) return;
-    const nextName = window.prompt("重命名节点", node.name)?.trim();
-    if (!nextName || nextName === node.name) return;
-    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, node.id, (item) => { item.name = nextName; }) }));
-    setExportMsg(`已将节点重命名为「${nextName}」`);
-  }, [mutateScene, selectedId]);
+    if (!node || node.locked || selectedIds.length !== 1) return;
+    setRenamingId(node.id);
+  }, [selectedId, selectedIds]);
 
-  /** Ctrl+W：关闭当前工程。 */
+  const commitRename = useCallback((id: string, value: string) => {
+    setRenamingId(null);
+    const nextName = value.trim();
+    const current = sceneRef.current;
+    const node = current ? walkNodes(current.nodes).find((item) => item.id === id) : undefined;
+    if (!node || node.locked || !nextName || nextName === node.name) return;
+    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, (item) => { item.name = nextName; }) }));
+    setExportMsg(`已将节点重命名为「${nextName}」`);
+  }, [mutateScene]);
+
+  /** Alt+W：关闭当前工程，避免与浏览器关闭页签的 Ctrl+W 冲突。 */
   const closeProject = useCallback(() => {
     if (!sceneRef.current) return;
     if (dirty && !window.confirm("当前工程有未保存修改，确定放弃并关闭吗？")) return;
@@ -418,6 +426,7 @@ export default function App() {
     setProjectPath(null);
     setProjectName("未命名.ui.json");
     setDirty(false);
+    setRenamingId(null);
     setSelectedId(null);
     setSelectedIds([]);
     setWarnings([]);
@@ -860,8 +869,17 @@ export default function App() {
   }, [selectedId, selectedIds]);
 
   useEffect(() => {
+    setRenamingId(null);
+  }, [workspace]);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
+      if (!e.ctrlKey && !e.metaKey && e.altKey && (e.key === "w" || e.key === "W")) {
+        e.preventDefault();
+        closeProject();
+        return;
+      }
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
       if (e.key === "Escape" && typeMenu) {
         e.preventDefault();
@@ -875,12 +893,11 @@ export default function App() {
       }
       if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key === "F2") {
         e.preventDefault();
-        renameSelected();
+        beginRenameSelected();
         return;
       }
       if (e.ctrlKey || e.metaKey) {
-        if (e.key === "w" || e.key === "W") { e.preventDefault(); closeProject(); }
-        else if (e.key === "s" || e.key === "S") { e.preventDefault(); void saveCurrentProject(); }
+        if (e.key === "s" || e.key === "S") { e.preventDefault(); void saveCurrentProject(); }
         else if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
         else if (e.key === "x" || e.key === "X") { e.preventDefault(); redo(); }
         else if (e.key === "]") { e.preventDefault(); moveSelectedLayer("up"); }
@@ -911,7 +928,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [undo, redo, selectedId, selectedIds, typeMenu, updateSelected, saveCurrentProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, renameSelected, closeProject]);
+  }, [undo, redo, selectedId, selectedIds, typeMenu, updateSelected, saveCurrentProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject]);
 
   // 命中检测 + 拖动（文档 §17：拖动只改 offset，不碰 designRect）
   const toLogical = (clientX: number, clientY: number) => {
@@ -986,6 +1003,7 @@ export default function App() {
       <div className="body">
         {workspace === "controls" ? (
           <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode}
+            renamingId={renamingId} onRename={commitRename} onCancelRename={() => setRenamingId(null)}
             onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
             onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
           />

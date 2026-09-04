@@ -1,0 +1,150 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "root",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,50},{0,50},{0,100},{0,100}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "CheckBox",
+                    "Name": "root-chb",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,50},{0,50},{0,386},{0,98}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:app_check_in_fund.json image:img_unlock_free"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:app_store.json image:img_bd_select"
+                        }
+                    ]
+                },
+                {
+                    "Type": "RadioButton",
+                    "Name": "root-radio",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,50},{0,50},{0,142},{0,142}}"
+                        },
+                        {
+                            "Name": "NormalImage",
+                            "Value": "set:arrow_key.json image:xia"
+                        },
+                        {
+                            "Name": "PushedImage",
+                            "Value": "set:arrow_key.json image:shang"
+                        }
+                    ]
+                },
+                {
+                    "Type": "ProgressBar",
+                    "Name": "root-pbar",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,50},{0,50},{0,122},{0,119}}"
+                        },
+                        {
+                            "Name": "ProgressBackImage",
+                            "Value": "set:common_christmas_bg.json image:img_0_board"
+                        },
+                        {
+                            "Name": "ProgressImage",
+                            "Value": "set:create_team_bg_1.json image:img_bg"
+                        },
+                        {
+                            "Name": "ProgressHeaderImage",
+                            "Value": "set:common_christmas_icon.json image:btn_0_close"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Slider",
+                    "Name": "root-slider",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,50},{0,50},{0,89},{0,89}}"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "2 2 2 2"
+                        },
+                        {
+                            "Name": "ProgressBackImage",
+                            "Value": "set:christmas_lottery.json image:btn_close"
+                        },
+                        {
+                            "Name": "ProgressImage",
+                            "Value": "set:create_team.json image:btn_act_shop"
+                        },
+                        {
+                            "Name": "ProgressHeaderImage",
+                            "Value": "set:create_team.json image:img_0_chat04"
+                        },
+                        {
+                            "Name": "ProgressIsVertical",
+                            "Value": "true"
+                        },
+                        {
+                            "Name": "QuickSlide",
+                            "Value": "true"
+                        }
+                    ]
+                },
+                {
+                    "Type": "Edit",
+                    "Name": "root-edit",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0,50},{0,50},{0,562},{0,337}}"
+                        },
+                        {
+                            "Name": "MaxWidth",
+                            "Value": "10"
+                        },
+                        {
+                            "Name": "MinWidth",
+                            "Value": "10"
+                        },
+                        {
+                            "Name": "MaxHeight",
+                            "Value": "10"
+                        },
+                        {
+                            "Name": "MinHeight",
+                            "Value": "10"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "fffffff"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "EditBackImage",
+                            "Value": "set:common_ad_activity.json image:bg"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

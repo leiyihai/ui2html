@@ -1,3 +1,4 @@
 ﻿test.psd
+控件类型测试.psd
 签到.psd
 英雄详情.psd

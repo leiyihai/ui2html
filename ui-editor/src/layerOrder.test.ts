@@ -18,6 +18,8 @@ describe("layer order shortcuts", () => {
     const folder = node("folder", 4, [node("a", 3), node("b", 2), node("c", 1)]);
     const first = moveLayerOrder([folder], ["c"], "up");
     expect(first.nodes[0].children?.map((n) => n.id)).toEqual(["a", "c", "b"]);
+    expect(first.nodes[0].children?.map((n) => n.zIndex)).toEqual([3, 2, 1]);
+    expect(first.nodes[0].zIndex).toBe(4);
     const second = moveLayerOrder(first.nodes, ["c"], "up");
     expect(second.nodes[0].children?.map((n) => n.id)).toEqual(["c", "a", "b"]);
     const third = moveLayerOrder(second.nodes, ["c"], "up");

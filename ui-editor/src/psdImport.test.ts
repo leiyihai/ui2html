@@ -30,6 +30,7 @@ describe("PSD folder import", () => {
     expect(folder.ctrl).toEqual({ type: "Layout" });
     expect(folder.image).toBeNull();
     expect(folder.children?.[0].ctrl).toEqual({ type: "StaticImage" });
+    expect(folder.zIndex).toBeLessThan(folder.children?.[0].zIndex ?? -Infinity);
     expect(warnings).toEqual([]);
   });
 

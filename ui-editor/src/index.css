@@ -104,7 +104,14 @@ body {
 .controls-panel:hover .panel-resizer::after, .controls-panel .panel-resizer:hover::after { opacity: 1; }
 .controls-panel .panel-resizer:hover { background: rgba(74,144,217,.35); }
 .controls-panel li { display: flex; align-items: center; gap: 6px; }
-.controls-panel li .name { flex: 1; }
+.controls-panel li .name { flex: 1; min-width: 0; }
+.controls-panel .inline-rename {
+  flex: 1; min-width: 0; height: 20px; margin: -1px 0; padding: 1px 4px;
+  border: 1px solid #5fa8e8; border-radius: 2px; outline: none;
+  background: #17212b; color: #f4f8fc; font: inherit; font-size: 12px;
+  box-shadow: 0 0 0 1px rgba(95, 168, 232, .18);
+}
+.controls-panel .inline-rename::selection { background: #356c9d; color: #fff; }
 .controls-panel .ctrl-type-icon { width: 16px; height: 16px; flex: none; display: flex; align-items: center; justify-content: center; }
 .controls-panel .ctrl-type-icon svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .controls-panel .ctrl-type-icon { color: #91a8bd; }
