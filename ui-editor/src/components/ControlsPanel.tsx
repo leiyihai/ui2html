@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { CtrlType, UINode } from "../types";
 import { createSelectionIntent, flattenLayerIds, type SelectionIntent } from "../selection";
+import InlineRename from "./InlineRename";
 
 interface Props {
   nodes: UINode[];
@@ -9,6 +10,7 @@ interface Props {
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
   renamingId: string | null;
+  renameCaretMode: "all" | "prefix";
   onRename: (id: string, name: string) => void;
   onCancelRename: () => void;
 }
@@ -81,51 +83,6 @@ export function TypeIcon({ type }: { type?: CtrlType }) {
   );
 }
 
-function InlineRename(p: { name: string; onCommit: (name: string) => void; onCancel: () => void }) {
-  const [value, setValue] = useState(p.name);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const finished = useRef(false);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-    inputRef.current?.select();
-  }, []);
-
-  const commit = () => {
-    if (finished.current) return;
-    finished.current = true;
-    p.onCommit(value);
-  };
-  const cancel = () => {
-    if (finished.current) return;
-    finished.current = true;
-    p.onCancel();
-  };
-
-  return (
-    <input
-      ref={inputRef}
-      className="inline-rename"
-      value={value}
-      aria-label={`重命名 ${p.name}`}
-      onChange={(event) => setValue(event.target.value)}
-      onClick={(event) => event.stopPropagation()}
-      onBlur={commit}
-      onKeyDown={(event) => {
-        event.stopPropagation();
-        if (event.nativeEvent.isComposing) return;
-        if (event.key === "Enter") {
-          event.preventDefault();
-          commit();
-        } else if (event.key === "Escape") {
-          event.preventDefault();
-          cancel();
-        }
-      }}
-    />
-  );
-}
-
 function Row(p: {
   n: UINode;
   depth: number;
@@ -136,6 +93,7 @@ function Row(p: {
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
   renamingId: string | null;
+  renameCaretMode: "all" | "prefix";
   onRename: (id: string, name: string) => void;
   onCancelRename: () => void;
 }) {
@@ -164,6 +122,7 @@ function Row(p: {
         {p.renamingId === p.n.id ? (
           <InlineRename
             name={p.n.name}
+            caretMode={p.renameCaretMode}
             onCommit={(name) => p.onRename(p.n.id, name)}
             onCancel={p.onCancelRename}
           />
@@ -203,6 +162,7 @@ function Row(p: {
           onToggleVisible={p.onToggleVisible}
           onToggleLock={p.onToggleLock}
           renamingId={p.renamingId}
+          renameCaretMode={p.renameCaretMode}
           onRename={p.onRename}
           onCancelRename={p.onCancelRename}
         />
@@ -252,6 +212,7 @@ export default function ControlsPanel(p: Props) {
             onToggleVisible={p.onToggleVisible}
             onToggleLock={p.onToggleLock}
             renamingId={p.renamingId}
+            renameCaretMode={p.renameCaretMode}
             onRename={p.onRename}
             onCancelRename={p.onCancelRename}
           />

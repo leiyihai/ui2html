@@ -27,6 +27,7 @@ describe("ControlsPanel inline rename", () => {
         nodes={[bag]}
         selectedIds={[bag.id]}
         renamingId={bag.id}
+        renameCaretMode="all"
         onSelect={vi.fn()}
         onToggleVisible={vi.fn()}
         onToggleLock={vi.fn()}

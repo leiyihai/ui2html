@@ -20,9 +20,13 @@ describe("LayerPanel multi-selection", () => {
       nodes={[node("top", 2), node("bottom", 1)]}
       selectedId="bottom"
       selectedIds={["top", "bottom"]}
+      renamingId={null}
+      renameCaretMode="all"
       onSelect={vi.fn()}
       onToggleVisible={vi.fn()}
       onToggleLock={vi.fn()}
+      onRename={vi.fn()}
+      onCancelRename={vi.fn()}
     />);
 
     expect((html.match(/class="sel"/g) ?? []).length).toBe(2);

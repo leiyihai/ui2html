@@ -20,6 +20,7 @@ import { prepareSceneAssets } from "./projectAssets";
 import { openProject, projectFileName, saveProject } from "./projectApi";
 import { canvasFromImageFile, createImageNode } from "./imageImport";
 import { applySelection, createSelectionIntent, flattenLayerIds, type SelectionIntent } from "./selection";
+import { autoControlName } from "./nodeNaming";
 
 export const PRESETS: [string, number, number][] = [
   ["16:9 (1920 × 1080)", 1920, 1080],
@@ -52,6 +53,15 @@ function findPath(nodes: UINode[], id: string, prefix: number[] = []): number[] 
     }
   }
   return null;
+}
+
+function isFixedRootNode(scene: UIScene, node: UINode, path: number[] | null): boolean {
+  return Boolean(
+    path?.length === 1 && path[0] === 0
+      && node.ctrl?.type === "Layout"
+      && node.designRect.x === 0 && node.designRect.y === 0
+      && node.designRect.width === scene.designWidth && node.designRect.height === scene.designHeight,
+  );
 }
 function nodeAtPath(nodes: UINode[], path: number[]): UINode | null {
   let current: UINode[] | undefined = nodes;
@@ -156,6 +166,7 @@ export default function App() {
   const [typeMenu, setTypeMenu] = useState<{ x: number; y: number } | null>(null);
   const [quickActionMenu, setQuickActionMenu] = useState<{ x: number; y: number } | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameCaretMode, setRenameCaretMode] = useState<"all" | "prefix">("all");
 
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
@@ -274,6 +285,7 @@ export default function App() {
     setSelectedIds([]);
     setWarnings([]);
     setDirty(false);
+    setRenameCaretMode("all");
     setExportMsg("已新建空白工程");
   }, [applyScene, dirty, resetHistory]);
 
@@ -421,11 +433,13 @@ export default function App() {
       ? walkNodes(current.nodes).find((item) => item.id === selectedId)
       : undefined;
     if (!node || node.locked || selectedIds.length !== 1) return;
+    setRenameCaretMode("all");
     setRenamingId(node.id);
   }, [selectedId, selectedIds]);
 
   const commitRename = useCallback((id: string, value: string) => {
     setRenamingId(null);
+    setRenameCaretMode("all");
     const nextName = value.trim();
     const current = sceneRef.current;
     const node = current ? walkNodes(current.nodes).find((item) => item.id === id) : undefined;
@@ -445,6 +459,7 @@ export default function App() {
     setProjectName("未命名.ui.json");
     setDirty(false);
     setRenamingId(null);
+    setRenameCaretMode("all");
     setSelectedId(null);
     selectionAnchorRef.current = null;
     setSelectedIds([]);
@@ -492,6 +507,15 @@ export default function App() {
     const current = sceneRef.current;
     const source = current && walkNodes(current.nodes).find((node) => node.id === id);
     if (!current || !source) return;
+    const sourcePath = findPath(current.nodes, id);
+    const parentPath = sourcePath?.slice(0, -1) ?? [];
+    const siblings = parentPath.length ? nodeAtPath(current.nodes, parentPath)?.children ?? [] : current.nodes;
+    const shouldAutoRename = source.ctrl?.type === "Layout"
+      && type !== "Layout"
+      && !isFixedRootNode(current, source, sourcePath);
+    const generatedName = shouldAutoRename
+      ? autoControlName(type, siblings.filter((node) => node.id !== id))
+      : null;
 
     const supported = new Set(resourceSlotDefinitions(type ?? undefined).map((slot) => slot.key));
     const stale = Object.entries(source.resources ?? {})
@@ -499,6 +523,7 @@ export default function App() {
     let nextNodes = mapNodes(current.nodes, id, (node) => {
       const converted = markControlType(node, type);
       Object.assign(node, converted);
+      if (generatedName) node.name = generatedName;
       if (node.resources) {
         const kept = Object.fromEntries(Object.entries(node.resources).filter(([slot]) => supported.has(slot as ResourceSlot)));
         node.resources = Object.keys(kept).length ? kept : undefined;
@@ -515,6 +540,10 @@ export default function App() {
       nextNodes = insertAtPath(nextNodes, parentPath, Math.min(binding.sourceIndex, maxIndex), cloneNode(binding.sourceNode));
     }
     mutateScene((s) => ({ ...s, nodes: nextNodes }));
+    if (generatedName) {
+      setRenameCaretMode("prefix");
+      setRenamingId(id);
+    }
     if (stale.length) setExportMsg(`已切换类型，并恢复 ${stale.length} 个不兼容资源节点`);
   }, [mutateScene]);
 
@@ -1038,7 +1067,8 @@ export default function App() {
       <div className="body">
         {workspace === "controls" ? (
           <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode}
-            renamingId={renamingId} onRename={commitRename} onCancelRename={() => setRenamingId(null)}
+            renamingId={renamingId} renameCaretMode={renameCaretMode}
+            onRename={commitRename} onCancelRename={() => setRenamingId(null)}
             onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
             onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
           />
@@ -1052,6 +1082,8 @@ export default function App() {
           <LayerPanel
             nodes={scene?.nodes ?? []} selectedId={selectedId} selectedIds={selectedIds}
             onSelect={(id, intent) => selectNode(id, intent)}
+            renamingId={renamingId} renameCaretMode={renameCaretMode}
+            onRename={commitRename} onCancelRename={() => setRenamingId(null)}
             onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
             onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
           />

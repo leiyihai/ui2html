@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { UINode } from "../types";
 import { createSelectionIntent, flattenLayerIds, type SelectionIntent } from "../selection";
+import InlineRename from "./InlineRename";
 
 interface Props {
   nodes: UINode[];
@@ -9,6 +10,10 @@ interface Props {
   onSelect: (id: string, intent: SelectionIntent) => void;
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
+  renamingId: string | null;
+  renameCaretMode: "all" | "prefix";
+  onRename: (id: string, name: string) => void;
+  onCancelRename: () => void;
 }
 
 export type NodeType = "group" | "list" | "image" | "text";
@@ -49,7 +54,7 @@ const TYPE_CLASS: Record<NodeType, string> = {
   group: "t-group", list: "t-list", image: "t-image", text: "t-text",
 };
 
-function Row(p: { n: UINode; depth: number; selectedId: string | null; selectedIds: string[]; orderedIds: string[]; onSelect: (id: string, intent: SelectionIntent) => void; onToggleVisible: (id: string) => void; onToggleLock: (id: string) => void }) {
+function Row(p: { n: UINode; depth: number; selectedId: string | null; selectedIds: string[]; orderedIds: string[]; onSelect: (id: string, intent: SelectionIntent) => void; onToggleVisible: (id: string) => void; onToggleLock: (id: string) => void; renamingId: string | null; renameCaretMode: "all" | "prefix"; onRename: (id: string, name: string) => void; onCancelRename: () => void }) {
   const [collapsed, setCollapsed] = useState(false);
   const isGroup = !!p.n.children?.length;
   const type = nodeType(p.n);
@@ -69,7 +74,14 @@ function Row(p: { n: UINode; depth: number; selectedId: string | null; selectedI
         <span className={"type-ic " + TYPE_CLASS[type]} title={{ group: "组", list: "列表", image: "图片", text: "文本" }[type]}>
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">{ICONS[type]}</svg>
         </span>
-        <span className="name">{p.n.name}</span>
+        {p.renamingId === p.n.id ? (
+          <InlineRename
+            name={p.n.name}
+            caretMode={p.renameCaretMode}
+            onCommit={(name) => p.onRename(p.n.id, name)}
+            onCancel={p.onCancelRename}
+          />
+        ) : <span className="name">{p.n.name}</span>}
         <span className="type-tag">{type === "list" ? "list" : ""}</span>
         <button className="icon" title="可见"
           onClick={(e) => { e.stopPropagation(); p.onToggleVisible(p.n.id); }}>
@@ -88,8 +100,10 @@ function Row(p: { n: UINode; depth: number; selectedId: string | null; selectedI
       </li>
       {!collapsed && [...(p.n.children ?? [])].sort((a, b) => b.zIndex - a.zIndex).map((c) => (
         <Row key={c.id} n={c} depth={p.depth + 1} selectedId={p.selectedId}
-          selectedIds={p.selectedIds} orderedIds={p.orderedIds}
-          onSelect={p.onSelect} onToggleVisible={p.onToggleVisible} onToggleLock={p.onToggleLock} />
+        selectedIds={p.selectedIds} orderedIds={p.orderedIds}
+          onSelect={p.onSelect} onToggleVisible={p.onToggleVisible} onToggleLock={p.onToggleLock}
+          renamingId={p.renamingId} renameCaretMode={p.renameCaretMode}
+          onRename={p.onRename} onCancelRename={p.onCancelRename} />
       ))}
     </>
   );
@@ -103,8 +117,10 @@ export default function LayerPanel(p: Props) {
       <h3>图层</h3>
       <ul>
         {sorted.map((n) => (
-          <Row key={n.id} n={n} depth={0} selectedId={p.selectedId} selectedIds={p.selectedIds} orderedIds={orderedIds} onSelect={p.onSelect}
-            onToggleVisible={p.onToggleVisible} onToggleLock={p.onToggleLock} />
+        <Row key={n.id} n={n} depth={0} selectedId={p.selectedId} selectedIds={p.selectedIds} orderedIds={orderedIds} onSelect={p.onSelect}
+            onToggleVisible={p.onToggleVisible} onToggleLock={p.onToggleLock}
+            renamingId={p.renamingId} renameCaretMode={p.renameCaretMode}
+            onRename={p.onRename} onCancelRename={p.onCancelRename} />
         ))}
       </ul>
     </aside>
