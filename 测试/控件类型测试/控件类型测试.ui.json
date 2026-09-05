@@ -40,7 +40,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 86,
+              "zIndex": 82,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -81,7 +81,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 85,
+              "zIndex": 81,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -130,7 +130,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 82,
+                      "zIndex": 78,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -164,7 +164,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 81,
+                      "zIndex": 77,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -198,7 +198,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 80,
+                      "zIndex": 76,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -229,7 +229,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 83,
+                  "zIndex": 79,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -271,7 +271,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 84,
+              "zIndex": 80,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -302,7 +302,7 @@
           "rotation": 0,
           "opacity": 1,
           "visible": true,
-          "zIndex": 87,
+          "zIndex": 83,
           "adaptation": {
             "mode": "anchor"
           },
@@ -386,7 +386,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 77,
+                  "zIndex": 73,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -427,7 +427,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 76,
+                  "zIndex": 72,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -458,7 +458,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 78,
+              "zIndex": 74,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -500,7 +500,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 73,
+                      "zIndex": 69,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -541,7 +541,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 72,
+                      "zIndex": 68,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -575,7 +575,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 71,
+                      "zIndex": 67,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -606,7 +606,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 74,
+                  "zIndex": 70,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -644,7 +644,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 69,
+                      "zIndex": 65,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -685,7 +685,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 68,
+                      "zIndex": 64,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -719,7 +719,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 67,
+                      "zIndex": 63,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -750,7 +750,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 70,
+                  "zIndex": 66,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -788,7 +788,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 65,
+                      "zIndex": 61,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -829,7 +829,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 64,
+                      "zIndex": 60,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -863,7 +863,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 63,
+                      "zIndex": 59,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -894,7 +894,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 66,
+                  "zIndex": 62,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -932,7 +932,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 61,
+                      "zIndex": 57,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -973,7 +973,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 60,
+                      "zIndex": 56,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -1007,7 +1007,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 59,
+                      "zIndex": 55,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -1038,7 +1038,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 62,
+                  "zIndex": 58,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -1080,7 +1080,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 75,
+              "zIndex": 71,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -1111,7 +1111,7 @@
           "rotation": 0,
           "opacity": 1,
           "visible": true,
-          "zIndex": 79,
+          "zIndex": 75,
           "adaptation": {
             "mode": "anchor"
           },
@@ -1160,7 +1160,7 @@
         },
         {
           "id": "node-46",
-          "name": "bottom-right",
+          "name": "bottom-left",
           "children": [
             {
               "id": "node-56",
@@ -1202,7 +1202,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 56,
+                  "zIndex": 52,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -1236,7 +1236,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": false,
-                  "zIndex": 55,
+                  "zIndex": 51,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -1270,7 +1270,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 54,
+                  "zIndex": 50,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -1301,7 +1301,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 57,
+              "zIndex": 53,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -1346,7 +1346,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 52,
+                  "zIndex": 48,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -1380,7 +1380,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": false,
-                  "zIndex": 51,
+                  "zIndex": 47,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -1414,7 +1414,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 50,
+                  "zIndex": 46,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -1445,7 +1445,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 53,
+              "zIndex": 49,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -1490,7 +1490,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 48,
+                  "zIndex": 44,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -1524,7 +1524,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 47,
+                  "zIndex": 43,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -1558,7 +1558,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 46,
+                  "zIndex": 42,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -1589,7 +1589,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 49,
+              "zIndex": 45,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -1620,7 +1620,7 @@
           "rotation": 0,
           "opacity": 1,
           "visible": true,
-          "zIndex": 58,
+          "zIndex": 54,
           "adaptation": {
             "mode": "anchor"
           },
@@ -1719,7 +1719,7 @@
                           "rotation": 0,
                           "opacity": 1,
                           "visible": true,
-                          "zIndex": 40,
+                          "zIndex": 37,
                           "adaptation": {
                             "mode": "anchor"
                           }
@@ -1757,7 +1757,7 @@
                               "rotation": 0,
                               "opacity": 1,
                               "visible": false,
-                              "zIndex": 38,
+                              "zIndex": 35,
                               "adaptation": {
                                 "mode": "anchor"
                               }
@@ -1791,7 +1791,7 @@
                               "rotation": 0,
                               "opacity": 1,
                               "visible": true,
-                              "zIndex": 37,
+                              "zIndex": 34,
                               "adaptation": {
                                 "mode": "anchor"
                               }
@@ -1822,7 +1822,7 @@
                           "rotation": 0,
                           "opacity": 1,
                           "visible": true,
-                          "zIndex": 39,
+                          "zIndex": 36,
                           "adaptation": {
                             "mode": "anchor"
                           }
@@ -1853,7 +1853,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 41,
+                      "zIndex": 38,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -1898,7 +1898,7 @@
                           "rotation": 0,
                           "opacity": 1,
                           "visible": true,
-                          "zIndex": 35,
+                          "zIndex": 32,
                           "adaptation": {
                             "mode": "anchor"
                           }
@@ -1936,7 +1936,7 @@
                               "rotation": 0,
                               "opacity": 1,
                               "visible": false,
-                              "zIndex": 33,
+                              "zIndex": 30,
                               "adaptation": {
                                 "mode": "anchor"
                               }
@@ -1970,7 +1970,7 @@
                               "rotation": 0,
                               "opacity": 1,
                               "visible": true,
-                              "zIndex": 32,
+                              "zIndex": 29,
                               "adaptation": {
                                 "mode": "anchor"
                               }
@@ -2001,7 +2001,7 @@
                           "rotation": 0,
                           "opacity": 1,
                           "visible": true,
-                          "zIndex": 34,
+                          "zIndex": 31,
                           "adaptation": {
                             "mode": "anchor"
                           }
@@ -2032,7 +2032,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 36,
+                      "zIndex": 33,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -2077,7 +2077,7 @@
                           "rotation": 0,
                           "opacity": 1,
                           "visible": true,
-                          "zIndex": 30,
+                          "zIndex": 27,
                           "adaptation": {
                             "mode": "anchor"
                           }
@@ -2115,7 +2115,7 @@
                               "rotation": 0,
                               "opacity": 1,
                               "visible": true,
-                              "zIndex": 28,
+                              "zIndex": 25,
                               "adaptation": {
                                 "mode": "anchor"
                               }
@@ -2149,7 +2149,7 @@
                               "rotation": 0,
                               "opacity": 1,
                               "visible": true,
-                              "zIndex": 27,
+                              "zIndex": 24,
                               "adaptation": {
                                 "mode": "anchor"
                               }
@@ -2180,7 +2180,7 @@
                           "rotation": 0,
                           "opacity": 1,
                           "visible": true,
-                          "zIndex": 29,
+                          "zIndex": 26,
                           "adaptation": {
                             "mode": "anchor"
                           }
@@ -2211,7 +2211,7 @@
                       "rotation": 0,
                       "opacity": 1,
                       "visible": true,
-                      "zIndex": 31,
+                      "zIndex": 28,
                       "adaptation": {
                         "mode": "anchor"
                       }
@@ -2253,7 +2253,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 42,
+                  "zIndex": 39,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -2284,7 +2284,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 44,
+              "zIndex": 40,
               "adaptation": {
                 "mode": "anchor"
               },
@@ -2364,7 +2364,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 25,
+                  "zIndex": 22,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -2395,7 +2395,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 26,
+              "zIndex": 23,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -2403,6 +2403,13 @@
             {
               "id": "node-24",
               "name": "edit",
+              "text": {
+                "content": "clic",
+                "fontSize": 20,
+                "color": "#ffffff",
+                "mode": "fixed",
+                "minFontSize": 12
+              },
               "children": [
                 {
                   "id": "node-26",
@@ -2440,7 +2447,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 23,
+                  "zIndex": 20,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -2471,7 +2478,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 24,
+              "zIndex": 21,
               "adaptation": {
                 "mode": "anchor"
               },
@@ -2517,40 +2524,6 @@
                   }
                 }
               }
-            },
-            {
-              "id": "node-23",
-              "name": "img_bd",
-              "assetPath": "img_bd_3.png",
-              "ctrl": {
-                "type": "StaticImage"
-              },
-              "designRect": {
-                "x": 0,
-                "y": 0,
-                "width": 696,
-                "height": 89
-              },
-              "anchor": {
-                "parentX": 0,
-                "parentY": 0,
-                "selfX": 0,
-                "selfY": 0,
-                "offsetX": 0,
-                "offsetY": 0,
-                "safeArea": false
-              },
-              "scale": {
-                "x": 1,
-                "y": 1
-              },
-              "rotation": 0,
-              "opacity": 1,
-              "visible": true,
-              "zIndex": 21,
-              "adaptation": {
-                "mode": "anchor"
-              }
             }
           ],
           "ctrl": {
@@ -2578,9 +2551,51 @@
           "rotation": 0,
           "opacity": 1,
           "visible": true,
-          "zIndex": 45,
+          "zIndex": 41,
           "adaptation": {
             "mode": "anchor"
+          },
+          "resources": {
+            "LayoutBackImage": {
+              "id": "node-23",
+              "name": "img_bd",
+              "sourceParentId": "node-22",
+              "sourceIndex": 3,
+              "sourceNode": {
+                "id": "node-23",
+                "name": "img_bd",
+                "assetPath": "img_bd_3.png",
+                "ctrl": {
+                  "type": "StaticImage"
+                },
+                "designRect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 696,
+                  "height": 89
+                },
+                "anchor": {
+                  "parentX": 0,
+                  "parentY": 0,
+                  "selfX": 0,
+                  "selfY": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "safeArea": false
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                },
+                "rotation": 0,
+                "opacity": 1,
+                "visible": true,
+                "zIndex": 19,
+                "adaptation": {
+                  "mode": "anchor"
+                }
+              }
+            }
           }
         },
         {
@@ -2592,7 +2607,7 @@
               "name": "btn_close",
               "assetPath": "btn_close.png",
               "ctrl": {
-                "type": "StaticImage"
+                "type": "Button"
               },
               "designRect": {
                 "x": 35,
@@ -2616,7 +2631,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 19,
+              "zIndex": 17,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -2657,56 +2672,56 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 18,
-              "adaptation": {
-                "mode": "anchor"
-              }
-            },
-            {
-              "id": "node-19",
-              "name": "EXP",
-              "text": {
-                "content": "EXP",
-                "fontSize": 24,
-                "color": "rgb(255,255,255)",
-                "font": "NotoSansHans-Black",
-                "mode": "auto",
-                "minFontSize": 12
-              },
-              "ctrl": {
-                "type": "StaticText"
-              },
-              "designRect": {
-                "x": 791,
-                "y": 39,
-                "width": 46,
-                "height": 19
-              },
-              "anchor": {
-                "parentX": 0.5,
-                "parentY": 0.5,
-                "selfX": 0,
-                "selfY": 0,
-                "offsetX": 181.5,
-                "offsetY": -5.5,
-                "safeArea": false
-              },
-              "scale": {
-                "x": 1,
-                "y": 1
-              },
-              "rotation": 0,
-              "opacity": 1,
-              "visible": true,
-              "zIndex": 17,
+              "zIndex": 16,
               "adaptation": {
                 "mode": "anchor"
               }
             },
             {
               "id": "node-14",
-              "name": "经验",
+              "name": "exp",
               "children": [
+                {
+                  "id": "node-19",
+                  "name": "EXP",
+                  "text": {
+                    "content": "EXP",
+                    "fontSize": 24,
+                    "color": "rgb(255,255,255)",
+                    "font": "NotoSansHans-Black",
+                    "mode": "auto",
+                    "minFontSize": 12
+                  },
+                  "ctrl": {
+                    "type": "StaticText"
+                  },
+                  "designRect": {
+                    "x": 791,
+                    "y": 39,
+                    "width": 46,
+                    "height": 19
+                  },
+                  "anchor": {
+                    "parentX": 0,
+                    "parentY": 0,
+                    "selfX": 0,
+                    "selfY": 0,
+                    "offsetX": -63,
+                    "offsetY": 3,
+                    "safeArea": false
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "rotation": 0,
+                  "opacity": 1,
+                  "visible": true,
+                  "zIndex": 14,
+                  "adaptation": {
+                    "mode": "anchor"
+                  }
+                },
                 {
                   "id": "node-18",
                   "name": "720/1000",
@@ -2743,7 +2758,7 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 15,
+                  "zIndex": 13,
                   "adaptation": {
                     "mode": "anchor"
                   }
@@ -2751,78 +2766,14 @@
                 {
                   "id": "node-15",
                   "name": "pbar",
-                  "children": [
-                    {
-                      "id": "node-17",
-                      "name": "矩形 998 拷贝",
-                      "assetPath": "矩形 998 拷贝.png",
-                      "ctrl": {
-                        "type": "StaticImage"
-                      },
-                      "designRect": {
-                        "x": 0,
-                        "y": 0,
-                        "width": 337,
-                        "height": 24
-                      },
-                      "anchor": {
-                        "parentX": 0,
-                        "parentY": 0,
-                        "selfX": 0,
-                        "selfY": 0,
-                        "offsetX": 0,
-                        "offsetY": 0,
-                        "safeArea": false
-                      },
-                      "scale": {
-                        "x": 1,
-                        "y": 1
-                      },
-                      "rotation": 0,
-                      "opacity": 1,
-                      "visible": true,
-                      "zIndex": 13,
-                      "adaptation": {
-                        "mode": "anchor"
-                      }
-                    },
-                    {
-                      "id": "node-16",
-                      "name": "img_pbar",
-                      "assetPath": "img_pbar.png",
-                      "ctrl": {
-                        "type": "StaticImage"
-                      },
-                      "designRect": {
-                        "x": 0,
-                        "y": 0,
-                        "width": 337,
-                        "height": 24
-                      },
-                      "anchor": {
-                        "parentX": 0,
-                        "parentY": 0,
-                        "selfX": 0,
-                        "selfY": 0,
-                        "offsetX": 0,
-                        "offsetY": 0,
-                        "safeArea": false
-                      },
-                      "scale": {
-                        "x": 1,
-                        "y": 1
-                      },
-                      "rotation": 0,
-                      "opacity": 1,
-                      "visible": true,
-                      "zIndex": 12,
-                      "adaptation": {
-                        "mode": "anchor"
-                      }
-                    }
-                  ],
+                  "children": [],
+                  "progress": {
+                    "value": 1,
+                    "direction": "horizontal",
+                    "reverse": false
+                  },
                   "ctrl": {
-                    "type": "Layout"
+                    "type": "ProgressBar"
                   },
                   "designRect": {
                     "x": 0,
@@ -2846,9 +2797,91 @@
                   "rotation": 0,
                   "opacity": 1,
                   "visible": true,
-                  "zIndex": 14,
+                  "zIndex": 12,
                   "adaptation": {
                     "mode": "anchor"
+                  },
+                  "resources": {
+                    "ProgressBackImage": {
+                      "id": "node-16",
+                      "name": "img_pbar",
+                      "sourceParentId": "node-15",
+                      "sourceIndex": 1,
+                      "sourceNode": {
+                        "id": "node-16",
+                        "name": "img_pbar",
+                        "assetPath": "img_pbar.png",
+                        "ctrl": {
+                          "type": "StaticImage"
+                        },
+                        "designRect": {
+                          "x": 0,
+                          "y": 0,
+                          "width": 337,
+                          "height": 24
+                        },
+                        "anchor": {
+                          "parentX": 0,
+                          "parentY": 0,
+                          "selfX": 0,
+                          "selfY": 0,
+                          "offsetX": 0,
+                          "offsetY": 0,
+                          "safeArea": false
+                        },
+                        "scale": {
+                          "x": 1,
+                          "y": 1
+                        },
+                        "rotation": 0,
+                        "opacity": 1,
+                        "visible": true,
+                        "zIndex": 12,
+                        "adaptation": {
+                          "mode": "anchor"
+                        }
+                      }
+                    },
+                    "ProgressImage": {
+                      "id": "node-17",
+                      "name": "矩形 998 拷贝",
+                      "sourceParentId": "node-15",
+                      "sourceIndex": 0,
+                      "sourceNode": {
+                        "id": "node-17",
+                        "name": "矩形 998 拷贝",
+                        "assetPath": "矩形 998 拷贝.png",
+                        "ctrl": {
+                          "type": "StaticImage"
+                        },
+                        "designRect": {
+                          "x": 0,
+                          "y": 0,
+                          "width": 337,
+                          "height": 24
+                        },
+                        "anchor": {
+                          "parentX": 0,
+                          "parentY": 0,
+                          "selfX": 0,
+                          "selfY": 0,
+                          "offsetX": 0,
+                          "offsetY": 0,
+                          "safeArea": false
+                        },
+                        "scale": {
+                          "x": 1,
+                          "y": 1
+                        },
+                        "rotation": 0,
+                        "opacity": 1,
+                        "visible": true,
+                        "zIndex": 13,
+                        "adaptation": {
+                          "mode": "anchor"
+                        }
+                      }
+                    }
                   }
                 }
               ],
@@ -2877,41 +2910,7 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 16,
-              "adaptation": {
-                "mode": "anchor"
-              }
-            },
-            {
-              "id": "node-13",
-              "name": "img_bd",
-              "assetPath": "img_bd_2.png",
-              "ctrl": {
-                "type": "StaticImage"
-              },
-              "designRect": {
-                "x": 0,
-                "y": 0,
-                "width": 1219,
-                "height": 89
-              },
-              "anchor": {
-                "parentX": 0,
-                "parentY": 0,
-                "selfX": 0,
-                "selfY": 0,
-                "offsetX": 0,
-                "offsetY": 0,
-                "safeArea": false
-              },
-              "scale": {
-                "x": 1,
-                "y": 1
-              },
-              "rotation": 0,
-              "opacity": 1,
-              "visible": true,
-              "zIndex": 11,
+              "zIndex": 15,
               "adaptation": {
                 "mode": "anchor"
               }
@@ -2942,9 +2941,51 @@
           "rotation": 0,
           "opacity": 1,
           "visible": true,
-          "zIndex": 20,
+          "zIndex": 18,
           "adaptation": {
             "mode": "anchor"
+          },
+          "resources": {
+            "LayoutBackImage": {
+              "id": "node-13",
+              "name": "img_bd",
+              "sourceParentId": "node-12",
+              "sourceIndex": 3,
+              "sourceNode": {
+                "id": "node-13",
+                "name": "img_bd",
+                "assetPath": "img_bd_2.png",
+                "ctrl": {
+                  "type": "StaticImage"
+                },
+                "designRect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 1219,
+                  "height": 89
+                },
+                "anchor": {
+                  "parentX": 0,
+                  "parentY": 0,
+                  "selfX": 0,
+                  "selfY": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "safeArea": false
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                },
+                "rotation": 0,
+                "opacity": 1,
+                "visible": true,
+                "zIndex": 11,
+                "adaptation": {
+                  "mode": "anchor"
+                }
+              }
+            }
           }
         },
         {
@@ -2993,15 +3034,15 @@
               }
             },
             {
-              "id": "node-10",
-              "name": "img_radio_on",
-              "assetPath": "img_radio_on.png",
+              "id": "group-1788531939906",
+              "name": "Layout 2",
+              "children": [],
               "ctrl": {
-                "type": "StaticImage"
+                "type": "RadioButton"
               },
               "designRect": {
-                "x": 91,
-                "y": 12,
+                "x": 0,
+                "y": 0,
                 "width": 36,
                 "height": 36
               },
@@ -3021,43 +3062,91 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 8,
+              "zIndex": 6.99,
               "adaptation": {
                 "mode": "anchor"
-              }
-            },
-            {
-              "id": "node-9",
-              "name": "img_radio_off",
-              "assetPath": "img_radio_off.png",
-              "ctrl": {
-                "type": "StaticImage"
               },
-              "designRect": {
-                "x": 91,
-                "y": 12,
-                "width": 36,
-                "height": 36
-              },
-              "anchor": {
-                "parentX": 0,
-                "parentY": 0,
-                "selfX": 0,
-                "selfY": 0,
-                "offsetX": 91,
-                "offsetY": 12,
-                "safeArea": false
-              },
-              "scale": {
-                "x": 1,
-                "y": 1
-              },
-              "rotation": 0,
-              "opacity": 1,
-              "visible": true,
-              "zIndex": 7,
-              "adaptation": {
-                "mode": "anchor"
+              "resources": {
+                "PushedImage": {
+                  "id": "node-10",
+                  "name": "img_radio_on",
+                  "sourceParentId": "group-1788531939906",
+                  "sourceIndex": 0,
+                  "sourceNode": {
+                    "id": "node-10",
+                    "name": "img_radio_on",
+                    "assetPath": "img_radio_on.png",
+                    "ctrl": {
+                      "type": "StaticImage"
+                    },
+                    "designRect": {
+                      "x": 91,
+                      "y": 12,
+                      "width": 36,
+                      "height": 36
+                    },
+                    "anchor": {
+                      "parentX": 0,
+                      "parentY": 0,
+                      "selfX": 0,
+                      "selfY": 0,
+                      "offsetX": 0,
+                      "offsetY": 0,
+                      "safeArea": false
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1
+                    },
+                    "rotation": 0,
+                    "opacity": 1,
+                    "visible": true,
+                    "zIndex": 8,
+                    "adaptation": {
+                      "mode": "anchor"
+                    }
+                  }
+                },
+                "NormalImage": {
+                  "id": "node-9",
+                  "name": "img_radio_off",
+                  "sourceParentId": "group-1788531939906",
+                  "sourceIndex": 1,
+                  "sourceNode": {
+                    "id": "node-9",
+                    "name": "img_radio_off",
+                    "assetPath": "img_radio_off.png",
+                    "ctrl": {
+                      "type": "StaticImage"
+                    },
+                    "designRect": {
+                      "x": 91,
+                      "y": 12,
+                      "width": 36,
+                      "height": 36
+                    },
+                    "anchor": {
+                      "parentX": 0,
+                      "parentY": 0,
+                      "selfX": 0,
+                      "selfY": 0,
+                      "offsetX": 0,
+                      "offsetY": 0,
+                      "safeArea": false
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1
+                    },
+                    "rotation": 0,
+                    "opacity": 1,
+                    "visible": true,
+                    "zIndex": 7,
+                    "adaptation": {
+                      "mode": "anchor"
+                    }
+                  }
+                }
               }
             },
             {
@@ -3095,127 +3184,30 @@
               }
             },
             {
-              "id": "node-7",
-              "name": "矩形 995 拷贝",
-              "assetPath": "矩形 995 拷贝.png",
+              "id": "group-1788532381287",
+              "name": "slider_volume",
+              "children": [],
+              "progress": {
+                "value": 1,
+                "direction": "horizontal",
+                "reverse": false
+              },
               "ctrl": {
-                "type": "StaticImage"
-              },
-              "designRect": {
-                "x": 296,
-                "y": 13,
-                "width": 38,
-                "height": 38
-              },
-              "anchor": {
-                "parentX": 1,
-                "parentY": 1,
-                "selfX": 0,
-                "selfY": 0,
-                "offsetX": -144,
-                "offsetY": -48,
-                "safeArea": false
-              },
-              "scale": {
-                "x": 1,
-                "y": 1
-              },
-              "rotation": 0,
-              "opacity": 1,
-              "visible": true,
-              "zIndex": 5,
-              "adaptation": {
-                "mode": "anchor"
-              }
-            },
-            {
-              "id": "node-6",
-              "name": "矩形 2 拷贝 3",
-              "assetPath": "矩形 2 拷贝 3.png",
-              "ctrl": {
-                "type": "StaticImage"
-              },
-              "designRect": {
-                "x": 221,
-                "y": 24,
-                "width": 188,
-                "height": 17
-              },
-              "anchor": {
-                "parentX": 1,
-                "parentY": 0.5,
-                "selfX": 0,
-                "selfY": 0,
-                "offsetX": -219,
-                "offsetY": -6.5,
-                "safeArea": false
-              },
-              "scale": {
-                "x": 1,
-                "y": 1
-              },
-              "rotation": 0,
-              "opacity": 1,
-              "visible": true,
-              "zIndex": 4,
-              "adaptation": {
-                "mode": "anchor"
-              }
-            },
-            {
-              "id": "node-5",
-              "name": "矩形 7",
-              "assetPath": "矩形 7.png",
-              "ctrl": {
-                "type": "StaticImage"
-              },
-              "designRect": {
-                "x": 216,
-                "y": 19,
-                "width": 198,
-                "height": 27
-              },
-              "anchor": {
-                "parentX": 1,
-                "parentY": 1,
-                "selfX": 0,
-                "selfY": 0,
-                "offsetX": -224,
-                "offsetY": -42,
-                "safeArea": false
-              },
-              "scale": {
-                "x": 1,
-                "y": 1
-              },
-              "rotation": 0,
-              "opacity": 1,
-              "visible": true,
-              "zIndex": 3,
-              "adaptation": {
-                "mode": "anchor"
-              }
-            },
-            {
-              "id": "node-4",
-              "name": "img_bd",
-              "assetPath": "img_bd.png",
-              "ctrl": {
-                "type": "StaticImage"
+                "type": "Slider"
               },
               "designRect": {
                 "x": 0,
                 "y": 0,
-                "width": 440,
-                "height": 61
+                "width": 198,
+                "height": 38
               },
               "anchor": {
                 "parentX": 0,
                 "parentY": 0,
                 "selfX": 0,
                 "selfY": 0,
-                "offsetX": 0,
-                "offsetY": 0,
+                "offsetX": 216,
+                "offsetY": 13,
                 "safeArea": false
               },
               "scale": {
@@ -3225,9 +3217,131 @@
               "rotation": 0,
               "opacity": 1,
               "visible": true,
-              "zIndex": 2,
+              "zIndex": 2.99,
               "adaptation": {
                 "mode": "anchor"
+              },
+              "resources": {
+                "ProgressBackImage": {
+                  "id": "node-5",
+                  "name": "矩形 7",
+                  "sourceParentId": "group-1788532381287",
+                  "sourceIndex": 2,
+                  "sourceNode": {
+                    "id": "node-5",
+                    "name": "矩形 7",
+                    "assetPath": "矩形 7.png",
+                    "ctrl": {
+                      "type": "StaticImage"
+                    },
+                    "designRect": {
+                      "x": 216,
+                      "y": 19,
+                      "width": 198,
+                      "height": 27
+                    },
+                    "anchor": {
+                      "parentX": 0,
+                      "parentY": 0,
+                      "selfX": 0,
+                      "selfY": 0,
+                      "offsetX": 0,
+                      "offsetY": 6,
+                      "safeArea": false
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1
+                    },
+                    "rotation": 0,
+                    "opacity": 1,
+                    "visible": true,
+                    "zIndex": 3,
+                    "adaptation": {
+                      "mode": "anchor"
+                    }
+                  }
+                },
+                "ProgressImage": {
+                  "id": "node-6",
+                  "name": "矩形 2 拷贝 3",
+                  "sourceParentId": "group-1788532381287",
+                  "sourceIndex": 1,
+                  "sourceNode": {
+                    "id": "node-6",
+                    "name": "矩形 2 拷贝 3",
+                    "assetPath": "矩形 2 拷贝 3.png",
+                    "ctrl": {
+                      "type": "StaticImage"
+                    },
+                    "designRect": {
+                      "x": 221,
+                      "y": 24,
+                      "width": 188,
+                      "height": 17
+                    },
+                    "anchor": {
+                      "parentX": 0,
+                      "parentY": 0,
+                      "selfX": 0,
+                      "selfY": 0,
+                      "offsetX": 5,
+                      "offsetY": 11,
+                      "safeArea": false
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1
+                    },
+                    "rotation": 0,
+                    "opacity": 1,
+                    "visible": true,
+                    "zIndex": 4,
+                    "adaptation": {
+                      "mode": "anchor"
+                    }
+                  }
+                },
+                "ProgressHeaderImage": {
+                  "id": "node-7",
+                  "name": "矩形 995 拷贝",
+                  "sourceParentId": "group-1788532381287",
+                  "sourceIndex": 0,
+                  "sourceNode": {
+                    "id": "node-7",
+                    "name": "矩形 995 拷贝",
+                    "assetPath": "矩形 995 拷贝.png",
+                    "ctrl": {
+                      "type": "StaticImage"
+                    },
+                    "designRect": {
+                      "x": 296,
+                      "y": 13,
+                      "width": 38,
+                      "height": 38
+                    },
+                    "anchor": {
+                      "parentX": 0,
+                      "parentY": 0,
+                      "selfX": 0,
+                      "selfY": 0,
+                      "offsetX": 80,
+                      "offsetY": 0,
+                      "safeArea": false
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1
+                    },
+                    "rotation": 0,
+                    "opacity": 1,
+                    "visible": true,
+                    "zIndex": 5,
+                    "adaptation": {
+                      "mode": "anchor"
+                    }
+                  }
+                }
               }
             }
           ],
@@ -3259,40 +3373,48 @@
           "zIndex": 10,
           "adaptation": {
             "mode": "anchor"
-          }
-        },
-        {
-          "id": "node-2",
-          "name": "img_bg",
-          "assetPath": "img_bg.png",
-          "ctrl": {
-            "type": "StaticImage"
           },
-          "designRect": {
-            "x": 0,
-            "y": 0,
-            "width": 1280,
-            "height": 720
-          },
-          "anchor": {
-            "parentX": 0,
-            "parentY": 0,
-            "selfX": 0,
-            "selfY": 0,
-            "offsetX": 0,
-            "offsetY": 0,
-            "safeArea": false
-          },
-          "scale": {
-            "x": 1,
-            "y": 1
-          },
-          "rotation": 0,
-          "opacity": 1,
-          "visible": true,
-          "zIndex": 1,
-          "adaptation": {
-            "mode": "stretch"
+          "resources": {
+            "LayoutBackImage": {
+              "id": "node-4",
+              "name": "img_bd",
+              "sourceParentId": "node-3",
+              "sourceIndex": 7,
+              "sourceNode": {
+                "id": "node-4",
+                "name": "img_bd",
+                "assetPath": "img_bd.png",
+                "ctrl": {
+                  "type": "StaticImage"
+                },
+                "designRect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 440,
+                  "height": 61
+                },
+                "anchor": {
+                  "parentX": 0,
+                  "parentY": 0,
+                  "selfX": 0,
+                  "selfY": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "safeArea": false
+                },
+                "scale": {
+                  "x": 1,
+                  "y": 1
+                },
+                "rotation": 0,
+                "opacity": 1,
+                "visible": true,
+                "zIndex": 2,
+                "adaptation": {
+                  "mode": "anchor"
+                }
+              }
+            }
           }
         }
       ],
@@ -3321,9 +3443,51 @@
       "rotation": 0,
       "opacity": 1,
       "visible": true,
-      "zIndex": 88,
+      "zIndex": 84,
       "adaptation": {
         "mode": "stretch"
+      },
+      "resources": {
+        "LayoutBackImage": {
+          "id": "node-2",
+          "name": "img_bg",
+          "sourceParentId": "node-1",
+          "sourceIndex": 6,
+          "sourceNode": {
+            "id": "node-2",
+            "name": "img_bg",
+            "assetPath": "img_bg.png",
+            "ctrl": {
+              "type": "StaticImage"
+            },
+            "designRect": {
+              "x": 0,
+              "y": 0,
+              "width": 1280,
+              "height": 720
+            },
+            "anchor": {
+              "parentX": 0,
+              "parentY": 0,
+              "selfX": 0,
+              "selfY": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "safeArea": false
+            },
+            "scale": {
+              "x": 1,
+              "y": 1
+            },
+            "rotation": 0,
+            "opacity": 1,
+            "visible": true,
+            "zIndex": 1,
+            "adaptation": {
+              "mode": "stretch"
+            }
+          }
+        }
       }
     }
   ],

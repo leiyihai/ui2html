@@ -1,0 +1,54 @@
+{
+    "Dialog": {
+        "Window": {
+            "Type": "Layout",
+            "Name": "root",
+            "Property": [
+                {
+                    "Name": "Area",
+                    "Value": "{{0,0},{0,0},{1,0},{1,0}}"
+                }
+            ],
+            "Window": [
+                {
+                    "Type": "Edit",
+                    "Name": "root-e",
+                    "Property": [
+                        {
+                            "Name": "Area",
+                            "Value": "{{0.1,20},{0.2,30},{0.1,50},{0.2,60}}"
+                        },
+                        {
+                            "Name": "VerticalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "HorizontalAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "Text",
+                            "Value": "我是输入框"
+                        },
+                        {
+                            "Name": "StretchType",
+                            "Value": "NineGrid"
+                        },
+                        {
+                            "Name": "StretchOffset",
+                            "Value": "2 3 4 5"
+                        },
+                        {
+                            "Name": "TextVertAlignment",
+                            "Value": "Centre"
+                        },
+                        {
+                            "Name": "EditBackImage",
+                            "Value": "set:common.json image:bg_homepage_color"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
