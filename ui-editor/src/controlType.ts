@@ -1,4 +1,5 @@
 import type { CtrlType, UINode } from "./types";
+import { defaultProgressConfig } from "./progressControl";
 
 const LIST_TYPES: Partial<Record<CtrlType, "vertical" | "horizontal" | "grid">> = {
   List: "vertical",
@@ -70,6 +71,11 @@ export function markControlType(node: UINode, type: CtrlType | null): UINode {
     marked.list = { ...marked.list, type: listType };
   } else {
     marked.list = undefined;
+  }
+  if (type === "ProgressBar" || type === "Slider") {
+    marked.progress = node.progress ? { ...node.progress } : defaultProgressConfig(node);
+  } else {
+    marked.progress = undefined;
   }
   return marked;
 }

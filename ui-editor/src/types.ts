@@ -23,6 +23,17 @@ export interface ListConfig {
 
 export type TextMode = "auto" | "fixed" | "fit";
 
+export type ProgressDirection = "horizontal" | "vertical";
+
+export interface ProgressConfig {
+  /** 归一化进度值，范围 0..1。 */
+  value: number;
+  /** 进度延伸方向。 */
+  direction: ProgressDirection;
+  /** 是否从默认起点反向填充/移动。 */
+  reverse: boolean;
+}
+
 /** 控件类型标签 */
 export type CtrlType =
   | "empty" | "Button" | "CheckBox" | "Edit" | "GridView" | "Layout"
@@ -95,6 +106,8 @@ export interface UINode {
   children?: UINode[];
   /** list 节点（文件夹名为 list）：li 按类型重排、容器尺寸自适应 */
   list?: ListConfig;
+  /** ProgressBar/Slider 的进度配置；旧工程缺失时使用默认值。 */
+  progress?: ProgressConfig;
   /** 九宫格边距（设计像素，相对图片原尺寸）；有值时按九宫格渲染 */
   slice?: { left: number; top: number; right: number; bottom: number };
   /** 九宫格替换图（来自 "9" 文件夹的同名图片） */

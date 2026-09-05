@@ -129,6 +129,7 @@ function cloneNode(n: UINode): UINode {
     ctrl: n.ctrl ? { ...n.ctrl } : undefined,
     text: n.text ? { ...n.text } : undefined,
     slice: n.slice ? { ...n.slice } : undefined,
+    progress: n.progress ? { ...n.progress } : undefined,
     list: n.list ? { ...n.list, padding: { ...n.list.padding } } : undefined,
     resources,
     children: n.children?.map(cloneNode),

@@ -1,7 +1,8 @@
 // Canvas Renderer：只负责把 LayoutResult 画出来，不做布局计算
 // uiCanvas：UI 图片；overlayCanvas：选中框 / 锚点 / Safe Area / 网格 / 设计分辨率边框
 
-import type { LayoutResult, LayoutContext, ResourceSlot, UINode } from "./types";
+import type { ImageBinding, LayoutResult, LayoutContext, ResourceSlot, UINode } from "./types";
+import { progressConfig } from "./progressControl";
 import { fitFontSize, wrapText, LINE_HEIGHT } from "./textMeasure";
 
 function boundImage(node: UINode, slot: ResourceSlot): HTMLCanvasElement | null {
@@ -32,6 +33,76 @@ export function visibleControlResourceImages(node: UINode): HTMLCanvasElement[] 
     default:
       return [];
   }
+}
+
+function sourceVisualSize(binding: ImageBinding | undefined, image: HTMLCanvasElement,
+  result: LayoutResult): { width: number; height: number } {
+  const source = binding?.sourceNode;
+  const width = source?.designRect?.width && source.designRect.width > 0
+    ? source.designRect.width * Math.abs(source.scale?.x ?? 1) * result.scaleX
+    : image.width * result.scaleX;
+  const height = source?.designRect?.height && source.designRect.height > 0
+    ? source.designRect.height * Math.abs(source.scale?.y ?? 1) * result.scaleY
+    : image.height * result.scaleY;
+  return { width: Math.max(1, width || result.scaleX), height: Math.max(1, height || result.scaleY) };
+}
+
+function drawProgressImage(ctx: CanvasRenderingContext2D, image: HTMLCanvasElement, rect: LayoutResult["nodes"][number]["rect"],
+  config: ReturnType<typeof progressConfig>) {
+  if (config.value <= 0) return;
+  const horizontal = config.direction === "horizontal";
+  const length = horizontal ? rect.width : rect.height;
+  const progressLength = length * config.value;
+  let clipStart: number;
+  let clipEnd: number;
+  if (horizontal) {
+    clipStart = config.reverse ? rect.x + rect.width - progressLength : rect.x;
+    clipEnd = config.reverse ? rect.x + rect.width : rect.x + progressLength;
+  } else {
+    clipStart = config.reverse ? rect.y : rect.y + rect.height - progressLength;
+    clipEnd = config.reverse ? rect.y + progressLength : rect.y + rect.height;
+  }
+  if (clipEnd <= clipStart) return;
+  const full = horizontal
+    ? clipStart <= rect.x && clipEnd >= rect.x + rect.width
+    : clipStart <= rect.y && clipEnd >= rect.y + rect.height;
+  if (!full) {
+    ctx.save();
+    ctx.beginPath();
+    if (horizontal) ctx.rect(clipStart, rect.y, clipEnd - clipStart, rect.height);
+    else ctx.rect(rect.x, clipStart, rect.width, clipEnd - clipStart);
+    ctx.clip();
+  }
+  ctx.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+  if (!full) ctx.restore();
+}
+
+function renderProgressControlResources(ctx: CanvasRenderingContext2D, node: UINode,
+  rect: LayoutResult["nodes"][number]["rect"], result: LayoutResult) {
+  const config = progressConfig(node);
+  const background = boundImage(node, "ProgressBackImage");
+  const progress = boundImage(node, "ProgressImage");
+  const header = boundImage(node, "ProgressHeaderImage");
+  if (background) ctx.drawImage(background, rect.x, rect.y, rect.width, rect.height);
+
+  let headerRect: { x: number; y: number; width: number; height: number } | null = null;
+  if (header) {
+    const size = sourceVisualSize(node.resources?.ProgressHeaderImage, header, result);
+    const horizontal = config.direction === "horizontal";
+    const crossCenter = horizontal ? rect.y + rect.height / 2 : rect.x + rect.width / 2;
+    const startEdge = horizontal ? rect.x : rect.y;
+    const endEdge = horizontal ? rect.x + rect.width : rect.y + rect.height;
+    const center = config.reverse
+      ? endEdge - (endEdge - startEdge) * config.value
+      : startEdge + (endEdge - startEdge) * config.value;
+    if (horizontal) {
+      headerRect = { x: center - size.width / 2, y: crossCenter - size.height / 2, width: size.width, height: size.height };
+    } else {
+      headerRect = { x: crossCenter - size.width / 2, y: center - size.height / 2, width: size.width, height: size.height };
+    }
+  }
+  if (progress) drawProgressImage(ctx, progress, rect, config);
+  if (header && headerRect) ctx.drawImage(header, headerRect.x, headerRect.y, headerRect.width, headerRect.height);
 }
 
 /** 九宫格拉伸绘制：四角原尺寸、四边单轴拉伸、中心双轴拉伸 */
@@ -83,8 +154,12 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
       ctx.clip();
     }
     ctx.globalAlpha = opacity; // 有效透明度：父组 × 自身
-    for (const resourceImage of visibleControlResourceImages(node)) {
-      ctx.drawImage(resourceImage, rect.x, rect.y, rect.width, rect.height);
+    if (node.ctrl?.type === "ProgressBar" || node.ctrl?.type === "Slider") {
+      renderProgressControlResources(ctx, node, rect, result);
+    } else {
+      for (const resourceImage of visibleControlResourceImages(node)) {
+        ctx.drawImage(resourceImage, rect.x, rect.y, rect.width, rect.height);
+      }
     }
     if (useSlice && node.sliceImage && node.slice) {
       // 九宫格替换图：按 slice 边距九宫格拉伸绘制

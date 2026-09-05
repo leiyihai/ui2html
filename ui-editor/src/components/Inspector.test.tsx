@@ -38,4 +38,27 @@ describe("Edit inspector", () => {
     expect(html).toContain("输入框文本");
     expect(html).toContain("输入框中显示的文字");
   });
+
+  it("shows bounded progress controls for Slider and ProgressBar", () => {
+    const slider = { ...editNode(), id: "slider", name: "slider_volume", ctrl: { type: "Slider" as const },
+      designRect: { x: 0, y: 0, width: 200, height: 32 }, progress: { value: 0.25, direction: "horizontal" as const, reverse: false } };
+    const html = renderToStaticMarkup(<Inspector
+      node={slider}
+      rect={null}
+      viewport={{ width: 1280, height: 720 }}
+      onUpdate={() => {}}
+      onSetCtrl={() => {}}
+      onUnbindResource={() => {}}
+      onReanchor={() => {}}
+      templates={[]}
+      onTemplates={() => {}}
+    />);
+
+    expect(html).toContain("进度控件");
+    expect(html).toContain("进度值");
+    expect(html).toContain('min="0"');
+    expect(html).toContain('max="1"');
+    expect(html).toContain('step="0.01"');
+    expect(html).toContain("反向");
+  });
 });

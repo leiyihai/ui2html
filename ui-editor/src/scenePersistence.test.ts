@@ -113,4 +113,16 @@ describe("independent UI project snapshots", () => {
     expect(saved.nodes[0].text?.content).toBe("请输入名称");
     expect(restored.text?.content).toBe("请输入名称");
   });
+
+  it("round-trips Slider progress settings", () => {
+    const slider = node("slider", "slider_volume");
+    slider.ctrl = { type: "Slider" };
+    slider.progress = { value: 0.75, direction: "vertical", reverse: true };
+
+    const saved = serializeScene({ designWidth: 100, designHeight: 100, nodes: [slider] });
+    const restored = restoreSceneSnapshot(saved, new Map()).scene.nodes[0];
+
+    expect(saved.nodes[0].progress).toEqual({ value: 0.75, direction: "vertical", reverse: true });
+    expect(restored.progress).toEqual({ value: 0.75, direction: "vertical", reverse: true });
+  });
 });

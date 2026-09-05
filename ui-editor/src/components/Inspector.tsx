@@ -3,6 +3,7 @@ import type { ImageBinding, InteractionTemplate, ResourceSlot, UINode, UIRect } 
 import { CTRL_TYPES, type CtrlType } from "../types";
 import { resourceSlotDefinitions } from "../resourceBinding";
 import { createDefaultEditText } from "../controlType";
+import { clampProgressValue, progressConfig } from "../progressControl";
 
 const PARENT_GRID: [string, number, number][] = [
   ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
@@ -16,14 +17,29 @@ const SELF_GRID: [string, number, number][] = [
 ];
 
 /** 数值行：label 按住左右拖动快速调值。 */
-function NumRow(p: { label: string; value: number; step?: number; set: (v: number, record?: boolean) => void }) {
+function NumRow(p: {
+  label: string;
+  value: number;
+  step?: number;
+  min?: number;
+  max?: number;
+  precision?: number;
+  inputStep?: number;
+  set: (v: number, record?: boolean) => void;
+}) {
   const step = p.step ?? 1;
+  const precision = p.precision ?? 2;
+  const factor = 10 ** precision;
+  const normalize = (value: number) => {
+    const rounded = Math.round(value * factor) / factor;
+    return Math.max(p.min ?? -Infinity, Math.min(p.max ?? Infinity, rounded));
+  };
   const onPointerDown = (e: React.PointerEvent<HTMLLabelElement>) => {
     const el = e.currentTarget;
     el.setPointerCapture(e.pointerId);
     p.set(p.value, true);
     const start = p.value;
-    const move = (ev: PointerEvent) => p.set(start + Math.round((ev.clientX - e.clientX) * step * 100) / 100, false);
+    const move = (ev: PointerEvent) => p.set(normalize(start + (ev.clientX - e.clientX) * step), false);
     const up = () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); };
     el.addEventListener("pointermove", move);
     el.addEventListener("pointerup", up);
@@ -31,7 +47,8 @@ function NumRow(p: { label: string; value: number; step?: number; set: (v: numbe
   return (
     <div className="row">
       <label className="drag" onPointerDown={onPointerDown} title="按住左右拖动调整数值">{p.label}</label>
-      <input type="number" value={p.value} onChange={(ev) => p.set(+ev.target.value || 0, true)} />
+      <input type="number" value={p.value} step={p.inputStep} min={p.min} max={p.max}
+        onChange={(ev) => p.set(normalize(Number(ev.target.value) || 0), true)} />
     </div>
   );
 }
@@ -99,6 +116,8 @@ export default function Inspector(p: Props) {
   const resourceSlots = resourceSlotDefinitions(n.ctrl?.type);
   const boundResourceCount = resourceSlots.filter((slot) => n.resources?.[slot.key]).length;
   const editableText = n.text ?? (n.ctrl?.type === "Edit" ? createDefaultEditText() : null);
+  const isProgressControl = n.ctrl?.type === "ProgressBar" || n.ctrl?.type === "Slider";
+  const progress = isProgressControl ? progressConfig(n) : null;
 
   return (
     <aside className="inspector">
@@ -179,6 +198,22 @@ export default function Inspector(p: Props) {
             <NumRow label="上" value={Math.round(n.list.padding.top)} set={(v) => set("list", { ...n.list!, padding: { ...n.list!.padding, top: Math.max(0, v) } })} />
             <NumRow label="下" value={Math.round(n.list.padding.bottom)} set={(v) => set("list", { ...n.list!, padding: { ...n.list!.padding, bottom: Math.max(0, v) } })} />
           </div>
+        </InspectorSection>
+      )}
+
+      {progress && (
+        <InspectorSection title="进度控件" summary={`${progress.value.toFixed(2)} · ${progress.direction === "horizontal" ? "水平" : "垂直"}`}>
+          <NumRow label="进度值" value={progress.value} step={0.01} min={0} max={1} precision={2} inputStep={0.01}
+            set={(value) => set("progress", { ...progress, value: clampProgressValue(value) })} />
+          <div className="row"><label>方向</label>
+            <select value={progress.direction}
+              onChange={(e) => set("progress", { ...progress, direction: e.target.value as "horizontal" | "vertical" })}>
+              <option value="horizontal">水平</option>
+              <option value="vertical">垂直</option>
+            </select>
+          </div>
+          <label className="chk"><input type="checkbox" checked={progress.reverse}
+            onChange={(e) => set("progress", { ...progress, reverse: e.target.checked })} /> 反向</label>
         </InspectorSection>
       )}
 

@@ -19,6 +19,7 @@ export interface SavedNode {
   text?: UINode["text"];
   children?: SavedNode[];
   list?: UINode["list"];
+  progress?: UINode["progress"];
   ctrl?: UINode["ctrl"];
   resources?: Partial<Record<ResourceSlot, SavedImageBinding>>;
   designRect: UINode["designRect"];
@@ -57,6 +58,7 @@ function serializeNode(node: UINode, includeResources = true): SavedNode {
     ...(node.text ? { text: { ...node.text } } : {}),
     ...(node.children ? { children: node.children.map((child) => serializeNode(child)) } : {}),
     ...(node.list ? { list: { ...node.list, padding: { ...node.list.padding } } } : {}),
+    ...(node.progress ? { progress: { ...node.progress } } : {}),
     ...(node.ctrl ? { ctrl: { ...node.ctrl } } : {}),
     designRect: { ...node.designRect },
     anchor: { ...node.anchor },
@@ -136,6 +138,7 @@ function hydrateNode(saved: SavedNode, assets: Map<string, HTMLCanvasElement>, m
     ...(saved.text ? { text: { ...saved.text } } : {}),
     ...(saved.children ? { children: saved.children.map((child) => hydrateNode(child, assets, missing)) } : {}),
     ...(saved.list ? { list: { ...saved.list, padding: { ...saved.list.padding } } } : {}),
+    ...(saved.progress ? { progress: { ...saved.progress } } : {}),
     ...(saved.ctrl ? { ctrl: { ...saved.ctrl } } : {}),
     ...(resources.length ? { resources: Object.fromEntries(resources) as UINode["resources"] } : {}),
     designRect: { ...saved.designRect },

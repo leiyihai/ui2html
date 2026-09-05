@@ -97,4 +97,19 @@ describe("control type marking", () => {
       minFontSize: 12,
     });
   });
+
+  it("initializes progress controls with a zero value and inferred direction", () => {
+    const marked = markControlType(node({ designRect: { x: 0, y: 0, width: 180, height: 32 } }), "Slider");
+
+    expect(marked.progress).toEqual({ value: 0, direction: "horizontal", reverse: false });
+  });
+
+  it("clears progress configuration when leaving a progress control", () => {
+    const source = node({
+      ctrl: { type: "ProgressBar" },
+      progress: { value: 0.75, direction: "vertical", reverse: true },
+    });
+
+    expect(markControlType(source, "StaticImage").progress).toBeUndefined();
+  });
 });
