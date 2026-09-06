@@ -39,6 +39,7 @@ function cloneNode(node: UINode): UINode {
 }
 
 function preferredAssetName(node: UINode): string {
+  if (node.assetName) return `${sanitizeAssetBase(node.assetName)}.png`;
   if (node.assetPath) {
     const parts = node.assetPath.replace(/\\/g, "/").split("/");
     return `${sanitizeAssetBase(parts[parts.length - 1])}.png`;

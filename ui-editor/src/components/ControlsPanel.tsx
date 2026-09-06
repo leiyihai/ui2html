@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CtrlType, UINode } from "../types";
 import { createSelectionIntent, flattenLayerIds, type SelectionIntent } from "../selection";
 import InlineRename from "./InlineRename";
@@ -13,6 +13,7 @@ interface Props {
   renameCaretMode: "all" | "prefix";
   onRename: (id: string, name: string) => void;
   onCancelRename: () => void;
+  warningIds?: string[];
 }
 
 export const TYPE_LABELS: Record<CtrlType, string> = {
@@ -83,6 +84,11 @@ export function TypeIcon({ type }: { type?: CtrlType }) {
   );
 }
 
+function branchHasWarning(node: UINode, warningIds: string[] | undefined): boolean {
+  if (!warningIds?.length) return false;
+  return warningIds.includes(node.id) || Boolean(node.children?.some((child) => branchHasWarning(child, warningIds)));
+}
+
 function Row(p: {
   n: UINode;
   depth: number;
@@ -96,13 +102,18 @@ function Row(p: {
   renameCaretMode: "all" | "prefix";
   onRename: (id: string, name: string) => void;
   onCancelRename: () => void;
+  warningIds?: string[];
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const hasChildren = Boolean(p.n.children?.length);
+  const hasWarningInBranch = branchHasWarning(p.n, p.warningIds);
+  useEffect(() => {
+    if (hasWarningInBranch) setCollapsed(false);
+  }, [hasWarningInBranch]);
 
   return (
     <>
-      <li className={p.selected ? "sel" : ""} onClick={(e) => p.onSelect(p.n.id, createSelectionIntent(e, p.orderedIds))}
+      <li className={`${p.selected ? "sel" : ""}${p.warningIds?.includes(p.n.id) ? " warning" : ""}`} onClick={(e) => p.onSelect(p.n.id, createSelectionIntent(e, p.orderedIds))}
         style={{ paddingLeft: 8 + p.depth * 16 }}>
         <button
           className="fold"
@@ -165,6 +176,7 @@ function Row(p: {
           renameCaretMode={p.renameCaretMode}
           onRename={p.onRename}
           onCancelRename={p.onCancelRename}
+          warningIds={p.warningIds}
         />
       ))}
     </>
@@ -215,6 +227,7 @@ export default function ControlsPanel(p: Props) {
             renameCaretMode={p.renameCaretMode}
             onRename={p.onRename}
             onCancelRename={p.onCancelRename}
+            warningIds={p.warningIds}
           />
         ))}
       </ul>

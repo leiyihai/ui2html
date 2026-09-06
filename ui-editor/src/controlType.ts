@@ -7,9 +7,24 @@ const LIST_TYPES: Partial<Record<CtrlType, "vertical" | "horizontal" | "grid">> 
   GridView: "grid",
 };
 
-/** PSD 文件夹导入后的默认控件类型：只作为空的布局容器。 */
-export function defaultFolderCtrlType(): CtrlType {
-  return "Layout";
+/** PSD 文件夹导入后的控件类型：根文件夹固定为空 Layout，其余中文类型名可直接标记。 */
+export function defaultFolderCtrlType(name?: string, isRoot = false): CtrlType {
+  if (isRoot) return "Layout";
+  const normalized = (name ?? "").trim().toLowerCase();
+  const mappings: Array<[string[], CtrlType]> = [
+    [["按钮", "button"], "Button"],
+    [["复选框", "checkbox", "check_box"], "CheckBox"],
+    [["输入框", "编辑框", "edit", "input"], "Edit"],
+    [["网格", "网格视图", "grid", "gridview"], "GridView"],
+    [["列表", "list"], "List"],
+    [["横向列表", "水平列表", "hlist", "listhorizontal"], "ListHorizontal"],
+    [["进度条", "progress", "progressbar"], "ProgressBar"],
+    [["单选框", "单选按钮", "radiobutton", "radio"], "RadioButton"],
+    [["滑块", "滑动条", "slider"], "Slider"],
+    [["静态图片", "图片", "image", "staticimage"], "StaticImage"],
+    [["静态文本", "文本", "文字", "text", "statictext"], "StaticText"],
+  ];
+  return mappings.find(([aliases]) => aliases.some((alias) => normalized === alias || normalized.startsWith(`${alias}_`)))?.[1] ?? "Layout";
 }
 
 /** Edit 控件默认显示文本；旧工程缺少该字段时属性面板也使用同一默认值。 */

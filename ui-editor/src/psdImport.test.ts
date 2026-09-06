@@ -49,4 +49,18 @@ describe("PSD folder import", () => {
     expect(folder.children).toEqual([]);
     expect(warnings).toEqual([]);
   });
+
+  it("uses an explicit Chinese control folder name for non-root folders", () => {
+    vi.mocked(readPsd).mockReturnValue({
+      width: 200,
+      height: 100,
+      children: [{ id: 10, name: "panel", children: [{ id: 11, name: "按钮", children: [{
+        id: 12, name: "确认", left: 10, top: 10, right: 60, bottom: 40, canvas: {} as HTMLCanvasElement,
+      }] }] }],
+    } as never);
+
+    const { scene } = importPsd(new ArrayBuffer(0));
+    expect(scene.nodes[0].ctrl).toEqual({ type: "Layout" });
+    expect(scene.nodes[0].children?.[0].ctrl).toEqual({ type: "Button" });
+  });
 });

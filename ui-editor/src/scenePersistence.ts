@@ -1,4 +1,4 @@
-import type { ImageBinding, InteractionTemplate, ResourceSlot, ScaleMode, UIScene, UINode } from "./types";
+import type { ImageBinding, InteractionTemplate, ProjectAnalysis, ResourceSlot, ScaleMode, UIScene, UINode } from "./types";
 
 /** 独立 UI 工程格式。版本 3 起不再保存 PSD 图层身份或依赖 PSD 重新挂载图片。 */
 export const SCENE_PERSISTENCE_VERSION = 3;
@@ -16,6 +16,8 @@ export interface SavedNode {
   id: string;
   name: string;
   assetPath?: string;
+  assetName?: string;
+  naming?: UINode["naming"];
   text?: UINode["text"];
   children?: SavedNode[];
   list?: UINode["list"];
@@ -55,6 +57,8 @@ function serializeNode(node: UINode, includeResources = true): SavedNode {
     id: node.id,
     name: node.name,
     ...(node.assetPath ? { assetPath: node.assetPath } : {}),
+    ...(node.assetName ? { assetName: node.assetName } : {}),
+    ...(node.naming ? { naming: { ...node.naming } } : {}),
     ...(node.text ? { text: { ...node.text } } : {}),
     ...(node.children ? { children: node.children.map((child) => serializeNode(child)) } : {}),
     ...(node.list ? { list: { ...node.list, padding: { ...node.list.padding } } } : {}),
@@ -109,6 +113,18 @@ export function serializeScene(scene: UIScene, view: SavedProjectView = defaultP
   };
 }
 
+export function createEmptyAnalysis(provider: ProjectAnalysis["provider"] = "local"): ProjectAnalysis {
+  return {
+    version: 1,
+    provider,
+    status: "complete",
+    generatedAt: new Date().toISOString(),
+    nodes: {},
+    assets: {},
+    warnings: [],
+  };
+}
+
 let restoredLayerId = -1;
 
 function hydrateNode(saved: SavedNode, assets: Map<string, HTMLCanvasElement>, missing: string[]): UINode {
@@ -135,6 +151,8 @@ function hydrateNode(saved: SavedNode, assets: Map<string, HTMLCanvasElement>, m
     name: saved.name,
     image,
     ...(saved.assetPath ? { assetPath: saved.assetPath } : {}),
+    ...(saved.assetName ? { assetName: saved.assetName } : {}),
+    ...(saved.naming ? { naming: { ...saved.naming } } : {}),
     ...(saved.text ? { text: { ...saved.text } } : {}),
     ...(saved.children ? { children: saved.children.map((child) => hydrateNode(child, assets, missing)) } : {}),
     ...(saved.list ? { list: { ...saved.list, padding: { ...saved.list.padding } } } : {}),

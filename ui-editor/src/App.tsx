@@ -14,21 +14,22 @@ import QuickActionMenu from "./components/QuickActionMenu";
 import { markControlType } from "./controlType";
 import { hasResourceSlots, planResourceBindings, resourceSlotDefinitions } from "./resourceBinding";
 import { moveLayerOrder, type LayerOrderDirection } from "./layerOrder";
-import { restoreSceneSnapshot, serializeScene, type SavedProjectView } from "./scenePersistence";
+import { createEmptyAnalysis, restoreSceneSnapshot, serializeScene, type SavedProjectView } from "./scenePersistence";
 import { prepareSceneAssets } from "./projectAssets";
 import { openProject, projectFileName, saveProject } from "./projectApi";
+import { requestAiNaming } from "./projectApi";
 import { canvasFromImageFile, createImageNode } from "./imageImport";
 import { applySelection, createSelectionIntent, flattenLayerIds, type SelectionIntent } from "./selection";
 import { autoControlName } from "./nodeNaming";
+import { applyAiNaming, applyFallbackNaming, buildNamingManifest } from "./aiNaming";
+import type { ProjectAnalysis } from "./types";
+import { presetsForDesign, type DeviceShell } from "./devicePreview";
 
-export const PRESETS: [string, number, number][] = [
-  ["16:9 (1920 × 1080)", 1920, 1080],
-  ["18:9 (2160 × 1080)", 2160, 1080],
-  ["21:9 (2520 × 1080)", 2520, 1080],
-  ["iPad 横屏 (1024 × 768)", 1024, 768],
-  ["iPad 竖屏 (768 × 1024)", 768, 1024],
-  ["iPhone 刘海屏 (390 × 844)", 390, 844],
-];
+export interface ImportProgress {
+  name: string;
+  phase: string;
+  progress: number;
+}
 
 // 树工具：组节点含 children，节点操作需要递归
 function walkNodes(nodes: UINode[], out: UINode[] = []): UINode[] {
@@ -135,6 +136,64 @@ function cloneNode(n: UINode): UINode {
   };
 }
 
+function buildNamingReference(scene: UIScene, manifest: ReturnType<typeof buildNamingManifest>): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const width = Math.max(1, scene.designWidth);
+  const height = Math.max(1, scene.designHeight);
+  const maxWidth = 1200;
+  const scale = Math.min(1, maxWidth / width);
+  const canvas = document.createElement("canvas");
+  const contactColumns = 6;
+  const contactCell = 112;
+  const contactRows = Math.ceil(manifest.assets.length / contactColumns);
+  const stageHeight = Math.max(1, Math.round(height * scale));
+  canvas.width = Math.max(1, Math.round(width * scale), contactColumns * contactCell);
+  canvas.height = stageHeight + (contactRows ? contactRows * contactCell + 28 : 0);
+  const context = canvas.getContext("2d");
+  if (!context) return undefined;
+  context.fillStyle = "#15181d";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  const layout = new LayoutEngine().layoutScene(scene, {
+    designWidth: width,
+    designHeight: height,
+    viewportWidth: width,
+    viewportHeight: height,
+    safeArea: { left: 0, right: 0, top: 0, bottom: 0 },
+    scaleMode: "contain",
+  });
+  const preview = document.createElement("canvas");
+  preview.width = width;
+  preview.height = height;
+  renderUi(preview.getContext("2d")!, layout);
+  context.drawImage(preview, 0, 0, Math.round(width * scale), stageHeight);
+  if (contactRows) {
+    context.fillStyle = "#202a34";
+    context.fillRect(0, stageHeight, canvas.width, canvas.height - stageHeight);
+    context.fillStyle = "#a8bed0";
+    context.font = "12px sans-serif";
+    context.fillText("Unique image references", 10, stageHeight + 18);
+    const nodeById = new Map(walkNodes(scene.nodes).map((node) => [node.id, node]));
+    manifest.assets.forEach((asset, index) => {
+      const node = nodeById.get(asset.nodeIds[0]);
+      if (!node?.image) return;
+      const col = index % contactColumns;
+      const row = Math.floor(index / contactColumns);
+      const x = col * contactCell + 8;
+      const y = stageHeight + 25 + row * contactCell;
+      context.fillStyle = "#11171d";
+      context.fillRect(x, y, 96, 82);
+      const ratio = Math.min(84 / Math.max(1, node.image.width), 66 / Math.max(1, node.image.height));
+      const w = Math.max(1, node.image.width * ratio);
+      const h = Math.max(1, node.image.height * ratio);
+      context.drawImage(node.image, x + (96 - w) / 2, y + (66 - h) / 2, w, h);
+      context.fillStyle = "#b8cbd9";
+      context.font = "9px monospace";
+      context.fillText(asset.key, x + 3, y + 78);
+    });
+  }
+  return canvas.toDataURL("image/png");
+}
+
 // 撤销快照：保存完整树结构；canvas 引用保持不变，只复制节点配置。
 type Snapshot = UINode[];
 const snapScene = (s: UIScene): Snapshot => s.nodes.map(cloneNode);
@@ -148,6 +207,10 @@ export default function App() {
   const [viewport, setViewport] = useState({ width: 1280, height: 720 });
   const [safeArea, setSafeArea] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
   const [scaleMode, setScaleMode] = useState<ScaleMode>("cover");
+  const [deviceShell, setDeviceShell] = useState<DeviceShell>("desktop");
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewZoom, setPreviewZoom] = useState(1);
+  const [previewPan, setPreviewPan] = useState({ x: 0, y: 0 });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showSafeArea, setShowSafeArea] = useState(false);
@@ -157,6 +220,8 @@ export default function App() {
   const [futureLen, setFutureLen] = useState(0);
   const [projectPath, setProjectPath] = useState<string | null>(null);
   const [projectName, setProjectName] = useState("未命名.ui.json");
+  const [analysis, setAnalysis] = useState<ProjectAnalysis | null>(null);
+  const [importProgress, setImportProgress] = useState<ImportProgress | null>(null);
   const [dirty, setDirty] = useState(false);
   const [workspace, setWorkspace] = useState<Workspace>("controls");
   const [exportMsg, setExportMsg] = useState("");
@@ -168,12 +233,15 @@ export default function App() {
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const previewWrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ id: string; startX: number; startY: number } | null>(null);
   const pointerRef = useRef({ x: 0, y: 0 });
   const sceneRef = useRef<UIScene | null>(null); // 同步引用（事件中立即更新）
   const historyRef = useRef<Snapshot[]>([]);
   const futureRef = useRef<Snapshot[]>([]);
   const selectionAnchorRef = useRef<string | null>(null);
+  const importAbortRef = useRef<AbortController | null>(null);
+  const previewDragRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
 
   const layoutCtx: LayoutContext | null = useMemo(
     () => (scene ? {
@@ -194,6 +262,10 @@ export default function App() {
   const engineExport = useMemo(
     () => (scene ? buildEngineJson(prepareSceneAssets(scene).scene) : null),
     [scene],
+  );
+  const warningIds = useMemo(
+    () => analysis ? Object.entries(analysis.nodes).filter(([, item]) => item.source === "fallback" || (item.confidence ?? 1) < 0.5).map(([id]) => id) : [],
+    [analysis],
   );
 
   // 右下角操作结果只作短暂反馈；新消息出现时重新计时。
@@ -223,7 +295,7 @@ export default function App() {
   // 画布 CSS 尺寸：contain 到窗口（切回图层 tab 时重新计算）
   useEffect(() => {
     const fit = () => {
-      const wrap = wrapRef.current;
+      const wrap = showPreview ? previewWrapRef.current : wrapRef.current;
       if (!wrap || !layoutCtx || wrap.style.display === "none") return;
       const s = Math.min(wrap.clientWidth / layoutCtx.viewportWidth, wrap.clientHeight / layoutCtx.viewportHeight) * 0.72;
       for (const c of [uiRef.current, ovRef.current]) {
@@ -233,7 +305,7 @@ export default function App() {
     fit();
     window.addEventListener("resize", fit);
     return () => window.removeEventListener("resize", fit);
-  }, [layoutCtx, workspace]);
+  }, [layoutCtx, workspace, showPreview]);
 
   // ---- 状态变更统一入口（record=true 时压入历史）----
   const applyScene = useCallback((next: UIScene) => { sceneRef.current = next; setScene(next); }, []);
@@ -278,9 +350,14 @@ export default function App() {
     applyScene(next);
     setProjectPath(null);
     setProjectName("未命名.ui.json");
+    setAnalysis(null);
     setViewport({ width: 1280, height: 720 });
     setSafeArea({ left: 0, right: 0, top: 0, bottom: 0 });
     setScaleMode("cover");
+    setDeviceShell("desktop");
+    setShowPreview(false);
+    setPreviewZoom(1);
+    setPreviewPan({ x: 0, y: 0 });
     selectionAnchorRef.current = null;
     setSelectedId(null);
     setSelectedIds([]);
@@ -301,9 +378,12 @@ export default function App() {
       applyScene(restored.scene);
       setProjectPath(opened.path);
       setProjectName(projectFileName(opened.path));
+      setAnalysis(opened.analysis);
       setViewport(view?.viewport ?? { width: restored.scene.designWidth, height: restored.scene.designHeight });
       setSafeArea(view?.safeArea ?? { left: 0, right: 0, top: 0, bottom: 0 });
       setScaleMode(view?.scaleMode ?? "cover");
+      setDeviceShell("desktop");
+      setShowPreview(false);
       setShowSafeArea(view?.showSafeArea ?? false);
       setShowDesignBorder(view?.showDesignBorder ?? true);
       selectionAnchorRef.current = null;
@@ -331,6 +411,7 @@ export default function App() {
         suggestedName: projectName,
         project: saved,
         assets: prepared.assets,
+        analysis,
         saveAs,
       });
       if (!nextPath) return;
@@ -342,32 +423,102 @@ export default function App() {
     } catch (error) {
       setExportMsg(error instanceof Error ? error.message : "保存工程失败");
     }
-  }, [applyScene, projectName, projectPath, safeArea, scaleMode, showDesignBorder, showSafeArea, viewport]);
+  }, [analysis, applyScene, projectName, projectPath, safeArea, scaleMode, showDesignBorder, showSafeArea, viewport]);
+
+  const cancelPsdImport = useCallback(() => {
+    importAbortRef.current?.abort();
+  }, []);
 
   const loadPsd = useCallback(async (buffer: ArrayBuffer, name: string) => {
+    if (importAbortRef.current) return;
+    if (dirty && !window.confirm("当前工程有未保存修改，导入 PSD 将创建新工程，确定继续吗？")) return;
+    const controller = new AbortController();
+    importAbortRef.current = controller;
+    const checkpoint = async (phase: string, progress: number) => {
+      if (controller.signal.aborted) throw new DOMException("导入已取消", "AbortError");
+      setImportProgress({ name, phase, progress });
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 20));
+      if (controller.signal.aborted) throw new DOMException("导入已取消", "AbortError");
+    };
     try {
+      await checkpoint("正在读取 PSD 图层……", 0.12);
       const imported = importPsd(buffer);
-      const current = sceneRef.current;
-      if (current) {
-        mutateScene((source) => ({ ...source, nodes: [...source.nodes, ...imported.scene.nodes] }));
-      } else {
-        resetHistory();
-        applyScene(imported.scene);
-        setViewport({ width: imported.scene.designWidth, height: imported.scene.designHeight });
-        setProjectPath(null);
-        setProjectName(`${name.replace(/\.(psd|psb)$/i, "")}.ui.json`);
+      await checkpoint("正在整理层级和控件类型……", 0.34);
+      const fallback = applyFallbackNaming(imported.scene);
+      await checkpoint("正在生成图片资源分析……", 0.52);
+      const manifest = buildNamingManifest(fallback.scene);
+      const referenceDataUrl = buildNamingReference(fallback.scene, manifest);
+      await checkpoint("正在调用 AI 批量命名……", 0.65);
+      let ai: Awaited<ReturnType<typeof requestAiNaming>>;
+      try {
+        ai = await requestAiNaming(manifest, referenceDataUrl, controller.signal);
+      } catch (error) {
+        ai = { available: false, message: error instanceof Error ? error.message : "AI 命名服务不可用" };
       }
-      setWarnings(imported.warnings);
-      const importedIds = imported.scene.nodes.map((node) => node.id);
+      await checkpoint("正在校验并保存导入结果……", 0.88);
+      const named = ai.available && ai.result ? applyAiNaming(fallback.scene, ai.result) : fallback;
+      if (!ai.available && ai.message) named.analysis.warnings.push(`AI 命名未执行：${ai.message}`);
+      const currentScene = named.scene;
+      const currentAnalysis = named.analysis;
+      if (controller.signal.aborted) throw new DOMException("导入已取消", "AbortError");
+
+      // PSD 导入总是创建新的独立工程，不追加到当前工程。
+      resetHistory();
+      applyScene(currentScene);
+      setAnalysis(currentAnalysis);
+      setViewport({ width: currentScene.designWidth, height: currentScene.designHeight });
+      setSafeArea({ left: 0, right: 0, top: 0, bottom: 0 });
+      setDeviceShell("desktop");
+      setShowPreview(true);
+      setPreviewZoom(1);
+      setPreviewPan({ x: 0, y: 0 });
+      setProjectPath(null);
+      setProjectName(`${name.replace(/\.(psd|psb)$/i, "")}.ui.json`);
+      const importedIds = currentScene.nodes.map((node) => node.id);
       selectionAnchorRef.current = importedIds.at(-1) ?? null;
       setSelectedIds(importedIds);
       setSelectedId(importedIds.at(-1) ?? null);
+      setWarnings([...imported.warnings, ...currentAnalysis.warnings]);
       setDirty(true);
-      setExportMsg(`已从 ${name} 导入 ${walkNodes(imported.scene.nodes).length} 个节点`);
+      setExportMsg(`已从 ${name} 导入 ${walkNodes(currentScene.nodes).length} 个节点`);
     } catch (error) {
-      setExportMsg(error instanceof Error ? error.message : `无法导入 ${name}`);
+      if (error instanceof DOMException && error.name === "AbortError") setExportMsg("已取消 PSD 导入");
+      else setExportMsg(error instanceof Error ? error.message : `无法导入 ${name}`);
+    } finally {
+      if (importAbortRef.current === controller) importAbortRef.current = null;
+      setImportProgress(null);
     }
-  }, [applyScene, mutateScene, resetHistory]);
+  }, [applyScene, dirty, resetHistory]);
+
+  const rerunAiNaming = useCallback(async () => {
+    const current = sceneRef.current;
+    if (!current || importAbortRef.current) return;
+    const controller = new AbortController();
+    importAbortRef.current = controller;
+    try {
+      setImportProgress({ name: projectName, phase: "正在重新生成命名分析……", progress: 0.3 });
+      const manifest = buildNamingManifest(current);
+      const referenceDataUrl = buildNamingReference(current, manifest);
+      const ai = await requestAiNaming(manifest, referenceDataUrl, controller.signal);
+      if (controller.signal.aborted) throw new DOMException("命名已取消", "AbortError");
+      if (!ai.available || !ai.result) {
+        setExportMsg(`AI 命名不可用${ai.message ? `：${ai.message}` : ""}，已保留当前名称`);
+        return;
+      }
+      setImportProgress({ name: projectName, phase: "正在应用 AI 命名（手动名称不会覆盖）……", progress: 0.85 });
+      const named = applyAiNaming(current, ai.result);
+      applyScene(named.scene);
+      setAnalysis(named.analysis);
+      setWarnings(named.analysis.warnings);
+      setDirty(true);
+      setExportMsg("AI 命名已更新");
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError")) setExportMsg(error instanceof Error ? error.message : "AI 命名失败");
+    } finally {
+      if (importAbortRef.current === controller) importAbortRef.current = null;
+      setImportProgress(null);
+    }
+  }, [applyScene, projectName]);
 
   const importImages = useCallback(async (files: File[]) => {
     if (!files.length) return;
@@ -424,6 +575,19 @@ export default function App() {
     setExportMsg(`已导入 ${imported.length} 张图片${failed.length ? `，${failed.length} 张失败` : ""}`);
   }, [applyScene, mutateScene, resetHistory, selectedId]);
 
+  const handleDrop = useCallback(async (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (importProgress) return;
+    const files = [...event.dataTransfer.files];
+    const psd = files.find((file) => /\.(psd|psb)$/i.test(file.name));
+    if (psd) {
+      await loadPsd(await psd.arrayBuffer(), psd.name);
+      return;
+    }
+    const images = files.filter((file) => /^image\//i.test(file.type) || /\.(png|jpe?g|webp|bmp|gif|svg)$/i.test(file.name));
+    if (images.length) await importImages(images);
+  }, [importImages, importProgress, loadPsd]);
+
   /** F2：让当前单选节点进入层级树内联重命名状态。 */
   const beginRenameSelected = useCallback(() => {
     const current = sceneRef.current;
@@ -442,7 +606,31 @@ export default function App() {
     const current = sceneRef.current;
     const node = current ? walkNodes(current.nodes).find((item) => item.id === id) : undefined;
     if (!node || node.locked || !nextName || nextName === node.name) return;
-    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, (item) => { item.name = nextName; }) }));
+    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, (item) => {
+      item.name = nextName;
+      // 手动名称是用户的明确决策；后续“AI 命名”只能补充其他节点，不能覆盖它。
+      item.naming = {
+        ...item.naming,
+        source: "manual",
+        confidence: 1,
+        suffix: nextName.replace(/^[a-z0-9]+_/i, "") || nextName,
+      };
+    }) }));
+    setAnalysis((current) => {
+      const base = current ?? createEmptyAnalysis("local");
+      return {
+        ...base,
+        nodes: {
+          ...base.nodes,
+          [id]: {
+            ...(base.nodes[id] ?? {}),
+            source: "manual",
+            confidence: 1,
+            suffix: nextName.replace(/^[a-z0-9]+_/i, "") || nextName,
+          },
+        },
+      };
+    });
     setExportMsg(`已将节点重命名为「${nextName}」`);
   }, [mutateScene]);
 
@@ -454,6 +642,7 @@ export default function App() {
     setScene(null);
     setProjectPath(null);
     setProjectName("未命名.ui.json");
+    setAnalysis(null);
     setDirty(false);
     setRenamingId(null);
     setRenameCaretMode("all");
@@ -908,6 +1097,10 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
+      if (importProgress) {
+        e.preventDefault();
+        return;
+      }
       if (!e.ctrlKey && !e.metaKey && e.altKey && (e.key === "w" || e.key === "W")) {
         e.preventDefault();
         closeProject();
@@ -970,7 +1163,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject]);
+  }, [importProgress, undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject]);
 
   // 命中检测 + 拖动（文档 §17：拖动只改 offset，不碰 designRect）
   const toLogical = (clientX: number, clientY: number) => {
@@ -982,6 +1175,7 @@ export default function App() {
 
   const onPointerDown = (e: React.PointerEvent) => {
     pointerRef.current = { x: e.clientX, y: e.clientY };
+    if (showPreview) return;
     if (!result || !layoutCtx) return;
     const p = toLogical(e.clientX, e.clientY);
     const hit = [...result.nodes]
@@ -1018,16 +1212,56 @@ export default function App() {
     dragRef.current = { ...d, startX: e.clientX, startY: e.clientY };
   };
   const onPointerUp = () => { dragRef.current = null; };
+  const onPreviewWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    setPreviewZoom((value) => Math.max(0.4, Math.min(3, value * (e.deltaY < 0 ? 1.1 : 0.9))));
+  };
+  const onPreviewPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    previewDragRef.current = { x: e.clientX, y: e.clientY, panX: previewPan.x, panY: previewPan.y };
+  };
+  const onPreviewPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const drag = previewDragRef.current;
+    if (!drag) return;
+    setPreviewPan({ x: drag.panX + e.clientX - drag.x, y: drag.panY + e.clientY - drag.y });
+  };
+  const onPreviewPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+    const drag = previewDragRef.current;
+    if (drag && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 5 && result && layoutCtx && uiRef.current) {
+      const point = toLogical(e.clientX, e.clientY);
+      const hit = [...result.nodes].sort((a, b) => b.node.zIndex - a.node.zIndex).find((item) => item.visible
+        && point.x >= item.rect.x && point.x <= item.rect.x + item.rect.width
+        && point.y >= item.rect.y && point.y <= item.rect.y + item.rect.height);
+      if (hit) selectNode(hit.node.id, createSelectionIntent(e, flattenLayerIds(scene?.nodes ?? [])));
+    }
+    previewDragRef.current = null;
+  };
   const pieNode = typeMenu && selectedId
     ? walkNodes(scene?.nodes ?? []).find((node) => node.id === selectedId) ?? null
     : null;
+  const previewPresets = scene ? presetsForDesign(scene.designWidth, scene.designHeight) : [];
+  const canvasStack = (
+    <div className="canvas-stack">
+      <canvas ref={uiRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp} />
+      <canvas ref={ovRef} style={{ pointerEvents: "none" }} />
+      {deviceShell !== "desktop" && (
+        <div className={`device-shell device-shell-${deviceShell} ${scene && scene.designHeight > scene.designWidth ? "portrait" : "landscape"}`} aria-hidden="true">
+          <span className="device-cutout" />
+          <span className="device-home-indicator" />
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div className="app">
+    <div className="app" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { void handleDrop(event); }}>
       <Appbar
         projectName={projectName} dirty={dirty}
         onNew={createNewProject} onOpenProject={openSavedProject}
         onImportPsd={loadPsd} onImportImages={importImages}
+        onAiRename={() => { void rerunAiNaming(); }}
         hasScene={!!scene} canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
         onSave={() => { void saveCurrentProject(); }} onSaveAs={() => { void saveCurrentProject(true); }}
         onExportHtml={exportHtml} onExportEngineJson={exportEngineJson} onGlobalFont={applyGlobalFont}
@@ -1038,9 +1272,12 @@ export default function App() {
         scaleMode={scaleMode} onScaleMode={setScaleMode}
         showSafeArea={showSafeArea} onShowSafeArea={setShowSafeArea}
         showDesignBorder={showDesignBorder} onShowDesignBorder={setShowDesignBorder}
+        designWidth={scene?.designWidth ?? 1280} designHeight={scene?.designHeight ?? 720}
+        deviceShell={deviceShell} onDeviceShell={setDeviceShell}
       />
       <div className="body">
         <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode}
+          warningIds={warningIds}
           renamingId={renamingId} renameCaretMode={renameCaretMode}
           onRename={commitRename} onCancelRename={() => setRenamingId(null)}
           onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
@@ -1068,10 +1305,7 @@ export default function App() {
           </section>
         ) : (
           <div className="canvas-wrap" ref={wrapRef}>
-            <div className="canvas-stack">
-              <canvas ref={uiRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp} />
-              <canvas ref={ovRef} style={{ pointerEvents: "none" }} />
-            </div>
+            {!showPreview && canvasStack}
           </div>
         )}
         {workspace === "export" ? <div className="ws-panel" /> : (
@@ -1113,9 +1347,50 @@ export default function App() {
           onClose={() => setTypeMenu(null)}
         />
       )}
+      {showPreview && scene && (
+        <div className="preview-overlay">
+          <section className="preview-dialog" aria-label="效果预览">
+            <header className="preview-dialog-head">
+              <div><span className="preview-kicker">IMPORT CHECK</span><h2>效果预览</h2></div>
+              <button className="btn" onClick={() => setShowPreview(false)}>进入 UI Editor 修改</button>
+            </header>
+            <nav className="preview-device-tabs" aria-label="设备预设">
+              {previewPresets.map((preset) => (
+                <button key={preset.id} className={deviceShell === preset.shell && viewport.width === preset.width && viewport.height === preset.height ? "on" : ""}
+                  onClick={() => { setViewport({ width: preset.width, height: preset.height }); setDeviceShell(preset.shell); setPreviewZoom(1); setPreviewPan({ x: 0, y: 0 }); }}>
+                  {preset.label}
+                </button>
+              ))}
+            </nav>
+            <div className="preview-canvas-wrap" ref={previewWrapRef} onWheel={onPreviewWheel}
+              onPointerDown={onPreviewPointerDown} onPointerMove={onPreviewPointerMove} onPointerUp={onPreviewPointerUp}>
+              <div className="preview-canvas-transform" style={{ transform: `translate(${previewPan.x}px, ${previewPan.y}px) scale(${previewZoom})` }}>
+                {canvasStack}
+              </div>
+              <div className="preview-tip">拖动平移 · 滚轮缩放 · CSS 设备外观仅用于视觉检查</div>
+            </div>
+            <footer className="preview-dialog-foot">
+              <span>当前预览：{viewport.width} × {viewport.height} · {deviceShell}</span>
+              <button className="btn" onClick={() => { setPreviewZoom(1); setPreviewPan({ x: 0, y: 0 }); }}>居中</button>
+            </footer>
+          </section>
+        </div>
+      )}
+      {importProgress && (
+        <div className="import-overlay" role="status" aria-live="polite">
+          <div className="import-progress-card">
+            <div className="import-spinner" aria-hidden="true" />
+            <strong>正在导入 {importProgress.name}</strong>
+            <span>{importProgress.phase}</span>
+            <div className="import-progress-track"><i style={{ width: `${Math.round(importProgress.progress * 100)}%` }} /></div>
+            <small>{Math.round(importProgress.progress * 100)}% · 导入期间编辑器已锁定</small>
+            <button className="btn" onClick={cancelPsdImport}>取消导入</button>
+          </div>
+        </div>
+      )}
       <footer className="statusbar">
         {warnings.length > 0 && (
-          <span className="warn" title={warnings.join("\n")}>⚠ {warnings.length} 个图层被跳过</span>
+          <span className="warn" title={warnings.join("\n")}>⚠ {warnings.length} 个导入/分析提示</span>
         )}
         <span className="grow" />
         {exportMsg && <span className="ok">{exportMsg}</span>}

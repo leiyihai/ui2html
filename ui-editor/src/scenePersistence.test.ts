@@ -125,4 +125,14 @@ describe("independent UI project snapshots", () => {
     expect(saved.nodes[0].progress).toEqual({ value: 0.75, direction: "vertical", reverse: true });
     expect(restored.progress).toEqual({ value: 0.75, direction: "vertical", reverse: true });
   });
+
+  it("round-trips AI/manual naming metadata without PSD dependencies", () => {
+    const named = node("named", "btn_confirm");
+    named.assetName = "img_button_normal";
+    named.naming = { source: "manual", confidence: 1, suffix: "confirm" };
+    const saved = serializeScene({ designWidth: 100, designHeight: 100, nodes: [named] });
+    const restored = restoreSceneSnapshot(saved, new Map()).scene.nodes[0];
+    expect(restored.assetName).toBe("img_button_normal");
+    expect(restored.naming?.source).toBe("manual");
+  });
 });

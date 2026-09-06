@@ -40,6 +40,33 @@ export type CtrlType =
   | "List" | "ListHorizontal" | "ProgressBar" | "RadioButton" | "Slider"
   | "StaticImage" | "StaticText";
 
+export type NamingSource = "ai" | "fallback" | "manual";
+
+export interface NodeNamingAnalysis {
+  source: NamingSource;
+  confidence?: number;
+  suffix?: string;
+  reason?: string;
+}
+
+export interface AssetNamingAnalysis {
+  source: NamingSource;
+  confidence?: number;
+  name?: string;
+  reason?: string;
+}
+
+/** AI 命名和导入质量报告，独立保存为同名 .analysis.json。 */
+export interface ProjectAnalysis {
+  version: 1;
+  provider: "codex-cli" | "local";
+  status: "complete" | "fallback" | "partial";
+  generatedAt: string;
+  nodes: Record<string, NodeNamingAnalysis>;
+  assets: Record<string, AssetNamingAnalysis>;
+  warnings: string[];
+}
+
 export const CTRL_TYPES: { value: CtrlType; label: string }[] = [
   { value: "empty", label: "空节点" },
   { value: "Button", label: "按钮" },
@@ -92,6 +119,9 @@ export interface UINode {
   image: HTMLCanvasElement | null;
   /** 工程 `.assets` 目录内的相对资源路径；PSD/外部图片导入后在首次保存时生成。 */
   assetPath?: string;
+  /** AI/本地分析得到的资源语义名；实际文件名由资源准备阶段生成。 */
+  assetName?: string;
+  naming?: NodeNamingAnalysis;
   /** 文本节点内容（image 为 null 时按文本绘制） */
   text?: {
     content: string;

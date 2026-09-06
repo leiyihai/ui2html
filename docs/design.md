@@ -1,6 +1,6 @@
 # UI2HTML — PSD → 自研引擎 UI 资源工具 设计文档
 
-> 状态:讨论稿 v1 · 2026-08-22 · 蓝图已与需求方确认,**尚未开工实施**
+> 状态:历史讨论稿 v1 · 2026-08-22 · 当前冻结规格以 [`technical-spec.md`](./technical-spec.md) 顶部的 2026-09-06 基线为准
 > 关联代码:`E:\ui2html\ui-editor\`(Vite + React + TS 前端)
 
 ---

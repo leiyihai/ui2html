@@ -97,7 +97,7 @@ function rasterizeVector(layer: Layer, w: number, h: number): HTMLCanvasElement 
 }
 
 function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: number,
-  counter: { n: number }, warnings: string[], compCanvas: HTMLCanvasElement | null): UINode | null {
+  counter: { n: number }, warnings: string[], compCanvas: HTMLCanvasElement | null, isRoot = false): UINode | null {
   const i = counter.n++;
   const name = layer.name || `Layer ${i}`;
   const base = { id: `node-${layerIdSeq++}`, name, scale: { x: 1, y: 1 }, rotation: 0,
@@ -109,13 +109,13 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
     collectRects(layer.children, rects);
     const merged = mergeRects(rects) ?? { x: baseX, y: baseY, w: 0, h: 0 };
     const children = layer.children
-      .map((ch) => toNode(ch, merged.x, merged.y, Math.max(1, merged.w), Math.max(1, merged.h), counter, warnings, compCanvas))
+      .map((ch) => toNode(ch, merged.x, merged.y, Math.max(1, merged.w), Math.max(1, merged.h), counter, warnings, compCanvas, false))
       .filter((n): n is UINode => !!n);
     const isFullscreen = merged.x <= 0 && merged.y <= 0 && merged.w >= refW && merged.h >= refH;
     // 锚点推断必须用「相对父组原点」的坐标（文档坐标 - baseX/baseY），否则组内定位跑偏
     const { px, py, ox, oy } = inferAnchor(merged.x - baseX, merged.y - baseY, merged.w, merged.h, refW, refH);
     return {
-      ...base, image: null, children, ctrl: { type: defaultFolderCtrlType() }, zIndex: i,
+      ...base, image: null, children, ctrl: { type: defaultFolderCtrlType(name, isRoot) }, zIndex: i,
       designRect: { x: merged.x - baseX, y: merged.y - baseY, width: merged.w, height: merged.h },
       anchor: { parentX: px, parentY: py, selfX: 0, selfY: 0, offsetX: ox, offsetY: oy, safeArea: false },
       adaptation: { mode: isFullscreen ? "stretch" : "anchor" },
@@ -203,7 +203,7 @@ export function importPsd(buffer: ArrayBuffer): { scene: UIScene; warnings: stri
   const topLayers = psd.children ?? [];
   const nodes: UINode[] = [];
   for (const layer of topLayers) {
-    const n = toNode(layer, 0, 0, psd.width, psd.height, counter, warnings, compCanvas);
+    const n = toNode(layer, 0, 0, psd.width, psd.height, counter, warnings, compCanvas, true);
     if (n) {
       nodes.push(n);
     }

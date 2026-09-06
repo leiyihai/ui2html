@@ -1,5 +1,5 @@
 import type { ScaleMode } from "../types";
-import { PRESETS } from "../App";
+import { presetsForDesign, type DeviceShell } from "../devicePreview";
 
 export type Workspace = "controls" | "export";
 
@@ -17,11 +17,16 @@ interface Props {
   onShowSafeArea: (value: boolean) => void;
   showDesignBorder: boolean;
   onShowDesignBorder: (value: boolean) => void;
+  designWidth: number;
+  designHeight: number;
+  deviceShell: DeviceShell;
+  onDeviceShell: (shell: DeviceShell) => void;
 }
 
 /** 当前版本只保留编辑层级和导出两个工作区；适配、动画、九宫格以后独立增加。 */
 export default function Workbar(p: Props) {
-  const preset = PRESETS.find(([, width, height]) => width === p.viewport.width && height === p.viewport.height)?.[0] ?? "custom";
+  const presets = presetsForDesign(p.designWidth, p.designHeight);
+  const preset = presets.find((item) => item.width === p.viewport.width && item.height === p.viewport.height)?.id ?? "custom";
   return (
     <div className="workbar">
       <nav className="ws-tabs" aria-label="工作区">
@@ -38,10 +43,10 @@ export default function Workbar(p: Props) {
         <div className="device-preview-popover">
           <label>设备预设
             <select value={preset} disabled={!p.hasScene} onChange={(event) => {
-              const hit = PRESETS.find(([name]) => name === event.target.value);
-              if (hit) p.onViewport({ width: hit[1], height: hit[2] });
+              const hit = presets.find((item) => item.id === event.target.value);
+              if (hit) { p.onViewport({ width: hit.width, height: hit.height }); p.onDeviceShell(hit.shell); }
             }}>
-              {PRESETS.map(([name]) => <option key={name} value={name}>{name}</option>)}
+              {presets.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
               <option value="custom">自定义</option>
             </select>
           </label>
