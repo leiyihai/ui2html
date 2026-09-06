@@ -5,6 +5,21 @@ import { resourceSlotDefinitions } from "../resourceBinding";
 import { createDefaultEditText } from "../controlType";
 import { clampProgressValue, progressConfig } from "../progressControl";
 
+const PARENT_GRID: [string, number, number][] = [
+  ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
+  ["←", 0, 0.5], ["●", 0.5, 0.5], ["→", 1, 0.5],
+  ["↙", 0, 1], ["↓", 0.5, 1], ["↘", 1, 1],
+];
+const SELF_GRID: [string, number, number][] = [
+  ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
+  ["←", 0, 0.5], ["●", 0.5, 0.5], ["→", 1, 0.5],
+  ["↙", 0, 1], ["↓", 0.5, 1], ["↘", 1, 1],
+];
+
+function gridLabel(x: number, y: number): string {
+  return PARENT_GRID.find(([, px, py]) => px === x && py === y)?.[0] ?? "自定义";
+}
+
 /** 数值行：label 按住左右拖动快速调值。 */
 function NumRow(p: {
   label: string;
@@ -80,13 +95,12 @@ function ResourceSlotRow(p: { slot: ResourceSlot; label: string; binding?: Image
 interface Props {
   node: UINode | null;
   rect: UIRect | null;
-  /** 兼容旧测试/调用方；当前面板不再显示视口适配设置。 */
+  /** 兼容旧测试/调用方；设备预览不在属性面板中设置。 */
   viewport?: { width: number; height: number };
   onUpdate: (patch: (n: UINode) => void, record?: boolean) => void;
   onSetCtrl: (id: string, type: CtrlType | null) => void;
   onUnbindResource: (id: string, slot: ResourceSlot) => void;
-  /** 兼容旧调用方；当前版本不提供锚点编辑入口。 */
-  onReanchor?: (a: { parentX: number; parentY: number; selfX: number; selfY: number }) => void;
+  onReanchor: (a: { parentX: number; parentY: number; selfX: number; selfY: number }) => void;
   templates: InteractionTemplate[];
   onTemplates: (t: InteractionTemplate[]) => void;
 }
@@ -220,6 +234,24 @@ export default function Inspector(p: Props) {
           </div>
         </InspectorSection>
       )}
+
+      <InspectorSection title="引擎对齐" summary={`父级 ${gridLabel(n.anchor.parentX, n.anchor.parentY)}`}>
+        <p className="hint correction-note">沿用九宫格设置控件相对父节点的对齐方式，同时保持当前视觉位置。</p>
+        <div className="subsection-label">Parent Anchor · HorizontalAlignment / VerticalAlignment</div>
+        <div className="grid">
+          {PARENT_GRID.map(([label, x, y]) => (
+            <button key={label} className={n.anchor.parentX === x && n.anchor.parentY === y ? "on" : ""}
+              onClick={() => p.onReanchor({ ...n.anchor, parentX: x, parentY: y })}>{label}</button>
+          ))}
+        </div>
+        <div className="subsection-label">Self Anchor · 控件自身锚点</div>
+        <div className="grid">
+          {SELF_GRID.map(([label, x, y]) => (
+            <button key={label} className={n.anchor.selfX === x && n.anchor.selfY === y ? "on" : ""}
+              onClick={() => p.onReanchor({ ...n.anchor, selfX: x, selfY: y })}>{label}</button>
+          ))}
+        </div>
+      </InspectorSection>
 
       <InspectorSection title="位置与尺寸校正" summary="PSD 视觉微调">
         <p className="hint correction-note">PSD 导入的位置和尺寸默认保留；这里仅用于少量视觉校正。</p>

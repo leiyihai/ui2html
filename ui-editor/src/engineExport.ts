@@ -25,6 +25,18 @@ function area(rect: { x: number; y: number; width: number; height: number }): st
   return `{{0,${number(rect.x)}},{0,${number(rect.y)}},{0,${number(rect.width)}},{0,${number(rect.height)}}}`;
 }
 
+function horizontalAlignment(value: number): string {
+  if (value >= 0.75) return "Right";
+  if (value >= 0.25) return "Centre";
+  return "Left";
+}
+
+function verticalAlignment(value: number): string {
+  if (value >= 0.75) return "Bottom";
+  if (value >= 0.25) return "Centre";
+  return "Top";
+}
+
 function imageReference(node: UINode | undefined): string | null {
   const path = node?.assetPath;
   return path ? path.replace(/\\/g, "/") : null;
@@ -64,6 +76,8 @@ function buildWindow(node: UINode, layout: LayoutResult, warnings: string[], err
 
   const properties: { Name: string; Value: string }[] = [
     { Name: "Area", Value: area(rectInParent(node, layout)) },
+    { Name: "HorizontalAlignment", Value: horizontalAlignment(node.anchor.parentX) },
+    { Name: "VerticalAlignment", Value: verticalAlignment(node.anchor.parentY) },
   ];
   const type = exportType(node, warnings);
   const slots = resourceSlotDefinitions(node.ctrl?.type);

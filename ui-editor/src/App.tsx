@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LayoutEngine } from "./layoutEngine";
+import { LayoutEngine, reanchor } from "./layoutEngine";
 import { importPsd } from "./psdImport";
 import { renderOverlay, renderUi } from "./renderer";
 import { buildExportHtml } from "./exportHtml";
@@ -1080,6 +1080,10 @@ export default function App() {
             rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
             onUpdate={updateSelected}
             onSetCtrl={setCtrl}
+            onReanchor={(a) => updateSelected((n) => {
+              const r = result?.nodes.find((x) => x.node.id === n.id)?.rect;
+              if (r && layoutCtx) reanchor(n, scene!.designWidth, scene!.designHeight, r, layoutCtx, result!, a);
+            })}
             templates={scene?.interactionTemplates ?? []}
             onTemplates={setTemplates}
             onUnbindResource={unbindResource}

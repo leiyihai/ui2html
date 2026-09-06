@@ -30,6 +30,8 @@ describe("self-developed engine JSON export", () => {
     expect(json.Dialog.Window.Type).toBe("Layout");
     expect(json.Dialog.Window.Window[0].Property).toEqual([
       { Name: "Area", Value: "{{0,12},{0,24},{0,120},{0,48}}" },
+      { Name: "HorizontalAlignment", Value: "Left" },
+      { Name: "VerticalAlignment", Value: "Top" },
       { Name: "NormalImage", Value: "normal.png" },
       { Name: "PushedImage", Value: "pressed.png" },
     ]);
