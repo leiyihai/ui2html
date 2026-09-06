@@ -1032,7 +1032,13 @@ export default function App() {
         onSave={() => { void saveCurrentProject(); }} onSaveAs={() => { void saveCurrentProject(true); }}
         onExportHtml={exportHtml} onExportEngineJson={exportEngineJson} onGlobalFont={applyGlobalFont}
       />
-      <Workbar ws={workspace} onWs={setWorkspace} hasScene={!!scene} />
+      <Workbar ws={workspace} onWs={setWorkspace} hasScene={!!scene}
+        viewport={viewport} onViewport={setViewport}
+        safeArea={safeArea} onSafeArea={setSafeArea}
+        scaleMode={scaleMode} onScaleMode={setScaleMode}
+        showSafeArea={showSafeArea} onShowSafeArea={setShowSafeArea}
+        showDesignBorder={showDesignBorder} onShowDesignBorder={setShowDesignBorder}
+      />
       <div className="body">
         <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode}
           renamingId={renamingId} renameCaretMode={renameCaretMode}

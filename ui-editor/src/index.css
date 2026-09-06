@@ -77,6 +77,25 @@ body {
 .ws-settings:hover { background: #2e3541; }
 .ws-settings.on { background: #3a526e; border-color: #4a90d9; color: #fff; }
 .workbar-hint { color: #627184; font-size: 10px; letter-spacing: .2px; }
+.device-preview { position: relative; flex: none; color: #a9bacb; font-size: 11px; }
+.device-preview summary { padding: 6px 9px; border: 1px solid #354556; border-radius: 5px; background: #232c37; cursor: pointer; list-style: none; }
+.device-preview summary::-webkit-details-marker { display: none; }
+.device-preview summary::before { content: "▣"; margin-right: 6px; color: #79b4df; }
+.device-preview[open] summary { border-color: #4a90d9; color: #e8f3fc; }
+.device-preview-popover {
+  position: absolute; z-index: 12; top: calc(100% + 7px); left: 0; width: 470px; padding: 12px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border: 1px solid #3b4d60;
+  border-radius: 7px; background: #202a35; box-shadow: 0 12px 30px rgba(0,0,0,.3);
+}
+.device-preview-popover > label { display: inline-flex; align-items: center; gap: 5px; color: #93a8ba; }
+.device-preview-popover select, .device-preview-popover input[type="number"] { height: 25px; background: #151b22; color: #e8edf2; border: 1px solid #3a4b5d; border-radius: 4px; padding: 3px 5px; }
+.device-preview-popover select { max-width: 180px; }
+.device-preview-popover input[type="number"] { width: 62px; }
+.device-preview-popover .device-check { color: #aab9c8; }
+.device-safe-area { width: 100%; display: flex; gap: 7px; padding-top: 4px; border-top: 1px solid #334250; }
+.device-safe-area label { display: inline-flex; align-items: center; gap: 4px; color: #8397aa; }
+.device-safe-area input { width: 48px; background: #151b22; color: #e8edf2; border: 1px solid #3a4b5d; border-radius: 4px; padding: 3px 4px; }
+.device-preview-popover p { width: 100%; margin: 0; color: #627589; font-size: 10px; }
 .ws-placeholder {
   flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
   justify-content: center; gap: 8px; color: #5f6c7c; font-size: 14px;
