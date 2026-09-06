@@ -15,6 +15,7 @@ interface Props {
   onUndo: () => void;
   onRedo: () => void;
   onExportHtml: () => void;
+  onExportEngineJson: () => void;
   onGlobalFont: (font: string) => void;
 }
 
@@ -93,6 +94,7 @@ export default function Appbar(p: Props) {
       <button className="btn" disabled={!p.canUndo} onClick={p.onUndo} title="后退一步 (Ctrl+Z)">↩ 撤销</button>
       <button className="btn" disabled={!p.canRedo} onClick={p.onRedo} title="前进一步 (Ctrl+X)">↪ 重做</button>
       <button className="btn" disabled={!p.hasScene} onClick={p.onExportHtml}>预览 HTML</button>
+      <button className="btn primary" disabled={!p.hasScene} onClick={p.onExportEngineJson}>导出 JSON</button>
     </header>
   );
 }

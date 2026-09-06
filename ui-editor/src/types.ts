@@ -59,7 +59,8 @@ export const CTRL_TYPES: { value: CtrlType; label: string }[] = [
 /** 控件可绑定的图片资源槽位（字段名与目标引擎保持一致）。 */
 export type ResourceSlot =
   | "LayoutBackImage" | "ImageName" | "NormalImage" | "PushedImage"
-  | "ProgressBackImage" | "ProgressImage" | "ProgressHeaderImage" | "EditBackImage";
+  | "ProgressBackImage" | "ProgressImage" | "ProgressHeaderImage" | "EditBackImage"
+  | "ListItemSelectImage";
 
 export interface ImageBinding {
   /** 原图片节点身份，用于解除绑定后恢复层级。 */

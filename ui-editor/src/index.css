@@ -76,11 +76,36 @@ body {
 }
 .ws-settings:hover { background: #2e3541; }
 .ws-settings.on { background: #3a526e; border-color: #4a90d9; color: #fff; }
+.workbar-hint { color: #627184; font-size: 10px; letter-spacing: .2px; }
 .ws-placeholder {
   flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
   justify-content: center; gap: 8px; color: #5f6c7c; font-size: 14px;
   background: #15181d; line-height: 1.8;
 }
+.export-panel {
+  flex: 1; min-width: 0; overflow: auto; padding: 36px 42px;
+  background: radial-gradient(circle at 50% 0%, #243246 0, #15181d 52%);
+}
+.export-panel-card {
+  width: min(760px, 100%); margin: 0 auto; padding: 28px 32px;
+  border: 1px solid #34485d; border-radius: 10px; background: rgba(29, 37, 48, .96);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .22);
+}
+.export-kicker { color: #78b5e8; font-size: 10px; letter-spacing: 1.6px; }
+.export-panel-card h2 { margin: 8px 0 10px; color: #f1f6fb; font-size: 22px; font-weight: 650; }
+.export-panel-card p { max-width: 620px; color: #9eb0c1; line-height: 1.7; }
+.export-panel-card code { color: #d7e9f8; }
+.export-check { display: flex; align-items: baseline; gap: 10px; margin: 22px 0 12px; padding: 12px 14px; border-radius: 6px; background: #1a222c; }
+.export-check strong { color: #a5e0bc; }
+.export-check span { color: #8194a7; font-size: 11px; }
+.export-check.has-errors strong { color: #f0a8a8; }
+.export-diagnostics { margin: 8px 0; padding: 8px 12px; border-left: 2px solid #b8964c; color: #d6bd78; font-size: 11px; line-height: 1.7; }
+.export-diagnostics.error { border-left-color: #b85f68; color: #efaaa9; }
+.export-action { margin-top: 12px; padding: 8px 16px; }
+.export-preview { margin-top: 22px; color: #91a8bd; font-size: 11px; }
+.export-preview summary { cursor: pointer; }
+.export-preview pre { max-height: 340px; overflow: auto; margin: 8px 0 0; padding: 12px; background: #11161c; border: 1px solid #2d3946; border-radius: 5px; color: #bcd1e2; font: 11px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; }
+.correction-note { margin: 5px 0 10px; line-height: 1.5; }
 .appbar .project-title {
   max-width: 180px;
   overflow: hidden;

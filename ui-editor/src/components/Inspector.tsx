@@ -5,17 +5,6 @@ import { resourceSlotDefinitions } from "../resourceBinding";
 import { createDefaultEditText } from "../controlType";
 import { clampProgressValue, progressConfig } from "../progressControl";
 
-const PARENT_GRID: [string, number, number][] = [
-  ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
-  ["←", 0, 0.5], ["●", 0.5, 0.5], ["→", 1, 0.5],
-  ["↙", 0, 1], ["↓", 0.5, 1], ["↘", 1, 1],
-];
-const SELF_GRID: [string, number, number][] = [
-  ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
-  ["←", 0, 0.5], ["●", 0.5, 0.5], ["→", 1, 0.5],
-  ["↙", 0, 1], ["↓", 0.5, 1], ["↘", 1, 1],
-];
-
 /** 数值行：label 按住左右拖动快速调值。 */
 function NumRow(p: {
   label: string;
@@ -91,11 +80,13 @@ function ResourceSlotRow(p: { slot: ResourceSlot; label: string; binding?: Image
 interface Props {
   node: UINode | null;
   rect: UIRect | null;
-  viewport: { width: number; height: number };
+  /** 兼容旧测试/调用方；当前面板不再显示视口适配设置。 */
+  viewport?: { width: number; height: number };
   onUpdate: (patch: (n: UINode) => void, record?: boolean) => void;
   onSetCtrl: (id: string, type: CtrlType | null) => void;
   onUnbindResource: (id: string, slot: ResourceSlot) => void;
-  onReanchor: (a: { parentX: number; parentY: number; selfX: number; selfY: number }) => void;
+  /** 兼容旧调用方；当前版本不提供锚点编辑入口。 */
+  onReanchor?: (a: { parentX: number; parentY: number; selfX: number; selfY: number }) => void;
   templates: InteractionTemplate[];
   onTemplates: (t: InteractionTemplate[]) => void;
 }
@@ -174,7 +165,7 @@ export default function Inspector(p: Props) {
           <div className="row"><label>颜色</label>
             <input type="color" value={toHex(editableText.color)}
               onChange={(e) => set("text", { ...editableText, color: e.target.value })} /></div>
-          {editableText.mode !== "auto" && <p className="hint">文本框宽高在“布局与适配”中调整。</p>}
+          {editableText.mode !== "auto" && <p className="hint">文本框宽高在“位置与尺寸校正”中调整。</p>}
         </InspectorSection>
       )}
 
@@ -230,30 +221,8 @@ export default function Inspector(p: Props) {
         </InspectorSection>
       )}
 
-      <InspectorSection title="布局与适配" summary={n.adaptation.mode}>
-        <div className="row"><label>适配模式</label>
-          <select value={n.adaptation.mode} onChange={(e) => set("adaptation", { mode: e.target.value as any })}>
-            <option value="anchor">anchor</option>
-            <option value="scale">scale</option>
-            <option value="stretch">stretch</option>
-          </select></div>
-        <div className="subsection-label">Parent Anchor</div>
-        <div className="grid">
-          {PARENT_GRID.map(([label, x, y]) => (
-            <button key={label} className={n.anchor.parentX === x && n.anchor.parentY === y ? "on" : ""}
-              onClick={() => p.onReanchor({ ...n.anchor, parentX: x, parentY: y })}>{label}</button>
-          ))}
-        </div>
-        <div className="subsection-label">Self Anchor</div>
-        <div className="grid">
-          {SELF_GRID.map(([label, x, y]) => (
-            <button key={label} className={n.anchor.selfX === x && n.anchor.selfY === y ? "on" : ""}
-              onClick={() => p.onReanchor({ ...n.anchor, selfX: x, selfY: y })}>{label}</button>
-          ))}
-        </div>
-        <label className="chk"><input type="checkbox" checked={n.anchor.safeArea}
-          onChange={(e) => set("anchor", { ...n.anchor, safeArea: e.target.checked })} /> 绑定 Safe Area</label>
-        <div className="subsection-label">偏移（设计像素）</div>
+      <InspectorSection title="位置与尺寸校正" summary="PSD 视觉微调">
+        <p className="hint correction-note">PSD 导入的位置和尺寸默认保留；这里仅用于少量视觉校正。</p>
         <NumRow label="X" value={Math.round(n.anchor.offsetX)} set={(v) => set("anchor", { ...n.anchor, offsetX: v })} />
         <NumRow label="Y" value={Math.round(n.anchor.offsetY)} set={(v) => set("anchor", { ...n.anchor, offsetY: v })} />
         <div className="subsection-label">尺寸（设计像素）</div>

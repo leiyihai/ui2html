@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LayoutEngine, reanchor } from "./layoutEngine";
+import { LayoutEngine } from "./layoutEngine";
 import { importPsd } from "./psdImport";
 import { renderOverlay, renderUi } from "./renderer";
 import { buildExportHtml } from "./exportHtml";
+import { buildEngineJson } from "./engineExport";
 import type { CtrlType, ImageBinding, InteractionTemplate, LayoutContext, ResourceSlot, ScaleMode, UINode, UIScene } from "./types";
 import Appbar from "./components/Toolbar";
 import Workbar, { type Workspace } from "./components/WorkspaceTabs";
-import LayerPanel from "./components/LayerPanel";
 import Inspector from "./components/Inspector";
 import ControlsPanel from "./components/ControlsPanel";
 import TypePieMenu from "./components/TypePieMenu";
 import QuickActionMenu from "./components/QuickActionMenu";
-import { SliceEditor, SliceList } from "./components/SlicePanel";
 import { markControlType } from "./controlType";
 import { hasResourceSlots, planResourceBindings, resourceSlotDefinitions } from "./resourceBinding";
 import { moveLayerOrder, type LayerOrderDirection } from "./layerOrder";
@@ -156,12 +155,9 @@ export default function App() {
   const [warnings, setWarnings] = useState<string[]>([]);
   const [histLen, setHistLen] = useState(0);
   const [futureLen, setFutureLen] = useState(0);
-  const [psdName, setPsdName] = useState<string | null>(null);
   const [projectPath, setProjectPath] = useState<string | null>(null);
   const [projectName, setProjectName] = useState("未命名.ui.json");
   const [dirty, setDirty] = useState(false);
-  const [sliceApplied, setSliceApplied] = useState(false);
-  const [sliceSelected, setSliceSelected] = useState<string | null>(null);
   const [workspace, setWorkspace] = useState<Workspace>("controls");
   const [exportMsg, setExportMsg] = useState("");
   const [typeMenu, setTypeMenu] = useState<{ x: number; y: number } | null>(null);
@@ -194,6 +190,11 @@ export default function App() {
     () => (scene && layoutCtx ? new LayoutEngine().layoutScene(scene, layoutCtx) : null),
     [scene, layoutCtx],
   );
+  // 预览和实际下载都走同一套资源准备逻辑，未保存的新导入图片也能正常导出。
+  const engineExport = useMemo(
+    () => (scene ? buildEngineJson(prepareSceneAssets(scene).scene) : null),
+    [scene],
+  );
 
   // 右下角操作结果只作短暂反馈；新消息出现时重新计时。
   useEffect(() => {
@@ -213,11 +214,11 @@ export default function App() {
       c.height = layoutCtx.viewportHeight * dpr;
       c.getContext("2d")!.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    renderUi(ui.getContext("2d")!, result, sliceApplied);
+    renderUi(ui.getContext("2d")!, result);
     renderOverlay(ov.getContext("2d")!, result, layoutCtx, {
       selectedId, selectedIds, showGrid: false, showSafeArea, showDesignBorder,
     });
-  }, [result, layoutCtx, selectedId, selectedIds, showSafeArea, showDesignBorder, sliceApplied]);
+  }, [result, layoutCtx, selectedId, selectedIds, showSafeArea, showDesignBorder]);
 
   // 画布 CSS 尺寸：contain 到窗口（切回图层 tab 时重新计算）
   useEffect(() => {
@@ -277,7 +278,6 @@ export default function App() {
     applyScene(next);
     setProjectPath(null);
     setProjectName("未命名.ui.json");
-    setPsdName(null);
     setViewport({ width: 1280, height: 720 });
     setSafeArea({ left: 0, right: 0, top: 0, bottom: 0 });
     setScaleMode("cover");
@@ -301,7 +301,6 @@ export default function App() {
       applyScene(restored.scene);
       setProjectPath(opened.path);
       setProjectName(projectFileName(opened.path));
-      setPsdName(projectFileName(opened.path));
       setViewport(view?.viewport ?? { width: restored.scene.designWidth, height: restored.scene.designHeight });
       setSafeArea(view?.safeArea ?? { left: 0, right: 0, top: 0, bottom: 0 });
       setScaleMode(view?.scaleMode ?? "cover");
@@ -338,7 +337,6 @@ export default function App() {
       applyScene(prepared.scene);
       setProjectPath(nextPath);
       setProjectName(projectFileName(nextPath));
-      setPsdName(projectFileName(nextPath));
       setDirty(false);
       setExportMsg(`已保存 ${projectFileName(nextPath)} ✓`);
     } catch (error) {
@@ -359,7 +357,6 @@ export default function App() {
         setProjectPath(null);
         setProjectName(`${name.replace(/\.(psd|psb)$/i, "")}.ui.json`);
       }
-      setPsdName(name);
       setWarnings(imported.warnings);
       const importedIds = imported.scene.nodes.map((node) => node.id);
       selectionAnchorRef.current = importedIds.at(-1) ?? null;
@@ -455,7 +452,6 @@ export default function App() {
     if (dirty && !window.confirm("当前工程有未保存修改，确定放弃并关闭吗？")) return;
     sceneRef.current = null;
     setScene(null);
-    setPsdName(null);
     setProjectPath(null);
     setProjectName("未命名.ui.json");
     setDirty(false);
@@ -465,8 +461,6 @@ export default function App() {
     selectionAnchorRef.current = null;
     setSelectedIds([]);
     setWarnings([]);
-    setSliceSelected(null);
-    setSliceApplied(false);
     setTypeMenu(null);
     historyRef.current = [];
     futureRef.current = [];
@@ -498,6 +492,26 @@ export default function App() {
       setExportMsg("已下载（未通过 start.bat 启动，无法写入 export 文件夹）");
     }
   }, [scene, scaleMode, safeArea, projectName]);
+
+  const exportEngineJson = useCallback(() => {
+    if (!scene) return;
+    const prepared = prepareSceneAssets(scene);
+    const output = buildEngineJson(prepared.scene);
+    if (output.errors.length) {
+      setExportMsg(`导出已阻止：${output.errors[0]}`);
+      setWarnings(output.errors.map((error) => `导出错误：${error}`));
+      return;
+    }
+    const base = projectName.replace(/\.ui\.json$/i, "") || "ui-project";
+    const blob = new Blob([output.json], { type: "application/json;charset=utf-8" });
+    const anchor = document.createElement("a");
+    anchor.href = URL.createObjectURL(blob);
+    anchor.download = `${base}.engine.json`;
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(anchor.href), 0);
+    setWarnings(output.warnings.map((warning) => `导出提示：${warning}`));
+    setExportMsg(`已导出 ${base}.engine.json ✓`);
+  }, [projectName, scene]);
 
   const updateNode = useCallback((id: string, patch: (n: UINode) => void, record = true) => {
     mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, patch) }), record);
@@ -636,41 +650,6 @@ export default function App() {
       setExportMsg(`已将全部 ${n} 个文本的字体替换为「${font}」`);
       return { ...s, nodes };
     });
-  }, [mutateScene]);
-
-  // ---- 九宫格：一键替换 / 切换对比 / 还原 ----
-  const replaceWithSlice = useCallback(() => {
-    if (!scene || !psdName) return;
-    mutateScene((s) => {
-      const nodes = s.nodes.map((n) => ({ ...n }));
-      const sources = s.sliceSources ?? [];
-      let n = 0;
-      for (const src of sources) {
-        walkNodes(nodes).forEach((x) => {
-          if (x.image && x.name === src.name) {
-            x.sliceImage = src.canvas;
-            const saved = localStorage.getItem(`ui2html.slice.${psdName}.${src.name}`);
-            x.slice = saved ? JSON.parse(saved) : { left: 0, top: 0, right: 0, bottom: 0 };
-            n++;
-          }
-        });
-      }
-      setExportMsg(`已替换 ${n} 个图片为九宫格版本`);
-      return { ...s, nodes };
-    });
-    setSliceApplied(true);
-  }, [scene, psdName, mutateScene]);
-
-  const toggleSlice = useCallback(() => setSliceApplied((v) => !v), []);
-
-  const restoreSlice = useCallback(() => {
-    mutateScene((s) => {
-      const nodes = s.nodes.map((n) => ({ ...n }));
-      walkNodes(nodes).forEach((x) => { if (x.sliceImage) { x.sliceImage = null; x.slice = undefined; } });
-      return { ...s, nodes };
-    });
-    setSliceApplied(false);
-    setExportMsg("已还原九宫格替换前的版本");
   }, [mutateScene]);
 
   const updateSelected = useCallback((patch: (n: UINode) => void, record = true) => {
@@ -1051,85 +1030,50 @@ export default function App() {
         onImportPsd={loadPsd} onImportImages={importImages}
         hasScene={!!scene} canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
         onSave={() => { void saveCurrentProject(); }} onSaveAs={() => { void saveCurrentProject(true); }}
-        onExportHtml={exportHtml} onGlobalFont={applyGlobalFont}
+        onExportHtml={exportHtml} onExportEngineJson={exportEngineJson} onGlobalFont={applyGlobalFont}
       />
-      <Workbar
-        ws={workspace} onWs={setWorkspace} hasScene={!!scene}
-        lockLayout={!!scene && walkNodes(scene.nodes).some((n) => !n.ctrl)}
-        onLocked={() => setExportMsg("请先在「层级」工作区选中节点，并在右侧属性面板完成控件类型标记")}
-        sliceAvailable={(scene?.sliceSources?.length ?? 0) > 0} sliceApplied={sliceApplied}
-        onReplaceSlice={replaceWithSlice} onToggleSlice={toggleSlice} onRestoreSlice={restoreSlice}
-        viewport={viewport} onViewport={setViewport}
-        safeArea={safeArea} onSafeArea={setSafeArea}
-        scaleMode={scaleMode} onScaleMode={setScaleMode}
-        showSafeArea={showSafeArea} onShowSafeArea={setShowSafeArea}
-        showDesignBorder={showDesignBorder} onShowDesignBorder={setShowDesignBorder}
-      />
+      <Workbar ws={workspace} onWs={setWorkspace} hasScene={!!scene} />
       <div className="body">
-        {workspace === "controls" ? (
-          <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode}
-            renamingId={renamingId} renameCaretMode={renameCaretMode}
-            onRename={commitRename} onCancelRename={() => setRenamingId(null)}
-            onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
-            onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
-          />
-        ) : workspace === "slice" ? (
-          <div className="layer-panel">
-            <h3>九宫格图片</h3>
-            <SliceList sources={scene?.sliceSources ?? []} selected={sliceSelected}
-              onSelect={(name) => setSliceSelected(sliceSelected === name ? null : name)} />
-          </div>
-        ) : workspace === "layout" ? (
-          <LayerPanel
-            nodes={scene?.nodes ?? []} selectedId={selectedId} selectedIds={selectedIds}
-            onSelect={(id, intent) => selectNode(id, intent)}
-            renamingId={renamingId} renameCaretMode={renameCaretMode}
-            onRename={commitRename} onCancelRename={() => setRenamingId(null)}
-            onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
-            onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
-          />
-        ) : (
-          <div className="ws-panel" />
-        )}
-        {workspace === "slice" && (
-          sliceSelected && scene ? (
-            <SliceEditor
-              key={sliceSelected}
-              source={scene.sliceSources?.find((s) => s.name === sliceSelected)!}
-              psdName={psdName} onBack={() => setSliceSelected(null)}
-            />
-          ) : (
-            <div className="slice-editor">
-              <span className="slice-empty">从左侧列表选择一张图片进行九宫格标记</span>
+        <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode}
+          renamingId={renamingId} renameCaretMode={renameCaretMode}
+          onRename={commitRename} onCancelRename={() => setRenamingId(null)}
+          onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
+          onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
+        />
+        {workspace === "export" ? (
+          <section className="export-panel">
+            <div className="export-panel-card">
+              <span className="export-kicker">FINAL OUTPUT</span>
+              <h2>导出自研引擎 JSON</h2>
+              <p>当前工程会转换为 <code>Dialog → Window</code> 结构。位置、尺寸使用当前 PSD 视觉结果，图片继续引用工程内独立 PNG。</p>
+              <div className={`export-check ${engineExport?.errors.length ? "has-errors" : "ready"}`}>
+                <strong>{engineExport?.errors.length ? "暂不能导出" : "可以导出"}</strong>
+                <span>{engineExport?.errors.length ? `发现 ${engineExport.errors.length} 个错误` : "基础字段校验通过"}</span>
+              </div>
+              {engineExport?.errors.length ? <div className="export-diagnostics error">{engineExport.errors.map((item) => <div key={item}>✕ {item}</div>)}</div> : null}
+              {engineExport?.warnings.length ? <div className="export-diagnostics">{engineExport.warnings.map((item) => <div key={item}>⚠ {item}</div>)}</div> : null}
+              <button className="btn primary export-action" disabled={!engineExport || engineExport.errors.length > 0}
+                onClick={exportEngineJson}>下载最终 JSON</button>
+              <details className="export-preview">
+                <summary>查看 JSON 预览</summary>
+                <pre>{engineExport?.json ?? ""}</pre>
+              </details>
             </div>
-          )
-        )}
-        {workspace === "animation" ? (
-          <div className="ws-placeholder">动画编辑器（开发中，敬请期待）</div>
-        ) : workspace === "export" ? (
-          <div className="ws-placeholder">导出设置（开发中）<br />目标：PSD → 自研引擎 UI 文件</div>
+          </section>
         ) : (
-          <div className="canvas-wrap" ref={wrapRef}
-            style={workspace === "slice" ? { display: "none" } : undefined}>
+          <div className="canvas-wrap" ref={wrapRef}>
             <div className="canvas-stack">
               <canvas ref={uiRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp} />
               <canvas ref={ovRef} style={{ pointerEvents: "none" }} />
             </div>
           </div>
         )}
-        {workspace === "animation" || workspace === "export" ? (
-          <div className="ws-panel" />
-        ) : (
+        {workspace === "export" ? <div className="ws-panel" /> : (
           <Inspector
             node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
             rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
-            viewport={viewport}
             onUpdate={updateSelected}
             onSetCtrl={setCtrl}
-            onReanchor={(a) => updateSelected((n) => {
-              const r = result!.nodes.find((x) => x.node.id === n.id)!.rect;
-              reanchor(n, scene!.designWidth, scene!.designHeight, r, layoutCtx!, result!, a);
-            })}
             templates={scene?.interactionTemplates ?? []}
             onTemplates={setTemplates}
             onUnbindResource={unbindResource}

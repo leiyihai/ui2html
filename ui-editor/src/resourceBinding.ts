@@ -32,6 +32,7 @@ const definitions: Partial<Record<CtrlType, ResourceSlotDefinition[]>> = {
     { key: "ProgressHeaderImage", label: "滑块头", aliases: ["progressheaderimage", "progress header", "header", "thumb", "handle"] },
   ],
   Edit: [{ key: "EditBackImage", label: "输入框底图", aliases: ["editbackimage", "edit back", "background", "back", "input"] }],
+  ListHorizontal: [{ key: "ListItemSelectImage", label: "列表选中图", aliases: ["listitemselectimage", "selected", "select", "highlight"] }],
 };
 
 export const resourceSlotDefinitions = (type?: CtrlType): ResourceSlotDefinition[] =>
