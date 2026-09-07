@@ -62,3 +62,23 @@ describe("Edit inspector", () => {
     expect(html).toContain("反向");
   });
 });
+
+describe("selectable control inspector", () => {
+  it("shows the initial selected state for CheckBox and RadioButton", () => {
+    const radio = { ...editNode(), id: "radio", name: "radio_tab", ctrl: { type: "RadioButton" as const, selected: true } };
+    const html = renderToStaticMarkup(<Inspector
+      node={radio}
+      rect={null}
+      onUpdate={() => {}}
+      onSetCtrl={() => {}}
+      onUnbindResource={() => {}}
+      onReanchor={() => {}}
+      templates={[]}
+      onTemplates={() => {}}
+    />);
+
+    expect(html).toContain("初始选中");
+    expect(html).toContain('type="checkbox"');
+    expect(html).toContain('checked=""');
+  });
+});

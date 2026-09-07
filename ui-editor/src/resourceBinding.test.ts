@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { matchResourceSlot, planResourceBindings, resourceSlotDefinitions } from "./resourceBinding";
+import { canConfirmResourceBinding, matchResourceSlot, planResourceBindings, resourceSlotDefinitions } from "./resourceBinding";
 import type { UINode } from "./types";
 
 const imageNode = (id: string, name: string): UINode => ({
@@ -28,4 +28,17 @@ describe("resource binding", () => {
     const result = planResourceBindings("RadioButton", [imageNode("a", "new")], existing);
     expect(result.assignments[0].slot).toBe("PushedImage");
   });
+
+  it("treats a selected static image as a binding source rather than a completion target", () => {
+    expect(canConfirmResourceBinding({
+      ...imageNode("image", "img_item_slot_background"),
+      ctrl: { type: "StaticImage" },
+    })).toBe(false);
+    expect(canConfirmResourceBinding({
+      ...imageNode("layout", "layout_item_content"),
+      image: null,
+      ctrl: { type: "Layout" },
+    })).toBe(true);
+  });
+
 });

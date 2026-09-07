@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { renderUi } from "./renderer";
 import type { UINode } from "./types";
 
-function renderBoundControl(type: string, slotNames: string[]): HTMLCanvasElement[] {
+function renderBoundControl(type: string, slotNames: string[], selected = false): HTMLCanvasElement[] {
   const drawImage = vi.fn();
   const context = {
     canvas: { width: 800, height: 600 },
@@ -24,7 +24,7 @@ function renderBoundControl(type: string, slotNames: string[]): HTMLCanvasElemen
     id: type,
     name: type,
     image: null,
-    ctrl: { type },
+    ctrl: { type, ...(selected ? { selected: true } : {}) },
     resources,
     designRect: { x: 0, y: 0, width: 100, height: 30 },
     anchor: { parentX: 0, parentY: 0, selfX: 0, selfY: 0 },
@@ -237,6 +237,11 @@ describe("bound resource rendering", () => {
 
   it("falls back to the pushed image when an interactive control has no normal image", () => {
     const drawn = renderBoundControl("Button", ["PushedImage"]);
+    expect((drawn[0] as unknown as { name: string }).name).toBe("PushedImage");
+  });
+
+  it("uses the pushed image for a selected CheckBox or RadioButton", () => {
+    const drawn = renderBoundControl("RadioButton", ["NormalImage", "PushedImage"], true);
     expect((drawn[0] as unknown as { name: string }).name).toBe("PushedImage");
   });
 

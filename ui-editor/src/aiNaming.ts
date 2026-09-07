@@ -1,4 +1,5 @@
 import type { CtrlType, ProjectAnalysis, UINode, UIScene } from "./types";
+import { controlNamePrefix } from "./nodeNaming";
 
 export interface NamingManifestNode {
   id: string;
@@ -31,21 +32,19 @@ export interface AiNamingResult {
   assets?: Array<{ key: string; name?: string; confidence?: number; reason?: string }>;
 }
 
-const TYPE_PREFIX: Record<string, string> = {
-  empty: "node",
-  Button: "btn",
-  CheckBox: "check",
-  Edit: "input",
-  GridView: "grid",
-  Layout: "layout",
-  List: "list",
-  ListHorizontal: "hlist",
-  ProgressBar: "pbar",
-  RadioButton: "radio",
-  Slider: "slider",
-  StaticImage: "img",
-  StaticText: "text",
-};
+/**
+ * 返回需要在层级树中逐项提示的节点。
+ *
+ * 本地兜底命名是“可继续编辑/导出”的正常结果，只在底部保留汇总提示；
+ * 只有已经经过 Codex 分析但置信度不足的结果才需要逐行标红，避免 AI 不可用
+ * 时整棵层级树都被误显示成错误状态。
+ */
+export function warningNodeIds(analysis: ProjectAnalysis | null): string[] {
+  if (!analysis || analysis.provider !== "codex-cli") return [];
+  return Object.entries(analysis.nodes)
+    .filter(([, item]) => item.source === "fallback" || (item.confidence ?? 1) < 0.5)
+    .map(([id]) => id);
+}
 
 const WORDS: Record<string, string> = {
   "地图": "map", "任务": "task", "宠物": "pet", "经验": "exp", "背包": "bag", "音量": "volume",
@@ -71,7 +70,7 @@ function assetKey(image: HTMLCanvasElement): string {
 }
 
 export function typePrefix(type: CtrlType | undefined): string {
-  return TYPE_PREFIX[type ?? "empty"] ?? "node";
+  return controlNamePrefix(type).replace(/_$/, "");
 }
 
 /** 只允许名称中出现英文、数字和下划线，避免最终引擎字段出现非法名称。 */
@@ -139,7 +138,7 @@ export function applyFallbackNaming(scene: UIScene): { scene: UIScene; analysis:
       return { ...input, children: input.children?.map(clone) };
     }
     const type = input.ctrl?.type;
-    const suffix = translateHint(input.name.replace(/^(btn|check|input|grid|layout|list|hlist|pbar|radio|slider|img|text|node)_/i, ""));
+    const suffix = translateHint(input.name.replace(/^(btn|chk|check|edit|input|grid|layout|vlist|list|hlist|pbar|radio|slider|img|txt|text|node)_/i, ""));
     const generated = uniqueName(typePrefix(type), suffix === "node" ? "item" : suffix, used);
     const key = input.image ? assetKey(input.image) : null;
     const assetName = key

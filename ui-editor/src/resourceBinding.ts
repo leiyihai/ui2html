@@ -7,7 +7,7 @@ export interface ResourceSlotDefinition {
 }
 
 const definitions: Partial<Record<CtrlType, ResourceSlotDefinition[]>> = {
-  Layout: [{ key: "LayoutBackImage", label: "布局底图", aliases: ["layout back image", "layoutbackimage", "background", "back"] }],
+  Layout: [{ key: "LayoutBackImage", label: "布局底图", aliases: ["layout back image", "layoutbackimage", "background", "back", "bg", "panel background", "panel bd"] }],
   StaticImage: [{ key: "ImageName", label: "图片资源", aliases: ["imagename", "image", "icon", "sprite", "pic"] }],
   Button: [
     { key: "NormalImage", label: "普通状态", aliases: ["normalimage", "normal", "default", "idle", "off"] },
@@ -39,6 +39,11 @@ export const resourceSlotDefinitions = (type?: CtrlType): ResourceSlotDefinition
   type ? definitions[type] ?? [] : [];
 
 export const hasResourceSlots = (type?: CtrlType): boolean => resourceSlotDefinitions(type).length > 0;
+
+/** StaticImage 是待绑定的图片来源，不参与“只选控件确认完成”的快捷键语义。 */
+export function canConfirmResourceBinding(node: UINode | null | undefined): boolean {
+  return Boolean(node?.ctrl?.type && node.ctrl.type !== "StaticImage" && hasResourceSlots(node.ctrl.type));
+}
 
 function normalizeName(name: string): string {
   return name

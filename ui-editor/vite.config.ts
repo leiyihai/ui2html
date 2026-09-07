@@ -203,11 +203,14 @@ async function runCodexNaming(manifest: unknown, referenceDataUrl?: string): Pro
     await new Promise<void>((resolve, reject) => {
       const args = [...(useDirectNode ? [windowsCodexJs] : []), "exec", "--ephemeral", "--sandbox", "read-only", "--output-last-message", outputPath];
       if (fs.existsSync(imagePath)) args.push("--image", imagePath);
-      args.push(prompt);
-      execFile(command, args, { windowsHide: true, encoding: "utf8", timeout: 180000, maxBuffer: 4 * 1024 * 1024 }, (error, stdout, stderr) => {
+      // 不把完整 PSD 清单拼进 Windows 命令行：大 PSD 会超过 CreateProcess 的
+      // 参数长度限制。Codex CLI 的 “-” 约定从 stdin 读取提示，支持任意大小。
+      args.push("-");
+      const child = execFile(command, args, { windowsHide: true, encoding: "utf8", timeout: 180000, maxBuffer: 4 * 1024 * 1024 }, (error, stdout, stderr) => {
         if (error) reject(new Error(stderr.trim() || stdout.trim() || error.message));
         else resolve();
       });
+      child.stdin?.end(prompt);
     });
     const output = fs.existsSync(outputPath) ? fs.readFileSync(outputPath, "utf8") : "";
     return { available: true, result: parseAiJson(output) };

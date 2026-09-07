@@ -10,6 +10,7 @@ interface Props {
   onImportImages: (files: File[]) => void;
   onSave: () => void;
   onSaveAs: () => void;
+  onCloseProject: () => void;
   onClose: () => void;
 }
 
@@ -114,6 +115,14 @@ export default function QuickActionMenu(p: Props) {
           >
             <span className="quick-action-icon">⇩</span>
             <span>另存为</span>
+          </button>
+          <button
+            className="quick-action-item quick-action-item-close"
+            disabled={!p.hasScene}
+            onClick={() => { p.onClose(); p.onCloseProject(); }}
+          >
+            <span className="quick-action-icon">×</span>
+            <span>关闭当前工程</span>
           </button>
         </section>
       </div>

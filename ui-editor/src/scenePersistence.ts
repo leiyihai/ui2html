@@ -24,6 +24,7 @@ export interface SavedNode {
   progress?: UINode["progress"];
   ctrl?: UINode["ctrl"];
   resources?: Partial<Record<ResourceSlot, SavedImageBinding>>;
+  resourceBindingComplete?: boolean;
   designRect: UINode["designRect"];
   anchor: UINode["anchor"];
   scale: UINode["scale"];
@@ -64,6 +65,7 @@ function serializeNode(node: UINode, includeResources = true): SavedNode {
     ...(node.list ? { list: { ...node.list, padding: { ...node.list.padding } } } : {}),
     ...(node.progress ? { progress: { ...node.progress } } : {}),
     ...(node.ctrl ? { ctrl: { ...node.ctrl } } : {}),
+    ...(node.resourceBindingComplete ? { resourceBindingComplete: true } : {}),
     designRect: { ...node.designRect },
     anchor: { ...node.anchor },
     scale: { ...node.scale },
@@ -158,6 +160,7 @@ function hydrateNode(saved: SavedNode, assets: Map<string, HTMLCanvasElement>, m
     ...(saved.list ? { list: { ...saved.list, padding: { ...saved.list.padding } } } : {}),
     ...(saved.progress ? { progress: { ...saved.progress } } : {}),
     ...(saved.ctrl ? { ctrl: { ...saved.ctrl } } : {}),
+    ...(saved.resourceBindingComplete ? { resourceBindingComplete: true } : {}),
     ...(resources.length ? { resources: Object.fromEntries(resources) as UINode["resources"] } : {}),
     designRect: { ...saved.designRect },
     anchor: { ...saved.anchor },

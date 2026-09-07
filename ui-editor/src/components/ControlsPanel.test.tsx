@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import type { UINode } from "../types";
-import ControlsPanel from "./ControlsPanel";
+import ControlsPanel, { shouldAutoExpandForFocus } from "./ControlsPanel";
 
 const bag: UINode = {
   id: "bag",
@@ -21,6 +21,14 @@ const bag: UINode = {
 };
 
 describe("ControlsPanel inline rename", () => {
+  it("does not reopen a collapsed branch when only node visibility changed", () => {
+    const child = { ...bag, id: "bag-child", name: "bag child" };
+    const parent = { ...bag, children: [child] };
+
+    expect(shouldAutoExpandForFocus(parent, "bag-child", "bag-child")).toBe(false);
+    expect(shouldAutoExpandForFocus(parent, "bag-child", null)).toBe(true);
+  });
+
   it("replaces the selected node name with an inline input", () => {
     const html = renderToStaticMarkup(
       <ControlsPanel

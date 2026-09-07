@@ -97,7 +97,8 @@ function rasterizeVector(layer: Layer, w: number, h: number): HTMLCanvasElement 
 }
 
 function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: number,
-  counter: { n: number }, warnings: string[], compCanvas: HTMLCanvasElement | null, isRoot = false): UINode | null {
+  counter: { n: number }, warnings: string[], compCanvas: HTMLCanvasElement | null,
+  isRoot = false): UINode | null {
   const i = counter.n++;
   const name = layer.name || `Layer ${i}`;
   const base = { id: `node-${layerIdSeq++}`, name, scale: { x: 1, y: 1 }, rotation: 0,

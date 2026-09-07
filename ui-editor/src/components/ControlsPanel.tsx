@@ -14,6 +14,7 @@ interface Props {
   onRename: (id: string, name: string) => void;
   onCancelRename: () => void;
   warningIds?: string[];
+  focusNodeId?: string | null;
 }
 
 export const TYPE_LABELS: Record<CtrlType, string> = {
@@ -89,6 +90,20 @@ function branchHasWarning(node: UINode, warningIds: string[] | undefined): boole
   return warningIds.includes(node.id) || Boolean(node.children?.some((child) => branchHasWarning(child, warningIds)));
 }
 
+function branchContains(node: UINode, id: string | null | undefined): boolean {
+  if (!id) return false;
+  return node.id === id || Boolean(node.children?.some((child) => branchContains(child, id)));
+}
+
+/** 只有定位目标真正变化时才自动展开，避免可见性等普通节点更新重开分支。 */
+export function shouldAutoExpandForFocus(
+  node: UINode,
+  focusNodeId: string | null | undefined,
+  previousFocusNodeId: string | null | undefined,
+): boolean {
+  return Boolean(focusNodeId && focusNodeId !== previousFocusNodeId && branchContains(node, focusNodeId));
+}
+
 function Row(p: {
   n: UINode;
   depth: number;
@@ -103,17 +118,29 @@ function Row(p: {
   onRename: (id: string, name: string) => void;
   onCancelRename: () => void;
   warningIds?: string[];
+  focusNodeId?: string | null;
 }) {
   const [collapsed, setCollapsed] = useState(false);
+  const previousFocusNodeId = useRef<string | null | undefined>(undefined);
   const hasChildren = Boolean(p.n.children?.length);
   const hasWarningInBranch = branchHasWarning(p.n, p.warningIds);
   useEffect(() => {
     if (hasWarningInBranch) setCollapsed(false);
   }, [hasWarningInBranch]);
+  useEffect(() => {
+    if (shouldAutoExpandForFocus(p.n, p.focusNodeId, previousFocusNodeId.current)) setCollapsed(false);
+    previousFocusNodeId.current = p.focusNodeId;
+  }, [p.focusNodeId, p.n]);
+  useEffect(() => {
+    if (p.focusNodeId !== p.n.id) return;
+    requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>(`[data-node-id="${p.n.id}"]`)?.scrollIntoView({ block: "center", behavior: "smooth" });
+    });
+  }, [p.focusNodeId, p.n.id]);
 
   return (
     <>
-      <li className={`${p.selected ? "sel" : ""}${p.warningIds?.includes(p.n.id) ? " warning" : ""}`} onClick={(e) => p.onSelect(p.n.id, createSelectionIntent(e, p.orderedIds))}
+      <li data-node-id={p.n.id} className={`${p.selected ? "sel" : ""}${p.warningIds?.includes(p.n.id) ? " warning" : ""}`} onClick={(e) => p.onSelect(p.n.id, createSelectionIntent(e, p.orderedIds))}
         style={{ paddingLeft: 8 + p.depth * 16 }}>
         <button
           className="fold"
@@ -177,6 +204,7 @@ function Row(p: {
           onRename={p.onRename}
           onCancelRename={p.onCancelRename}
           warningIds={p.warningIds}
+          focusNodeId={p.focusNodeId}
         />
       ))}
     </>
@@ -210,7 +238,7 @@ export default function ControlsPanel(p: Props) {
         <h3>层级</h3>
         {p.selectedIds.length > 1 && <span className="selection-count">已选 {p.selectedIds.length}</span>}
       </div>
-      <p className="panel-hint">Ctrl/⌘ 多选 · Ctrl+G 打组 · Alt+G 取消 · Ctrl+[/] 调整层级 · F2 重命名 · T 转换 · Ctrl+B 绑定资源 · Alt+W 关闭</p>
+      <p className="panel-hint">Ctrl/⌘ 多选 · Ctrl+G 打组 · Alt+G 取消 · Ctrl+[/] 调整层级 · F2 重命名 · T 转换 · Ctrl+B 图片=绑定/控件=完成 · Alt+W 关闭</p>
       <ul>
         {sorted.map((node) => (
           <Row
@@ -228,6 +256,7 @@ export default function ControlsPanel(p: Props) {
             onRename={p.onRename}
             onCancelRename={p.onCancelRename}
             warningIds={p.warningIds}
+            focusNodeId={p.focusNodeId}
           />
         ))}
       </ul>

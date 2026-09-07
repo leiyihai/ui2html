@@ -18,9 +18,12 @@ export function visibleControlResourceImages(node: UINode): HTMLCanvasElement[] 
     case "StaticImage":
       return compact([boundImage(node, "ImageName")]);
     case "Button":
+      return compact([boundImage(node, "NormalImage") ?? boundImage(node, "PushedImage")]);
     case "CheckBox":
     case "RadioButton":
-      return compact([boundImage(node, "NormalImage") ?? boundImage(node, "PushedImage")]);
+      return compact([node.ctrl?.selected
+        ? boundImage(node, "PushedImage") ?? boundImage(node, "NormalImage")
+        : boundImage(node, "NormalImage") ?? boundImage(node, "PushedImage")]);
     case "ProgressBar":
     case "Slider":
       return compact([

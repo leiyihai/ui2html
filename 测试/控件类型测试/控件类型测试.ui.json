@@ -287,12 +287,12 @@
             "height": 404
           },
           "anchor": {
-            "parentX": 1,
-            "parentY": 1,
-            "selfX": 0,
-            "selfY": 0,
-            "offsetX": -325,
-            "offsetY": -538,
+            "parentX": 0.5,
+            "parentY": 0.5,
+            "selfX": 0.5,
+            "selfY": 0.5,
+            "offsetX": 463,
+            "offsetY": 24,
             "safeArea": false
           },
           "scale": {

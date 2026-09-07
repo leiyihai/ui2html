@@ -15,6 +15,7 @@ describe("QuickActionMenu", () => {
       onImportImages={vi.fn()}
       onSave={vi.fn()}
       onSaveAs={vi.fn()}
+      onCloseProject={vi.fn()}
       onClose={vi.fn()}
     />);
 
@@ -26,6 +27,7 @@ describe("QuickActionMenu", () => {
     expect(html).toContain("保存工程");
     expect(html).toContain("保存");
     expect(html).toContain("另存为");
+    expect(html).toContain("关闭当前工程");
     expect(html).not.toContain("disabled=\"\"");
   });
 
@@ -41,9 +43,10 @@ describe("QuickActionMenu", () => {
       onImportImages={vi.fn()}
       onSave={vi.fn()}
       onSaveAs={vi.fn()}
+      onCloseProject={vi.fn()}
       onClose={vi.fn()}
     />);
 
-    expect((html.match(/disabled=""/g) ?? []).length).toBe(2);
+    expect((html.match(/disabled=""/g) ?? []).length).toBe(3);
   });
 });

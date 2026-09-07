@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyAiNaming, applyFallbackNaming, buildNamingManifest, type AiNamingResult } from "./aiNaming";
+import { applyAiNaming, applyFallbackNaming, buildNamingManifest, type AiNamingResult, typePrefix, warningNodeIds } from "./aiNaming";
 import type { UIScene, UINode } from "./types";
 
 function node(id: string, name: string, type: UINode["ctrl"] extends infer T ? T : never, image = false): UINode {
@@ -13,6 +13,15 @@ function node(id: string, name: string, type: UINode["ctrl"] extends infer T ? T
 }
 
 describe("AI naming pipeline", () => {
+  it("uses the same engine prefixes as manual type conversion", () => {
+    expect(typePrefix("CheckBox")).toBe("chk");
+    expect(typePrefix("Edit")).toBe("edit");
+    expect(typePrefix("StaticText")).toBe("txt");
+    expect(typePrefix("List")).toBe("vlist");
+    expect(typePrefix("ListHorizontal")).toBe("hlist");
+    expect(typePrefix("GridView")).toBe("grid");
+  });
+
   it("creates stable local fallback names and an analysis record", () => {
     const scene: UIScene = { designWidth: 100, designHeight: 100, nodes: [node("a", "音量", { type: "Slider" }, true)] };
     const fallback = applyFallbackNaming(scene);
@@ -53,5 +62,20 @@ describe("AI naming pipeline", () => {
     });
     expect(named.scene.nodes[0].name).toBe("btn_custom");
     expect(named.analysis.nodes.manual.source).toBe("manual");
+  });
+
+  it("does not mark every node red when local fallback naming is the only available result", () => {
+    const fallback = applyFallbackNaming({
+      designWidth: 100,
+      designHeight: 100,
+      nodes: [node("local", "未知", { type: "Button" })],
+    });
+    expect(warningNodeIds(fallback.analysis)).toEqual([]);
+    expect(warningNodeIds({
+      ...fallback.analysis,
+      provider: "codex-cli",
+      status: "partial",
+      nodes: { local: { source: "fallback", confidence: 0.2 } },
+    })).toEqual(["local"]);
   });
 });

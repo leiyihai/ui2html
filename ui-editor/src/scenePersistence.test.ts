@@ -89,6 +89,18 @@ describe("independent UI project snapshots", () => {
     expect(collectSavedAssetPaths(saved)).toEqual(["普通.png"]);
   });
 
+  it("round-trips a user-confirmed resource binding completion marker", () => {
+    const target = node("button", "按钮");
+    target.ctrl = { type: "Button" };
+    target.resourceBindingComplete = true;
+
+    const saved = serializeScene({ designWidth: 100, designHeight: 100, nodes: [target] });
+    const restored = restoreSceneSnapshot(saved, new Map()).scene.nodes[0];
+
+    expect(saved.nodes[0].resourceBindingComplete).toBe(true);
+    expect(restored.resourceBindingComplete).toBe(true);
+  });
+
   it("saves and restores project viewport settings", () => {
     const saved = serializeScene({ designWidth: 1280, designHeight: 720, nodes: [] }, {
       viewport: { width: 1920, height: 1080 },
@@ -124,6 +136,25 @@ describe("independent UI project snapshots", () => {
 
     expect(saved.nodes[0].progress).toEqual({ value: 0.75, direction: "vertical", reverse: true });
     expect(restored.progress).toEqual({ value: 0.75, direction: "vertical", reverse: true });
+  });
+
+  it("round-trips the editor-only initial selected state", () => {
+    const radio = node("radio", "radio_tab", "radio.png");
+    radio.ctrl = { type: "RadioButton", selected: true };
+
+    const saved = serializeScene({ designWidth: 100, designHeight: 100, nodes: [radio] });
+    const restored = restoreSceneSnapshot(saved, new Map([["radio.png", {} as HTMLCanvasElement]])).scene.nodes[0];
+
+    expect(saved.nodes[0].ctrl).toEqual({ type: "RadioButton", selected: true });
+    expect(restored.ctrl?.selected).toBe(true);
+  });
+
+  it("omits the default unselected state from the project JSON", () => {
+    const check = node("check", "chk_option");
+    check.ctrl = { type: "CheckBox", selected: undefined };
+
+    expect(JSON.stringify(serializeScene({ designWidth: 100, designHeight: 100, nodes: [check] })))
+      .not.toContain("selected");
   });
 
   it("round-trips AI/manual naming metadata without PSD dependencies", () => {

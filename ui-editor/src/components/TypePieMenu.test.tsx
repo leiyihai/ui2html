@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import type { UINode } from "../types";
-import TypePieMenu from "./TypePieMenu";
+import TypePieMenu, { ListArrangementMenu } from "./TypePieMenu";
 
 const node: UINode = {
   id: "layout-1",
@@ -53,6 +53,34 @@ describe("TypePieMenu", () => {
 
     expect(html).toContain("控件类型");
     expect(html).toContain("移动鼠标选择");
+    expect((html.match(/type-pie-item active/g) ?? []).length).toBe(1);
+  });
+
+  it("groups the three engine list types behind one list-family choice", () => {
+    vi.stubGlobal("window", { innerWidth: 1280, innerHeight: 720 });
+    const html = renderToStaticMarkup(<TypePieMenu
+      x={640}
+      y={360}
+      node={node}
+      onChoose={vi.fn()}
+      onClose={vi.fn()}
+    />);
+
+    expect(html).toContain("列表容器");
+    expect(html).not.toContain("横向列表");
+    expect(html).not.toContain("网格列表");
+  });
+
+  it("offers all three final engine types in the list arrangement menu", () => {
+    const html = renderToStaticMarkup(<ListArrangementMenu
+      currentType="ListHorizontal"
+      onChoose={vi.fn()}
+      onBack={vi.fn()}
+    />);
+
+    expect(html).toContain("纵向列表");
+    expect(html).toContain("横向列表");
+    expect(html).toContain("网格列表");
     expect((html.match(/type-pie-item active/g) ?? []).length).toBe(1);
   });
 });

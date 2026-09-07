@@ -118,6 +118,7 @@ export default function Inspector(p: Props) {
   };
   const typeLabel = CTRL_TYPES.find((item) => item.value === n.ctrl?.type)?.label ?? "未标记";
   const isInteractive = n.ctrl?.type === "Button" || n.ctrl?.type === "CheckBox";
+  const isSelectableControl = n.ctrl?.type === "CheckBox" || n.ctrl?.type === "RadioButton";
   const resourceSlots = resourceSlotDefinitions(n.ctrl?.type);
   const boundResourceCount = resourceSlots.filter((slot) => n.resources?.[slot.key]).length;
   const editableText = n.text ?? (n.ctrl?.type === "Edit" ? createDefaultEditText() : null);
@@ -152,6 +153,11 @@ export default function Inspector(p: Props) {
           </select></div>
         <div className="row"><label>可见</label>
           <input type="checkbox" checked={n.visible} onChange={(e) => set("visible", e.target.checked)} /></div>
+        {isSelectableControl && (
+          <div className="row"><label>{n.ctrl?.type === "CheckBox" ? "初始勾选" : "初始选中"}</label>
+            <input type="checkbox" checked={Boolean(n.ctrl?.selected)}
+              onChange={(e) => set("ctrl", { ...n.ctrl!, selected: e.target.checked ? true : undefined })} /></div>
+        )}
         <div className="row"><label>透明度</label>
           <input type="range" min={0} max={1} step={0.01} value={n.opacity}
             onChange={(e) => set("opacity", +e.target.value)} /></div>
@@ -224,7 +230,7 @@ export default function Inspector(p: Props) {
 
       {resourceSlots.length > 0 && (
         <InspectorSection title="资源" summary={`${boundResourceCount}/${resourceSlots.length}`}>
-          <p className="hint">选择层级中的图片后按 Ctrl+B，按名称优先填入空槽位。</p>
+          <p className="hint">可在资源绑定页签中查看缩略图并手动绑定，也可以选择图片后按 Ctrl+B。</p>
           <div className="resource-slots">
             {resourceSlots.map((slot) => (
               <ResourceSlotRow key={slot.key} slot={slot.key} label={slot.label}

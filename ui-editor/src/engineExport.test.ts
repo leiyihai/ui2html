@@ -51,6 +51,19 @@ describe("self-developed engine JSON export", () => {
     expect(windows[1].Property).toContainEqual({ Name: "ProgressImage", Value: "fill.png" });
   });
 
+  it("does not export the editor-only selected state", () => {
+    const root = base("root", "root", "Layout", 0, 0, 100, 100);
+    const radio = base("radio", "radio_tab", "RadioButton", 10, 10, 80, 30);
+    radio.ctrl = { type: "RadioButton", selected: true };
+    root.children = [radio];
+
+    const result = buildEngineJson({ designWidth: 100, designHeight: 100, nodes: [root] });
+
+    expect(result.errors).toEqual([]);
+    expect(result.json).not.toContain("selected");
+    expect(result.json).not.toContain("Selected");
+  });
+
   it("reports unmarked nodes and maps empty editor nodes to Layout", () => {
     const unmarked = base("missing", "missing", "StaticImage");
     unmarked.ctrl = undefined;

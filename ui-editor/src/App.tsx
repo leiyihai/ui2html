@@ -12,7 +12,7 @@ import ControlsPanel from "./components/ControlsPanel";
 import TypePieMenu from "./components/TypePieMenu";
 import QuickActionMenu from "./components/QuickActionMenu";
 import { markControlType } from "./controlType";
-import { hasResourceSlots, planResourceBindings, resourceSlotDefinitions } from "./resourceBinding";
+import { canConfirmResourceBinding, hasResourceSlots, planResourceBindings, resourceSlotDefinitions } from "./resourceBinding";
 import { moveLayerOrder, type LayerOrderDirection } from "./layerOrder";
 import { createEmptyAnalysis, restoreSceneSnapshot, serializeScene, type SavedProjectView } from "./scenePersistence";
 import { prepareSceneAssets } from "./projectAssets";
@@ -20,10 +20,12 @@ import { openProject, projectFileName, saveProject } from "./projectApi";
 import { requestAiNaming } from "./projectApi";
 import { canvasFromImageFile, createImageNode } from "./imageImport";
 import { applySelection, createSelectionIntent, flattenLayerIds, type SelectionIntent } from "./selection";
-import { autoControlName } from "./nodeNaming";
-import { applyAiNaming, applyFallbackNaming, buildNamingManifest } from "./aiNaming";
+import { renameControlForType } from "./nodeNaming";
+import { applyAiNaming, applyFallbackNaming, buildNamingManifest, warningNodeIds } from "./aiNaming";
 import type { ProjectAnalysis } from "./types";
 import { presetsForDesign, type DeviceShell } from "./devicePreview";
+import ResourceBindingWorkspace from "./components/ResourceBindingWorkspace";
+import SceneOverview from "./components/SceneOverview";
 
 export interface ImportProgress {
   name: string;
@@ -213,6 +215,7 @@ export default function App() {
   const [previewPan, setPreviewPan] = useState({ x: 0, y: 0 });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
   const [showSafeArea, setShowSafeArea] = useState(false);
   const [showDesignBorder, setShowDesignBorder] = useState(true);
   const [warnings, setWarnings] = useState<string[]>([]);
@@ -224,6 +227,7 @@ export default function App() {
   const [importProgress, setImportProgress] = useState<ImportProgress | null>(null);
   const [dirty, setDirty] = useState(false);
   const [workspace, setWorkspace] = useState<Workspace>("controls");
+  const [rightPanelTab, setRightPanelTab] = useState<"properties" | "overview">("properties");
   const [exportMsg, setExportMsg] = useState("");
   const [typeMenu, setTypeMenu] = useState<{ x: number; y: number } | null>(null);
   const [quickActionMenu, setQuickActionMenu] = useState<{ x: number; y: number } | null>(null);
@@ -264,7 +268,7 @@ export default function App() {
     [scene],
   );
   const warningIds = useMemo(
-    () => analysis ? Object.entries(analysis.nodes).filter(([, item]) => item.source === "fallback" || (item.confidence ?? 1) < 0.5).map(([id]) => id) : [],
+    () => warningNodeIds(analysis),
     [analysis],
   );
 
@@ -480,7 +484,7 @@ export default function App() {
       setSelectedId(importedIds.at(-1) ?? null);
       setWarnings([...imported.warnings, ...currentAnalysis.warnings]);
       setDirty(true);
-      setExportMsg(`已从 ${name} 导入 ${walkNodes(currentScene.nodes).length} 个节点`);
+      setExportMsg(`已从 ${name} 导入 ${walkNodes(currentScene.nodes).length} 个节点，请在资源绑定页签中手动绑定`);
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") setExportMsg("已取消 PSD 导入");
       else setExportMsg(error instanceof Error ? error.message : `无法导入 ${name}`);
@@ -714,11 +718,11 @@ export default function App() {
     const sourcePath = findPath(current.nodes, id);
     const parentPath = sourcePath?.slice(0, -1) ?? [];
     const siblings = parentPath.length ? nodeAtPath(current.nodes, parentPath)?.children ?? [] : current.nodes;
-    const shouldAutoRename = source.ctrl?.type === "Layout"
-      && type !== "Layout"
+    const shouldAutoRename = Boolean(type)
+      && source.ctrl?.type !== type
       && !isFixedRootNode(current, source, sourcePath);
     const generatedName = shouldAutoRename
-      ? autoControlName(type, siblings.filter((node) => node.id !== id))
+      ? renameControlForType(source, type!, siblings.filter((node) => node.id !== id))
       : null;
 
     const supported = new Set(resourceSlotDefinitions(type ?? undefined).map((slot) => slot.key));
@@ -744,35 +748,78 @@ export default function App() {
       nextNodes = insertAtPath(nextNodes, parentPath, Math.min(binding.sourceIndex, maxIndex), cloneNode(binding.sourceNode));
     }
     mutateScene((s) => ({ ...s, nodes: nextNodes }));
-    if (generatedName) {
-      setRenameCaretMode("prefix");
-      setRenamingId(id);
-    }
     if (stale.length) setExportMsg(`已切换类型，并恢复 ${stale.length} 个不兼容资源节点`);
+    else if (generatedName && generatedName !== source.name) setExportMsg(`已切换类型并保留名称后缀：${generatedName}`);
   }, [mutateScene]);
 
-  /** Ctrl+B：将选中的图片按名称/选择顺序填入共同控件祖先的空资源槽位。 */
-  const bindResources = useCallback(() => {
+  /** Ctrl+B / 资源绑定工作区：将图片手动填入目标控件的资源槽位。 */
+  const bindResources = useCallback((requestedTargetId?: string, requestedImageIds?: string[], preferredSlot?: ResourceSlot) => {
     const current = sceneRef.current;
-    if (!current || !selectedIds.length) return;
-    const selected = selectedIds.map((id) => walkNodes(current.nodes).find((node) => node.id === id));
+    const sourceIds = requestedImageIds ?? selectedIds;
+    if (!current || !sourceIds.length) return;
+
+    const confirmBindingComplete = (targetId: string, allowPartial = false): boolean => {
+      const control = walkNodes(current.nodes).find((node) => node.id === targetId);
+      const slots = resourceSlotDefinitions(control?.ctrl?.type);
+      if (!control || !canConfirmResourceBinding(control) || !slots.length || (!allowPartial && !slots.every((slot) => Boolean(control.resources?.[slot.key])))) return false;
+      if (!control.resourceBindingComplete) {
+        const nextNodes = mapNodes(current.nodes, targetId, (node) => {
+          node.resourceBindingComplete = true;
+        });
+        mutateScene((s) => ({ ...s, nodes: nextNodes }));
+      }
+      selectionAnchorRef.current = targetId;
+      setSelectedIds([targetId]);
+      setSelectedId(targetId);
+      setExportMsg("已确认该控件的资源绑定完成");
+      return true;
+    };
+
+    // 重开工程后通常选中的是控件节点本身；槽位已满时 Ctrl+B 直接确认完成，
+    // 不把控件节点误判为待绑定图片。
+    if (requestedImageIds === undefined && selectedIds.length === 1 && confirmBindingComplete(selectedIds[0], true)) return;
+
+    const selected = sourceIds.map((id) => walkNodes(current.nodes).find((node) => node.id === id));
     if (selected.some((node) => !node || !node.image)) {
       setExportMsg("绑定已取消：选择中包含非图片节点");
       return;
     }
     const images = selected.filter((node): node is UINode => Boolean(node));
-    const target = nearestBindableAncestor(current.nodes, selectedIds);
+    const requestedPath = requestedTargetId ? findPath(current.nodes, requestedTargetId) : null;
+    const requestedNode = requestedPath ? nodeAtPath(current.nodes, requestedPath) : null;
+    const target = requestedNode && requestedPath
+      ? { node: requestedNode, path: requestedPath }
+      : nearestBindableAncestor(current.nodes, sourceIds);
     if (!target) {
       setExportMsg("绑定失败：未找到共同的可绑定控件");
       return;
     }
-    const plan = planResourceBindings(target.node.ctrl?.type, images, target.node.resources);
-    if (!plan.assignments.length) {
-      setExportMsg("绑定失败：目标控件没有空资源槽位");
-      return;
+    let assignments: { slot: ResourceSlot; node: UINode }[];
+    let skipped = 0;
+    if (preferredSlot) {
+      const supported = resourceSlotDefinitions(target.node.ctrl?.type).some((slot) => slot.key === preferredSlot);
+      if (!supported) { setExportMsg("绑定失败：目标控件不支持该资源槽位"); return; }
+      if (target.node.resources?.[preferredSlot]) { setExportMsg("绑定失败：该资源槽位已经绑定"); return; }
+      assignments = images.length ? [{ slot: preferredSlot, node: images[0] }] : [];
+      skipped = Math.max(0, images.length - 1);
+    } else {
+      const plan = planResourceBindings(target.node.ctrl?.type, images, target.node.resources);
+      if (!plan.assignments.length) {
+        const slots = resourceSlotDefinitions(target.node.ctrl?.type);
+        const allSlotsFilled = slots.length > 0 && slots.every((slot) => Boolean(target.node.resources?.[slot.key]));
+        if (allSlotsFilled) {
+          confirmBindingComplete(target.node.id);
+          return;
+        }
+        setExportMsg("绑定失败：目标控件没有空资源槽位");
+        return;
+      }
+      assignments = plan.assignments;
+      skipped = plan.skipped.length;
     }
+    if (!assignments.length) return;
 
-    const assignments = plan.assignments.map(({ slot, node }) => {
+    const detailedAssignments = assignments.map(({ slot, node }) => {
       const path = findPath(current.nodes, node.id)!;
       const parent = path.length > 1 ? nodeAtPath(current.nodes, path.slice(0, -1)) : null;
       const binding: ImageBinding = {
@@ -785,19 +832,27 @@ export default function App() {
       };
       return { slot, node, binding };
     });
-    const assignedIds = new Set(assignments.map((item) => item.node.id));
+    const assignedIds = new Set(detailedAssignments.map((item) => item.node.id));
     const removed = removeNodes(current.nodes, assignedIds);
     const nextNodes = mapNodes(removed, target.node.id, (node) => {
       node.resources = { ...(node.resources ?? {}) };
-      for (const item of assignments) node.resources[item.slot] = item.binding;
+      node.resourceBindingComplete = false;
+      for (const item of detailedAssignments) node.resources[item.slot] = item.binding;
     });
     mutateScene((s) => ({ ...s, nodes: nextNodes }));
     selectionAnchorRef.current = target.node.id;
     setSelectedIds([target.node.id]);
     setSelectedId(target.node.id);
-    const skipped = plan.skipped.length;
-    setExportMsg(`已绑定 ${assignments.length} 个资源槽位${skipped ? `，${skipped} 张图片未绑定` : ""}`);
+    setExportMsg(`已绑定 ${detailedAssignments.length} 个资源槽位${skipped ? `，${skipped} 张图片未绑定` : ""}`);
   }, [mutateScene, selectedIds]);
+
+  const resetBindingComplete = useCallback((controlId: string) => {
+    const current = sceneRef.current;
+    const control = current && walkNodes(current.nodes).find((node) => node.id === controlId);
+    if (!current || !control?.resourceBindingComplete) return;
+    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, controlId, (node) => { node.resourceBindingComplete = false; }) }));
+    setExportMsg("已恢复该控件的待处理状态");
+  }, [mutateScene]);
 
   /** 解除控件资源槽位绑定，并按绑定时保存的父级与顺序恢复图片节点。 */
   const unbindResource = useCallback((controlId: string, slot: ResourceSlot) => {
@@ -818,6 +873,7 @@ export default function App() {
     const parent = nodeAtPath(nextNodes, parentPath);
     const maxIndex = parent?.children?.length ?? nextNodes.length;
     nextNodes = insertAtPath(nextNodes, parentPath, Math.min(binding.sourceIndex, maxIndex), cloneNode(binding.sourceNode));
+    nextNodes = mapNodes(nextNodes, controlId, (node) => { node.resourceBindingComplete = false; });
     mutateScene((s) => ({ ...s, nodes: nextNodes }));
     selectionAnchorRef.current = binding.id;
     setSelectedIds([binding.id]);
@@ -858,6 +914,12 @@ export default function App() {
       return next.ids;
     });
   }, []);
+
+  /** 资源绑定工作区的定位：同步选择、展开并滚动层级树，让目标节点进入明显视野。 */
+  const locateNode = useCallback((id: string) => {
+    selectNode(id);
+    setFocusNodeId(id);
+  }, [selectNode]);
 
   /** Ctrl+G：在最近共同父级下创建 Layout，并将一个或多个选中节点移动进去。 */
   const groupSelected = useCallback(() => {
@@ -1095,6 +1157,10 @@ export default function App() {
   }, [workspace]);
 
   useEffect(() => {
+    setRightPanelTab(workspace === "bindings" ? "overview" : "properties");
+  }, [workspace]);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (importProgress) {
@@ -1276,7 +1342,7 @@ export default function App() {
         deviceShell={deviceShell} onDeviceShell={setDeviceShell}
       />
       <div className="body">
-        <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode}
+        <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
           warningIds={warningIds}
           renamingId={renamingId} renameCaretMode={renameCaretMode}
           onRename={commitRename} onCancelRename={() => setRenamingId(null)}
@@ -1303,25 +1369,49 @@ export default function App() {
               </details>
             </div>
           </section>
+        ) : workspace === "bindings" ? (
+          <ResourceBindingWorkspace
+            nodes={scene?.nodes ?? []}
+            layout={result}
+            viewport={{ width: layoutCtx?.viewportWidth ?? viewport.width, height: layoutCtx?.viewportHeight ?? viewport.height }}
+            selectedIds={selectedIds}
+            onSelectImage={(id, event) => selectNode(id, createSelectionIntent(event, flattenLayerIds(scene?.nodes ?? [])))}
+            onLocate={locateNode}
+            onBind={bindResources}
+            onUnbind={unbindResource}
+            onResetComplete={resetBindingComplete}
+          />
         ) : (
           <div className="canvas-wrap" ref={wrapRef}>
             {!showPreview && canvasStack}
           </div>
         )}
         {workspace === "export" ? <div className="ws-panel" /> : (
-          <Inspector
-            node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
-            rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
-            onUpdate={updateSelected}
-            onSetCtrl={setCtrl}
-            onReanchor={(a) => updateSelected((n) => {
-              const r = result?.nodes.find((x) => x.node.id === n.id)?.rect;
-              if (r && layoutCtx) reanchor(n, scene!.designWidth, scene!.designHeight, r, layoutCtx, result!, a);
-            })}
-            templates={scene?.interactionTemplates ?? []}
-            onTemplates={setTemplates}
-            onUnbindResource={unbindResource}
-          />
+          <aside className="right-panel">
+            <nav className="right-panel-tabs" aria-label="右侧面板">
+              <button className={rightPanelTab === "properties" ? "on" : ""} onClick={() => setRightPanelTab("properties")}>属性</button>
+              <button className={rightPanelTab === "overview" ? "on" : ""} onClick={() => setRightPanelTab("overview")}>场景总览</button>
+            </nav>
+            {rightPanelTab === "overview" ? <SceneOverview
+              result={result}
+              nodes={scene?.nodes ?? []}
+              viewport={{ width: layoutCtx?.viewportWidth ?? viewport.width, height: layoutCtx?.viewportHeight ?? viewport.height }}
+              selectedId={selectedId}
+              onLocate={locateNode}
+            /> : <Inspector
+              node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
+              rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
+              onUpdate={updateSelected}
+              onSetCtrl={setCtrl}
+              onReanchor={(a) => updateSelected((n) => {
+                const r = result?.nodes.find((x) => x.node.id === n.id)?.rect;
+                if (r && layoutCtx) reanchor(n, scene!.designWidth, scene!.designHeight, r, layoutCtx, result!, a);
+              })}
+              templates={scene?.interactionTemplates ?? []}
+              onTemplates={setTemplates}
+              onUnbindResource={unbindResource}
+            />}
+          </aside>
         )}
       </div>
       {quickActionMenu && (
@@ -1335,6 +1425,7 @@ export default function App() {
           onImportImages={importImages}
           onSave={() => { void saveCurrentProject(); }}
           onSaveAs={() => { void saveCurrentProject(true); }}
+          onCloseProject={closeProject}
           onClose={() => setQuickActionMenu(null)}
         />
       )}

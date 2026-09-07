@@ -143,10 +143,12 @@ export interface UINode {
   slice?: { left: number; top: number; right: number; bottom: number };
   /** 九宫格替换图（来自 "9" 文件夹的同名图片） */
   sliceImage?: HTMLCanvasElement | null;
-  /** 控件类型标签 + 交互模板引用 */
-  ctrl?: { type: CtrlType; templateId?: string };
+  /** 控件类型标签 + 编辑器交互状态；selected 仅用于工程编辑/预览，不导出到引擎 JSON。 */
+  ctrl?: { type: CtrlType; templateId?: string; selected?: boolean };
   /** 已从层级树移入控件属性槽位的图片资源。 */
   resources?: Partial<Record<ResourceSlot, ImageBinding>>;
+  /** 用户确认该控件的资源处理已完成；允许仍有图片未绑定、但槽位已没有空位的情况。 */
+  resourceBindingComplete?: boolean;
 
   /** PSD 导入时的原始布局（只在导入时写入，编辑不改它） */
   designRect: UIRect;

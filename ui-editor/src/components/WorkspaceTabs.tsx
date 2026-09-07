@@ -1,7 +1,7 @@
 import type { ScaleMode } from "../types";
 import { presetsForDesign, type DeviceShell } from "../devicePreview";
 
-export type Workspace = "controls" | "export";
+export type Workspace = "controls" | "bindings" | "export";
 
 interface Props {
   ws: Workspace;
@@ -23,7 +23,7 @@ interface Props {
   onDeviceShell: (shell: DeviceShell) => void;
 }
 
-/** 当前版本只保留编辑层级和导出两个工作区；适配、动画、九宫格以后独立增加。 */
+/** 当前版本提供层级、资源绑定和导出三个工作区；适配、动画、九宫格以后独立增加。 */
 export default function Workbar(p: Props) {
   const presets = presetsForDesign(p.designWidth, p.designHeight);
   const preset = presets.find((item) => item.width === p.viewport.width && item.height === p.viewport.height)?.id ?? "custom";
@@ -32,6 +32,10 @@ export default function Workbar(p: Props) {
       <nav className="ws-tabs" aria-label="工作区">
         <button className={p.ws === "controls" ? "on" : ""} onClick={() => p.onWs("controls")}>
           <span className="ws-ic">◎</span>层级
+        </button>
+        <button className={p.ws === "bindings" ? "on" : ""} disabled={!p.hasScene}
+          onClick={() => p.onWs("bindings")} title={!p.hasScene ? "请先打开或导入工程" : "手动绑定控件资源"}>
+          <span className="ws-ic">▦</span>资源绑定
         </button>
         <button className={p.ws === "export" ? "on" : ""} disabled={!p.hasScene}
           onClick={() => p.onWs("export")} title={!p.hasScene ? "请先打开或导入工程" : "导出自研引擎 JSON"}>
