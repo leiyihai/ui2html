@@ -1,170 +1,157 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { NineSliceCandidate, NineSliceMargins, UIScene } from "../types";
+import { collectNineSliceImages, createManualNineSliceCandidate, type NineSliceImageEntry } from "../nineSlice";
 
-export type Slice = { left: number; top: number; right: number; bottom: number };
-export const DEFAULT_SLICE: Slice = { left: 0, top: 0, right: 0, bottom: 0 };
-
-export function loadSlice(psdName: string, imgName: string): Slice {
-  try {
-    const s = localStorage.getItem(`ui2html.slice.${psdName}.${imgName}`);
-    if (s) return { ...DEFAULT_SLICE, ...JSON.parse(s) };
-  } catch { /* 忽略损坏数据 */ }
-  return { ...DEFAULT_SLICE };
+function statusLabel(status: NineSliceCandidate["status"]): string {
+  return status === "confirmed" ? "已确认" : status === "skipped" ? "已跳过" : "待确认";
 }
 
-/** 左侧九宫格图片列表（类似图层面板） */
-export function SliceList(p: {
-  sources: { name: string; canvas: HTMLCanvasElement }[];
-  selected: string | null;
-  onSelect: (name: string) => void;
-}) {
-  if (!p.sources.length) {
-    return <div className="slice-empty">未找到「9」文件夹（约定：名为 9 的文件夹内图片作为九宫格替换源）</div>;
-  }
-  return (
-    <ul className="slice-list">
-      {p.sources.map((s) => (
-        <li key={s.name} className={s.name === p.selected ? "sel" : ""}
-          onClick={() => p.onSelect(s.name)}>
-          <span className="type-ic t-image">
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2.5" y="3.5" width="11" height="9" rx="1.5" />
-              <circle cx="6" cy="6.8" r="1" />
-              <path d="M4.2 11.5 7.2 8.4l2 2 2.6-2.6" />
-            </svg>
-          </span>
-          <span className="name">{s.name}</span>
-        </li>
-      ))}
-    </ul>
-  );
+function sourceFor(candidate: NineSliceCandidate, entries: NineSliceImageEntry[]): NineSliceImageEntry | null {
+  return entries.find((entry) => entry.node.id === candidate.sourceNodeId) ?? null;
 }
 
-/** 中间区域的九宫格编辑：图片预览 + 4 条可拖动引导线 + 边距数值，自动保存 */
 export function SliceEditor(p: {
-  source: { name: string; canvas: HTMLCanvasElement };
-  psdName: string | null;
-  onBack: () => void;
+  source: NineSliceImageEntry;
+  slice: NineSliceMargins;
+  onChange: (slice: NineSliceMargins) => void;
 }) {
-  const [slice, setSlice] = useState<Slice>(() => loadSlice(p.psdName ?? "", p.source.name));
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dragRef = useRef<"top" | "bottom" | "left" | "right" | null>(null);
   const scaleRef = useRef(1);
 
-  // 绘制图片 + 引导线（归一化：无论原图大小都缩放到适中区域，便于操作）
   useEffect(() => {
     const cv = canvasRef.current;
     if (!cv) return;
-    const { canvas } = p.source;
+    const image = p.source.image;
     const dpr = window.devicePixelRatio || 1;
-    const maxW = 420, maxH = 300;
-    const sc = Math.max(0.25, Math.min(maxW / canvas.width, maxH / canvas.height, 8));
-    scaleRef.current = sc;
-    cv.width = canvas.width * sc * dpr;
-    cv.height = canvas.height * sc * dpr;
-    cv.style.width = canvas.width * sc + "px";
-    cv.style.height = canvas.height * sc + "px";
-    const g = cv.getContext("2d")!;
-    g.setTransform(dpr * sc, 0, 0, dpr * sc, 0, 0);
-    g.clearRect(0, 0, canvas.width, canvas.height);
-    g.drawImage(canvas, 0, 0);
-    g.strokeStyle = "#00ff00";
-    g.lineWidth = 1 / sc;
-    const { left, top, right, bottom } = slice;
-    const w = canvas.width, h = canvas.height;
-    g.beginPath(); g.moveTo(0, top); g.lineTo(w, top); g.stroke();
-    g.beginPath(); g.moveTo(0, h - bottom); g.lineTo(w, h - bottom); g.stroke();
-    g.beginPath(); g.moveTo(left, 0); g.lineTo(left, h); g.stroke();
-    g.beginPath(); g.moveTo(w - right, 0); g.lineTo(w - right, h); g.stroke();
-  }, [p.source, slice]);
-
-  const save = (s: Slice) => {
-    setSlice(s);
-    localStorage.setItem(`ui2html.slice.${p.psdName}.${p.source.name}`, JSON.stringify(s));
-  };
-
-  /** 检测鼠标靠近哪条引导线：v=垂直线(left/right)，h=水平线(top/bottom)，null=未靠近 */
-  const nearLine = (px: number, py: number): "v" | "h" | null => {
-    const w = p.source.canvas.width, h = p.source.canvas.height;
-    const near = 6 / scaleRef.current;
-    const { left, top, right, bottom } = slice;
-    const dV = Math.min(Math.abs(px - left), Math.abs(px - (w - right)));
-    const dH = Math.min(Math.abs(py - top), Math.abs(py - (h - bottom)));
-    if (dV < near && dV <= dH) return "v";
-    if (dH < near) return "h";
-    return null;
-  };
-
-  const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
-    const px = (e.clientX - rect.left) / scaleRef.current;
-    const py = (e.clientY - rect.top) / scaleRef.current;
-    const w = p.source.canvas.width, h = p.source.canvas.height;
-    const near = 6 / scaleRef.current;
-    const { left, top, right, bottom } = slice;
-    const lines: [string, number][] = [
-      ["top", top], ["bottom", h - bottom], ["left", left], ["right", w - right],
+    const scale = Math.max(0.25, Math.min(460 / image.width, 300 / image.height, 8));
+    scaleRef.current = scale;
+    cv.width = Math.max(1, Math.round(image.width * scale * dpr));
+    cv.height = Math.max(1, Math.round(image.height * scale * dpr));
+    cv.style.width = `${image.width * scale}px`;
+    cv.style.height = `${image.height * scale}px`;
+    const context = cv.getContext("2d");
+    if (!context) return;
+    context.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+    context.clearRect(0, 0, image.width, image.height);
+    context.drawImage(image, 0, 0);
+    context.fillStyle = "rgba(45, 177, 198, .12)";
+    context.fillRect(p.slice.left, p.slice.top, Math.max(0, image.width - p.slice.left - p.slice.right), Math.max(0, image.height - p.slice.top - p.slice.bottom));
+    context.strokeStyle = "#6ed8df";
+    context.lineWidth = Math.max(1, 1 / scale);
+    const lines: [number, number, number, number][] = [
+      [0, p.slice.top, image.width, p.slice.top], [0, image.height - p.slice.bottom, image.width, image.height - p.slice.bottom],
+      [p.slice.left, 0, p.slice.left, image.height], [image.width - p.slice.right, 0, image.width - p.slice.right, image.height],
     ];
-    const hit = lines
-      .map(([d, v]) => [d, v, d === "top" || d === "bottom" ? Math.abs(py - v) : Math.abs(px - v)] as const)
-      .filter(([, , dist]) => dist < near)
-      .sort((a, b) => a[2] - b[2])[0];
-    if (hit) {
-      dragRef.current = hit[0] as "top" | "bottom" | "left" | "right";
-      const el = e.currentTarget;
-      el.setPointerCapture(e.pointerId);
-      el.style.cursor = hit[0] === "top" || hit[0] === "bottom" ? "ns-resize" : "ew-resize"; // ↕ / ↔
-    }
+    for (const [x1, y1, x2, y2] of lines) { context.beginPath(); context.moveTo(x1, y1); context.lineTo(x2, y2); context.stroke(); }
+  }, [p.source, p.slice]);
+
+  const pointerPosition = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    return {
+      x: Math.max(0, Math.min(p.source.image.width, Math.round((event.clientX - rect.left) / scaleRef.current))),
+      y: Math.max(0, Math.min(p.source.image.height, Math.round((event.clientY - rect.top) / scaleRef.current))),
+    };
   };
-  const onPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const el = e.currentTarget;
-    if (!dragRef.current) {
-      // hover：靠近引导线时切换光标（↔ 垂直线 / ↕ 水平线）
-      const rect = el.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / scaleRef.current;
-      const py = (e.clientY - rect.top) / scaleRef.current;
-      const dir = nearLine(px, py);
-      el.style.cursor = dir === "v" ? "ew-resize" : dir === "h" ? "ns-resize" : "crosshair";
+  const lineAt = (x: number, y: number): "top" | "bottom" | "left" | "right" | null => {
+    const { width, height } = p.source.image;
+    const threshold = 7 / scaleRef.current;
+    const distances: ["top" | "bottom" | "left" | "right", number][] = [
+      ["top", Math.abs(y - p.slice.top)], ["bottom", Math.abs(y - (height - p.slice.bottom))],
+      ["left", Math.abs(x - p.slice.left)], ["right", Math.abs(x - (width - p.slice.right))],
+    ];
+    distances.sort((a, b) => a[1] - b[1]);
+    return distances[0][1] <= threshold ? distances[0][0] : null;
+  };
+  const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const point = pointerPosition(event);
+    const hit = lineAt(point.x, point.y);
+    if (!hit) return;
+    dragRef.current = hit;
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const onPointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const point = pointerPosition(event);
+    const hit = dragRef.current;
+    if (!hit) {
+      const near = lineAt(point.x, point.y);
+      event.currentTarget.style.cursor = near === "left" || near === "right" ? "ew-resize" : near ? "ns-resize" : "crosshair";
       return;
     }
-    const rect = el.getBoundingClientRect();
-    const px = Math.max(0, Math.round((e.clientX - rect.left) / scaleRef.current));
-    const py = Math.max(0, Math.round((e.clientY - rect.top) / scaleRef.current));
-    const w = p.source.canvas.width, h = p.source.canvas.height;
-    const d = dragRef.current;
-    save({
-      ...slice,
-      top: d === "top" ? Math.min(py, h - 1) : slice.top,
-      bottom: d === "bottom" ? Math.min(h - py, h - 1) : slice.bottom,
-      left: d === "left" ? Math.min(px, w - 1) : slice.left,
-      right: d === "right" ? Math.min(w - px, w - 1) : slice.right,
-    });
+    const { width, height } = p.source.image;
+    const next = { ...p.slice };
+    if (hit === "left") next.left = Math.max(0, Math.min(point.x, width - next.right - 1));
+    if (hit === "right") next.right = Math.max(0, Math.min(width - point.x, width - next.left - 1));
+    if (hit === "top") next.top = Math.max(0, Math.min(point.y, height - next.bottom - 1));
+    if (hit === "bottom") next.bottom = Math.max(0, Math.min(height - point.y, height - next.top - 1));
+    p.onChange(next);
   };
-  const onPointerUp = () => { dragRef.current = null; };
+  const onPointerUp = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    dragRef.current = null;
+  };
+  const setMargin = (key: keyof NineSliceMargins, value: number) => {
+    const max = key === "left" || key === "right" ? p.source.image.width - 1 : p.source.image.height - 1;
+    const other = key === "left" ? p.slice.right : key === "right" ? p.slice.left : key === "top" ? p.slice.bottom : p.slice.top;
+    p.onChange({ ...p.slice, [key]: Math.max(0, Math.min(max - other, Math.round(value) || 0)) });
+  };
+  return <div className="slice-editor">
+    <div className="slice-preview"><canvas ref={canvasRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} /></div>
+    <div className="slice-nums">{(["left", "top", "right", "bottom"] as const).map((key) => <label className="slice-num" key={key}>
+      <span>{key === "left" ? "左" : key === "top" ? "上" : key === "right" ? "右" : "下"}</span>
+      <input type="number" min="0" value={p.slice[key]} onChange={(event) => setMargin(key, +event.target.value)} />
+    </label>)}</div>
+  </div>;
+}
 
-  const num = (key: keyof Slice, max: number) => (
-    <label className="slice-num">
-      <span>{key === "top" ? "上" : key === "bottom" ? "下" : key === "left" ? "左" : "右"}</span>
-      <input type="number" min={0} max={max} value={slice[key]}
-        onChange={(e) => save({ ...slice, [key]: Math.max(0, Math.min(max, +e.target.value || 0)) })} />
-    </label>
-  );
+export default function NineSliceWorkspace(p: {
+  scene: UIScene;
+  onScan: () => void;
+  onConfirm: (candidate: NineSliceCandidate, margins: NineSliceMargins) => void;
+  onSkip: (candidateId: string) => void;
+  onRestoreSkipped: () => void;
+  onManualCreate: (candidate: NineSliceCandidate) => void;
+}) {
+  const entries = useMemo(() => collectNineSliceImages(p.scene), [p.scene]);
+  const candidates = useMemo(() => p.scene.nineSliceCandidates ?? [], [p.scene.nineSliceCandidates]);
+  const [selectedId, setSelectedId] = useState<string | null>(candidates[0]?.id ?? null);
+  const [manualIds, setManualIds] = useState<string[]>([]);
+  const selected = candidates.find((candidate) => candidate.id === selectedId) ?? candidates[0] ?? null;
+  const source = selected ? sourceFor(selected, entries) : null;
+  const [margins, setMargins] = useState<NineSliceMargins>(selected?.suggestedMargins ?? { left: 0, top: 0, right: 0, bottom: 0 });
+  useEffect(() => {
+    const current = candidates.find((candidate) => candidate.id === selectedId);
+    if (!current) { setSelectedId(candidates[0]?.id ?? null); return; }
+    setMargins({ ...current.suggestedMargins });
+  }, [candidates, selectedId]);
 
-  return (
-    <div className="slice-editor" onClick={(e) => { if (e.target === e.currentTarget) p.onBack(); }}>
-      <div className="slice-editor-head">
-        <span className="slice-title">{p.source.name}</span>
-        <span className="slice-hint">拖动绿色线或输入数值标记九宫格边距（自动保存）· 点击空白处返回画布</span>
-      </div>
-      <div className="slice-preview">
-        <canvas ref={canvasRef} onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove} onPointerUp={onPointerUp} />
-      </div>
-      <div className="slice-nums">
-        {num("top", p.source.canvas.height - 1)}
-        {num("bottom", p.source.canvas.height - 1)}
-        {num("left", p.source.canvas.width - 1)}
-        {num("right", p.source.canvas.width - 1)}
-      </div>
+  const pending = candidates.filter((candidate) => candidate.status === "suggested");
+  const skipped = candidates.filter((candidate) => candidate.status === "skipped");
+  const confirmed = candidates.filter((candidate) => candidate.status === "confirmed");
+  const toggleManual = (id: string) => setManualIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+  const createManual = () => {
+    const selectedEntries = entries.filter((entry) => manualIds.includes(entry.node.id));
+    if (!selectedEntries.length) return;
+    const candidate = createManualNineSliceCandidate(selectedEntries);
+    p.onManualCreate(candidate);
+    setManualIds([]);
+    setSelectedId(candidate.id);
+  };
+
+  return <section className="nine-slice-workspace">
+    <header className="nine-slice-head"><div><span className="workspace-kicker">ASSET PROCESSING</span><h2>九宫格</h2><p>本地规则只提供建议，确认后才会影响工程预览。</p></div>
+      <div className="nine-slice-actions"><button className="btn primary" onClick={p.onScan}>扫描 / 更新候选</button><button className="btn" disabled={!skipped.length} onClick={p.onRestoreSkipped}>恢复已跳过</button></div></header>
+    <div className="nine-slice-summary"><span>待确认 <strong>{pending.length}</strong></span><span>已确认 <strong>{confirmed.length}</strong></span><span>已跳过 <strong>{skipped.length}</strong></span><span>图片资源 <strong>{entries.length}</strong></span></div>
+    <div className="nine-slice-body"><aside className="nine-slice-candidates"><div className="nine-slice-list-title">候选列表</div>
+      {!candidates.length && <div className="slice-empty">点击“扫描 / 更新候选”开始分析工程图片。</div>}
+      {candidates.map((candidate) => { const entry = sourceFor(candidate, entries); return <button key={candidate.id} className={`nine-candidate ${candidate.id === selected?.id ? "on" : ""} status-${candidate.status}`} onClick={() => setSelectedId(candidate.id)}>
+        {entry && <img src={entry.image.toDataURL("image/png")} alt="" />}<span><strong>{entry?.node.name ?? "图片已缺失"}</strong><small>{candidate.memberNodeIds.length > 1 ? `${candidate.memberNodeIds.length} 个同源图 · ` : ""}{statusLabel(candidate.status)}</small></span><em>{Math.round(candidate.confidence * 100)}%</em>
+      </button>; })}</aside>
+      <main className="nine-slice-editor-panel">{selected && source ? <><div className="nine-slice-editor-title"><div><span>公共源图</span><h3>{source.node.name}</h3><small>{selected.memberNodeIds.length > 1 ? `同源图片 ${selected.memberNodeIds.length} 张，已选择最大分辨率源图` : "单张图片"}</small></div><span className={`nine-status status-${selected.status}`}>{statusLabel(selected.status)}</span></div>
+        <p className="nine-slice-reason">{selected.reason}</p><SliceEditor source={source} slice={margins} onChange={setMargins} />
+        <div className="nine-slice-editor-foot"><span>拖动边界线或直接输入边距；原图始终保留。</span><div><button className="btn" onClick={() => p.onSkip(selected.id)}>{selected.status === "skipped" ? "保持跳过" : "跳过"}</button><button className="btn primary" disabled={selected.status === "confirmed"} onClick={() => p.onConfirm(selected, margins)}>{selected.status === "confirmed" ? "已确认" : "确认并应用"}</button></div></div>
+      </> : <div className="slice-empty large">选择候选后在这里确认九宫格边界。</div>}</main>
+      <aside className="nine-slice-manual"><div className="nine-slice-list-title">手动补选</div><p>算法没推荐的图片，可以在这里多选并归为同一逻辑图片组。</p><div className="nine-manual-list">{entries.map((entry) => <label key={entry.node.id} className="nine-manual-item"><input type="checkbox" checked={manualIds.includes(entry.node.id)} onChange={() => toggleManual(entry.node.id)} /><img src={entry.image.toDataURL("image/png")} alt="" /><span>{entry.node.name}</span></label>)}</div><button className="btn" disabled={!manualIds.length} onClick={createManual}>创建手动候选{manualIds.length ? `（${manualIds.length}）` : ""}</button></aside>
     </div>
-  );
+  </section>;
 }

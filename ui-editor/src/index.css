@@ -364,6 +364,49 @@ body {
   position: fixed; inset: 0; z-index: 100; display: grid; place-items: center;
   background: rgba(7, 11, 16, .74); backdrop-filter: blur(3px); cursor: wait;
 }
+.nine-slice-workspace, .preview-workspace { flex: 1; min-width: 0; min-height: 0; overflow: auto; background: #12181f; color: #dce8f0; }
+.nine-slice-head, .preview-workspace-head { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 22px 12px; border-bottom: 1px solid #293846; }
+.nine-slice-head h2, .preview-workspace-head h2 { margin: 3px 0; color: #f2f7fb; font-size: 20px; }
+.nine-slice-head p, .preview-workspace-head p { margin: 0; color: #7890a2; font-size: 12px; }
+.workspace-kicker { color: #6bcbd4; font-size: 10px; letter-spacing: .12em; }
+.nine-slice-actions { display: flex; gap: 8px; }
+.nine-slice-summary { display: flex; gap: 20px; padding: 10px 22px; color: #91a9b8; font-size: 12px; border-bottom: 1px solid #22303b; }
+.nine-slice-summary strong { margin-left: 4px; color: #e4f0f4; font-size: 14px; }
+.nine-slice-body { display: grid; grid-template-columns: minmax(190px, 240px) minmax(360px, 1fr) minmax(200px, 260px); min-height: 520px; }
+.nine-slice-candidates, .nine-slice-manual { padding: 12px; background: #17212a; }
+.nine-slice-candidates { border-right: 1px solid #2a3a46; }
+.nine-slice-manual { border-left: 1px solid #2a3a46; }
+.nine-slice-list-title { margin: 2px 4px 9px; color: #9bb3c3; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.nine-candidate { width: 100%; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding: 7px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: #d6e3e9; text-align: left; cursor: pointer; }
+.nine-candidate:hover { background: #20303b; }
+.nine-candidate.on { border-color: #5dbfc8; background: #203743; }
+.nine-candidate img, .nine-manual-item img { width: 34px; height: 34px; object-fit: contain; background: #0f161c; border: 1px solid #344b59; border-radius: 4px; }
+.nine-candidate span { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.nine-candidate strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.nine-candidate small { color: #8299a8; font-size: 10px; }
+.nine-candidate em { color: #7fabb4; font-size: 10px; font-style: normal; }
+.nine-candidate.status-confirmed { opacity: .72; }
+.nine-candidate.status-skipped { opacity: .52; }
+.nine-slice-editor-panel { display: flex; min-width: 0; flex-direction: column; padding: 18px 20px; background: #121a21; }
+.nine-slice-editor-title { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.nine-slice-editor-title span:first-child, .nine-slice-editor-title small { color: #7f99a8; font-size: 11px; }
+.nine-slice-editor-title h3 { margin: 3px 0; color: #eef7fa; font-size: 16px; }
+.nine-status { padding: 4px 7px; border-radius: 4px; color: #8ddce0; background: #1c3b40; font-size: 11px; }
+.nine-status.status-skipped { color: #a1aab0; background: #293238; }
+.nine-slice-reason { margin: 12px 0; color: #90a6b3; font-size: 12px; }
+.nine-slice-editor-panel .slice-editor { flex: none; background: transparent; }
+.nine-slice-editor-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; color: #75909f; font-size: 11px; }
+.nine-slice-editor-foot > div { display: flex; gap: 8px; }
+.nine-slice-manual > p { margin: 0 4px 10px; color: #8299a8; font-size: 11px; line-height: 1.5; }
+.nine-manual-list { max-height: 390px; overflow: auto; margin-bottom: 10px; }
+.nine-manual-item { display: flex; align-items: center; gap: 7px; padding: 5px 3px; color: #c7d8df; font-size: 11px; cursor: pointer; }
+.nine-manual-item input { accent-color: #63c4ca; }
+.nine-manual-item img { width: 28px; height: 28px; }
+.nine-manual-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slice-empty.large { display: grid; flex: 1; place-items: center; min-height: 300px; }
+.preview-slice-toggle { display: flex; align-items: center; gap: 7px; color: #b9dce0; font-size: 12px; }
+.preview-slice-toggle input { accent-color: #63c4ca; }
+.preview-workspace-canvas { min-height: 520px; }
 .import-progress-card {
   width: min(430px, calc(100vw - 40px)); display: flex; flex-direction: column; align-items: center; gap: 10px;
   padding: 28px 30px 24px; border: 1px solid #3b5166; border-radius: 12px;

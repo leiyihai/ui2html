@@ -63,6 +63,9 @@ function collectAssetPaths(project: any): string[] {
     }
   };
   visit(project.nodes ?? []);
+  for (const group of project.nineSliceGroups ?? []) {
+    if (typeof group.sourceAssetPath === "string") found.add(safeAssetPath(group.sourceAssetPath));
+  }
   return [...found];
 }
 

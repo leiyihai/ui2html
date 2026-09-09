@@ -9,6 +9,7 @@ interface Props {
   viewport: { width: number; height: number };
   selectedId: string | null;
   onLocate: (id: string) => void;
+  useNineSlice?: boolean;
 }
 
 function flatten(node: UINode, out: UINode[] = []): UINode[] {
@@ -34,7 +35,7 @@ export default function SceneOverview(p: Props) {
     canvas.height = Math.max(1, Math.round(p.viewport.height));
     const context = canvas.getContext("2d");
     if (!context) return;
-    renderUi(context, p.result);
+    renderUi(context, p.result, p.useNineSlice ?? false);
 
     const selected = p.selectedId ? p.result.nodes.find((item) => item.node.id === p.selectedId) : null;
     const bounds = selected && effectivePreviewRect(selected, p.viewport);
@@ -48,7 +49,7 @@ export default function SceneOverview(p: Props) {
     context.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
     context.strokeRect(bounds.x, bounds.y, Math.max(bounds.width, 12), Math.max(bounds.height, 12));
     context.restore();
-  }, [p.result, p.viewport, p.selectedId]);
+  }, [p.result, p.viewport, p.selectedId, p.useNineSlice]);
 
   const locateFromPoint = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!p.result) return;

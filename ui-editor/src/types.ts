@@ -34,6 +34,39 @@ export interface ProgressConfig {
   reverse: boolean;
 }
 
+export interface NineSliceMargins {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+export type NineSliceStatus = "suggested" | "confirmed" | "skipped";
+
+/** 九宫格候选/确认的稳定工程数据，不依赖 Canvas 运行时对象。 */
+export interface NineSliceCandidate {
+  id: string;
+  memberNodeIds: string[];
+  sourceNodeId: string;
+  sourceAssetKey: string;
+  suggestedMargins: NineSliceMargins;
+  confidence: number;
+  reason: string;
+  status: NineSliceStatus;
+  signature: string;
+}
+
+export interface NineSliceGroup {
+  id: string;
+  memberNodeIds: string[];
+  sourceNodeId: string;
+  sourceAssetKey: string;
+  sourceAssetPath?: string;
+  margins: NineSliceMargins;
+  confidence?: number;
+  reason?: string;
+}
+
 /** 控件类型标签 */
 export type CtrlType =
   | "empty" | "Button" | "CheckBox" | "Edit" | "GridView" | "Layout"
@@ -143,6 +176,8 @@ export interface UINode {
   slice?: { left: number; top: number; right: number; bottom: number };
   /** 九宫格替换图（来自 "9" 文件夹的同名图片） */
   sliceImage?: HTMLCanvasElement | null;
+  /** 已确认的逻辑九宫格图片组；实际图片由 group 的公共源图提供。 */
+  nineSliceGroupId?: string;
   /** 控件类型标签 + 编辑器交互状态；selected 仅用于工程编辑/预览，不导出到引擎 JSON。 */
   ctrl?: { type: CtrlType; templateId?: string; selected?: boolean };
   /** 已从层级树移入控件属性槽位的图片资源。 */
@@ -188,6 +223,12 @@ export interface UIScene {
   nodes: UINode[];
   /** "9" 文件夹内的图片（九宫格替换源），不进场景布局 */
   sliceSources?: { name: string; canvas: HTMLCanvasElement }[];
+  /** 本地扫描产生的九宫格候选，保存后可恢复确认/跳过状态。 */
+  nineSliceCandidates?: NineSliceCandidate[];
+  /** 已确认的逻辑九宫格图片组。 */
+  nineSliceGroups?: NineSliceGroup[];
+  /** 预览页签中是否使用已确认的九宫格源图；默认 false。 */
+  useNineSlicePreview?: boolean;
   /** 交互样式模板（控件工作区管理） */
   interactionTemplates?: InteractionTemplate[];
 }

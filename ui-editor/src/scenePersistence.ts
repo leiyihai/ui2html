@@ -1,4 +1,4 @@
-import type { ImageBinding, InteractionTemplate, ProjectAnalysis, ResourceSlot, ScaleMode, UIScene, UINode } from "./types";
+import type { ImageBinding, InteractionTemplate, NineSliceCandidate, NineSliceGroup, ProjectAnalysis, ResourceSlot, ScaleMode, UIScene, UINode } from "./types";
 
 /** 独立 UI 工程格式。版本 3 起不再保存 PSD 图层身份或依赖 PSD 重新挂载图片。 */
 export const SCENE_PERSISTENCE_VERSION = 3;
@@ -22,6 +22,8 @@ export interface SavedNode {
   children?: SavedNode[];
   list?: UINode["list"];
   progress?: UINode["progress"];
+  slice?: UINode["slice"];
+  nineSliceGroupId?: string;
   ctrl?: UINode["ctrl"];
   resources?: Partial<Record<ResourceSlot, SavedImageBinding>>;
   resourceBindingComplete?: boolean;
@@ -51,6 +53,9 @@ export interface SavedScene {
   nodes: SavedNode[];
   templates: InteractionTemplate[];
   view: SavedProjectView;
+  nineSliceCandidates?: NineSliceCandidate[];
+  nineSliceGroups?: NineSliceGroup[];
+  useNineSlicePreview?: boolean;
 }
 
 function serializeNode(node: UINode, includeResources = true): SavedNode {
@@ -64,6 +69,8 @@ function serializeNode(node: UINode, includeResources = true): SavedNode {
     ...(node.children ? { children: node.children.map((child) => serializeNode(child)) } : {}),
     ...(node.list ? { list: { ...node.list, padding: { ...node.list.padding } } } : {}),
     ...(node.progress ? { progress: { ...node.progress } } : {}),
+    ...(node.slice ? { slice: { ...node.slice } } : {}),
+    ...(node.nineSliceGroupId ? { nineSliceGroupId: node.nineSliceGroupId } : {}),
     ...(node.ctrl ? { ctrl: { ...node.ctrl } } : {}),
     ...(node.resourceBindingComplete ? { resourceBindingComplete: true } : {}),
     designRect: { ...node.designRect },
@@ -112,6 +119,17 @@ export function serializeScene(scene: UIScene, view: SavedProjectView = defaultP
     nodes: scene.nodes.map((node) => serializeNode(node)),
     templates: scene.interactionTemplates ?? [],
     view,
+    ...(scene.nineSliceCandidates ? { nineSliceCandidates: scene.nineSliceCandidates.map((item) => ({
+      ...item,
+      memberNodeIds: [...item.memberNodeIds],
+      suggestedMargins: { ...item.suggestedMargins },
+    })) } : {}),
+    ...(scene.nineSliceGroups ? { nineSliceGroups: scene.nineSliceGroups.map((item) => ({
+      ...item,
+      memberNodeIds: [...item.memberNodeIds],
+      margins: { ...item.margins },
+    })) } : {}),
+    ...(scene.useNineSlicePreview ? { useNineSlicePreview: true } : {}),
   };
 }
 
@@ -159,6 +177,8 @@ function hydrateNode(saved: SavedNode, assets: Map<string, HTMLCanvasElement>, m
     ...(saved.children ? { children: saved.children.map((child) => hydrateNode(child, assets, missing)) } : {}),
     ...(saved.list ? { list: { ...saved.list, padding: { ...saved.list.padding } } } : {}),
     ...(saved.progress ? { progress: { ...saved.progress } } : {}),
+    ...(saved.slice ? { slice: { ...saved.slice } } : {}),
+    ...(saved.nineSliceGroupId ? { nineSliceGroupId: saved.nineSliceGroupId } : {}),
     ...(saved.ctrl ? { ctrl: { ...saved.ctrl } } : {}),
     ...(saved.resourceBindingComplete ? { resourceBindingComplete: true } : {}),
     ...(resources.length ? { resources: Object.fromEntries(resources) as UINode["resources"] } : {}),
@@ -181,19 +201,56 @@ function hydrateNode(saved: SavedNode, assets: Map<string, HTMLCanvasElement>, m
   };
 }
 
+function applyNineSliceRuntime(nodes: UINode[], groups: NineSliceGroup[], assets: Map<string, HTMLCanvasElement>, missing: string[]) {
+  const byId = new Map<string, UINode>();
+  const visit = (items: UINode[]) => items.forEach((node) => {
+    if (byId.has(node.id)) return;
+    byId.set(node.id, node);
+    if (node.children) visit(node.children);
+    for (const binding of Object.values(node.resources ?? {})) if (binding) visit([binding.sourceNode]);
+  });
+  visit(nodes);
+  for (const group of groups) {
+    const sourceNode = byId.get(group.sourceNodeId);
+    const sourceImage = (group.sourceAssetPath ? assets.get(group.sourceAssetPath) : undefined) ?? sourceNode?.image ?? null;
+    if (group.sourceAssetPath && !assets.has(group.sourceAssetPath)) missing.push(group.sourceAssetPath);
+    for (const memberId of group.memberNodeIds) {
+      const node = byId.get(memberId);
+      if (!node) continue;
+      node.nineSliceGroupId = group.id;
+      node.slice = { ...group.margins };
+      node.sliceImage = sourceImage;
+    }
+  }
+}
+
 /** 从 `.ui.json` 和同名 `.assets` 中恢复场景。 */
 export function restoreSceneSnapshot(saved: SavedScene, assets: Map<string, HTMLCanvasElement>): { scene: UIScene; missingAssets: string[] } {
   if (saved.schemaVersion !== SCENE_PERSISTENCE_VERSION) {
     throw new Error(`不支持的工程版本：${String(saved.schemaVersion)}，当前版本为 ${SCENE_PERSISTENCE_VERSION}`);
   }
   const missingAssets: string[] = [];
+  const nodes = saved.nodes.map((node) => hydrateNode(node, assets, missingAssets));
+  const nineSliceGroups = saved.nineSliceGroups?.map((item) => ({
+    ...item,
+    memberNodeIds: [...item.memberNodeIds],
+    margins: { ...item.margins },
+  }));
+  applyNineSliceRuntime(nodes, nineSliceGroups ?? [], assets, missingAssets);
   return {
     scene: {
       designWidth: saved.designWidth,
       designHeight: saved.designHeight,
-      nodes: saved.nodes.map((node) => hydrateNode(node, assets, missingAssets)),
+      nodes,
       interactionTemplates: saved.templates ?? [],
       sliceSources: [],
+      nineSliceCandidates: saved.nineSliceCandidates?.map((item) => ({
+        ...item,
+        memberNodeIds: [...item.memberNodeIds],
+        suggestedMargins: { ...item.suggestedMargins },
+      })),
+      nineSliceGroups,
+      useNineSlicePreview: saved.useNineSlicePreview ?? false,
     },
     missingAssets: [...new Set(missingAssets)],
   };
@@ -212,5 +269,8 @@ export function collectSavedAssetPaths(saved: SavedScene): string[] {
     }
   };
   visit(saved.nodes);
+  for (const group of saved.nineSliceGroups ?? []) {
+    if (group.sourceAssetPath) paths.add(group.sourceAssetPath);
+  }
   return [...paths];
 }

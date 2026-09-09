@@ -166,4 +166,30 @@ describe("independent UI project snapshots", () => {
     expect(restored.assetName).toBe("img_button_normal");
     expect(restored.naming?.source).toBe("manual");
   });
+
+  it("round-trips confirmed nine-slice groups and restores their render source", () => {
+    const source = node("panel", "img_panel", "panel.png");
+    const scene: UIScene = {
+      designWidth: 100, designHeight: 100, nodes: [source],
+      nineSliceCandidates: [{
+        id: "slice-panel", memberNodeIds: ["panel"], sourceNodeId: "panel", sourceAssetKey: "panel-key",
+        suggestedMargins: { left: 8, top: 6, right: 8, bottom: 6 }, confidence: 0.9,
+        reason: "面板", status: "confirmed", signature: "panel-signature",
+      }],
+      nineSliceGroups: [{
+        id: "slice-panel", memberNodeIds: ["panel"], sourceNodeId: "panel", sourceAssetKey: "panel-key",
+        sourceAssetPath: "9/panel.png", margins: { left: 8, top: 6, right: 8, bottom: 6 },
+      }],
+      useNineSlicePreview: true,
+    };
+    const saved = serializeScene(scene);
+    const nineCanvas = {} as HTMLCanvasElement;
+    const restored = restoreSceneSnapshot(saved, new Map([["panel.png", {} as HTMLCanvasElement], ["9/panel.png", nineCanvas]])).scene;
+    expect(saved.nineSliceGroups?.[0].margins).toEqual({ left: 8, top: 6, right: 8, bottom: 6 });
+    expect(restored.useNineSlicePreview).toBe(true);
+    expect(restored.nodes[0].nineSliceGroupId).toBe("slice-panel");
+    expect(restored.nodes[0].slice).toEqual({ left: 8, top: 6, right: 8, bottom: 6 });
+    expect(restored.nodes[0].sliceImage).toBe(nineCanvas);
+    expect(collectSavedAssetPaths(saved)).toEqual(["panel.png", "9/panel.png"]);
+  });
 });

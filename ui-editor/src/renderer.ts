@@ -6,34 +6,29 @@ import { ENGINE_EDITOR_FONT_FAMILY } from "./engineFont";
 import { progressConfig } from "./progressControl";
 import { fitFontSize, wrapText, LINE_HEIGHT } from "./textMeasure";
 
-function boundImage(node: UINode, slot: ResourceSlot): HTMLCanvasElement | null {
-  return node.resources?.[slot]?.image ?? null;
-}
-
 /** 返回编辑状态下当前应显示的控件资源层，顺序为从底到顶。 */
 export function visibleControlResourceImages(node: UINode): HTMLCanvasElement[] {
-  const compact = (images: (HTMLCanvasElement | null)[]) => images.filter((image): image is HTMLCanvasElement => Boolean(image));
+  return visibleControlResourceBindings(node).map((binding) => binding.image);
+}
+
+function visibleControlResourceBindings(node: UINode): ImageBinding[] {
+  const bindings = (slots: ResourceSlot[]) => slots.map((slot) => node.resources?.[slot]).filter((binding): binding is ImageBinding => Boolean(binding));
   switch (node.ctrl?.type) {
     case "Layout":
-      return compact([boundImage(node, "LayoutBackImage")]);
+      return bindings(["LayoutBackImage"]);
     case "StaticImage":
-      return compact([boundImage(node, "ImageName")]);
+      return bindings(["ImageName"]);
     case "Button":
-      return compact([boundImage(node, "NormalImage") ?? boundImage(node, "PushedImage")]);
+      return [node.resources?.NormalImage ?? node.resources?.PushedImage].filter((binding): binding is ImageBinding => Boolean(binding));
     case "CheckBox":
     case "RadioButton":
-      return compact([node.ctrl?.selected
-        ? boundImage(node, "PushedImage") ?? boundImage(node, "NormalImage")
-        : boundImage(node, "NormalImage") ?? boundImage(node, "PushedImage")]);
+      return [node.ctrl?.selected ? node.resources?.PushedImage ?? node.resources?.NormalImage : node.resources?.NormalImage ?? node.resources?.PushedImage]
+        .filter((binding): binding is ImageBinding => Boolean(binding));
     case "ProgressBar":
     case "Slider":
-      return compact([
-        boundImage(node, "ProgressBackImage"),
-        boundImage(node, "ProgressImage"),
-        boundImage(node, "ProgressHeaderImage"),
-      ]);
+      return bindings(["ProgressBackImage", "ProgressImage", "ProgressHeaderImage"]);
     case "Edit":
-      return compact([boundImage(node, "EditBackImage")]);
+      return bindings(["EditBackImage"]);
     default:
       return [];
   }
@@ -51,8 +46,8 @@ function sourceVisualSize(binding: ImageBinding | undefined, image: HTMLCanvasEl
   return { width: Math.max(1, width || result.scaleX), height: Math.max(1, height || result.scaleY) };
 }
 
-function drawProgressImage(ctx: CanvasRenderingContext2D, image: HTMLCanvasElement, rect: LayoutResult["nodes"][number]["rect"],
-  config: ReturnType<typeof progressConfig>) {
+function drawProgressImage(ctx: CanvasRenderingContext2D, binding: ImageBinding, rect: LayoutResult["nodes"][number]["rect"],
+  config: ReturnType<typeof progressConfig>, useSlice: boolean) {
   if (config.value <= 0) return;
   const horizontal = config.direction === "horizontal";
   const length = horizontal ? rect.width : rect.height;
@@ -77,21 +72,21 @@ function drawProgressImage(ctx: CanvasRenderingContext2D, image: HTMLCanvasEleme
     else ctx.rect(rect.x, clipStart, rect.width, clipEnd - clipStart);
     ctx.clip();
   }
-  ctx.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+  drawResourceImage(ctx, binding, rect, useSlice);
   if (!full) ctx.restore();
 }
 
 function renderProgressControlResources(ctx: CanvasRenderingContext2D, node: UINode,
-  rect: LayoutResult["nodes"][number]["rect"], result: LayoutResult) {
+  rect: LayoutResult["nodes"][number]["rect"], result: LayoutResult, useSlice: boolean) {
   const config = progressConfig(node);
-  const background = boundImage(node, "ProgressBackImage");
-  const progress = boundImage(node, "ProgressImage");
-  const header = boundImage(node, "ProgressHeaderImage");
-  if (background) ctx.drawImage(background, rect.x, rect.y, rect.width, rect.height);
+  const background = node.resources?.ProgressBackImage;
+  const progress = node.resources?.ProgressImage;
+  const header = node.resources?.ProgressHeaderImage;
+  if (background) drawResourceImage(ctx, background, rect, useSlice);
 
   let headerRect: { x: number; y: number; width: number; height: number } | null = null;
   if (header) {
-    const size = sourceVisualSize(node.resources?.ProgressHeaderImage, header, result);
+    const size = sourceVisualSize(node.resources?.ProgressHeaderImage, header.image, result);
     const horizontal = config.direction === "horizontal";
     const crossCenter = horizontal ? rect.y + rect.height / 2 : rect.x + rect.width / 2;
     const startEdge = horizontal ? rect.x : rect.y;
@@ -105,8 +100,8 @@ function renderProgressControlResources(ctx: CanvasRenderingContext2D, node: UIN
       headerRect = { x: crossCenter - size.width / 2, y: center - size.height / 2, width: size.width, height: size.height };
     }
   }
-  if (progress) drawProgressImage(ctx, progress, rect, config);
-  if (header && headerRect) ctx.drawImage(header, headerRect.x, headerRect.y, headerRect.width, headerRect.height);
+  if (progress) drawProgressImage(ctx, progress, rect, config, useSlice);
+  if (header && headerRect) drawResourceImage(ctx, header, headerRect, useSlice);
 }
 
 /** 九宫格拉伸绘制：四角原尺寸、四边单轴拉伸、中心双轴拉伸 */
@@ -128,6 +123,13 @@ export function draw9Slice(ctx: CanvasRenderingContext2D, img: HTMLCanvasElement
       ctx.drawImage(img, sx[i], sy[j], sw, sh, dx[i], dy[j], dw, dh);
     }
   }
+}
+
+function drawResourceImage(ctx: CanvasRenderingContext2D, binding: ImageBinding,
+  rect: { x: number; y: number; width: number; height: number }, useSlice: boolean) {
+  const sourceNode = binding.sourceNode;
+  if (useSlice && sourceNode.slice && sourceNode.sliceImage) draw9Slice(ctx, sourceNode.sliceImage, rect, sourceNode.slice);
+  else ctx.drawImage(binding.image, rect.x, rect.y, rect.width, rect.height);
 }
 
 export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, useSlice = false) {
@@ -159,10 +161,10 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
     }
     ctx.globalAlpha = opacity; // 有效透明度：父组 × 自身
     if (node.ctrl?.type === "ProgressBar" || node.ctrl?.type === "Slider") {
-      renderProgressControlResources(ctx, node, rect, result);
+      renderProgressControlResources(ctx, node, rect, result, useSlice);
     } else {
-      for (const resourceImage of visibleControlResourceImages(node)) {
-        ctx.drawImage(resourceImage, rect.x, rect.y, rect.width, rect.height);
+      for (const binding of visibleControlResourceBindings(node)) {
+        drawResourceImage(ctx, binding, rect, useSlice);
       }
     }
     if (useSlice && node.sliceImage && node.slice) {

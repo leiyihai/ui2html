@@ -36,4 +36,19 @@ describe("project assets", () => {
     expect(prepared.scene.nodes.map((node) => node.assetPath)).toEqual(["按钮.png", "按钮.png", "按钮_2.png"]);
     expect(Object.keys(prepared.assets)).toEqual(["按钮.png", "按钮_2.png"]);
   });
+
+  it("stores a confirmed nine-slice source under the project 9 folder", () => {
+    const panel = imageNode("panel", "panel_background", "data:image/png;base64,PANEL");
+    const prepared = prepareSceneAssets({
+      designWidth: 100, designHeight: 100, nodes: [panel],
+      nineSliceGroups: [{
+        id: "slice-panel", memberNodeIds: ["panel"], sourceNodeId: "panel", sourceAssetKey: "panel-key",
+        margins: { left: 4, top: 4, right: 4, bottom: 4 },
+      }],
+    });
+    expect(prepared.scene.nineSliceGroups?.[0].sourceAssetPath).toBe("9/panel_background.png");
+    expect(prepared.scene.nodes[0].nineSliceGroupId).toBe("slice-panel");
+    expect(prepared.scene.nodes[0].sliceImage).toBe(panel.image);
+    expect(Object.keys(prepared.assets)).toEqual(["panel_background.png", "9/panel_background.png"]);
+  });
 });

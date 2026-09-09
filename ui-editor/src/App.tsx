@@ -4,7 +4,7 @@ import { importPsd } from "./psdImport";
 import { renderOverlay, renderUi } from "./renderer";
 import { buildExportHtml } from "./exportHtml";
 import { buildEngineJson } from "./engineExport";
-import type { CtrlType, ImageBinding, InteractionTemplate, LayoutContext, ResourceSlot, ScaleMode, UINode, UIScene } from "./types";
+import type { CtrlType, ImageBinding, InteractionTemplate, LayoutContext, NineSliceCandidate, NineSliceMargins, ResourceSlot, ScaleMode, UINode, UIScene } from "./types";
 import Appbar from "./components/Toolbar";
 import Workbar, { type Workspace } from "./components/WorkspaceTabs";
 import Inspector from "./components/Inspector";
@@ -26,6 +26,8 @@ import type { ProjectAnalysis } from "./types";
 import { presetsForDesign, type DeviceShell } from "./devicePreview";
 import ResourceBindingWorkspace from "./components/ResourceBindingWorkspace";
 import SceneOverview from "./components/SceneOverview";
+import NineSliceWorkspace from "./components/SlicePanel";
+import { groupFromCandidate, scanNineSliceCandidates } from "./nineSlice";
 
 export interface ImportProgress {
   name: string;
@@ -44,6 +46,34 @@ function mapNodes(nodes: UINode[], id: string, fn: (n: UINode) => void): UINode[
     if (n.children) return { ...n, children: mapNodes(n.children, id, fn) };
     return n;
   });
+}
+function mapNodesByIds(nodes: UINode[], ids: Set<string>, fn: (n: UINode) => void): UINode[] {
+  return nodes.map((node) => {
+    const next = ids.has(node.id) ? { ...node } : node;
+    if (ids.has(node.id)) fn(next);
+    const children = next.children ? mapNodesByIds(next.children, ids, fn) : next.children;
+    const resources = next.resources
+      ? Object.fromEntries(Object.entries(next.resources).map(([slot, binding]) => {
+        if (!binding) return [slot, binding];
+        const sourceNode = mapNodesByIds([binding.sourceNode], ids, fn)[0];
+        return [slot, { ...binding, sourceNode, image: sourceNode.image ?? binding.image }];
+      })) as UINode["resources"]
+      : next.resources;
+    return { ...next, ...(children ? { children } : {}), ...(resources ? { resources } : {}) };
+  });
+}
+function findNodeIncludingResources(nodes: UINode[], id: string): UINode | null {
+  for (const node of nodes) {
+    if (node.id === id) return node;
+    const child = node.children ? findNodeIncludingResources(node.children, id) : null;
+    if (child) return child;
+    for (const binding of Object.values(node.resources ?? {})) {
+      if (!binding) continue;
+      const source = findNodeIncludingResources([binding.sourceNode], id);
+      if (source) return source;
+    }
+  }
+  return null;
 }
 function findPath(nodes: UINode[], id: string, prefix: number[] = []): number[] | null {
   for (let i = 0; i < nodes.length; i++) {
@@ -131,6 +161,7 @@ function cloneNode(n: UINode): UINode {
     ctrl: n.ctrl ? { ...n.ctrl } : undefined,
     text: n.text ? { ...n.text } : undefined,
     slice: n.slice ? { ...n.slice } : undefined,
+    nineSliceGroupId: n.nineSliceGroupId,
     progress: n.progress ? { ...n.progress } : undefined,
     list: n.list ? { ...n.list, padding: { ...n.list.padding } } : undefined,
     resources,
@@ -196,10 +227,20 @@ function buildNamingReference(scene: UIScene, manifest: ReturnType<typeof buildN
   return canvas.toDataURL("image/png");
 }
 
-// 撤销快照：保存完整树结构；canvas 引用保持不变，只复制节点配置。
-type Snapshot = UINode[];
-const snapScene = (s: UIScene): Snapshot => s.nodes.map(cloneNode);
-const applySnap = (snap: Snapshot): UINode[] => snap.map(cloneNode);
+// 撤销快照：保存九宫格配置和完整树结构；canvas 引用保持不变，只复制节点配置。
+type Snapshot = Pick<UIScene, "nodes" | "nineSliceCandidates" | "nineSliceGroups" | "useNineSlicePreview">;
+const snapScene = (s: UIScene): Snapshot => ({
+  nodes: s.nodes.map(cloneNode),
+  nineSliceCandidates: s.nineSliceCandidates?.map((candidate) => ({ ...candidate, memberNodeIds: [...candidate.memberNodeIds], suggestedMargins: { ...candidate.suggestedMargins } })),
+  nineSliceGroups: s.nineSliceGroups?.map((group) => ({ ...group, memberNodeIds: [...group.memberNodeIds], margins: { ...group.margins } })),
+  useNineSlicePreview: s.useNineSlicePreview,
+});
+const applySnap = (snap: Snapshot): Snapshot => ({
+  nodes: snap.nodes.map(cloneNode),
+  nineSliceCandidates: snap.nineSliceCandidates?.map((candidate) => ({ ...candidate, memberNodeIds: [...candidate.memberNodeIds], suggestedMargins: { ...candidate.suggestedMargins } })),
+  nineSliceGroups: snap.nineSliceGroups?.map((group) => ({ ...group, memberNodeIds: [...group.memberNodeIds], margins: { ...group.margins } })),
+  useNineSlicePreview: snap.useNineSlicePreview,
+});
 
 const HISTORY_LIMIT = 50; // 步数不用保留太多
 const STATUS_MESSAGE_DURATION_MS = 4000;
@@ -290,11 +331,11 @@ export default function App() {
       c.height = layoutCtx.viewportHeight * dpr;
       c.getContext("2d")!.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    renderUi(ui.getContext("2d")!, result);
+    renderUi(ui.getContext("2d")!, result, scene?.useNineSlicePreview ?? false);
     renderOverlay(ov.getContext("2d")!, result, layoutCtx, {
       selectedId, selectedIds, showGrid: false, showSafeArea, showDesignBorder,
     });
-  }, [result, layoutCtx, selectedId, selectedIds, showSafeArea, showDesignBorder]);
+  }, [result, layoutCtx, selectedId, selectedIds, showSafeArea, showDesignBorder, scene?.useNineSlicePreview]);
 
   // 画布 CSS 尺寸：contain 到窗口（切回图层 tab 时重新计算）
   useEffect(() => {
@@ -349,7 +390,7 @@ export default function App() {
 
   const createNewProject = useCallback(() => {
     if (dirty && !window.confirm("当前工程有未保存修改，确定放弃并新建工程吗？")) return;
-    const next: UIScene = { designWidth: 1280, designHeight: 720, nodes: [], sliceSources: [], interactionTemplates: [] };
+    const next: UIScene = { designWidth: 1280, designHeight: 720, nodes: [], sliceSources: [], interactionTemplates: [], nineSliceCandidates: [], nineSliceGroups: [], useNineSlicePreview: false };
     resetHistory();
     applyScene(next);
     setProjectPath(null);
@@ -886,6 +927,53 @@ export default function App() {
     mutateScene((s) => ({ ...s, interactionTemplates: t }));
   }, [mutateScene]);
 
+  const scanNineSlice = useCallback(() => {
+    const current = sceneRef.current;
+    if (!current) return;
+    const candidates = scanNineSliceCandidates(current, current.nineSliceCandidates ?? []);
+    mutateScene((s) => ({ ...s, nineSliceCandidates: candidates }));
+    setExportMsg(candidates.length ? `已发现 ${candidates.length} 组九宫格候选` : "没有发现适合九宫格的候选图片");
+  }, [mutateScene]);
+
+  const confirmNineSlice = useCallback((candidate: NineSliceCandidate, margins: NineSliceMargins) => {
+    const current = sceneRef.current;
+    if (!current) return;
+    const source = findNodeIncludingResources(current.nodes, candidate.sourceNodeId);
+    if (!source?.image) { setExportMsg("九宫格确认失败：公共源图已缺失"); return; }
+    const group = groupFromCandidate(candidate, margins);
+    const memberIds = new Set(candidate.memberNodeIds);
+    mutateScene((s) => ({
+      ...s,
+      nodes: mapNodesByIds(s.nodes, memberIds, (node) => {
+        node.nineSliceGroupId = group.id;
+        node.slice = { ...margins };
+        node.sliceImage = source.image;
+      }),
+      nineSliceCandidates: (s.nineSliceCandidates ?? []).map((item) => item.id === candidate.id
+        ? { ...item, status: "confirmed", suggestedMargins: { ...margins } }
+        : item),
+      nineSliceGroups: [...(s.nineSliceGroups ?? []).filter((item) => item.id !== group.id), group],
+    }));
+    setExportMsg(`已确认九宫格：${source.name}`);
+  }, [mutateScene]);
+
+  const skipNineSlice = useCallback((candidateId: string) => {
+    mutateScene((s) => ({ ...s, nineSliceCandidates: (s.nineSliceCandidates ?? []).map((item) => item.id === candidateId ? { ...item, status: "skipped" } : item) }));
+  }, [mutateScene]);
+
+  const restoreSkippedNineSlice = useCallback(() => {
+    mutateScene((s) => ({ ...s, nineSliceCandidates: (s.nineSliceCandidates ?? []).map((item) => item.status === "skipped" ? { ...item, status: "suggested" } : item) }));
+  }, [mutateScene]);
+
+  const addManualNineSlice = useCallback((candidate: NineSliceCandidate) => {
+    mutateScene((s) => ({ ...s, nineSliceCandidates: [...(s.nineSliceCandidates ?? []).filter((item) => item.id !== candidate.id), candidate] }));
+    setExportMsg("已创建手动九宫格候选，请确认边距");
+  }, [mutateScene]);
+
+  const toggleNineSlicePreview = useCallback(() => {
+    mutateScene((s) => ({ ...s, useNineSlicePreview: !s.useNineSlicePreview }));
+  }, [mutateScene]);
+
   /** 全局字体：一次性替换场景内所有文本节点的字体 */
   const applyGlobalFont = useCallback((font: string) => {
     mutateScene((s) => {
@@ -1123,7 +1211,7 @@ export default function App() {
     if (!snap) return;
     futureRef.current.push(snapScene(sceneRef.current!));
     const s = sceneRef.current!;
-    applyScene({ ...s, nodes: applySnap(snap) });
+    applyScene({ ...s, ...applySnap(snap) });
     setDirty(true);
     setHistLen(historyRef.current.length);
     setFutureLen(futureRef.current.length);
@@ -1134,7 +1222,7 @@ export default function App() {
     if (!snap) return;
     historyRef.current.push(snapScene(sceneRef.current!));
     const s = sceneRef.current!;
-    applyScene({ ...s, nodes: applySnap(snap) });
+    applyScene({ ...s, ...applySnap(snap) });
     setDirty(true);
     setHistLen(historyRef.current.length);
     setFutureLen(futureRef.current.length);
@@ -1157,7 +1245,7 @@ export default function App() {
   }, [workspace]);
 
   useEffect(() => {
-    setRightPanelTab(workspace === "bindings" ? "overview" : "properties");
+    setRightPanelTab(workspace === "bindings" || workspace === "preview" ? "overview" : "properties");
   }, [workspace]);
 
   useEffect(() => {
@@ -1381,6 +1469,20 @@ export default function App() {
             onUnbind={unbindResource}
             onResetComplete={resetBindingComplete}
           />
+        ) : workspace === "slice" ? (
+          <NineSliceWorkspace scene={scene ?? { designWidth: 1280, designHeight: 720, nodes: [] }}
+            onScan={scanNineSlice}
+            onConfirm={confirmNineSlice}
+            onSkip={skipNineSlice}
+            onRestoreSkipped={restoreSkippedNineSlice}
+            onManualCreate={addManualNineSlice}
+          />
+        ) : workspace === "preview" ? (
+          <section className="preview-workspace">
+            <header className="preview-workspace-head"><div><span className="workspace-kicker">VISUAL CHECK</span><h2>预览</h2><p>设备比例、安全区和九宫格效果只影响检查显示，不改变节点数据。</p></div>
+              <label className="preview-slice-toggle"><input type="checkbox" checked={scene?.useNineSlicePreview ?? false} onChange={toggleNineSlicePreview} />使用已确认的九宫格图</label></header>
+            <div className="canvas-wrap preview-workspace-canvas" ref={wrapRef}>{canvasStack}</div>
+          </section>
         ) : (
           <div className="canvas-wrap" ref={wrapRef}>
             {!showPreview && canvasStack}
@@ -1398,6 +1500,7 @@ export default function App() {
               viewport={{ width: layoutCtx?.viewportWidth ?? viewport.width, height: layoutCtx?.viewportHeight ?? viewport.height }}
               selectedId={selectedId}
               onLocate={locateNode}
+              useNineSlice={scene?.useNineSlicePreview}
             /> : <Inspector
               node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
               rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}

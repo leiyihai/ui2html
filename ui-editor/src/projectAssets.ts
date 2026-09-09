@@ -56,6 +56,20 @@ function uniqueAssetName(preferred: string, used: Set<string>): string {
   return candidate;
 }
 
+function findNode(nodes: UINode[], id: string): UINode | null {
+  for (const node of nodes) {
+    if (node.id === id) return node;
+    const nested = node.children ? findNode(node.children, id) : null;
+    if (nested) return nested;
+    for (const binding of Object.values(node.resources ?? {})) {
+      if (!binding) continue;
+      const source = findNode([binding.sourceNode], id);
+      if (source) return source;
+    }
+  }
+  return null;
+}
+
 /**
  * 为场景中的所有图片分配稳定的 `.assets` 相对路径，并收集待写入的 PNG。
  * 相同像素内容自动复用同一个资源文件；不同内容永不覆盖同名资源。
@@ -66,10 +80,23 @@ export function prepareSceneAssets(source: UIScene): PreparedProjectAssets {
     nodes: source.nodes.map(cloneNode),
     interactionTemplates: source.interactionTemplates?.map((template) => ({ ...template })),
     sliceSources: source.sliceSources,
+    nineSliceCandidates: source.nineSliceCandidates?.map((candidate) => ({
+      ...candidate,
+      memberNodeIds: [...candidate.memberNodeIds],
+      suggestedMargins: { ...candidate.suggestedMargins },
+    })),
+    nineSliceGroups: source.nineSliceGroups?.map((group) => ({
+      ...group,
+      memberNodeIds: [...group.memberNodeIds],
+      margins: { ...group.margins },
+    })),
+    useNineSlicePreview: source.useNineSlicePreview ?? false,
   };
   const assets: Record<string, string> = {};
   const used = new Set<string>();
   const contentPaths = new Map<string, string>();
+  const nineUsed = new Set<string>();
+  const nineContentPaths = new Map<string, string>();
 
   const visit = (node: UINode) => {
     if (node.image) {
@@ -90,5 +117,26 @@ export function prepareSceneAssets(source: UIScene): PreparedProjectAssets {
     }
   };
   scene.nodes.forEach(visit);
+
+  // 九宫格源图始终作为 `.assets/9` 的独立副本保存，不替换普通资源。
+  for (const group of scene.nineSliceGroups ?? []) {
+    const sourceNode = findNode(scene.nodes, group.sourceNodeId);
+    if (!sourceNode?.image) continue;
+    const dataUrl = sourceNode.image.toDataURL("image/png");
+    const existing = nineContentPaths.get(dataUrl);
+    const preferred = group.sourceAssetPath ?? `9/${preferredAssetName(sourceNode)}`;
+    const relative = existing ?? (group.sourceAssetPath ?? `9/${uniqueAssetName(preferred.replace(/^9\//, ""), nineUsed)}`);
+    group.sourceAssetPath = relative.replace(/\\/g, "/");
+    nineUsed.add(group.sourceAssetPath.toLocaleLowerCase());
+    nineContentPaths.set(dataUrl, group.sourceAssetPath);
+    assets[group.sourceAssetPath] = dataUrl;
+    for (const memberId of group.memberNodeIds) {
+      const node = findNode(scene.nodes, memberId);
+      if (!node) continue;
+      node.nineSliceGroupId = group.id;
+      node.slice = { ...group.margins };
+      node.sliceImage = sourceNode.image;
+    }
+  }
   return { scene, assets };
 }
