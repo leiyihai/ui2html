@@ -25,6 +25,12 @@ function area(rect: { x: number; y: number; width: number; height: number }): st
   return `{{0,${number(rect.x)}},{0,${number(rect.y)}},{0,${number(rect.width)}},{0,${number(rect.height)}}}`;
 }
 
+function alignmentFactor(value: number): number {
+  if (value >= 0.75) return 1;
+  if (value >= 0.25) return 0.5;
+  return 0;
+}
+
 function horizontalAlignment(value: number): string {
   if (value >= 0.75) return "Right";
   if (value >= 0.25) return "Centre";
@@ -66,6 +72,19 @@ function rectInParent(node: UINode, layout: LayoutResult): LayoutResult["nodes"]
   };
 }
 
+function areaForNode(node: UINode, layout: LayoutResult): string {
+  const entry = layout.nodes.find((item) => item.node.id === node.id);
+  const rect = rectInParent(node, layout);
+  const parent = entry?.parent;
+  if (!parent) return area(rect);
+
+  // The engine interprets Area's position relative to the declared alignment.
+  // Convert the editor's visual top-left position back to that offset first.
+  const x = rect.x - alignmentFactor(node.anchor.parentX) * parent.width;
+  const y = rect.y - alignmentFactor(node.anchor.parentY) * parent.height;
+  return area({ ...rect, x, y });
+}
+
 function addProperty(properties: { Name: string; Value: string }[], name: string, value: string | null | undefined) {
   if (value != null && value !== "") properties.push({ Name: name, Value: value });
 }
@@ -75,7 +94,7 @@ function buildWindow(node: UINode, layout: LayoutResult, warnings: string[], err
   if (!node.name.trim()) errors.push(`存在未命名节点（${node.id}）`);
 
   const properties: { Name: string; Value: string }[] = [
-    { Name: "Area", Value: area(rectInParent(node, layout)) },
+    { Name: "Area", Value: areaForNode(node, layout) },
     { Name: "HorizontalAlignment", Value: horizontalAlignment(node.anchor.parentX) },
     { Name: "VerticalAlignment", Value: verticalAlignment(node.anchor.parentY) },
   ];
@@ -126,7 +145,17 @@ function hasFullCanvasRect(node: UINode, scene: UIScene): boolean {
 export function buildEngineJson(scene: UIScene): EngineExportResult {
   const warnings: string[] = [];
   const errors: string[] = [];
-  const layout = new LayoutEngine().layoutScene(scene, {
+  const isCanvasRoot = scene.nodes.length === 1 && hasFullCanvasRect(scene.nodes[0], scene);
+  const layoutScene = isCanvasRoot
+    ? {
+      ...scene,
+      nodes: [{
+        ...scene.nodes[0],
+        anchor: { ...scene.nodes[0].anchor, parentX: 0, parentY: 0, selfX: 0, selfY: 0, offsetX: 0, offsetY: 0 },
+      }],
+    }
+    : scene;
+  const layout = new LayoutEngine().layoutScene(layoutScene, {
     designWidth: scene.designWidth,
     designHeight: scene.designHeight,
     viewportWidth: scene.designWidth,
@@ -136,7 +165,7 @@ export function buildEngineJson(scene: UIScene): EngineExportResult {
   });
 
   if (!scene.nodes.length) errors.push("工程没有可导出的节点");
-  const root = scene.nodes.length === 1 && hasFullCanvasRect(scene.nodes[0], scene)
+  const root = isCanvasRoot
     ? buildWindow(scene.nodes[0], layout, warnings, errors)
     : {
       Type: "Layout",

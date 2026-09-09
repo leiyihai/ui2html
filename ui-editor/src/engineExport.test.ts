@@ -51,6 +51,37 @@ describe("self-developed engine JSON export", () => {
     expect(windows[1].Property).toContainEqual({ Name: "ProgressImage", Value: "fill.png" });
   });
 
+  it("converts visual positions into offsets relative to engine alignment", () => {
+    const root = base("root", "root", "Layout", 0, 0, 1000, 600);
+    const centered = base("centered", "centered", "StaticText", 400, 250, 200, 100);
+    centered.anchor.parentX = 0.5;
+    centered.anchor.parentY = 0.5;
+    centered.anchor.offsetX = -100;
+    centered.anchor.offsetY = -50;
+    const rightBottom = base("right-bottom", "right_bottom", "StaticImage", 840, 510, 120, 60);
+    rightBottom.anchor.parentX = 1;
+    rightBottom.anchor.parentY = 1;
+    rightBottom.anchor.offsetX = -160;
+    rightBottom.anchor.offsetY = -90;
+    root.children = [centered, rightBottom];
+
+    const json = JSON.parse(buildEngineJson({ designWidth: 1000, designHeight: 600, nodes: [root] }).json);
+    expect(json.Dialog.Window.Window[0].Property[0]).toEqual({ Name: "Area", Value: "{{0,-100},{0,-50},{0,200},{0,100}}" });
+    expect(json.Dialog.Window.Window[1].Property[0]).toEqual({ Name: "Area", Value: "{{0,-160},{0,-90},{0,120},{0,60}}" });
+  });
+
+  it("anchors a full-canvas root at the design origin", () => {
+    const root = base("root", "root", "Layout", 0, 0, 1280, 720);
+    root.anchor.offsetX = 24;
+    root.anchor.offsetY = 18;
+    const child = base("child", "child", "StaticText", 20, 30, 100, 30);
+    root.children = [child];
+
+    const json = JSON.parse(buildEngineJson({ designWidth: 1280, designHeight: 720, nodes: [root] }).json);
+    expect(json.Dialog.Window.Property[0]).toEqual({ Name: "Area", Value: "{{0,0},{0,0},{0,1280},{0,720}}" });
+    expect(json.Dialog.Window.Window[0].Property[0]).toEqual({ Name: "Area", Value: "{{0,20},{0,30},{0,100},{0,30}}" });
+  });
+
   it("does not export the editor-only selected state", () => {
     const root = base("root", "root", "Layout", 0, 0, 100, 100);
     const radio = base("radio", "radio_tab", "RadioButton", 10, 10, 80, 30);

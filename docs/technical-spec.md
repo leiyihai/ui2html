@@ -34,6 +34,17 @@ PSD 中明确的中文控件类型文件夹优先，转换为对应英文控件�
 
 `.ui.json` 是编辑器工程事实来源，`.assets` 保存独立图片，`.analysis.json` 保存 AI 置信度、候选名和待确认记录，`.engine.json` 是当前自研引擎最终 JSON。工程不保存 PSD 实时依赖；PSD 路径和图层 ID不作为重新挂载依据。
 
+### 工具与文件术语规范
+
+为避免混淆，沟通和界面文案统一使用以下名称：
+
+- **引擎 UIEditor**：自研引擎附带的原生 UI 编辑器，路径为 `engine-core\res\client\tools\UIEditor.exe`，用于打开和检查最终引擎 JSON。
+- **UI2HTML 编辑器**：本项目正在开发的网页 UI 编辑器，位于 `ui-editor`，用于打开和编辑 `.ui.json` 工程。
+- **引擎 JSON**：自研引擎的原生 UI JSON，交给“引擎 UIEditor”打开。
+- **UI2HTML 工程**：以 `.ui.json` 结尾的工程文件，交给“UI2HTML 编辑器”打开。
+
+如果用户没有明确使用上述固定术语，或只说“UI 编辑器”“JSON”“打开”等无法判断目标时，必须先询问用户指的是“引擎 UIEditor”还是“UI2HTML 编辑器”，以及对应的“引擎 JSON”还是“UI2HTML 工程”，确认后再继续操作。
+
 导出前校验节点类型、必填字段、资源引用、槽位和名称。错误阻止导出，警告允许继续。第一版只支持当前自研引擎导出；九宫格、动画和高级适配布局暂不进入本次闭环。
 
 ### 验收重点
@@ -292,6 +303,24 @@ PSD 仅作为一次性或追加式导入源：导入时读取图层、文件夹�
 - 每个节点的 `Area` 根据当前最终视觉矩形生成；当前版本使用绝对设计像素，默认相对值为 `0`。
 - 图片槽位按控件类型映射到引擎字段；资源缺失、名称缺失或槽位引用失效时阻止导出并提示。
 - 导出前校验节点类型、名称、Area、资源引用和必需槽位；未实现的专有字段以警告提示。导出通过保存对话框或浏览器下载生成最终 JSON，不修改 PSD 和工程源文件。
+
+### 11. 引擎 UIEditor 资源加载验证结论（2026-09-09）
+
+- 引擎 UIEditor 的文件选择框允许选择任意路径，但打开 JSON 时，内部会取所选文件的纯文件名，再交给引擎资源管理器按资源名加载；因此桌面或其他未登记目录中的 JSON，即使在文件选择框中选中，也可能被打开成空白。
+- 引擎 JSON 必须放在当前 UIEditor 已登记的 `res/layout` 资源目录中；JSON 引用的 imageset JSON 和 PNG 必须放在同一运行配置已登记的 `res/imageset` 资源目录中。仅把 JSON 和图集放在同一个桌面文件夹，不足以完成引擎 UIEditor 验证。
+- 图集引用必须使用引擎格式 `set:<imageset>.json image:<frame>`，图集描述 JSON 使用引擎实际支持的 `frames`/`meta` 结构；不能直接把 UI2HTML 的独立图片路径写入引擎 JSON。
+- 新增或替换 imageset 后应重启引擎 UIEditor，再重新打开 JSON，避免资源位置列表或已加载资源缓存导致误判。
+- 当前验证已确认：将测试 JSON 放入启用游戏 `g1048` 的 `res/layout`，将配套图集放入 `g1048` 的 `res/imageset`，引擎 UIEditor 可以正确显示节点和视觉效果。该验证只产生测试资源文件，不修改引擎代码。
+- 当前验证中，节点的 `Area`、图片资源、`Text`、`HorizontalAlignment` 和 `VerticalAlignment` 均正确；文字节点仍可能出现视觉位置偏差，优先按字体度量差异排查，不直接判定为坐标转换错误。
+- 引擎 UIEditor 的文字 `Font` 属性是预设枚举（例如 `DEFAULT_HT16`、`HT20` 等），不能像 UI2HTML 编辑器一样直接指定字体文件和具体字号。因此后续导出需要增加 UI2HTML 字体信息到引擎预设字体的映射策略，并在字体不等价时允许文字位置存在可校正偏差；本轮只记录，不处理。
+- `position_test` 实测根节点 `layout_main_screen` 为 `Layout`，`Area={{0,0},{0,0},{0,1280},{0,720}}`，`HorizontalAlignment=Left`、`VerticalAlignment=Top`，`LayoutBackImage=set:position_test.json image:img_gray_background`；与导出结果一致。
+- `position_test` 实测图片节点 `img_left_region` 为 `StaticImage`，左上对齐，`Area={{0,33},{0,33},{0,267},{0,131}}`，`ImageName=set:position_test.json image:img_left_region_red`；与导出结果一致，其他通用默认属性无异常。
+- `position_test` 实测图片节点 `img_center_region` 为 `StaticImage`，`HorizontalAlignment=Centre`、`VerticalAlignment=Top`，`Area={{0,-21},{0,39},{0,213},{0,137}}`，`ImageName=set:position_test.json image:img_center_region_green`；与导出结果一致。
+- `position_test` 实测图片节点 `img_right_region` 实际为右上布局（此前口头描述的“右下”不作为测试预期），`HorizontalAlignment=Right`、`VerticalAlignment=Top`，`Area={{0,-42},{0,30},{0,192},{0,128}}`，`ImageName=set:position_test.json image:img_right_region_blue`；与导出结果一致。
+- `position_test` 实测层级为：`layout_main_screen` 下包含 `layout_center_content_panel`（子节点 `txt_center_region_text`）、`btn_primary_action`（子节点 `txt_button_label`）、`img_left_region`、`img_center_region` 和 `img_right_region`；该层级与导出结果一致。嵌套 Layout/文字的属性数据仍作为后续截图核对项。
+- `position_test` 实测嵌套 Layout `layout_center_content_panel` 的 `Area={{0,-16},{0,-12},{0,346},{0,156}}`，`HorizontalAlignment=Centre`、`VerticalAlignment=Centre`，`LayoutBackImage=set:position_test.json image:img_purple_content_background`；与导出结果一致。
+- `position_test` 实测文字节点 `txt_center_region_text` 的 `Area={{0,104},{0,0},{0,258},{0,26}}`，`HorizontalAlignment=Left`、`VerticalAlignment=Centre`，`Text=中间区域文本`，文字对齐为左上且换行关闭；位置、内容和对齐与导出结果一致。UIEditor 属性面板显示 `Font=DEFAULT_HT16`，而测试导出 JSON 原始写入的是 `NotoSansHans-Black`，表明引擎可能将未注册/不支持的字体名回退为默认预设字体；该字体回退是文字视觉位置偏差的重点排查方向。
+- 后续实现“导出自研引擎 JSON”时，导出适配层需要额外提供资源部署/验证说明或可选的测试 staging 包，明确区分“桌面导出文件”和“引擎资源目录中的可加载文件”；本结论本轮只记录，不改变现有导出行为。
 
 ## Acceptance Criteria
 
