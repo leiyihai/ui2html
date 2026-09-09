@@ -1,7 +1,8 @@
 import type { ImageBinding, InteractionTemplate, NineSliceCandidate, NineSliceGroup, ProjectAnalysis, ResourceSlot, ScaleMode, UIScene, UINode } from "./types";
+import { ensureRootLayout } from "./layoutValues";
 
-/** 独立 UI 工程格式。版本 3 起不再保存 PSD 图层身份或依赖 PSD 重新挂载图片。 */
-export const SCENE_PERSISTENCE_VERSION = 3;
+/** 独立 UI 工程格式。版本 3 起不再保存 PSD 图层身份或依赖 PSD 重新挂载图片。版本 4 增加布局表达式和九宫格生成资源。 */
+export const SCENE_PERSISTENCE_VERSION = 4;
 
 export interface SavedImageBinding {
   id: string;
@@ -28,6 +29,7 @@ export interface SavedNode {
   resources?: Partial<Record<ResourceSlot, SavedImageBinding>>;
   resourceBindingComplete?: boolean;
   designRect: UINode["designRect"];
+  layout?: UINode["layout"];
   anchor: UINode["anchor"];
   scale: UINode["scale"];
   rotation: number;
@@ -47,7 +49,7 @@ export interface SavedProjectView {
 }
 
 export interface SavedScene {
-  schemaVersion: typeof SCENE_PERSISTENCE_VERSION;
+  schemaVersion: number;
   designWidth: number;
   designHeight: number;
   nodes: SavedNode[];
@@ -65,7 +67,7 @@ function serializeNode(node: UINode, includeResources = true): SavedNode {
     ...(node.assetPath ? { assetPath: node.assetPath } : {}),
     ...(node.assetName ? { assetName: node.assetName } : {}),
     ...(node.naming ? { naming: { ...node.naming } } : {}),
-    ...(node.text ? { text: { ...node.text } } : {}),
+    ...(node.text ? { text: { ...node.text, explicitFields: node.text.explicitFields ? [...node.text.explicitFields] : undefined } } : {}),
     ...(node.children ? { children: node.children.map((child) => serializeNode(child)) } : {}),
     ...(node.list ? { list: { ...node.list, padding: { ...node.list.padding } } } : {}),
     ...(node.progress ? { progress: { ...node.progress } } : {}),
@@ -74,6 +76,10 @@ function serializeNode(node: UINode, includeResources = true): SavedNode {
     ...(node.ctrl ? { ctrl: { ...node.ctrl } } : {}),
     ...(node.resourceBindingComplete ? { resourceBindingComplete: true } : {}),
     designRect: { ...node.designRect },
+    ...(node.layout ? { layout: {
+      x: { ...node.layout.x }, y: { ...node.layout.y },
+      width: { ...node.layout.width }, height: { ...node.layout.height },
+    } } : {}),
     anchor: { ...node.anchor },
     scale: { ...node.scale },
     rotation: node.rotation,
@@ -173,7 +179,7 @@ function hydrateNode(saved: SavedNode, assets: Map<string, HTMLCanvasElement>, m
     ...(saved.assetPath ? { assetPath: saved.assetPath } : {}),
     ...(saved.assetName ? { assetName: saved.assetName } : {}),
     ...(saved.naming ? { naming: { ...saved.naming } } : {}),
-    ...(saved.text ? { text: { ...saved.text } } : {}),
+    ...(saved.text ? { text: { ...saved.text, explicitFields: saved.text.explicitFields ? [...saved.text.explicitFields] : undefined } } : {}),
     ...(saved.children ? { children: saved.children.map((child) => hydrateNode(child, assets, missing)) } : {}),
     ...(saved.list ? { list: { ...saved.list, padding: { ...saved.list.padding } } } : {}),
     ...(saved.progress ? { progress: { ...saved.progress } } : {}),
@@ -183,6 +189,10 @@ function hydrateNode(saved: SavedNode, assets: Map<string, HTMLCanvasElement>, m
     ...(saved.resourceBindingComplete ? { resourceBindingComplete: true } : {}),
     ...(resources.length ? { resources: Object.fromEntries(resources) as UINode["resources"] } : {}),
     designRect: { ...saved.designRect },
+    ...(saved.layout ? { layout: {
+      x: { ...saved.layout.x }, y: { ...saved.layout.y },
+      width: { ...saved.layout.width }, height: { ...saved.layout.height },
+    } } : {}),
     anchor: { ...saved.anchor },
     scale: { ...saved.scale },
     rotation: saved.rotation,
@@ -212,8 +222,11 @@ function applyNineSliceRuntime(nodes: UINode[], groups: NineSliceGroup[], assets
   visit(nodes);
   for (const group of groups) {
     const sourceNode = byId.get(group.sourceNodeId);
-    const sourceImage = (group.sourceAssetPath ? assets.get(group.sourceAssetPath) : undefined) ?? sourceNode?.image ?? null;
+    const sourceImage = (group.generatedAssetPath ? assets.get(group.generatedAssetPath) : undefined)
+      ?? (group.sourceAssetPath ? assets.get(group.sourceAssetPath) : undefined)
+      ?? sourceNode?.image ?? null;
     if (group.sourceAssetPath && !assets.has(group.sourceAssetPath)) missing.push(group.sourceAssetPath);
+    if (group.generatedAssetPath && !assets.has(group.generatedAssetPath)) missing.push(group.generatedAssetPath);
     for (const memberId of group.memberNodeIds) {
       const node = byId.get(memberId);
       if (!node) continue;
@@ -226,11 +239,16 @@ function applyNineSliceRuntime(nodes: UINode[], groups: NineSliceGroup[], assets
 
 /** 从 `.ui.json` 和同名 `.assets` 中恢复场景。 */
 export function restoreSceneSnapshot(saved: SavedScene, assets: Map<string, HTMLCanvasElement>): { scene: UIScene; missingAssets: string[] } {
-  if (saved.schemaVersion !== SCENE_PERSISTENCE_VERSION) {
+  if (saved.schemaVersion !== 3 && saved.schemaVersion !== SCENE_PERSISTENCE_VERSION) {
     throw new Error(`不支持的工程版本：${String(saved.schemaVersion)}，当前版本为 ${SCENE_PERSISTENCE_VERSION}`);
   }
   const missingAssets: string[] = [];
   const nodes = saved.nodes.map((node) => hydrateNode(node, assets, missingAssets));
+  if (nodes.length === 1 && nodes[0].ctrl?.type === "Layout"
+    && nodes[0].designRect.x === 0 && nodes[0].designRect.y === 0
+    && nodes[0].designRect.width === saved.designWidth && nodes[0].designRect.height === saved.designHeight) {
+    ensureRootLayout(nodes[0], saved.designWidth, saved.designHeight);
+  }
   const nineSliceGroups = saved.nineSliceGroups?.map((item) => ({
     ...item,
     memberNodeIds: [...item.memberNodeIds],
@@ -271,6 +289,7 @@ export function collectSavedAssetPaths(saved: SavedScene): string[] {
   visit(saved.nodes);
   for (const group of saved.nineSliceGroups ?? []) {
     if (group.sourceAssetPath) paths.add(group.sourceAssetPath);
+    if (group.generatedAssetPath) paths.add(group.generatedAssetPath);
   }
   return [...paths];
 }

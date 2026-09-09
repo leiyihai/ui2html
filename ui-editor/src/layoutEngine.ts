@@ -11,6 +11,7 @@
 
 import type { LayoutContext, LayoutResult, UINode } from "./types";
 import { LINE_HEIGHT } from "./textMeasure";
+import { resolveLayoutValue } from "./layoutValues";
 
 export class LayoutEngine {
   layoutScene(scene: { designWidth: number; designHeight: number; nodes: UINode[] }, ctx: LayoutContext): LayoutResult {
@@ -45,22 +46,26 @@ export class LayoutEngine {
   /** 左上角定位（self 锚点恒为 0 的原点，list 容器/普通节点共用） */
   private anchorOrigin(n: UINode, scaleX: number, scaleY: number, lx: number, ly: number,
     ctx: LayoutContext, parentRect?: LayoutResult["nodes"][0]["rect"]) {
+    const parentDesignWidth = parentRect ? parentRect.width / scaleX : ctx.designWidth;
+    const parentDesignHeight = parentRect ? parentRect.height / scaleY : ctx.designHeight;
+    const offsetX = resolveLayoutValue(n.layout?.x, parentDesignWidth, n.anchor.offsetX);
+    const offsetY = resolveLayoutValue(n.layout?.y, parentDesignHeight, n.anchor.offsetY);
     if (parentRect) return {
-      x: parentRect.x + n.anchor.parentX * parentRect.width + n.anchor.offsetX * scaleX,
-      y: parentRect.y + n.anchor.parentY * parentRect.height + n.anchor.offsetY * scaleY,
+      x: parentRect.x + n.anchor.parentX * parentRect.width + offsetX * scaleX,
+      y: parentRect.y + n.anchor.parentY * parentRect.height + offsetY * scaleY,
     };
     if (n.anchor.safeArea) {
       const sw = ctx.viewportWidth - ctx.safeArea.left - ctx.safeArea.right;
       const sh = ctx.viewportHeight - ctx.safeArea.top - ctx.safeArea.bottom;
-      return { x: ctx.safeArea.left + n.anchor.parentX * sw + n.anchor.offsetX * scaleX, y: ctx.safeArea.top + n.anchor.parentY * sh + n.anchor.offsetY * scaleY };
+      return { x: ctx.safeArea.left + n.anchor.parentX * sw + offsetX * scaleX, y: ctx.safeArea.top + n.anchor.parentY * sh + offsetY * scaleY };
     }
     if (ctx.scaleMode === "cover") return {
-      x: n.anchor.parentX * ctx.viewportWidth + n.anchor.offsetX * scaleX,
-      y: n.anchor.parentY * ctx.viewportHeight + n.anchor.offsetY * scaleY,
+      x: n.anchor.parentX * ctx.viewportWidth + offsetX * scaleX,
+      y: n.anchor.parentY * ctx.viewportHeight + offsetY * scaleY,
     };
     return {
-      x: lx + n.anchor.parentX * ctx.designWidth * scaleX + n.anchor.offsetX * scaleX,
-      y: ly + n.anchor.parentY * ctx.designHeight * scaleY + n.anchor.offsetY * scaleY,
+      x: lx + n.anchor.parentX * ctx.designWidth * scaleX + offsetX * scaleX,
+      y: ly + n.anchor.parentY * ctx.designHeight * scaleY + offsetY * scaleY,
     };
   }
 
@@ -73,13 +78,24 @@ export class LayoutEngine {
     const effVisible = n.visible && parentVisible;
     const effOpacity = n.opacity * parentOpacity;
     // li 项按 PSD 视觉位置排序（水平按 x、垂直/格子按 y），重排后保持原视觉顺序
-    let lis = n.children!.filter((c) => c.children && c.name.toLowerCase() !== "list");
+    const previewItem = cfg.previewItemId
+      ? n.children!.find((child) => child.id === cfg.previewItemId)
+      : undefined;
+    let lis = previewItem
+      ? Array.from({ length: Math.max(1, Math.min(99, Math.round(cfg.previewItemCount ?? 1))) }, () => previewItem)
+      : n.children!.filter((c) => c.children && c.name.toLowerCase() !== "list");
     lis = [...lis].sort((a, b) => cfg.type === "vertical"
       ? a.designRect.y - b.designRect.y
       : cfg.type === "grid"
         ? a.designRect.y - b.designRect.y || a.designRect.x - b.designRect.x
         : a.designRect.x - b.designRect.x);
-    const others = n.children!.filter((c) => !c.children || c.name.toLowerCase() === "list");
+    const others = previewItem
+      ? n.children!.filter((child) => child.id !== previewItem.id)
+      : n.children!.filter((c) => !c.children || c.name.toLowerCase() === "list");
+    const parentDesignWidth = parentRect ? parentRect.width / scaleX : ctx.designWidth;
+    const parentDesignHeight = parentRect ? parentRect.height / scaleY : ctx.designHeight;
+    const listWidth = resolveLayoutValue(n.layout?.width, parentDesignWidth, n.designRect.width);
+    const listHeight = resolveLayoutValue(n.layout?.height, parentDesignHeight, n.designRect.height);
     const liDims = lis.map((li) => ({ w: li.designRect.width * scaleX, h: li.designRect.height * scaleY }));
     const pad = cfg.padding;
     const spX = cfg.spacing * scaleX, spY = cfg.spacing * scaleY;
@@ -87,8 +103,8 @@ export class LayoutEngine {
     const origin = this.anchorOrigin(n, scaleX, scaleY, lx, ly, ctx, parentRect);
     const rect: LayoutResult["nodes"][0]["rect"] = {
       x: origin.x, y: origin.y,
-      width: n.designRect.width * scaleX,
-      height: n.designRect.height * scaleY,
+      width: listWidth * scaleX,
+      height: listHeight * scaleY,
     };
     const out: LayoutResult["nodes"] = [{ node: n, rect, visible: effVisible, opacity: effOpacity }];
     let accX = pad.left * scaleX, accY = pad.top * scaleY;
@@ -135,38 +151,44 @@ export class LayoutEngine {
     } else {
       // auto 模式文本：单行，框宽 = 尺寸宽度（显示裁切边界，内容超出裁切）；其他节点用 designRect
       const isAutoText = n.text?.mode === "auto";
-      const w = dw * scaleX;
-      const h = isAutoText ? n.text!.fontSize * LINE_HEIGHT * scaleY : dh * scaleY;
+      const parentDesignWidth = parentRect ? parentRect.width / scaleX : ctx.designWidth;
+      const parentDesignHeight = parentRect ? parentRect.height / scaleY : ctx.designHeight;
+      const resolvedWidth = resolveLayoutValue(n.layout?.width, parentDesignWidth, dw);
+      const resolvedHeight = resolveLayoutValue(n.layout?.height, parentDesignHeight, dh);
+      const offsetX = resolveLayoutValue(n.layout?.x, parentDesignWidth, n.anchor.offsetX);
+      const offsetY = resolveLayoutValue(n.layout?.y, parentDesignHeight, n.anchor.offsetY);
+      const w = resolvedWidth * scaleX;
+      const h = isAutoText ? n.text!.fontSize * LINE_HEIGHT * scaleY : resolvedHeight * scaleY;
       if (n.adaptation.mode === "scale") {
         rect = parentRect
-          ? { x: parentRect.x + n.designRect.x * scaleX, y: parentRect.y + n.designRect.y * scaleY, width: w, height: h }
-          : { x: lx + n.designRect.x * scaleX, y: ly + n.designRect.y * scaleY, width: w, height: h };
+          ? { x: parentRect.x + offsetX * scaleX, y: parentRect.y + offsetY * scaleY, width: w, height: h }
+          : { x: lx + offsetX * scaleX, y: ly + offsetY * scaleY, width: w, height: h };
       } else if (parentRect) {
         // 组内子节点：锚点参照父组矩形
         rect = {
-          x: parentRect.x + n.anchor.parentX * parentRect.width + n.anchor.offsetX * scaleX - n.anchor.selfX * w,
-          y: parentRect.y + n.anchor.parentY * parentRect.height + n.anchor.offsetY * scaleY - n.anchor.selfY * h,
+          x: parentRect.x + n.anchor.parentX * parentRect.width + offsetX * scaleX - n.anchor.selfX * w,
+          y: parentRect.y + n.anchor.parentY * parentRect.height + offsetY * scaleY - n.anchor.selfY * h,
           width: w, height: h,
         };
       } else if (n.anchor.safeArea) {
         const sw = ctx.viewportWidth - ctx.safeArea.left - ctx.safeArea.right;
         const sh = ctx.viewportHeight - ctx.safeArea.top - ctx.safeArea.bottom;
         rect = {
-          x: ctx.safeArea.left + n.anchor.parentX * sw + n.anchor.offsetX * scaleX - n.anchor.selfX * w,
-          y: ctx.safeArea.top + n.anchor.parentY * sh + n.anchor.offsetY * scaleY - n.anchor.selfY * h,
+          x: ctx.safeArea.left + n.anchor.parentX * sw + offsetX * scaleX - n.anchor.selfX * w,
+          y: ctx.safeArea.top + n.anchor.parentY * sh + offsetY * scaleY - n.anchor.selfY * h,
           width: w, height: h,
         };
       } else if (ctx.scaleMode === "cover") {
         // cover：锚点参照视口——贴边元素跟随屏幕边缘（等比不变形，无 letterbox 留边）
         rect = {
-          x: n.anchor.parentX * ctx.viewportWidth + n.anchor.offsetX * scaleX - n.anchor.selfX * w,
-          y: n.anchor.parentY * ctx.viewportHeight + n.anchor.offsetY * scaleY - n.anchor.selfY * h,
+          x: n.anchor.parentX * ctx.viewportWidth + offsetX * scaleX - n.anchor.selfX * w,
+          y: n.anchor.parentY * ctx.viewportHeight + offsetY * scaleY - n.anchor.selfY * h,
           width: w, height: h,
         };
       } else {
         rect = {
-          x: lx + n.anchor.parentX * ctx.designWidth * scaleX + n.anchor.offsetX * scaleX - n.anchor.selfX * w,
-          y: ly + n.anchor.parentY * ctx.designHeight * scaleY + n.anchor.offsetY * scaleY - n.anchor.selfY * h,
+          x: lx + n.anchor.parentX * ctx.designWidth * scaleX + offsetX * scaleX - n.anchor.selfX * w,
+          y: ly + n.anchor.parentY * ctx.designHeight * scaleY + offsetY * scaleY - n.anchor.selfY * h,
           width: w, height: h,
         };
       }

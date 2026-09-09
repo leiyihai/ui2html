@@ -81,6 +81,61 @@ export function suggestedMargins(image: HTMLCanvasElement): NineSliceMargins {
   };
 }
 
+function stretchVariation(image: HTMLCanvasElement, margins: NineSliceMargins): number {
+  try {
+    const context = image.getContext("2d", { willReadFrequently: true });
+    if (!context) return 0;
+    const left = Math.max(0, Math.min(image.width - 1, margins.left));
+    const top = Math.max(0, Math.min(image.height - 1, margins.top));
+    const width = Math.max(1, image.width - margins.left - margins.right);
+    const height = Math.max(1, image.height - margins.top - margins.bottom);
+    const pixels = context.getImageData(left, top, width, height).data;
+    let count = 0, mean = 0, square = 0;
+    for (let i = 0; i < pixels.length; i += 4) {
+      const value = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3;
+      count++;
+      mean += value;
+      square += value * value;
+    }
+    if (!count) return 0;
+    mean /= count;
+    return Math.sqrt(Math.max(0, square / count - mean * mean)) / 128;
+  } catch {
+    return 0;
+  }
+}
+
+/** 生成用于引擎九宫格的紧凑源图；原图边角保持不变，中间按变化程度保留 1px 或约 25%。 */
+export function generateNineSliceImage(image: HTMLCanvasElement, margins: NineSliceMargins): HTMLCanvasElement | null {
+  if (typeof document === "undefined" || !image.width || !image.height) return null;
+  const left = Math.max(0, Math.min(margins.left, image.width - 1));
+  const right = Math.max(0, Math.min(margins.right, image.width - left - 1));
+  const top = Math.max(0, Math.min(margins.top, image.height - 1));
+  const bottom = Math.max(0, Math.min(margins.bottom, image.height - top - 1));
+  const centerWidth = Math.max(1, image.width - left - right);
+  const centerHeight = Math.max(1, image.height - top - bottom);
+  const variation = stretchVariation(image, { left, right, top, bottom });
+  const centerScale = variation > 0.12 ? 0.25 : 1 / centerWidth;
+  const centerScaleY = variation > 0.12 ? 0.25 : 1 / centerHeight;
+  const targetWidth = left + Math.max(1, Math.round(centerWidth * centerScale)) + right;
+  const targetHeight = top + Math.max(1, Math.round(centerHeight * centerScaleY)) + bottom;
+  const output = document.createElement("canvas");
+  output.width = targetWidth;
+  output.height = targetHeight;
+  const context = output.getContext("2d");
+  if (!context) return null;
+  const sx = [0, left, image.width - right, image.width];
+  const sy = [0, top, image.height - bottom, image.height];
+  const dx = [0, left, targetWidth - right, targetWidth];
+  const dy = [0, top, targetHeight - bottom, targetHeight];
+  for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) {
+    const sw = sx[col + 1] - sx[col], sh = sy[row + 1] - sy[row];
+    const dw = dx[col + 1] - dx[col], dh = dy[row + 1] - dy[row];
+    if (sw > 0 && sh > 0 && dw > 0 && dh > 0) context.drawImage(image, sx[col], sy[row], sw, sh, dx[col], dy[row], dw, dh);
+  }
+  return output;
+}
+
 function stableId(signature: string, ids: string[]): string {
   let hash = 2166136261;
   for (const char of `${signature}|${ids.join(",")}`) {

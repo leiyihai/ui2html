@@ -8,6 +8,7 @@ import type { CtrlType, UINode, UIScene } from "./types";
 import { defaultFolderCtrlType } from "./controlType";
 import { ENGINE_EDITOR_FONT_FAMILY, normalizeEditorFontSize } from "./engineFont";
 import { cropImportedSceneImages } from "./imageImport";
+import { ensureRootLayout } from "./layoutValues";
 
 let layerIdSeq = 1;
 
@@ -51,6 +52,17 @@ function textColor(layer: Layer): string {
     return `rgba(${Math.round(v.r)},${Math.round(v.g)},${Math.round(v.b)},${v.a})`;
   }
   return `rgb(${Math.round(v.r)},${Math.round(v.g)},${Math.round(v.b)})`;
+}
+
+function listConfigFor(type: CtrlType) {
+  if (type !== "List" && type !== "ListHorizontal" && type !== "GridView") return undefined;
+  return {
+    type: type === "GridView" ? "grid" as const : type === "ListHorizontal" ? "horizontal" as const : "vertical" as const,
+    spacing: 0,
+    padding: { left: 0, right: 0, top: 0, bottom: 0 },
+    columns: 3,
+    sizeConfirmed: false,
+  };
 }
 
 /** 检测启用的图层样式（投影/内阴影/发光/描边等），返回名称列表 */
@@ -116,8 +128,9 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
     const isFullscreen = merged.x <= 0 && merged.y <= 0 && merged.w >= refW && merged.h >= refH;
     // 锚点推断必须用「相对父组原点」的坐标（文档坐标 - baseX/baseY），否则组内定位跑偏
     const { px, py, ox, oy } = inferAnchor(merged.x - baseX, merged.y - baseY, merged.w, merged.h, refW, refH);
+    const ctrlType = defaultFolderCtrlType(name, isRoot);
     return {
-      ...base, image: null, children, ctrl: { type: defaultFolderCtrlType(name, isRoot) }, zIndex: i,
+      ...base, image: null, children, ctrl: { type: ctrlType }, list: listConfigFor(ctrlType), zIndex: i,
       designRect: { x: merged.x - baseX, y: merged.y - baseY, width: merged.w, height: merged.h },
       anchor: { parentX: px, parentY: py, selfX: 0, selfY: 0, offsetX: ox, offsetY: oy, safeArea: false },
       adaptation: { mode: isFullscreen ? "stretch" : "anchor" },
@@ -152,6 +165,18 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
         font: ENGINE_EDITOR_FONT_FAMILY,
         mode: "auto", // 默认单行随内容延伸，可在属性面板切换
         minFontSize: Math.max(6, Math.round(fontSize * 0.5)),
+        textColor: textColor(layer),
+        horizontalAlign: "center",
+        verticalAlign: "center",
+        wordWrap: false,
+        selfAdaptHeight: false,
+        shadow: false,
+        shadowColor: "#000000",
+        border: false,
+        borderColor: "#000000",
+        scale: 1,
+        lineExtraSpace: 0,
+        autoOmission: false,
       }, zIndex: i,
       designRect: { x: x - baseX, y: y - baseY, width: w, height: h },
       anchor: { parentX: px, parentY: py, selfX: 0, selfY: 0, offsetX: ox, offsetY: oy, safeArea: false },
@@ -214,5 +239,9 @@ export function importPsd(buffer: ArrayBuffer): { scene: UIScene; warnings: stri
     }
   }
   const scene = cropImportedSceneImages({ designWidth: psd.width, designHeight: psd.height, nodes, sliceSources: [] }, warnings);
+  if (scene.nodes.length === 1 && scene.nodes[0].ctrl?.type === "Layout"
+    && scene.nodes[0].designRect.width === psd.width && scene.nodes[0].designRect.height === psd.height) {
+    ensureRootLayout(scene.nodes[0], psd.width, psd.height);
+  }
   return { scene, warnings };
 }

@@ -174,7 +174,7 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
       ctx.drawImage(node.image, rect.x, rect.y, rect.width, rect.height);
     } else if (node.text) {
       const t = node.text;
-      const scale = Math.min(result.scaleX, result.scaleY);
+      const scale = Math.min(result.scaleX, result.scaleY) * (t.scale ?? 1);
       const fam = `"${t.font || ENGINE_EDITOR_FONT_FAMILY}", `;
       ctx.save();
       // 所有模式都裁剪到 rect：auto 内容超出尺寸宽度时裁切，fixed/fit 限框内
@@ -187,14 +187,36 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
           rect.width / result.scaleX, rect.height / result.scaleY);
       }
       ctx.font = `${fs * scale}px ${fam}"PingFang SC", "Microsoft YaHei", sans-serif`;
-      ctx.fillStyle = t.color;
-      ctx.textAlign = "center";
+      ctx.fillStyle = t.textColor ?? t.color;
+      ctx.textAlign = t.horizontalAlign === "left" ? "left" : t.horizontalAlign === "right" ? "right" : "center";
       ctx.textBaseline = "middle";
-      const lines = t.mode === "auto" ? [t.content] : wrapText(t.content, fs, rect.width / result.scaleX);
+      const lines = t.mode === "auto" || t.wordWrap === false ? [t.content] : wrapText(t.content, fs, rect.width / result.scaleX);
       const lineHeight = fs * LINE_HEIGHT * result.scaleY;
-      const firstLineCenter = rect.y + (rect.height - lineHeight * lines.length) / 2 + lineHeight / 2;
+      const contentHeight = lineHeight * lines.length + (lines.length - 1) * (t.lineExtraSpace ?? 0) * result.scaleY;
+      const firstLineCenter = t.verticalAlign === "top"
+        ? rect.y + lineHeight / 2
+        : t.verticalAlign === "bottom"
+          ? rect.y + rect.height - contentHeight + lineHeight / 2
+          : rect.y + (rect.height - contentHeight) / 2 + lineHeight / 2;
+      const textX = t.horizontalAlign === "left" ? rect.x : t.horizontalAlign === "right" ? rect.x + rect.width : rect.x + rect.width / 2;
       for (let li = 0; li < lines.length; li++) {
-        ctx.fillText(lines[li], rect.x + rect.width / 2, firstLineCenter + li * lineHeight);
+        const y = firstLineCenter + li * (lineHeight + (t.lineExtraSpace ?? 0) * result.scaleY);
+        if (t.shadow) {
+          ctx.save();
+          ctx.fillStyle = t.shadowColor ?? "#000000";
+          ctx.globalAlpha *= 0.65;
+          ctx.fillText(lines[li], textX + 2 * scale, y + 2 * scale);
+          ctx.restore();
+        }
+        if (t.border) {
+          ctx.save();
+          ctx.strokeStyle = t.borderColor ?? "#000000";
+          ctx.lineWidth = Math.max(1, 2 * scale);
+          ctx.strokeText(lines[li], textX, y);
+          ctx.restore();
+        }
+        ctx.fillStyle = t.textColor ?? t.color;
+        ctx.fillText(lines[li], textX, y);
       }
       ctx.restore();
     }

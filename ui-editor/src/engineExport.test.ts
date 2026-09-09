@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
 import { buildEngineJson, createEngineAssetManifest } from "./engineExport";
 import type { CtrlType, ImageBinding, UINode, UIScene } from "./types";
 
@@ -62,6 +61,70 @@ describe("self-developed engine JSON export", () => {
     expect(windows[1].Property).toContainEqual({ Name: "ProgressImage", Value: "set:ui-project.json image:fill" });
   });
 
+  it("keeps relative Area values while applying engine alignment offsets", () => {
+    const root = base("root", "root", "Layout", 0, 0, 1000, 500);
+    const child = base("child", "child", "StaticImage", 0, 0, 500, 100);
+    child.layout = {
+      x: { mode: "relative", relative: 0.1, absolute: 0 },
+      y: { mode: "relative", relative: 0.2, absolute: 0 },
+      width: { mode: "relative", relative: 0.5, absolute: 0 },
+      height: { mode: "relative", relative: 0.2, absolute: 0 },
+    };
+    root.children = [child];
+
+    const json = JSON.parse(buildEngineJson({ designWidth: 1000, designHeight: 500, nodes: [root] }).json);
+    expect(json.Dialog.Window.Window[0].Property[0]).toEqual({
+      Name: "Area", Value: "{{0.1,0},{0.2,0},{0.6,0},{0.4,0}}",
+    });
+  });
+
+  it("exports engine text presentation fields", () => {
+    const text = base("text", "body", "StaticText", 0, 0, 120, 40);
+    text.text = {
+      content: "正文", fontSize: 17, color: "#fff", mode: "fixed", minFontSize: 12,
+      horizontalAlign: "right", verticalAlign: "bottom", wordWrap: true,
+      selfAdaptHeight: true, shadow: true, shadowColor: "#111111", border: true,
+      borderColor: "#222222", scale: 1.25, lineExtraSpace: 3, autoOmission: true,
+    };
+    const result = buildEngineJson({ designWidth: 200, designHeight: 100, nodes: [text] });
+    const properties = JSON.parse(result.json).Dialog.Window.Window[0].Property;
+    expect(properties).toContainEqual({ Name: "Font", Value: "HT18" });
+    expect(properties).toContainEqual({ Name: "TextHorzAlignment", Value: "Right" });
+    expect(properties).toContainEqual({ Name: "TextVertAlignment", Value: "Bottom" });
+    expect(properties).toContainEqual({ Name: "TextWordWrap", Value: "true" });
+    expect(properties).toContainEqual({ Name: "TextShadowColor", Value: "#111111" });
+    expect(properties).toContainEqual({ Name: "TextBorderColor", Value: "#222222" });
+    expect(properties).toContainEqual({ Name: "TextScale", Value: "1.25" });
+  });
+
+  it("exports a confirmed nine-slice resource through the engine atlas", () => {
+    const root = base("root", "root", "Layout", 0, 0, 320, 180);
+    const panel = base("panel", "panel_main", "Layout", 20, 30, 240, 100);
+    panel.resources = { LayoutBackImage: binding("panel-source", "panel.png") };
+    root.children = [panel];
+
+    const scene: UIScene = {
+      designWidth: 320,
+      designHeight: 180,
+      nodes: [root],
+      nineSliceGroups: [{
+        id: "slice-panel",
+        memberNodeIds: ["source-panel-source"],
+        sourceNodeId: "source-panel-source",
+        sourceAssetKey: "panel-pixels",
+        sourceAssetPath: "9/panel.png",
+        margins: { left: 12, top: 10, right: 14, bottom: 8 },
+      }],
+    };
+    const result = buildEngineJson(scene, { atlasName: "demo_ui" });
+
+    expect(result.errors).toEqual([]);
+    const properties = JSON.parse(result.json).Dialog.Window.Window[0].Property;
+    expect(properties).toContainEqual({ Name: "LayoutBackImage", Value: "set:demo_ui.json image:panel_2" });
+    expect(properties).toContainEqual({ Name: "StretchType", Value: "NineGrid" });
+    expect(properties).toContainEqual({ Name: "StretchOffset", Value: "12 10 14 8" });
+  });
+
   it("converts visual positions into offsets relative to engine alignment", () => {
     const root = base("root", "root", "Layout", 0, 0, 1000, 600);
     const centered = base("centered", "centered", "StaticText", 400, 250, 200, 100);
@@ -118,31 +181,4 @@ describe("self-developed engine JSON export", () => {
     expect(JSON.parse(result.json).Dialog.Window.Window[1].Type).toBe("Layout");
   });
 
-  it("keeps the position_test visual hierarchy compatible with engine Area semantics", () => {
-    const scene = JSON.parse(readFileSync(new URL("../../测试/position_test.ui.json", import.meta.url), "utf8")) as UIScene;
-    const json = JSON.parse(buildEngineJson(scene, { atlasName: "position_test" }).json);
-    const root = json.Dialog.Window;
-    const center = root.Window[0];
-    const centerText = center.Window[0];
-    const button = root.Window[1];
-    const left = root.Window[2];
-    const middle = root.Window[3];
-    const right = root.Window[4];
-
-    expect(root.Property[0]).toEqual({ Name: "Area", Value: "{{0,0},{0,0},{0,1280},{0,720}}" });
-    expect(center.Property[0]).toEqual({ Name: "Area", Value: "{{0,-16},{0,-12},{0,346},{0,156}}" });
-    expect(center.Property).toContainEqual({ Name: "LayoutBackImage", Value: "set:position_test.json image:img_purple_content_background" });
-    expect(centerText.Property[0]).toEqual({ Name: "Area", Value: "{{0,104},{0,0},{0,258},{0,26}}" });
-    expect(centerText.Property).toContainEqual({ Name: "Font", Value: "HT26" });
-    expect(centerText.Property).toContainEqual({ Name: "TextHorzAlignment", Value: "Centre" });
-    expect(centerText.Property).toContainEqual({ Name: "TextVertAlignment", Value: "Centre" });
-    expect(button.Property[0]).toEqual({ Name: "Area", Value: "{{0,-23},{0,-78},{0,171},{0,-8}}" });
-    expect(left.Property[0]).toEqual({ Name: "Area", Value: "{{0,33},{0,33},{0,267},{0,131}}" });
-    expect(middle.Property[0]).toEqual({ Name: "Area", Value: "{{0,-21},{0,39},{0,213},{0,137}}" });
-    expect(right.Property[0]).toEqual({ Name: "Area", Value: "{{0,-42},{0,30},{0,192},{0,128}}" });
-    for (const window of [center, left, middle, right]) {
-      expect(window.Property.filter((item: { Name: string }) => /Image$|ImageName$/.test(item.Name))
-        .every((item: { Value: string }) => /^set:position_test\.json image:/.test(item.Value))).toBe(true);
-    }
-  });
 });

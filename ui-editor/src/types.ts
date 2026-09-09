@@ -19,6 +19,30 @@ export interface ListConfig {
   padding: { left: number; right: number; top: number; bottom: number };
   /** grid 列数 */
   columns: number;
+  /** 仅用于 UI2HTML 预览的直接子节点模板。 */
+  previewItemId?: string;
+  /** 仅用于 UI2HTML 预览的虚拟重复数量。 */
+  previewItemCount?: number;
+  /** 列表容器尺寸是否已由用户确认。 */
+  sizeConfirmed?: boolean;
+}
+
+export type LayoutValueMode = "absolute" | "relative";
+
+/** 与引擎 UDim 对应的单轴布局表达式。 */
+export interface LayoutValue {
+  mode: LayoutValueMode;
+  relative: number;
+  absolute: number;
+  /** 引擎导入的混合值未被 UI2HTML 规范化时保留此标记。 */
+  mixed?: boolean;
+}
+
+export interface NodeLayoutValues {
+  x: LayoutValue;
+  y: LayoutValue;
+  width: LayoutValue;
+  height: LayoutValue;
 }
 
 export type TextMode = "auto" | "fixed" | "fit";
@@ -62,6 +86,8 @@ export interface NineSliceGroup {
   sourceNodeId: string;
   sourceAssetKey: string;
   sourceAssetPath?: string;
+  /** 第二阶段转换生成的紧凑九宫格图片路径。 */
+  generatedAssetPath?: string;
   margins: NineSliceMargins;
   confidence?: number;
   reason?: string;
@@ -165,6 +191,20 @@ export interface UINode {
     mode: TextMode;
     /** fit 模式最小字号 */
     minFontSize: number;
+    textColor?: string;
+    horizontalAlign?: "left" | "center" | "right";
+    verticalAlign?: "top" | "center" | "bottom";
+    wordWrap?: boolean;
+    selfAdaptHeight?: boolean;
+    shadow?: boolean;
+    shadowColor?: string;
+    border?: boolean;
+    borderColor?: string;
+    scale?: number;
+    lineExtraSpace?: number;
+    autoOmission?: boolean;
+    /** 记录 PSD/用户明确设置过的引擎字段，避免默认值被错误省略。 */
+    explicitFields?: string[];
   };
   /** 组节点（PSD 文件夹）：子节点相对该组定位，自身不绘制 */
   children?: UINode[];
@@ -187,6 +227,8 @@ export interface UINode {
 
   /** PSD 导入时的原始布局（只在导入时写入，编辑不改它） */
   designRect: UIRect;
+  /** 可选的引擎 Area 表达式；缺失时兼容旧工程的绝对 anchor 逻辑。 */
+  layout?: NodeLayoutValues;
 
   anchor: {
     parentX: number; // 0..1，父容器横向位置

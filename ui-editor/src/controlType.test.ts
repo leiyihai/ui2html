@@ -46,6 +46,7 @@ describe("control type marking", () => {
       spacing: 0,
       padding: { left: 0, right: 0, top: 0, bottom: 0 },
       columns: 3,
+      sizeConfirmed: false,
     });
   });
 
@@ -89,13 +90,21 @@ describe("control type marking", () => {
   it("initializes editable text when a node becomes an Edit control", () => {
     const marked = markControlType(node(), "Edit");
 
-    expect(marked.text).toEqual({
+    expect(marked.text).toMatchObject({
       content: "",
       fontSize: 20,
       color: "#ffffff",
       font: "DroidSans",
       mode: "fixed",
       minFontSize: 12,
+      textColor: "#ffffff",
+      horizontalAlign: "center",
+      verticalAlign: "center",
+      wordWrap: false,
+      selfAdaptHeight: false,
+      shadow: false,
+      border: false,
+      scale: 1,
     });
   });
 

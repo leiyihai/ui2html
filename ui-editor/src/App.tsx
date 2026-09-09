@@ -27,7 +27,8 @@ import { presetsForDesign, type DeviceShell } from "./devicePreview";
 import ResourceBindingWorkspace from "./components/ResourceBindingWorkspace";
 import SceneOverview from "./components/SceneOverview";
 import NineSliceWorkspace from "./components/SlicePanel";
-import { groupFromCandidate, scanNineSliceCandidates } from "./nineSlice";
+import { generateNineSliceImage, groupFromCandidate, scanNineSliceCandidates } from "./nineSlice";
+import { syncNodeLayoutPosition } from "./layoutValues";
 
 export interface ImportProgress {
   name: string;
@@ -83,6 +84,14 @@ function findPath(nodes: UINode[], id: string, prefix: number[] = []): number[] 
       const found = findPath(n.children, id, [...prefix, i]);
       if (found) return found;
     }
+  }
+  return null;
+}
+function findParentNode(nodes: UINode[], id: string): UINode | null {
+  for (const node of nodes) {
+    if (node.children?.some((child) => child.id === id)) return node;
+    const nested = node.children ? findParentNode(node.children, id) : null;
+    if (nested) return nested;
   }
   return null;
 }
@@ -157,6 +166,10 @@ function cloneNode(n: UINode): UINode {
     ...n,
     scale: { ...n.scale },
     designRect: { ...n.designRect },
+    layout: n.layout ? {
+      x: { ...n.layout.x }, y: { ...n.layout.y },
+      width: { ...n.layout.width }, height: { ...n.layout.height },
+    } : undefined,
     anchor: { ...n.anchor },
     ctrl: n.ctrl ? { ...n.ctrl } : undefined,
     text: n.text ? { ...n.text } : undefined,
@@ -306,7 +319,7 @@ export default function App() {
   );
   // 预览、下载和测试包都使用同一份资源映射，避免 JSON 与 imageset 的 frame 名不一致。
   const preparedEngineProject = useMemo(
-    () => (scene ? prepareSceneAssets(scene) : null),
+    () => (scene ? prepareSceneAssets(scene, { scaleSceneBackground: true }) : null),
     [scene],
   );
   const engineExportName = useMemo(() => {
@@ -530,7 +543,8 @@ export default function App() {
       setViewport({ width: currentScene.designWidth, height: currentScene.designHeight });
       setSafeArea({ left: 0, right: 0, top: 0, bottom: 0 });
       setDeviceShell("desktop");
-      setShowPreview(true);
+      // 导入完成后直接进入层级工作区；效果检查统一从“预览”页签进入。
+      setShowPreview(false);
       setPreviewZoom(1);
       setPreviewPan({ x: 0, y: 0 });
       setProjectPath(null);
@@ -791,7 +805,15 @@ export default function App() {
   }, [engineAssetManifest, engineExport, engineExportName, engineOutputPath, preparedEngineProject]);
 
   const updateNode = useCallback((id: string, patch: (n: UINode) => void, record = true) => {
-    mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, patch) }), record);
+    mutateScene((s) => {
+      const nodes = mapNodes(s.nodes, id, patch);
+      const target = walkNodes(nodes).find((node) => node.id === id);
+      if (target?.layout) {
+        const parent = findParentNode(nodes, id);
+        syncNodeLayoutPosition(target, parent?.designRect.width ?? s.designWidth, parent?.designRect.height ?? s.designHeight);
+      }
+      return { ...s, nodes };
+    }, record);
   }, [mutateScene]);
 
   /** 控件类型标签 */
@@ -984,13 +1006,14 @@ export default function App() {
     const source = findNodeIncludingResources(current.nodes, candidate.sourceNodeId);
     if (!source?.image) { setExportMsg("九宫格确认失败：公共源图已缺失"); return; }
     const group = groupFromCandidate(candidate, margins);
+    const generated = generateNineSliceImage(source.image, margins);
     const memberIds = new Set(candidate.memberNodeIds);
     mutateScene((s) => ({
       ...s,
       nodes: mapNodesByIds(s.nodes, memberIds, (node) => {
         node.nineSliceGroupId = group.id;
         node.slice = { ...margins };
-        node.sliceImage = source.image;
+        node.sliceImage = generated ?? source.image;
       }),
       nineSliceCandidates: (s.nineSliceCandidates ?? []).map((item) => item.id === candidate.id
         ? { ...item, status: "confirmed", suggestedMargins: { ...margins } }
@@ -1109,6 +1132,7 @@ export default function App() {
           safeArea: false,
         };
         child.adaptation = { mode: "anchor" };
+        syncNodeLayoutPosition(child, groupWidth, groupHeight);
         return child;
       });
     const group: UINode = {
@@ -1185,6 +1209,7 @@ export default function App() {
           safeArea: false,
         };
         child.adaptation = { mode: "anchor" };
+        syncNodeLayoutPosition(child, parent?.designRect.width ?? current.designWidth, parent?.designRect.height ?? current.designHeight);
       }
       return child;
     });
@@ -1238,6 +1263,8 @@ export default function App() {
             safeArea: false,
           };
           node.adaptation = { mode: "anchor" };
+          const newParent = moved.newParentId ? walkNodes(nextNodes).find((entry) => entry.id === moved.newParentId) : null;
+          syncNodeLayoutPosition(node, newParent?.designRect.width ?? current.designWidth, newParent?.designRect.height ?? current.designHeight);
         });
       }
     }
@@ -1473,13 +1500,13 @@ export default function App() {
         deviceShell={deviceShell} onDeviceShell={setDeviceShell}
       />
       <div className="body">
-        <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
+        {workspace !== "slice" && <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
           warningIds={warningIds}
           renamingId={renamingId} renameCaretMode={renameCaretMode}
           onRename={commitRename} onCancelRename={() => setRenamingId(null)}
           onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
           onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
-        />
+        />}
         {workspace === "export" ? (
           <section className="export-panel">
             <div className="export-panel-card">
@@ -1498,6 +1525,7 @@ export default function App() {
                   onChange={(event) => setEngineOutputPath(event.target.value)}
                   placeholder="例如：C:\\Users\\你的用户名\\Desktop\\ui-engine-output" />
                 <p>填写本机目录。生成后会创建 <code>res/layout</code> 和 <code>res/imageset</code>；再将它们复制到引擎已登记的资源目录，用“引擎 UIEditor”打开。这里不是引擎源码路径，也不会修改真实引擎工程。</p>
+                <p className="export-note">图集优化：仅场景级氛围背景会生成 50% 尺寸的导出副本；引擎 JSON 仍按原设计范围显示，视觉尺寸不变。控件底图和普通图片不受影响。</p>
               </div>
               <div className="export-actions">
                 <button className="btn primary export-action" disabled={!engineExport || engineExport.errors.length > 0 || !engineOutputPath.trim()}
@@ -1542,7 +1570,7 @@ export default function App() {
             {!showPreview && canvasStack}
           </div>
         )}
-        {workspace === "export" ? <div className="ws-panel" /> : (
+        {workspace === "export" ? <div className="ws-panel" /> : workspace === "slice" ? null : (
           <aside className="right-panel">
             <nav className="right-panel-tabs" aria-label="右侧面板">
               <button className={rightPanelTab === "properties" ? "on" : ""} onClick={() => setRightPanelTab("properties")}>属性</button>
@@ -1558,6 +1586,11 @@ export default function App() {
             /> : <Inspector
               node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
               rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
+              parentDesignSize={(() => {
+                const selected = selectedId ? findNodeIncludingResources(scene?.nodes ?? [], selectedId) : null;
+                const parent = selected ? findParentNode(scene?.nodes ?? [], selected.id) : null;
+                return { width: parent?.designRect.width ?? scene?.designWidth ?? 1280, height: parent?.designRect.height ?? scene?.designHeight ?? 720 };
+              })()}
               onUpdate={updateSelected}
               onSetCtrl={setCtrl}
               onReanchor={(a) => updateSelected((n) => {

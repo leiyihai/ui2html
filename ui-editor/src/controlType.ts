@@ -37,6 +37,18 @@ export function createDefaultEditText(): NonNullable<UINode["text"]> {
     font: ENGINE_EDITOR_FONT_FAMILY,
     mode: "fixed",
     minFontSize: 12,
+    textColor: "#ffffff",
+    horizontalAlign: "center",
+    verticalAlign: "center",
+    wordWrap: false,
+    selfAdaptHeight: false,
+    shadow: false,
+    shadowColor: "#000000",
+    border: false,
+    borderColor: "#000000",
+    scale: 1,
+    lineExtraSpace: 0,
+    autoOmission: false,
   };
 }
 
@@ -84,8 +96,9 @@ export function markControlType(node: UINode, type: CtrlType | null): UINode {
       spacing: 0,
       padding: { left: 0, right: 0, top: 0, bottom: 0 },
       columns: 3,
+      sizeConfirmed: false,
     };
-    marked.list = { ...marked.list, type: listType };
+    marked.list = { ...marked.list, type: listType, sizeConfirmed: marked.list.sizeConfirmed ?? false };
   } else {
     marked.list = undefined;
   }

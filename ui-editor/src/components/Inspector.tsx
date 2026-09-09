@@ -1,9 +1,10 @@
 import { useState } from "react";
-import type { ImageBinding, InteractionTemplate, ResourceSlot, UINode, UIRect } from "../types";
+import type { ImageBinding, InteractionTemplate, LayoutValueMode, ResourceSlot, UINode, UIRect } from "../types";
 import { CTRL_TYPES, type CtrlType } from "../types";
 import { resourceSlotDefinitions } from "../resourceBinding";
 import { createDefaultEditText } from "../controlType";
 import { clampProgressValue, progressConfig } from "../progressControl";
+import { normalizeLayoutValue, resolveLayoutValue } from "../layoutValues";
 
 const PARENT_GRID: [string, number, number][] = [
   ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
@@ -95,6 +96,7 @@ function ResourceSlotRow(p: { slot: ResourceSlot; label: string; binding?: Image
 interface Props {
   node: UINode | null;
   rect: UIRect | null;
+  parentDesignSize?: { width: number; height: number };
   /** 兼容旧测试/调用方；设备预览不在属性面板中设置。 */
   viewport?: { width: number; height: number };
   onUpdate: (patch: (n: UINode) => void, record?: boolean) => void;
@@ -124,6 +126,39 @@ export default function Inspector(p: Props) {
   const editableText = n.text ?? (n.ctrl?.type === "Edit" ? createDefaultEditText() : null);
   const isProgressControl = n.ctrl?.type === "ProgressBar" || n.ctrl?.type === "Slider";
   const progress = isProgressControl ? progressConfig(n) : null;
+  const parentSize = p.parentDesignSize ?? { width: 1280, height: 720 };
+  const layoutField = (key: "x" | "y" | "width" | "height") => {
+    const fallback = key === "x" ? n.anchor.offsetX : key === "y" ? n.anchor.offsetY : key === "width" ? n.designRect.width : n.designRect.height;
+    const value = n.layout?.[key];
+    return {
+      mode: value?.mode ?? "absolute" as LayoutValueMode,
+      value: value?.mode === "relative" ? value.relative : value?.absolute ?? fallback,
+    };
+  };
+  const updateLayoutField = (key: "x" | "y" | "width" | "height", mode: LayoutValueMode, value: number) => {
+    const base = key === "x" || key === "width" ? parentSize.width : parentSize.height;
+    p.onUpdate((node) => {
+      const current = key === "x" ? node.anchor.offsetX : key === "y" ? node.anchor.offsetY : key === "width" ? node.designRect.width : node.designRect.height;
+      const resolved = mode === "relative" ? value * base : value;
+      node.layout = {
+        x: node.layout?.x ?? normalizeLayoutValue("absolute", node.anchor.offsetX, parentSize.width),
+        y: node.layout?.y ?? normalizeLayoutValue("absolute", node.anchor.offsetY, parentSize.height),
+        width: node.layout?.width ?? normalizeLayoutValue("absolute", node.designRect.width, parentSize.width),
+        height: node.layout?.height ?? normalizeLayoutValue("absolute", node.designRect.height, parentSize.height),
+        ...node.layout,
+        [key]: normalizeLayoutValue(mode, resolved, base),
+      };
+      if (key === "x") node.anchor.offsetX = resolved;
+      if (key === "y") node.anchor.offsetY = resolved;
+      if (key === "width") node.designRect.width = Math.max(1, resolved);
+      if (key === "height") node.designRect.height = Math.max(1, resolved);
+      if ((key === "width" || key === "height") && node.list && node.list.sizeConfirmed === false) {
+        node.list = { ...node.list, sizeConfirmed: true };
+      }
+      // keep the local value used by older renderer paths in sync with the visible design result
+      void current;
+    });
+  };
 
   return (
     <aside className="inspector">
@@ -184,7 +219,37 @@ export default function Inspector(p: Props) {
           )}
           <div className="row"><label>颜色</label>
             <input type="color" value={toHex(editableText.color)}
-              onChange={(e) => set("text", { ...editableText, color: e.target.value })} /></div>
+              onChange={(e) => set("text", { ...editableText, color: e.target.value, textColor: e.target.value })} /></div>
+          <div className="row"><label>水平对齐</label>
+            <select value={editableText.horizontalAlign ?? "center"}
+              onChange={(e) => set("text", { ...editableText, horizontalAlign: e.target.value as "left" | "center" | "right" })}>
+              <option value="left">左</option><option value="center">居中</option><option value="right">右</option>
+            </select></div>
+          <div className="row"><label>垂直对齐</label>
+            <select value={editableText.verticalAlign ?? "center"}
+              onChange={(e) => set("text", { ...editableText, verticalAlign: e.target.value as "top" | "center" | "bottom" })}>
+              <option value="top">上</option><option value="center">居中</option><option value="bottom">下</option>
+            </select></div>
+          <label className="chk"><input type="checkbox" checked={editableText.wordWrap ?? false}
+            onChange={(e) => set("text", { ...editableText, wordWrap: e.target.checked })} /> 自动换行</label>
+          <label className="chk"><input type="checkbox" checked={editableText.selfAdaptHeight ?? false}
+            onChange={(e) => set("text", { ...editableText, selfAdaptHeight: e.target.checked })} /> 自适应高度</label>
+          <label className="chk"><input type="checkbox" checked={editableText.shadow ?? false}
+            onChange={(e) => set("text", { ...editableText, shadow: e.target.checked })} /> 文字投影</label>
+          {editableText.shadow && <div className="row"><label>投影色</label>
+            <input type="color" value={toHex(editableText.shadowColor ?? "#000000")}
+              onChange={(e) => set("text", { ...editableText, shadowColor: e.target.value })} /></div>}
+          <label className="chk"><input type="checkbox" checked={editableText.border ?? false}
+            onChange={(e) => set("text", { ...editableText, border: e.target.checked })} /> 文字描边</label>
+          {editableText.border && <div className="row"><label>描边色</label>
+            <input type="color" value={toHex(editableText.borderColor ?? "#000000")}
+              onChange={(e) => set("text", { ...editableText, borderColor: e.target.value })} /></div>}
+          <NumRow label="文字缩放" value={editableText.scale ?? 1} step={0.01} min={0.1} max={4} precision={2} inputStep={0.01}
+            set={(v) => set("text", { ...editableText, scale: Math.max(0.1, v || 1) })} />
+          <NumRow label="行间距" value={editableText.lineExtraSpace ?? 0} step={1}
+            set={(v) => set("text", { ...editableText, lineExtraSpace: v || 0 })} />
+          <label className="chk"><input type="checkbox" checked={editableText.autoOmission ?? false}
+            onChange={(e) => set("text", { ...editableText, autoOmission: e.target.checked })} /> 自动省略</label>
           {editableText.mode !== "auto" && <p className="hint">文本框宽高在“位置与尺寸校正”中调整。</p>}
         </InspectorSection>
       )}
@@ -209,6 +274,17 @@ export default function Inspector(p: Props) {
             <NumRow label="上" value={Math.round(n.list.padding.top)} set={(v) => set("list", { ...n.list!, padding: { ...n.list!.padding, top: Math.max(0, v) } })} />
             <NumRow label="下" value={Math.round(n.list.padding.bottom)} set={(v) => set("list", { ...n.list!, padding: { ...n.list!.padding, bottom: Math.max(0, v) } })} />
           </div>
+          <div className="subsection-label">预览 item</div>
+          <div className="row"><label>模板节点</label>
+            <select value={n.list.previewItemId ?? ""}
+              onChange={(e) => set("list", { ...n.list!, previewItemId: e.target.value || undefined, previewItemCount: e.target.value ? Math.max(1, n.list!.previewItemCount ?? 1) : undefined })}>
+              <option value="">不指定（使用真实子节点）</option>
+              {(n.children ?? []).map((child) => <option key={child.id} value={child.id}>{child.name}</option>)}
+            </select></div>
+          {n.list.previewItemId && <NumRow label="重复数量" value={n.list.previewItemCount ?? 1} min={1} max={99}
+            set={(v) => set("list", { ...n.list!, previewItemCount: Math.max(1, Math.min(99, Math.round(v || 1))) })} />}
+          {n.list.sizeConfirmed === false && <div className="list-size-warning">列表尺寸待确认：当前尺寸可能只是单个 item 的大小。</div>}
+          {n.list.sizeConfirmed === false && <button className="btn" onClick={() => set("list", { ...n.list!, sizeConfirmed: true })}>确认当前尺寸</button>}
         </InspectorSection>
       )}
 
@@ -261,13 +337,21 @@ export default function Inspector(p: Props) {
 
       <InspectorSection title="位置与尺寸校正" summary="PSD 视觉微调">
         <p className="hint correction-note">PSD 导入的位置和尺寸默认保留；这里仅用于少量视觉校正。</p>
-        <NumRow label="X" value={Math.round(n.anchor.offsetX)} set={(v) => set("anchor", { ...n.anchor, offsetX: v })} />
-        <NumRow label="Y" value={Math.round(n.anchor.offsetY)} set={(v) => set("anchor", { ...n.anchor, offsetY: v })} />
+        {(["x", "y", "width", "height"] as const).map((key) => {
+          const field = layoutField(key);
+          const label = key === "x" ? "X" : key === "y" ? "Y" : key === "width" ? "宽" : "高";
+          return <div className="layout-value-row" key={key}>
+            <label className="layout-value-label">{label}</label>
+            <select value={field.mode} onChange={(e) => updateLayoutField(key, e.target.value as LayoutValueMode, field.mode === "relative"
+              ? resolveLayoutValue(n.layout?.[key], key === "x" || key === "width" ? parentSize.width : parentSize.height, field.value)
+              : field.value)}>
+              <option value="absolute">绝对</option><option value="relative">相对</option>
+            </select>
+            <input type="number" step={field.mode === "relative" ? 0.01 : 1} value={field.value}
+              onChange={(e) => updateLayoutField(key, field.mode, Number(e.target.value) || 0)} />
+          </div>;
+        })}
         <div className="subsection-label">尺寸（设计像素）</div>
-        <NumRow label="宽" value={Math.round(n.designRect.width)}
-          set={(v) => set("designRect", { ...n.designRect, width: Math.max(1, v || 1) })} />
-        <NumRow label="高" value={Math.round(n.designRect.height)}
-          set={(v) => set("designRect", { ...n.designRect, height: Math.max(1, v || 1) })} />
         {p.rect && <div className="layout-readout"><span>当前布局</span><strong>{Math.round(p.rect.x)}, {Math.round(p.rect.y)} · {Math.round(p.rect.width)} × {Math.round(p.rect.height)}</strong></div>}
       </InspectorSection>
 

@@ -2,7 +2,7 @@ import { LayoutEngine } from "./layoutEngine";
 import { mapToEngineFont } from "./engineFont";
 import { resourceSlotDefinitions } from "./resourceBinding";
 import { progressConfig } from "./progressControl";
-import type { LayoutResult, ResourceSlot, UINode, UIScene } from "./types";
+import type { LayoutResult, LayoutValue, NineSliceGroup, ResourceSlot, UINode, UIScene } from "./types";
 
 export interface EngineExportResult {
   json: string;
@@ -39,6 +39,37 @@ function area(rect: { x: number; y: number; width: number; height: number }): st
   return `{{0,${number(rect.x)}},{0,${number(rect.y)}},{0,${number(rect.x + rect.width)}},{0,${number(rect.y + rect.height)}}}`;
 }
 
+interface UDim {
+  relative: number;
+  absolute: number;
+}
+
+function uDim(relative: number, absolute: number): UDim {
+  return { relative, absolute };
+}
+
+function uDimValue(value: LayoutValue | undefined, fallback: number): UDim {
+  if (!value) {
+    return uDim(0, fallback);
+  }
+  return uDim(Number(value.relative) || 0, Number(value.absolute) || 0);
+}
+
+function addUDim(a: UDim, b: UDim): UDim {
+  return uDim(a.relative + b.relative, a.absolute + b.absolute);
+}
+
+function subtractUDim(a: UDim, b: UDim): UDim {
+  return uDim(a.relative - b.relative, a.absolute - b.absolute);
+}
+
+function areaFromUDims(x: UDim, y: UDim, width: UDim, height: UDim): string {
+  const right = addUDim(x, width);
+  const bottom = addUDim(y, height);
+  return `{{${number(x.relative)},${number(x.absolute)}},{${number(y.relative)},${number(y.absolute)}},` +
+    `{${number(right.relative)},${number(right.absolute)}},{${number(bottom.relative)},${number(bottom.absolute)}}}`;
+}
+
 function alignmentFactor(value: number): number {
   if (value >= 0.75) return 1;
   if (value >= 0.25) return 0.5;
@@ -60,6 +91,42 @@ function verticalAlignment(value: number): string {
 function frameNameForAsset(assetPath: string): string {
   const stem = assetPath.replace(/\\/g, "/").split("/").pop()?.replace(/\.[^.]+$/, "") ?? "image";
   return stem.replace(/[^0-9A-Za-z_-]+/g, "_") || "image";
+}
+
+function normalizedAssetPath(assetPath: string | undefined): string | null {
+  return assetPath ? assetPath.replace(/\\/g, "/") : null;
+}
+
+/** 找到节点所属的已确认九宫格逻辑图片组，兼容保存前后的两种关联方式。 */
+function nineSliceGroupForNode(node: UINode, scene: UIScene): NineSliceGroup | undefined {
+  return scene.nineSliceGroups?.find((group) =>
+    (node.nineSliceGroupId && group.id === node.nineSliceGroupId)
+    || group.memberNodeIds.includes(node.id));
+}
+
+/** 九宫格确认后，导出必须使用 .assets/9 中的公共源图。 */
+function effectiveAssetPath(node: UINode | undefined, scene: UIScene): string | null {
+  if (!node) return null;
+  const group = nineSliceGroupForNode(node, scene);
+  return normalizedAssetPath(group?.generatedAssetPath)
+    ?? normalizedAssetPath(group?.sourceAssetPath)
+    ?? normalizedAssetPath(node.assetPath);
+}
+
+function marginsForNode(node: UINode, scene: UIScene): NineSliceGroup | undefined {
+  const direct = nineSliceGroupForNode(node, scene);
+  if (direct) return direct;
+  for (const binding of Object.values(node.resources ?? {})) {
+    const group = binding?.sourceNode ? nineSliceGroupForNode(binding.sourceNode, scene) : undefined;
+    if (group) return group;
+  }
+  return undefined;
+}
+
+function nineSliceOffset(group: NineSliceGroup): string {
+  return [group.margins.left, group.margins.top, group.margins.right, group.margins.bottom]
+    .map(number)
+    .join(" ");
 }
 
 export function collectEngineAssetPaths(nodes: UINode[], paths = new Set<string>()): Set<string> {
@@ -91,13 +158,14 @@ export function createEngineAssetManifest(assetPaths: Iterable<string>, atlasNam
   });
 }
 
-function imageReference(node: UINode | undefined, assetReferences: Record<string, string>): string | null {
-  const assetPath = node?.assetPath?.replace(/\\/g, "/");
+function imageReference(node: UINode | undefined, scene: UIScene, assetReferences: Record<string, string>): string | null {
+  const assetPath = effectiveAssetPath(node, scene);
   return assetPath ? assetReferences[assetPath] ?? null : null;
 }
 
-function bindingReference(node: UINode, slot: ResourceSlot, assetReferences: Record<string, string>): string | null {
-  return imageReference(node.resources?.[slot]?.sourceNode, assetReferences);
+function bindingReference(node: UINode, slot: ResourceSlot, scene: UIScene,
+  assetReferences: Record<string, string>): string | null {
+  return imageReference(node.resources?.[slot]?.sourceNode, scene, assetReferences);
 }
 
 function exportType(node: UINode, warnings: string[]): string {
@@ -133,6 +201,26 @@ function areaForNode(node: UINode, layout: LayoutResult, parents: Map<string, UI
   const parentWidth = parentNode?.designRect.width ?? parent?.width ?? scene.designWidth;
   const parentHeight = parentNode?.designRect.height ?? parent?.height ?? scene.designHeight;
 
+  // 用户在属性面板切换为相对值后，直接保留 UDim 的表达式导出。
+  // 这样引擎可以继续按父节点尺寸适配，同时仍用 Horizontal/VerticalAlignment
+  // 解释“父锚点到控件矩形”的关系。没有 layout 数据的旧工程继续走绝对值兼容路径。
+  if (node.layout) {
+    const width = uDimValue(node.layout.width, node.designRect.width);
+    const height = uDimValue(node.layout.height, node.designRect.height);
+    const x = uDimValue(node.layout.x, rect.x);
+    const y = uDimValue(node.layout.y, rect.y);
+    const fx = alignmentFactor(node.anchor.parentX);
+    const fy = alignmentFactor(node.anchor.parentY);
+    const parentWidthDim = uDim(0, parentWidth * fx);
+    const parentHeightDim = uDim(0, parentHeight * fy);
+    return areaFromUDims(
+      addUDim(subtractUDim(x, parentWidthDim), uDim(fx * width.relative, fx * width.absolute)),
+      addUDim(subtractUDim(y, parentHeightDim), uDim(fy * height.relative, fy * height.absolute)),
+      width,
+      height,
+    );
+  }
+
   // 引擎 Area 是 min/max 坐标；对齐点参照的是“父容器减去控件尺寸”后的可放置范围。
   const x = rect.x - alignmentFactor(node.anchor.parentX) * (parentWidth - rect.width);
   const y = rect.y - alignmentFactor(node.anchor.parentY) * (parentHeight - rect.height);
@@ -156,27 +244,48 @@ function buildWindow(node: UINode, layout: LayoutResult, parents: Map<string, UI
   const type = exportType(node, warnings);
   const slots = resourceSlotDefinitions(node.ctrl?.type);
   for (const slot of slots) {
-    if (node.resources?.[slot.key] && !bindingReference(node, slot.key, assetReferences)) {
+    if (node.resources?.[slot.key] && !bindingReference(node, slot.key, scene, assetReferences)) {
       errors.push(`节点「${node.name}」的资源槽位「${slot.key}」没有可用工程资源`);
     }
-    const reference = bindingReference(node, slot.key, assetReferences);
+    const reference = bindingReference(node, slot.key, scene, assetReferences);
     if (reference) addProperty(properties, slot.key, reference);
   }
 
   if (type === "StaticImage" && !node.resources?.ImageName) {
-    const reference = imageReference(node, assetReferences);
+    const reference = imageReference(node, scene, assetReferences);
     if (!reference && node.image) errors.push(`节点「${node.name}」的图片尚未生成工程资源`);
     addProperty(properties, "ImageName", reference);
   }
+  const nineSliceGroup = marginsForNode(node, scene);
+  if (nineSliceGroup) {
+    addProperty(properties, "StretchType", "NineGrid");
+    addProperty(properties, "StretchOffset", nineSliceOffset(nineSliceGroup));
+  }
   if (node.text) {
-    const font = mapToEngineFont(node.text.fontSize);
-    addProperty(properties, "Text", node.text.content);
+    const text = node.text;
+    const font = mapToEngineFont(text.fontSize);
+    addProperty(properties, "Text", text.content);
     addProperty(properties, "Font", font.name);
-    addProperty(properties, "TextHorzAlignment", "Centre");
-    addProperty(properties, "TextVertAlignment", "Centre");
-    addProperty(properties, "TextColor", node.text.color);
+    addProperty(properties, "TextHorzAlignment", text.horizontalAlign === "left" ? "Left" : text.horizontalAlign === "right" ? "Right" : "Centre");
+    addProperty(properties, "TextVertAlignment", text.verticalAlign === "top" ? "Top" : text.verticalAlign === "bottom" ? "Bottom" : "Centre");
+    addProperty(properties, "TextColor", text.textColor ?? text.color);
+    addProperty(properties, "TextWordWrap", String(text.wordWrap ?? false));
+    addProperty(properties, "TextSelfAdaptHigh", String(text.selfAdaptHeight ?? false));
+    addProperty(properties, "TextShadow", String(text.shadow ?? false));
+    if (text.shadow) {
+      addProperty(properties, "TextShadowColor", text.shadowColor ?? "#000000");
+      warnings.push(`节点「${node.name}」的投影距离由引擎固定，已保留投影开关和颜色`);
+    }
+    addProperty(properties, "TextBorder", String(text.border ?? false));
+    if (text.border) {
+      addProperty(properties, "TextBorderColor", text.borderColor ?? "#000000");
+      warnings.push(`节点「${node.name}」的描边粗细由引擎固定，已保留描边开关和颜色`);
+    }
+    addProperty(properties, "TextScale", number(text.scale ?? 1));
+    addProperty(properties, "TextLineExtraSpace", number(text.lineExtraSpace ?? 0));
+    addProperty(properties, "TextAutoOmission", String(text.autoOmission ?? false));
     if (font.clamped) {
-      warnings.push(`节点「${node.name}」的字号 ${String(node.text.fontSize)} 超出引擎范围，已映射为 ${font.name}`);
+      warnings.push(`节点「${node.name}」的字号 ${String(text.fontSize)} 超出引擎范围，已映射为 ${font.name}`);
     }
   }
   if (type === "ProgressBar" || type === "Slider") {
@@ -225,7 +334,12 @@ export function buildEngineJson(scene: UIScene, options: EngineExportOptions = {
     scaleMode: "cover",
   });
 
-  const manifest = createEngineAssetManifest(collectEngineAssetPaths(layoutScene.nodes), options.atlasName ?? "ui-project");
+  const assetPaths = collectEngineAssetPaths(layoutScene.nodes);
+  for (const group of layoutScene.nineSliceGroups ?? []) {
+    if (group.sourceAssetPath) assetPaths.add(group.sourceAssetPath.replace(/\\/g, "/"));
+    if (group.generatedAssetPath) assetPaths.add(group.generatedAssetPath.replace(/\\/g, "/"));
+  }
+  const manifest = createEngineAssetManifest(assetPaths, options.atlasName ?? "ui-project");
   const assetReferences = options.assetReferences ?? Object.fromEntries(manifest.map((item) => [item.assetPath, item.reference]));
   const parents = parentMap(scene.nodes);
 
