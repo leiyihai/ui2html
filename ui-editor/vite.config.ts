@@ -173,6 +173,81 @@ function writeProjectTransaction(projectPathInput: string, project: unknown, ass
   }
 }
 
+function safeEnginePackageName(value: string): string {
+  const name = value.replace(/\.engine\.json$/i, "").replace(/\.ui\.json$/i, "").trim();
+  return name.replace(/[<>:"/\\|?*\x00-\x1f]/g, "_") || "ui-project";
+}
+
+function runEngineAssetPacker(args: string[]): Promise<void> {
+  const command = process.platform === "win32" ? "python" : "python3";
+  return new Promise((resolve, reject) => {
+    execFile(command, args, { windowsHide: true, encoding: "utf8", timeout: 180000, maxBuffer: 4 * 1024 * 1024 }, (error, stdout, stderr) => {
+      if (error) reject(new Error(stderr.trim() || stdout.trim() || error.message));
+      else resolve();
+    });
+  });
+}
+
+async function writeEngineTestPackage(input: {
+  outputPath: string;
+  packageName: string;
+  engineJson: string;
+  assets: Record<string, string>;
+  manifest: { assetPath: string; frameName: string }[];
+}): Promise<string> {
+  if (!input.outputPath.trim()) throw new Error("没有填写测试包输出目录");
+  if (!input.engineJson.trim()) throw new Error("没有可导出的引擎 JSON");
+  JSON.parse(input.engineJson);
+  const packageName = safeEnginePackageName(input.packageName);
+  const target = path.resolve(input.outputPath);
+  const staging = fs.mkdtempSync(path.join(os.tmpdir(), "ui-engine-package-"));
+  const stagingAssets = path.join(staging, "assets");
+  const stagingImageset = path.join(staging, "res", "imageset");
+  const stagingLayout = path.join(staging, "res", "layout");
+  const manifestPath = path.join(staging, "manifest.json");
+  try {
+    fs.mkdirSync(stagingAssets, { recursive: true });
+    fs.mkdirSync(stagingLayout, { recursive: true });
+    fs.writeFileSync(path.join(stagingLayout, `${packageName}.json`), input.engineJson, "utf8");
+    for (const entry of input.manifest) {
+      const relative = safeAssetPath(entry.assetPath);
+      const dataUrl = input.assets[relative];
+      if (!dataUrl) throw new Error(`测试包缺少资源：${relative}`);
+      const match = /^data:[^;]+;base64,(.+)$/s.exec(dataUrl);
+      if (!match) throw new Error(`资源不是有效的 base64 图片：${relative}`);
+      const destination = path.resolve(stagingAssets, relative);
+      if (!destination.startsWith(`${path.resolve(stagingAssets)}${path.sep}`)) throw new Error(`非法资源路径：${relative}`);
+      fs.mkdirSync(path.dirname(destination), { recursive: true });
+      fs.writeFileSync(destination, Buffer.from(match[1], "base64"));
+    }
+    fs.writeFileSync(manifestPath, JSON.stringify({ assets: input.manifest }, null, 2), "utf8");
+    await runEngineAssetPacker([
+      path.join(import.meta.dirname, "tools", "pack_engine_assets.py"),
+      "--assets-dir", stagingAssets,
+      "--output-dir", stagingImageset,
+      "--atlas-name", packageName,
+      "--manifest", manifestPath,
+    ]);
+    fs.mkdirSync(target, { recursive: true });
+    fs.cpSync(path.join(staging, "res"), path.join(target, "res"), { recursive: true, force: true });
+    fs.writeFileSync(path.join(target, "README.txt"), [
+      "UI2HTML 自研引擎 UIEditor 测试包",
+      "",
+      `引擎 JSON：res/layout/${packageName}.json`,
+      `图集描述：res/imageset/${packageName}.json`,
+      `图集图片：res/imageset/${packageName}.png`,
+      "",
+      "引擎 UIEditor 通常只从已登记的 res/layout 与 res/imageset 目录加载资源。",
+      "请将本包内的 res/layout 和 res/imageset 内容复制到目标引擎游戏的对应资源目录，",
+      "然后重启引擎 UIEditor，再打开 res/layout 中的 JSON。此操作不会修改真实引擎工程。",
+      "",
+    ].join("\n"), "utf8");
+    return target;
+  } finally {
+    fs.rmSync(staging, { recursive: true, force: true });
+  }
+}
+
 function parseAiJson(output: string): unknown {
   const cleaned = output.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
   try { return JSON.parse(cleaned); } catch { /* 继续尝试提取 JSON */ }
@@ -289,6 +364,36 @@ export default defineConfig({
           } catch (error) {
             res.statusCode = 400;
             res.end(error instanceof Error ? error.message : String(error));
+          }
+        });
+
+        server.middlewares.use("/api/export-engine-package", async (req: MiddlewareRequest, res: MiddlewareResponse) => {
+          if (req.method !== "POST") { res.statusCode = 405; return res.end("Method Not Allowed"); }
+          try {
+            const body = JSON.parse(await readBody(req)) as {
+              outputPath?: string;
+              packageName?: string;
+              engineJson?: string;
+              assets?: Record<string, string>;
+              manifest?: { assetPath: string; frameName: string }[];
+            };
+            if (!body.outputPath || !body.packageName || !body.engineJson || !body.assets || !body.manifest) {
+              throw new Error("测试包参数不完整");
+            }
+            const output = await writeEngineTestPackage({
+              outputPath: body.outputPath,
+              packageName: body.packageName,
+              engineJson: body.engineJson,
+              assets: body.assets,
+              manifest: body.manifest,
+            });
+            sendJson(res, {
+              path: output,
+              layoutPath: path.join(output, "res", "layout"),
+              imagesetPath: path.join(output, "res", "imageset"),
+            });
+          } catch (error) {
+            sendJson(res, { message: error instanceof Error ? error.message : String(error) }, 400);
           }
         });
 

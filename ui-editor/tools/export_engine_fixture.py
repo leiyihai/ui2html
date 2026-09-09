@@ -78,9 +78,10 @@ def color(value: Any) -> str | None:
 
 
 class Atlas:
-    def __init__(self, source_assets: Path, output: Path):
+    def __init__(self, source_assets: Path, output: Path, atlas_name: str):
         self.source_assets = source_assets
         self.output = output
+        self.atlas_name = atlas_name
         self.entries: list[tuple[str, Image.Image]] = []
         self.frames: dict[str, dict[str, Any]] = {}
         self.used: set[str] = set()
@@ -126,10 +127,11 @@ class Atlas:
                 "sourceSize": {"w": image.width, "h": image.height},
             }
         self.output.mkdir(parents=True, exist_ok=True)
-        canvas.save(self.output / "position_test.png")
-        (self.output / "position_test.json").write_text(json.dumps({
+        image_name = f"{self.atlas_name}.png"
+        canvas.save(self.output / image_name)
+        (self.output / f"{self.atlas_name}.json").write_text(json.dumps({
             "frames": self.frames,
-            "meta": {"image": "position_test.png", "format": "RGBA8888", "size": {"w": atlas_width, "h": atlas_height}, "scale": "1", "type": "frame"},
+            "meta": {"image": image_name, "format": "RGBA8888", "size": {"w": atlas_width, "h": atlas_height}, "scale": "1", "type": "frame"},
         }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
@@ -138,10 +140,11 @@ class Exporter:
         self.project_path = project_path
         self.output = output
         self.data = json.loads(project_path.read_text(encoding="utf-8-sig"))
+        self.package_name = re.sub(r"[^0-9A-Za-z_-]+", "_", project_path.name.replace(".ui.json", "")) or "ui-project"
         self.assets = project_path.with_name(project_path.stem.replace(".ui", "") + ".assets")
         if not self.assets.is_dir():
             self.assets = project_path.with_suffix(".assets")
-        self.atlas = Atlas(self.assets, output / "imageset")
+        self.atlas = Atlas(self.assets, output / "res" / "imageset", self.package_name)
         self.asset_refs: dict[str, str] = {}
 
     def image_ref(self, asset_path: str | None) -> str | None:
@@ -151,7 +154,7 @@ class Exporter:
             frame = self.atlas.add(asset_path)
             self.asset_refs[asset_path] = frame or ""
         frame = self.asset_refs[asset_path]
-        return f"set:position_test.json image:{frame}" if frame else None
+        return f"set:{self.package_name}.json image:{frame}" if frame else None
 
     def props(self, node: dict[str, Any], ctrl_type: str) -> list[dict[str, str]]:
         props = node.get("text") or {}
@@ -205,14 +208,15 @@ class Exporter:
         nodes = [self.convert(node, root_rect, index) for index, node in enumerate(self.data.get("nodes") or [])]
         engine = {"Dialog": {"Window": nodes[0] if len(nodes) == 1 else {"Type": "Layout", "Name": "root", "Property": [{"Name": "Area", "Value": "{{0,0},{0,0},{0,%s},{0,%s}}" % (fmt(root_rect["width"]), fmt(root_rect["height"]))}], "Window": nodes}}}
         self.output.mkdir(parents=True, exist_ok=True)
-        json_path = self.output / "position_test.engine.json"
+        json_path = self.output / "res" / "layout" / f"{self.package_name}.json"
+        json_path.parent.mkdir(parents=True, exist_ok=True)
         json_path.write_text(json.dumps(engine, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         self.atlas.write()
         (self.output / "README.txt").write_text(
             "引擎 UIEditor 验证包\n\n"
-            "position_test.engine.json 是给引擎 UIEditor 打开的引擎 JSON。\n"
-            "imageset/position_test.json 与 position_test.png 是该 JSON 使用的图集资源。\n"
-            "如果引擎 UIEditor 不从当前目录加载资源，请将 imageset 中两个文件临时复制到其 ResourceConfig.cfg 已登记的 imageset 资源目录；不要覆盖同名文件。\n",
+            f"res/layout/{self.package_name}.json 是给引擎 UIEditor 打开的引擎 JSON。\n"
+            f"res/imageset/{self.package_name}.json 与 {self.package_name}.png 是该 JSON 使用的图集资源。\n"
+            "请将本包内的 res/layout 和 res/imageset 内容复制到目标引擎已登记的对应资源目录，重启引擎 UIEditor 后再打开 JSON；不要覆盖同名文件。\n",
             encoding="utf-8",
         )
         return json_path
@@ -223,10 +227,11 @@ def main() -> int:
     parser.add_argument("project", type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
-    path = Exporter(args.project, args.output).run()
+    exporter = Exporter(args.project, args.output)
+    path = exporter.run()
     print(path)
-    print(args.output / "imageset" / "position_test.json")
-    print(args.output / "imageset" / "position_test.png")
+    print(args.output / "res" / "imageset" / f"{exporter.package_name}.json")
+    print(args.output / "res" / "imageset" / f"{exporter.package_name}.png")
     return 0
 
 

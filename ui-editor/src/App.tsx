@@ -3,7 +3,7 @@ import { LayoutEngine, reanchor } from "./layoutEngine";
 import { importPsd } from "./psdImport";
 import { renderOverlay, renderUi } from "./renderer";
 import { buildExportHtml } from "./exportHtml";
-import { buildEngineJson } from "./engineExport";
+import { buildEngineJson, createEngineAssetManifest } from "./engineExport";
 import type { CtrlType, ImageBinding, InteractionTemplate, LayoutContext, NineSliceCandidate, NineSliceMargins, ResourceSlot, ScaleMode, UINode, UIScene } from "./types";
 import Appbar from "./components/Toolbar";
 import Workbar, { type Workspace } from "./components/WorkspaceTabs";
@@ -270,6 +270,7 @@ export default function App() {
   const [workspace, setWorkspace] = useState<Workspace>("controls");
   const [rightPanelTab, setRightPanelTab] = useState<"properties" | "overview">("properties");
   const [exportMsg, setExportMsg] = useState("");
+  const [engineOutputPath, setEngineOutputPath] = useState("");
   const [typeMenu, setTypeMenu] = useState<{ x: number; y: number } | null>(null);
   const [quickActionMenu, setQuickActionMenu] = useState<{ x: number; y: number } | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -303,10 +304,25 @@ export default function App() {
     () => (scene && layoutCtx ? new LayoutEngine().layoutScene(scene, layoutCtx) : null),
     [scene, layoutCtx],
   );
-  // 预览和实际下载都走同一套资源准备逻辑，未保存的新导入图片也能正常导出。
-  const engineExport = useMemo(
-    () => (scene ? buildEngineJson(prepareSceneAssets(scene).scene) : null),
+  // 预览、下载和测试包都使用同一份资源映射，避免 JSON 与 imageset 的 frame 名不一致。
+  const preparedEngineProject = useMemo(
+    () => (scene ? prepareSceneAssets(scene) : null),
     [scene],
+  );
+  const engineExportName = useMemo(() => {
+    const base = projectName.replace(/\.ui\.json$/i, "").trim();
+    return base.replace(/[^0-9A-Za-z_-]+/g, "_") || "ui-project";
+  }, [projectName]);
+  const engineAssetManifest = useMemo(
+    () => (preparedEngineProject ? createEngineAssetManifest(Object.keys(preparedEngineProject.assets), engineExportName) : []),
+    [preparedEngineProject, engineExportName],
+  );
+  const engineExport = useMemo(
+    () => (preparedEngineProject ? buildEngineJson(preparedEngineProject.scene, {
+      atlasName: engineExportName,
+      assetReferences: Object.fromEntries(engineAssetManifest.map((item) => [item.assetPath, item.reference])),
+    }) : null),
+    [preparedEngineProject, engineAssetManifest, engineExportName],
   );
   const warningIds = useMemo(
     () => warningNodeIds(analysis),
@@ -728,15 +744,15 @@ export default function App() {
   }, [scene, scaleMode, safeArea, projectName]);
 
   const exportEngineJson = useCallback(() => {
-    if (!scene) return;
-    const prepared = prepareSceneAssets(scene);
-    const output = buildEngineJson(prepared.scene);
+    if (!preparedEngineProject) return;
+    const output = engineExport;
+    if (!output) return;
     if (output.errors.length) {
       setExportMsg(`导出已阻止：${output.errors[0]}`);
       setWarnings(output.errors.map((error) => `导出错误：${error}`));
       return;
     }
-    const base = projectName.replace(/\.ui\.json$/i, "") || "ui-project";
+    const base = engineExportName;
     const blob = new Blob([output.json], { type: "application/json;charset=utf-8" });
     const anchor = document.createElement("a");
     anchor.href = URL.createObjectURL(blob);
@@ -745,7 +761,34 @@ export default function App() {
     window.setTimeout(() => URL.revokeObjectURL(anchor.href), 0);
     setWarnings(output.warnings.map((warning) => `导出提示：${warning}`));
     setExportMsg(`已导出 ${base}.engine.json ✓`);
-  }, [projectName, scene]);
+  }, [engineExport, engineExportName, preparedEngineProject]);
+
+  const exportEnginePackage = useCallback(async () => {
+    if (!preparedEngineProject || !engineExport || engineExport.errors.length) return;
+    const outputPath = engineOutputPath.trim();
+    if (!outputPath) {
+      setExportMsg("请先填写引擎测试包输出目录");
+      return;
+    }
+    try {
+      const response = await fetch("/api/export-engine-package", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          outputPath,
+          packageName: engineExportName,
+          engineJson: engineExport.json,
+          assets: preparedEngineProject.assets,
+          manifest: engineAssetManifest,
+        }),
+      });
+      const result = await response.json().catch(() => ({})) as { path?: string; layoutPath?: string; imagesetPath?: string; message?: string };
+      if (!response.ok) throw new Error(result.message ?? "测试包生成失败");
+      setExportMsg(`已生成引擎测试包：${result.path ?? outputPath} ✓`);
+    } catch (error) {
+      setExportMsg(`测试包生成失败：${error instanceof Error ? error.message : String(error)}`);
+    }
+  }, [engineAssetManifest, engineExport, engineExportName, engineOutputPath, preparedEngineProject]);
 
   const updateNode = useCallback((id: string, patch: (n: UINode) => void, record = true) => {
     mutateScene((s) => ({ ...s, nodes: mapNodes(s.nodes, id, patch) }), record);
@@ -1442,15 +1485,26 @@ export default function App() {
             <div className="export-panel-card">
               <span className="export-kicker">FINAL OUTPUT</span>
               <h2>导出自研引擎 JSON</h2>
-              <p>当前工程会转换为 <code>Dialog → Window</code> 结构。位置、尺寸使用当前 PSD 视觉结果，图片继续引用工程内独立 PNG。</p>
+              <p>当前工程会转换为 <code>Dialog → Window</code> 结构。位置、尺寸使用当前视觉结果，图片统一进入引擎可识别的 imageset，字体统一映射为引擎预设。</p>
               <div className={`export-check ${engineExport?.errors.length ? "has-errors" : "ready"}`}>
                 <strong>{engineExport?.errors.length ? "暂不能导出" : "可以导出"}</strong>
                 <span>{engineExport?.errors.length ? `发现 ${engineExport.errors.length} 个错误` : "基础字段校验通过"}</span>
               </div>
               {engineExport?.errors.length ? <div className="export-diagnostics error">{engineExport.errors.map((item) => <div key={item}>✕ {item}</div>)}</div> : null}
               {engineExport?.warnings.length ? <div className="export-diagnostics">{engineExport.warnings.map((item) => <div key={item}>⚠ {item}</div>)}</div> : null}
-              <button className="btn primary export-action" disabled={!engineExport || engineExport.errors.length > 0}
-                onClick={exportEngineJson}>下载最终 JSON</button>
+              <div className="engine-export-path">
+                <label htmlFor="engine-output-path">引擎测试包输出目录</label>
+                <input id="engine-output-path" type="text" value={engineOutputPath}
+                  onChange={(event) => setEngineOutputPath(event.target.value)}
+                  placeholder="例如：C:\\Users\\你的用户名\\Desktop\\ui-engine-output" />
+                <p>填写本机目录。生成后会创建 <code>res/layout</code> 和 <code>res/imageset</code>；再将它们复制到引擎已登记的资源目录，用“引擎 UIEditor”打开。这里不是引擎源码路径，也不会修改真实引擎工程。</p>
+              </div>
+              <div className="export-actions">
+                <button className="btn primary export-action" disabled={!engineExport || engineExport.errors.length > 0 || !engineOutputPath.trim()}
+                  onClick={() => { void exportEnginePackage(); }}>生成引擎测试包</button>
+                <button className="btn export-action" disabled={!engineExport || engineExport.errors.length > 0}
+                  onClick={exportEngineJson}>下载最终 JSON</button>
+              </div>
               <details className="export-preview">
                 <summary>查看 JSON 预览</summary>
                 <pre>{engineExport?.json ?? ""}</pre>

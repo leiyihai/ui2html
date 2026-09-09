@@ -124,7 +124,13 @@ body {
 .export-check.has-errors strong { color: #f0a8a8; }
 .export-diagnostics { margin: 8px 0; padding: 8px 12px; border-left: 2px solid #b8964c; color: #d6bd78; font-size: 11px; line-height: 1.7; }
 .export-diagnostics.error { border-left-color: #b85f68; color: #efaaa9; }
-.export-action { margin-top: 12px; padding: 8px 16px; }
+.engine-export-path { margin-top: 18px; padding: 14px; border: 1px solid #2d3b48; border-radius: 6px; background: #151d25; }
+.engine-export-path label { display: block; margin-bottom: 7px; color: #d9e9f5; font-size: 12px; font-weight: 600; }
+.engine-export-path input { width: 100%; box-sizing: border-box; padding: 9px 10px; border: 1px solid #415363; border-radius: 4px; background: #0d1319; color: #e5f2fa; font: 12px ui-monospace, SFMono-Regular, Consolas, monospace; outline: none; }
+.engine-export-path input:focus { border-color: #6fc3ce; box-shadow: 0 0 0 2px rgba(111, 195, 206, .12); }
+.engine-export-path p { margin: 9px 0 0; color: #8499aa; font-size: 11px; line-height: 1.6; }
+.export-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.export-action { padding: 8px 16px; }
 .export-preview { margin-top: 22px; color: #91a8bd; font-size: 11px; }
 .export-preview summary { cursor: pointer; }
 .export-preview pre { max-height: 340px; overflow: auto; margin: 8px 0 0; padding: 12px; background: #11161c; border: 1px solid #2d3946; border-radius: 5px; color: #bcd1e2; font: 11px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; }

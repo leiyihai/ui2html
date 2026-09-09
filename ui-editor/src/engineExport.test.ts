@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { buildEngineJson } from "./engineExport";
-import type { CtrlType, ImageBinding, UINode } from "./types";
+import { readFileSync } from "node:fs";
+import { buildEngineJson, createEngineAssetManifest } from "./engineExport";
+import type { CtrlType, ImageBinding, UINode, UIScene } from "./types";
 
 function base(id: string, name: string, type: CtrlType, x = 0, y = 0, width = 100, height = 50): UINode {
   return {
@@ -18,6 +19,13 @@ function binding(name: string, assetPath: string): ImageBinding {
 }
 
 describe("self-developed engine JSON export", () => {
+  it("creates stable engine references for same-named assets", () => {
+    expect(createEngineAssetManifest(["panel/a.png", "button/a.png"], "demo_ui")).toEqual([
+      { assetPath: "panel/a.png", frameName: "a", reference: "set:demo_ui.json image:a" },
+      { assetPath: "button/a.png", frameName: "a_2", reference: "set:demo_ui.json image:a_2" },
+    ]);
+  });
+
   it("exports a root window, absolute Area and typed image slots", () => {
     const root = base("root", "root", "Layout", 0, 0, 1280, 720);
     const button = base("button", "btn_confirm", "Button", 12, 24, 120, 48);
@@ -29,11 +37,11 @@ describe("self-developed engine JSON export", () => {
     const json = JSON.parse(result.json);
     expect(json.Dialog.Window.Type).toBe("Layout");
     expect(json.Dialog.Window.Window[0].Property).toEqual([
-      { Name: "Area", Value: "{{0,12},{0,24},{0,120},{0,48}}" },
+      { Name: "Area", Value: "{{0,12},{0,24},{0,132},{0,72}}" },
       { Name: "HorizontalAlignment", Value: "Left" },
       { Name: "VerticalAlignment", Value: "Top" },
-      { Name: "NormalImage", Value: "normal.png" },
-      { Name: "PushedImage", Value: "pressed.png" },
+      { Name: "NormalImage", Value: "set:ui-project.json image:normal" },
+      { Name: "PushedImage", Value: "set:ui-project.json image:pressed" },
     ]);
   });
 
@@ -51,7 +59,7 @@ describe("self-developed engine JSON export", () => {
     expect(windows[0].Property).toContainEqual({ Name: "TextVertAlignment", Value: "Centre" });
     expect(windows[0].Property).toContainEqual({ Name: "TextColor", Value: "#fff" });
     expect(windows[1].Property).toContainEqual({ Name: "Progress", Value: "0.75" });
-    expect(windows[1].Property).toContainEqual({ Name: "ProgressImage", Value: "fill.png" });
+    expect(windows[1].Property).toContainEqual({ Name: "ProgressImage", Value: "set:ui-project.json image:fill" });
   });
 
   it("converts visual positions into offsets relative to engine alignment", () => {
@@ -69,12 +77,14 @@ describe("self-developed engine JSON export", () => {
     root.children = [centered, rightBottom];
 
     const json = JSON.parse(buildEngineJson({ designWidth: 1000, designHeight: 600, nodes: [root] }).json);
-    expect(json.Dialog.Window.Window[0].Property[0]).toEqual({ Name: "Area", Value: "{{0,-100},{0,-50},{0,200},{0,100}}" });
-    expect(json.Dialog.Window.Window[1].Property[0]).toEqual({ Name: "Area", Value: "{{0,-160},{0,-90},{0,120},{0,60}}" });
+    expect(json.Dialog.Window.Window[0].Property[0]).toEqual({ Name: "Area", Value: "{{0,0},{0,0},{0,200},{0,100}}" });
+    expect(json.Dialog.Window.Window[1].Property[0]).toEqual({ Name: "Area", Value: "{{0,-40},{0,-30},{0,80},{0,30}}" });
   });
 
   it("anchors a full-canvas root at the design origin", () => {
     const root = base("root", "root", "Layout", 0, 0, 1280, 720);
+    root.anchor.parentX = 0.5;
+    root.anchor.parentY = 1;
     root.anchor.offsetX = 24;
     root.anchor.offsetY = 18;
     const child = base("child", "child", "StaticText", 20, 30, 100, 30);
@@ -82,7 +92,7 @@ describe("self-developed engine JSON export", () => {
 
     const json = JSON.parse(buildEngineJson({ designWidth: 1280, designHeight: 720, nodes: [root] }).json);
     expect(json.Dialog.Window.Property[0]).toEqual({ Name: "Area", Value: "{{0,0},{0,0},{0,1280},{0,720}}" });
-    expect(json.Dialog.Window.Window[0].Property[0]).toEqual({ Name: "Area", Value: "{{0,20},{0,30},{0,100},{0,30}}" });
+    expect(json.Dialog.Window.Window[0].Property[0]).toEqual({ Name: "Area", Value: "{{0,20},{0,30},{0,120},{0,60}}" });
   });
 
   it("does not export the editor-only selected state", () => {
@@ -106,5 +116,33 @@ describe("self-developed engine JSON export", () => {
     expect(result.errors).toContain("节点「missing」未指定控件类型");
     expect(result.warnings).toContain("节点「empty」的编辑器类型 empty 将按 Layout 导出");
     expect(JSON.parse(result.json).Dialog.Window.Window[1].Type).toBe("Layout");
+  });
+
+  it("keeps the position_test visual hierarchy compatible with engine Area semantics", () => {
+    const scene = JSON.parse(readFileSync(new URL("../../测试/position_test.ui.json", import.meta.url), "utf8")) as UIScene;
+    const json = JSON.parse(buildEngineJson(scene, { atlasName: "position_test" }).json);
+    const root = json.Dialog.Window;
+    const center = root.Window[0];
+    const centerText = center.Window[0];
+    const button = root.Window[1];
+    const left = root.Window[2];
+    const middle = root.Window[3];
+    const right = root.Window[4];
+
+    expect(root.Property[0]).toEqual({ Name: "Area", Value: "{{0,0},{0,0},{0,1280},{0,720}}" });
+    expect(center.Property[0]).toEqual({ Name: "Area", Value: "{{0,-16},{0,-12},{0,346},{0,156}}" });
+    expect(center.Property).toContainEqual({ Name: "LayoutBackImage", Value: "set:position_test.json image:img_purple_content_background" });
+    expect(centerText.Property[0]).toEqual({ Name: "Area", Value: "{{0,104},{0,0},{0,258},{0,26}}" });
+    expect(centerText.Property).toContainEqual({ Name: "Font", Value: "HT26" });
+    expect(centerText.Property).toContainEqual({ Name: "TextHorzAlignment", Value: "Centre" });
+    expect(centerText.Property).toContainEqual({ Name: "TextVertAlignment", Value: "Centre" });
+    expect(button.Property[0]).toEqual({ Name: "Area", Value: "{{0,-23},{0,-78},{0,171},{0,-8}}" });
+    expect(left.Property[0]).toEqual({ Name: "Area", Value: "{{0,33},{0,33},{0,267},{0,131}}" });
+    expect(middle.Property[0]).toEqual({ Name: "Area", Value: "{{0,-21},{0,39},{0,213},{0,137}}" });
+    expect(right.Property[0]).toEqual({ Name: "Area", Value: "{{0,-42},{0,30},{0,192},{0,128}}" });
+    for (const window of [center, left, middle, right]) {
+      expect(window.Property.filter((item: { Name: string }) => /Image$|ImageName$/.test(item.Name))
+        .every((item: { Value: string }) => /^set:position_test\.json image:/.test(item.Value))).toBe(true);
+    }
   });
 });
