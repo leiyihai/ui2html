@@ -312,7 +312,9 @@ PSD 仅作为一次性或追加式导入源：导入时读取图层、文件夹�
 - 新增或替换 imageset 后应重启引擎 UIEditor，再重新打开 JSON，避免资源位置列表或已加载资源缓存导致误判。
 - 当前验证已确认：将测试 JSON 放入启用游戏 `g1048` 的 `res/layout`，将配套图集放入 `g1048` 的 `res/imageset`，引擎 UIEditor 可以正确显示节点和视觉效果。该验证只产生测试资源文件，不修改引擎代码。
 - 当前验证中，节点的 `Area`、图片资源、`Text`、`HorizontalAlignment` 和 `VerticalAlignment` 均正确；文字节点仍可能出现视觉位置偏差，优先按字体度量差异排查，不直接判定为坐标转换错误。
-- 引擎 UIEditor 的文字 `Font` 属性是预设枚举（例如 `DEFAULT_HT16`、`HT20` 等），不能像 UI2HTML 编辑器一样直接指定字体文件和具体字号。因此后续导出需要增加 UI2HTML 字体信息到引擎预设字体的映射策略，并在字体不等价时允许文字位置存在可校正偏差；本轮只记录，不处理。
+- 引擎 UIEditor 的文字 `Font` 属性是预设枚举（例如 `DEFAULT_HT16`、`HT20` 等），不能像 UI2HTML 编辑器一样直接指定字体文件和具体字号。现已确认项目 `GUIResConfig.json` 中的预设使用 `DroidSans.ttf`，字号为 `HT8、HT10、HT12、HT14、HT16、HT18、HT20、HT22、HT24、HT26、HT28、HT30、HT32、HT34、HT36、HT48、HT64、HT72、HT120、HT160`；`DEFAULT_HTn` 与对应 `HTn` 为同字号别名。
+- UI2HTML 编辑器默认使用 `DroidSans`（项目内置字体）绘制文本；PSD 导入的文字无论原字体名称是什么，都替换为 `DroidSans`，字号向上取最近的引擎预设字号，以避免字体替换后视觉变小。字号低于 `HT8` 或高于 `HT160` 时限制到边界，并在导出时给出警告；用户仍可通过现有全局字体入口主动覆盖预览字体，但引擎 JSON 始终输出可识别的 `HTn` 预设。
+- 文本在 UI2HTML 画布预览、HTML 预览和引擎 JSON 中默认水平、垂直居中；引擎 JSON 对文本节点写入 `TextHorzAlignment=Centre` 与 `TextVertAlignment=Centre`。这两个对齐属性属于文本默认行为，与节点的 `Parent Anchor`（引擎 `HorizontalAlignment/VerticalAlignment`）分开处理。
 - `position_test` 实测根节点 `layout_main_screen` 为 `Layout`，`Area={{0,0},{0,0},{0,1280},{0,720}}`，`HorizontalAlignment=Left`、`VerticalAlignment=Top`，`LayoutBackImage=set:position_test.json image:img_gray_background`；与导出结果一致。
 - `position_test` 实测图片节点 `img_left_region` 为 `StaticImage`，左上对齐，`Area={{0,33},{0,33},{0,267},{0,131}}`，`ImageName=set:position_test.json image:img_left_region_red`；与导出结果一致，其他通用默认属性无异常。
 - `position_test` 实测图片节点 `img_center_region` 为 `StaticImage`，`HorizontalAlignment=Centre`、`VerticalAlignment=Top`，`Area={{0,-21},{0,39},{0,213},{0,137}}`，`ImageName=set:position_test.json image:img_center_region_green`；与导出结果一致。
@@ -320,7 +322,7 @@ PSD 仅作为一次性或追加式导入源：导入时读取图层、文件夹�
 - `position_test` 实测层级为：`layout_main_screen` 下包含 `layout_center_content_panel`（子节点 `txt_center_region_text`）、`btn_primary_action`（子节点 `txt_button_label`）、`img_left_region`、`img_center_region` 和 `img_right_region`；该层级与导出结果一致。嵌套 Layout/文字的属性数据仍作为后续截图核对项。
 - `position_test` 实测嵌套 Layout `layout_center_content_panel` 的 `Area={{0,-16},{0,-12},{0,346},{0,156}}`，`HorizontalAlignment=Centre`、`VerticalAlignment=Centre`，`LayoutBackImage=set:position_test.json image:img_purple_content_background`；与导出结果一致。
 - `position_test` 实测文字节点 `txt_center_region_text` 的 `Area={{0,104},{0,0},{0,258},{0,26}}`，`HorizontalAlignment=Left`、`VerticalAlignment=Centre`，`Text=中间区域文本`，文字对齐为左上且换行关闭；位置、内容和对齐与导出结果一致。UIEditor 属性面板显示 `Font=DEFAULT_HT16`，而测试导出 JSON 原始写入的是 `NotoSansHans-Black`，表明引擎可能将未注册/不支持的字体名回退为默认预设字体；该字体回退是文字视觉位置偏差的重点排查方向。
-- 后续实现“导出自研引擎 JSON”时，导出适配层需要额外提供资源部署/验证说明或可选的测试 staging 包，明确区分“桌面导出文件”和“引擎资源目录中的可加载文件”；本结论本轮只记录，不改变现有导出行为。
+- 后续实现“导出自研引擎 JSON”时，导出适配层需要额外提供资源部署/验证说明或可选的测试 staging 包，明确区分“桌面导出文件”和“引擎资源目录中的可加载文件”；本结论只记录资源部署验证，不改变现有导出行为。
 
 ## Acceptance Criteria
 
@@ -339,6 +341,7 @@ PSD 仅作为一次性或追加式导入源：导入时读取图层、文件夹�
 - `root` 文件夹生成空 Layout；普通文件夹生成 Layout 并保留导入后的子层级。
 - 图片有效像素被裁切为独立 PNG，裁切后画面位置和尺寸视觉不变；全透明图片被跳过并提示。
 - 文字图层成为可编辑 `StaticText`；复杂效果成为独立 PNG；两者均不依赖 PSD。
+- 文本默认使用引擎 UIEditor 的 `DroidSans` 字体；PSD 原字体不作为工程运行时依赖，导入时统一替换为 `DroidSans`，字号映射到不小于原视觉字号的最近引擎预设值。
 - 菜单和拖拽图片支持任意系统路径、批量导入、自动错开、自动选择和失败汇总。
 - 导入到 Layout 时保持世界位置；空 Layout 自动扩展，根固定 Layout 不扩展。
 
@@ -363,6 +366,8 @@ PSD 仅作为一次性或追加式导入源：导入时读取图层、文件夹�
 - 同内容同尺寸资源去重；不同尺寸或不同内容不错误合并；资源命名冲突不覆盖旧文件。
 - 被引用资源不可直接删除；替换和重命名同步全部引用，且不改变节点布局和控件属性。
 - `.ui.json` 只引用独立图片，最终引擎 JSON 能映射到工程资源引用，二者可以相互校验。
+- 文本导出使用 `HTn` 引擎字体预设，并写入 `TextHorzAlignment=Centre`、`TextVertAlignment=Centre`；编辑器画布和 HTML 预览也采用相同的水平/垂直居中规则。
+- 工具栏提供项目字体下拉框和相邻的循环切换按钮；选择下拉项立即将字体应用到全部文本，不需要回车确认；循环切换按字体列表顺序前进并从末项回到首项。
 - 导出 JSON 结构、节点类型、Area、图片槽位和资源引用正确；导出校验失败时不生成正式结果。
 - 九宫格、布局适配和动画不出现在当前版本工作区，后续可独立增加。
 

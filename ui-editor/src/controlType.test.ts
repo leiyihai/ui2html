@@ -93,6 +93,7 @@ describe("control type marking", () => {
       content: "",
       fontSize: 20,
       color: "#ffffff",
+      font: "DroidSans",
       mode: "fixed",
       minFontSize: 12,
     });

@@ -1,4 +1,5 @@
 import { LayoutEngine } from "./layoutEngine";
+import { mapToEngineFont } from "./engineFont";
 import { resourceSlotDefinitions } from "./resourceBinding";
 import { progressConfig } from "./progressControl";
 import type { LayoutResult, ResourceSlot, UINode, UIScene } from "./types";
@@ -114,9 +115,15 @@ function buildWindow(node: UINode, layout: LayoutResult, warnings: string[], err
     addProperty(properties, "ImageName", reference);
   }
   if (node.text) {
+    const font = mapToEngineFont(node.text.fontSize);
     addProperty(properties, "Text", node.text.content);
-    addProperty(properties, "Font", node.text.font);
+    addProperty(properties, "Font", font.name);
+    addProperty(properties, "TextHorzAlignment", "Centre");
+    addProperty(properties, "TextVertAlignment", "Centre");
     addProperty(properties, "TextColor", node.text.color);
+    if (font.clamped) {
+      warnings.push(`节点「${node.name}」的字号 ${String(node.text.fontSize)} 超出引擎范围，已映射为 ${font.name}`);
+    }
   }
   if (type === "ProgressBar" || type === "Slider") {
     const progress = progressConfig(node);

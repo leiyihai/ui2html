@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { ENGINE_EDITOR_FONT_FAMILY } from "../engineFont";
+import { nextFontInCycle } from "../fontPicker";
 
 interface Props {
   projectName: string;
@@ -23,6 +25,7 @@ interface Props {
 /** 应用栏：工程生命周期、素材导入、历史与预览导出。 */
 export default function Appbar(p: Props) {
   const [fontList, setFontList] = useState<string[]>([]);
+  const [selectedFont, setSelectedFont] = useState(ENGINE_EDITOR_FONT_FAMILY);
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -32,10 +35,21 @@ export default function Appbar(p: Props) {
       document.fonts.forEach((font) => {
         if (font.family) families.add(font.family.replace(/^"/, "").replace(/"$/, ""));
       });
-      setFontList([...families]);
+      setFontList([ENGINE_EDITOR_FONT_FAMILY, ...[...families].filter((font) => font !== ENGINE_EDITOR_FONT_FAMILY)]);
     })();
     return () => { alive = false; };
   }, []);
+
+  const applyFont = (font: string) => {
+    if (!font) return;
+    setSelectedFont(font);
+    p.onGlobalFont(font);
+  };
+
+  const cycleFont = () => {
+    const nextFont = nextFontInCycle(fontList, selectedFont);
+    if (nextFont) applyFont(nextFont);
+  };
 
   return (
     <header className="appbar">
@@ -80,20 +94,25 @@ export default function Appbar(p: Props) {
       <button className="btn primary" disabled={!p.hasScene} onClick={p.onSave} title="保存工程 (Ctrl+S)">保存</button>
       <button className="btn" disabled={!p.hasScene} onClick={p.onSaveAs}>另存为</button>
       <span className="grow" />
-      <input
-        className="global-font"
-        list="global-font-list"
-        placeholder="项目字体（应用到全部文本）"
-        disabled={!p.hasScene}
-        onChange={(event) => { const value = event.target.value.trim(); if (value) p.onGlobalFont(value); }}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            const value = event.currentTarget.value.trim();
-            if (value) p.onGlobalFont(value);
-          }
-        }}
-      />
-      <datalist id="global-font-list">{fontList.map((font) => <option key={font} value={font} />)}</datalist>
+      <div className="font-picker" title="选择字体后立即应用到全部文本">
+        <select
+          className="global-font"
+          aria-label="项目字体"
+          value={selectedFont}
+          disabled={!p.hasScene || !fontList.length}
+          onChange={(event) => applyFont(event.target.value)}
+        >
+          {fontList.map((font) => <option key={font} value={font}>{font}</option>)}
+        </select>
+        <button
+          className="btn font-cycle"
+          type="button"
+          aria-label="循环切换字体"
+          title="循环切换字体"
+          disabled={!p.hasScene || fontList.length < 2}
+          onClick={cycleFont}
+        >↻</button>
+      </div>
       <span className="vsep" />
       <button className="btn" disabled={!p.canUndo} onClick={p.onUndo} title="后退一步 (Ctrl+Z)">↩ 撤销</button>
       <button className="btn" disabled={!p.canRedo} onClick={p.onRedo} title="前进一步 (Ctrl+X)">↪ 重做</button>

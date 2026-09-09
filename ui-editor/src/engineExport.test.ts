@@ -46,6 +46,9 @@ describe("self-developed engine JSON export", () => {
     const result = buildEngineJson({ designWidth: 320, designHeight: 180, nodes: [text, progress] });
     const windows = JSON.parse(result.json).Dialog.Window.Window;
     expect(windows[0].Property).toContainEqual({ Name: "Text", Value: "标题" });
+    expect(windows[0].Property).toContainEqual({ Name: "Font", Value: "HT24" });
+    expect(windows[0].Property).toContainEqual({ Name: "TextHorzAlignment", Value: "Centre" });
+    expect(windows[0].Property).toContainEqual({ Name: "TextVertAlignment", Value: "Centre" });
     expect(windows[0].Property).toContainEqual({ Name: "TextColor", Value: "#fff" });
     expect(windows[1].Property).toContainEqual({ Name: "Progress", Value: "0.75" });
     expect(windows[1].Property).toContainEqual({ Name: "ProgressImage", Value: "fill.png" });

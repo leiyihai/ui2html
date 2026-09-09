@@ -6,6 +6,7 @@
 import { readPsd, type Layer } from "ag-psd";
 import type { CtrlType, UINode, UIScene } from "./types";
 import { defaultFolderCtrlType } from "./controlType";
+import { ENGINE_EDITOR_FONT_FAMILY, normalizeEditorFontSize } from "./engineFont";
 import { cropImportedSceneImages } from "./imageImport";
 
 let layerIdSeq = 1;
@@ -139,13 +140,16 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
     // 单行文本高 ≈ 字号 × leading(≈1.2)。fsRaw 明显小于估算一半时视为异常。
     const fsRaw = layer.text.style?.fontSize ?? layer.text.styleRuns?.[0]?.style?.fontSize ?? 0;
     const fsEst = h / 1.2;
-    const fontSize = fsRaw > 0 && fsRaw >= fsEst / 2 ? fsRaw : fsEst;
+    const sourceFontSize = fsRaw > 0 && fsRaw >= fsEst / 2 ? fsRaw : fsEst;
+    // 引擎字号是离散预设；向上取最近值，避免换成 DroidSans 后文字视觉变小。
+    const fontSize = normalizeEditorFontSize(sourceFontSize);
     return {
       ...base, image: null, ctrl: { type: "StaticText" as CtrlType }, text: {
         content: layer.text.text,
         fontSize,
         color: textColor(layer),
-        font: layer.text.style?.font?.name ?? undefined,
+        // PSD 字体不一定随项目发布，编辑器统一使用与引擎相同的 DroidSans。
+        font: ENGINE_EDITOR_FONT_FAMILY,
         mode: "auto", // 默认单行随内容延伸，可在属性面板切换
         minFontSize: Math.max(6, Math.round(fontSize * 0.5)),
       }, zIndex: i,

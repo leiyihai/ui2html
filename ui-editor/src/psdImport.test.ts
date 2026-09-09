@@ -63,4 +63,17 @@ describe("PSD folder import", () => {
     expect(scene.nodes[0].ctrl).toEqual({ type: "Layout" });
     expect(scene.nodes[0].children?.[0].ctrl).toEqual({ type: "Button" });
   });
+
+  it("normalizes imported text to the engine font and supported size", () => {
+    vi.mocked(readPsd).mockReturnValue({
+      width: 320,
+      height: 180,
+      children: [{ id: 20, name: "标题", left: 20, top: 30, right: 180, bottom: 54,
+        text: { text: "标题", style: { font: { name: "SomePsdFont" }, fontSize: 17 } },
+      }],
+    } as never);
+
+    const { scene } = importPsd(new ArrayBuffer(0));
+    expect(scene.nodes[0].text).toMatchObject({ font: "DroidSans", fontSize: 18 });
+  });
 });

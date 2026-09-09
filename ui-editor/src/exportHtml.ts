@@ -217,10 +217,11 @@ function draw() {
       if (im && im.complete) ctx.drawImage(im, r.r.x, r.r.y, r.r.w, r.r.h);
     } else if (r.n.txt) {
       var fsScale = SCENE.scaleMode === "fill" ? vw / SCENE.width : Math.min(vw / SCENE.width, vh / SCENE.height);
-      ctx.font = r.n.txt.fs * fsScale + 'px ' + (r.n.txt.f ? '"' + r.n.txt.f + '", ' : '') + '"PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.font = r.n.txt.fs * fsScale + 'px ' + (r.n.txt.f ? '"' + r.n.txt.f + '", ' : '') + '"DroidSans","PingFang SC","Microsoft YaHei",sans-serif';
       ctx.fillStyle = r.n.txt.c;
-      ctx.textBaseline = "top";
-      ctx.fillText(r.n.txt.t, r.r.x, r.r.y, r.r.w);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(r.n.txt.t, r.r.x + r.r.w / 2, r.r.y + r.r.h / 2, r.r.w);
     }
     ctx.restore();
   });

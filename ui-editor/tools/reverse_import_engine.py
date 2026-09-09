@@ -28,6 +28,8 @@ from PIL import Image
 DESIGN_WIDTH = 1280
 DESIGN_HEIGHT = 720
 SCHEMA_VERSION = 3
+ENGINE_FONT_SIZES = (8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 48, 64, 72, 120, 160)
+ENGINE_EDITOR_FONT = "DroidSans"
 TYPE_MAP = {
     "Layout": "Layout",
     "Button": "Button",
@@ -56,6 +58,11 @@ RESOURCE_SLOTS = (
 )
 AREA_PAIR_RE = re.compile(r"\{\s*([^{}]+?)\s*\}")
 RESOURCE_RE = re.compile(r"set\s*:\s*([^\s]+?)\s+image\s*:\s*(.+?)\s*$", re.I)
+
+
+def engine_font_size(value: Any) -> int:
+    size = number(value, 16)
+    return next((candidate for candidate in ENGINE_FONT_SIZES if candidate >= size), ENGINE_FONT_SIZES[-1])
 
 
 def number(value: Any, default: float = 0.0) -> float:
@@ -354,12 +361,12 @@ class Importer:
             "ctrl": {"type": ctrl_type},
         }
         if props.get("Text") is not None and ctrl_type not in ("StaticImage",):
-            font_size = max(8, min(96, round(rect.height * 0.72)))
+            font_size = engine_font_size(parse_engine_font_size(props.get("Font")) or rect.height * 0.72)
             node["text"] = {
                 "content": props.get("Text", ""),
                 "fontSize": font_size,
                 "color": rgba_to_css(props.get("TextColor")),
-                "font": props.get("Font") or undefined_font(),
+                "font": ENGINE_EDITOR_FONT,
                 "mode": "fixed",
                 "minFontSize": max(8, font_size // 2),
             }
@@ -446,8 +453,12 @@ class Importer:
         return {"source": str(self.source), "project": str(ui_path), "assets": str(self.assets_dir), "report": str(report_path), "nodes": len(self.raw_nodes), "assetsCount": report["assetCount"], "warnings": len(self.warnings)}
 
 
-def undefined_font() -> str:
-    return "DEFAULT_HT16"
+def parse_engine_font_size(value: Any) -> int | None:
+    match = re.match(r"^(?:DEFAULT_)?HT(\d+)$", str(value or ""), re.I)
+    if not match:
+        return None
+    size = int(match.group(1))
+    return size if size in ENGINE_FONT_SIZES else None
 
 
 def main() -> int:

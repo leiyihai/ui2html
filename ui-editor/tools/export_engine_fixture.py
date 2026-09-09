@@ -19,6 +19,15 @@ from typing import Any
 from PIL import Image
 
 
+ENGINE_FONT_SIZES = (8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 48, 64, 72, 120, 160)
+
+
+def engine_font_name(value: Any) -> str:
+    size = num(value, 16)
+    target = next((candidate for candidate in ENGINE_FONT_SIZES if candidate >= size), ENGINE_FONT_SIZES[-1])
+    return f"HT{target}"
+
+
 def num(value: Any, default: float = 0.0) -> float:
     try:
         return float(value)
@@ -156,8 +165,9 @@ class Exporter:
             result.append({"Name": "Alpha", "Value": fmt(num(node.get("opacity"), 1))})
         if props and ctrl_type != "StaticImage":
             result.append({"Name": "Text", "Value": str(props.get("content", ""))})
-            if props.get("font"):
-                result.append({"Name": "Font", "Value": str(props["font"])})
+            result.append({"Name": "Font", "Value": engine_font_name(props.get("fontSize", 16))})
+            result.append({"Name": "TextHorzAlignment", "Value": "Centre"})
+            result.append({"Name": "TextVertAlignment", "Value": "Centre"})
             text_color = color(props.get("color"))
             if text_color:
                 result.append({"Name": "TextColor", "Value": text_color})

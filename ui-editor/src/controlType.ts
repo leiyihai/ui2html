@@ -1,4 +1,5 @@
 import type { CtrlType, UINode } from "./types";
+import { ENGINE_EDITOR_FONT_FAMILY, normalizeEditorFontSize } from "./engineFont";
 import { defaultProgressConfig } from "./progressControl";
 
 const LIST_TYPES: Partial<Record<CtrlType, "vertical" | "horizontal" | "grid">> = {
@@ -31,8 +32,9 @@ export function defaultFolderCtrlType(name?: string, isRoot = false): CtrlType {
 export function createDefaultEditText(): NonNullable<UINode["text"]> {
   return {
     content: "",
-    fontSize: 20,
+    fontSize: normalizeEditorFontSize(20),
     color: "#ffffff",
+    font: ENGINE_EDITOR_FONT_FAMILY,
     mode: "fixed",
     minFontSize: 12,
   };

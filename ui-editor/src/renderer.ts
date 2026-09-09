@@ -2,6 +2,7 @@
 // uiCanvas：UI 图片；overlayCanvas：选中框 / 锚点 / Safe Area / 网格 / 设计分辨率边框
 
 import type { ImageBinding, LayoutResult, LayoutContext, ResourceSlot, UINode } from "./types";
+import { ENGINE_EDITOR_FONT_FAMILY } from "./engineFont";
 import { progressConfig } from "./progressControl";
 import { fitFontSize, wrapText, LINE_HEIGHT } from "./textMeasure";
 
@@ -172,7 +173,7 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
     } else if (node.text) {
       const t = node.text;
       const scale = Math.min(result.scaleX, result.scaleY);
-      const fam = t.font ? `"${t.font}", ` : "";
+      const fam = `"${t.font || ENGINE_EDITOR_FONT_FAMILY}", `;
       ctx.save();
       // 所有模式都裁剪到 rect：auto 内容超出尺寸宽度时裁切，fixed/fit 限框内
       ctx.beginPath();
@@ -185,15 +186,13 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
       }
       ctx.font = `${fs * scale}px ${fam}"PingFang SC", "Microsoft YaHei", sans-serif`;
       ctx.fillStyle = t.color;
-      ctx.textBaseline = "top";
-      if (t.mode === "auto") {
-        // 单行随内容延伸，不换行不裁切
-        ctx.fillText(t.content, rect.x, rect.y);
-      } else {
-        const lines = wrapText(t.content, fs, rect.width / result.scaleX);
-        for (let li = 0; li < lines.length; li++) {
-          ctx.fillText(lines[li], rect.x, rect.y + li * fs * LINE_HEIGHT * result.scaleY);
-        }
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const lines = t.mode === "auto" ? [t.content] : wrapText(t.content, fs, rect.width / result.scaleX);
+      const lineHeight = fs * LINE_HEIGHT * result.scaleY;
+      const firstLineCenter = rect.y + (rect.height - lineHeight * lines.length) / 2 + lineHeight / 2;
+      for (let li = 0; li < lines.length; li++) {
+        ctx.fillText(lines[li], rect.x + rect.width / 2, firstLineCenter + li * lineHeight);
       }
       ctx.restore();
     }
