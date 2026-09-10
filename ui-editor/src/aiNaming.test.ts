@@ -46,11 +46,14 @@ describe("AI naming pipeline", () => {
 
   it("sends a compact layer and unique asset manifest", () => {
     const image = node("a", "背景", { type: "StaticImage" }, true);
+    image.originalName = "背包背景";
     const scene: UIScene = { designWidth: 100, designHeight: 100, nodes: [{ ...image }, { ...image, id: "b" }] };
     const manifest = buildNamingManifest(scene);
     expect(manifest.nodes).toHaveLength(2);
+    expect(manifest.nodes[0].originalName).toBe("背包背景");
     expect(manifest.assets).toHaveLength(1);
     expect(manifest.assets[0].nodeIds).toEqual(["a", "b"]);
+    expect(manifest.assets[0].sourceNames).toContain("背包背景");
     expect(manifest.design).toEqual({ width: 100, height: 100 });
   });
 
@@ -62,6 +65,17 @@ describe("AI naming pipeline", () => {
     });
     expect(named.scene.nodes[0].name).toBe("btn_custom");
     expect(named.analysis.nodes.manual.source).toBe("manual");
+  });
+
+  it("can explicitly overwrite manual names when the user triggers a full AI rename", () => {
+    const original = node("manual", "按钮", { type: "Button" });
+    original.naming = { source: "manual", confidence: 1, suffix: "按钮" };
+    const named = applyAiNaming({ designWidth: 100, designHeight: 100, nodes: [original] }, {
+      nodes: [{ id: "manual", suffix: "confirm", confidence: 0.96 }],
+    }, { overwriteManual: true });
+
+    expect(named.scene.nodes[0].name).toBe("btn_confirm");
+    expect(named.analysis.nodes.manual.source).toBe("ai");
   });
 
   it("does not mark every node red when local fallback naming is the only available result", () => {

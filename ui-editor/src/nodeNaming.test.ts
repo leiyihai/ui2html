@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CtrlType, UINode } from "./types";
-import { autoControlName, controlNamePrefix, renameControlForType } from "./nodeNaming";
+import { autoControlName, controlNamePrefix, controlTypeName, quickControlName, renameControlForType } from "./nodeNaming";
 
 function sibling(id: string, name: string): UINode {
   return {
@@ -61,5 +61,11 @@ describe("automatic control naming", () => {
     source.ctrl = { type: "Button" };
 
     expect(renameControlForType(source, "Slider", [])).toBe("slider_confirm_purchase");
+  });
+
+  it("creates a Chinese整理名称 for the one-step T action", () => {
+    expect(controlTypeName("ProgressBar")).toBe("进度条");
+    expect(quickControlName(sibling("source", "经验"), "ProgressBar", [])).toBe("进度条");
+    expect(quickControlName(sibling("source", "旧名"), "Button", [sibling("other", "按钮")])).toBe("按钮_2");
   });
 });

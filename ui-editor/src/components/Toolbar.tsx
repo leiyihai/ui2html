@@ -87,7 +87,7 @@ export default function Appbar(p: Props) {
           }}
         />
       </label>
-      <button className="btn" disabled={!p.hasScene} onClick={p.onAiRename} title="重新调用 Codex CLI 批量命名">
+      <button className="btn" disabled={!p.hasScene} onClick={p.onAiRename} title="资源绑定完成后，主动调用 Codex CLI 统一命名">
         AI 命名
       </button>
       <span className="vsep" />

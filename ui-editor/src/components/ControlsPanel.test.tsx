@@ -6,6 +6,7 @@ import ControlsPanel, { shouldAutoExpandForFocus } from "./ControlsPanel";
 const bag: UINode = {
   id: "bag",
   name: "bag",
+  originalName: "背包",
   image: null,
   children: [],
   ctrl: { type: "Layout" },
@@ -34,6 +35,10 @@ describe("ControlsPanel inline rename", () => {
       <ControlsPanel
         nodes={[bag]}
         selectedIds={[bag.id]}
+        panelStyle="editor"
+        onPanelStyleChange={vi.fn()}
+        nameMode="ai"
+        onNameModeChange={vi.fn()}
         renamingId={bag.id}
         renameCaretMode="all"
         onSelect={vi.fn()}
@@ -47,5 +52,46 @@ describe("ControlsPanel inline rename", () => {
     expect(html).toContain('class="inline-rename"');
     expect(html).toContain('value="bag"');
     expect(html).toContain("Alt+W 关闭");
+  });
+
+  it("switches the hierarchy between PSD and AI names", () => {
+    const original = renderToStaticMarkup(
+      <ControlsPanel
+        nodes={[bag]}
+        selectedIds={[]}
+        panelStyle="psd"
+        onPanelStyleChange={vi.fn()}
+        nameMode="original"
+        onNameModeChange={vi.fn()}
+        renamingId={null}
+        renameCaretMode="all"
+        onSelect={vi.fn()}
+        onToggleVisible={vi.fn()}
+        onToggleLock={vi.fn()}
+        onRename={vi.fn()}
+        onCancelRename={vi.fn()}
+      />,
+    );
+    const ai = renderToStaticMarkup(
+      <ControlsPanel
+        nodes={[bag]}
+        selectedIds={[]}
+        panelStyle="editor"
+        onPanelStyleChange={vi.fn()}
+        nameMode="ai"
+        onNameModeChange={vi.fn()}
+        renamingId={null}
+        renameCaretMode="all"
+        onSelect={vi.fn()}
+        onToggleVisible={vi.fn()}
+        onToggleLock={vi.fn()}
+        onRename={vi.fn()}
+        onCancelRename={vi.fn()}
+      />,
+    );
+
+    expect(original).toContain(">背包</span>");
+    expect(original).not.toContain(">bag</span>");
+    expect(ai).toContain(">bag</span>");
   });
 });

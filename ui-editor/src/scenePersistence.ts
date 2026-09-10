@@ -16,6 +16,7 @@ export interface SavedImageBinding {
 export interface SavedNode {
   id: string;
   name: string;
+  originalName?: string;
   assetPath?: string;
   assetName?: string;
   naming?: UINode["naming"];
@@ -64,6 +65,7 @@ function serializeNode(node: UINode, includeResources = true): SavedNode {
   const saved: SavedNode = {
     id: node.id,
     name: node.name,
+    ...(node.originalName !== undefined ? { originalName: node.originalName } : {}),
     ...(node.assetPath ? { assetPath: node.assetPath } : {}),
     ...(node.assetName ? { assetName: node.assetName } : {}),
     ...(node.naming ? { naming: { ...node.naming } } : {}),
@@ -175,6 +177,7 @@ function hydrateNode(saved: SavedNode, assets: Map<string, HTMLCanvasElement>, m
   return {
     id: saved.id,
     name: saved.name,
+    ...(saved.originalName !== undefined ? { originalName: saved.originalName } : {}),
     image,
     ...(saved.assetPath ? { assetPath: saved.assetPath } : {}),
     ...(saved.assetName ? { assetName: saved.assetName } : {}),

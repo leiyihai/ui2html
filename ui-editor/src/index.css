@@ -149,6 +149,13 @@ body {
 .controls-panel { position: relative; min-width: 220px; max-width: 480px; }
 .controls-panel .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .controls-panel .panel-head h3 { margin-bottom: 0; }
+.layer-style-switch { display: inline-flex; min-width: 0; margin-left: auto; border: 1px solid #334455; border-radius: 4px; overflow: hidden; }
+.layer-style-switch button, .layer-name-switch button { padding: 3px 6px; border: 0; border-right: 1px solid #334455; background: #1a222b; color: #77899b; cursor: pointer; font-size: 10px; white-space: nowrap; }
+.layer-name-switch { display: inline-flex; align-items: center; width: max-content; max-width: 100%; margin: 0 0 7px; border: 1px solid #334455; border-radius: 4px; overflow: hidden; }
+.layer-name-switch span { padding: 3px 6px; color: #5f7182; font-size: 10px; }
+.layer-style-switch button:last-child, .layer-name-switch button:last-child { border-right: 0; }
+.layer-style-switch button:hover, .layer-name-switch button:hover { color: #dcebf5; background: #263544; }
+.layer-style-switch button.on, .layer-name-switch button.on { color: #e5f6ff; background: #2d526b; box-shadow: inset 0 -2px #78c9df; }
 .controls-panel .panel-hint { margin: -4px 0 8px; color: #627184; font-size: 10px; white-space: nowrap; }
 .controls-panel .selection-count { color: #76afe3; font-size: 10px; white-space: nowrap; }
 .controls-panel .panel-resizer { position: absolute; z-index: 2; top: 0; right: -3px; bottom: 0; width: 6px; cursor: ew-resize; }
@@ -171,6 +178,12 @@ body {
 .controls-panel .ctrl-type-icon svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .controls-panel .ctrl-type-icon { color: #91a8bd; }
 .controls-panel li.sel .ctrl-type-icon { color: #cfe3f5; }
+.controls-panel .psd-layer-thumb, .controls-panel .psd-folder-icon, .controls-panel .psd-text-icon, .controls-panel .psd-empty-icon { width: 16px; height: 16px; flex: none; display: flex; align-items: center; justify-content: center; color: #aab7c4; }
+.controls-panel .psd-layer-thumb { overflow: hidden; border: 1px solid #435365; border-radius: 2px; background: repeating-conic-gradient(#26313d 0 25%, #1e2730 0 50%) 50% / 6px 6px; }
+.controls-panel .psd-layer-thumb img { width: 100%; height: 100%; object-fit: contain; }
+.controls-panel .psd-folder-icon svg, .controls-panel .psd-empty-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
+.controls-panel .psd-folder-icon { color: #d4ad68; }
+.controls-panel .psd-text-icon { color: #a9c6e2; font: 600 12px/1 sans-serif; }
 .type-pie-backdrop {
   position: fixed; inset: 0; z-index: 20; background: rgba(5, 8, 12, .08);
 }

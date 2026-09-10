@@ -6,6 +6,10 @@ import InlineRename from "./InlineRename";
 interface Props {
   nodes: UINode[];
   selectedIds: string[];
+  panelStyle: LayerPanelStyle;
+  onPanelStyleChange: (style: LayerPanelStyle) => void;
+  nameMode: LayerNameMode;
+  onNameModeChange: (mode: LayerNameMode) => void;
   onSelect: (id: string, intent: SelectionIntent) => void;
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
@@ -15,6 +19,26 @@ interface Props {
   onCancelRename: () => void;
   warningIds?: string[];
   focusNodeId?: string | null;
+}
+
+export type LayerNameMode = "original" | "ai";
+export type LayerPanelStyle = "psd" | "editor";
+
+function displayName(node: UINode, mode: LayerNameMode): string {
+  return mode === "original" ? (node.originalName ?? node.name) : node.name;
+}
+
+function PsdLayerIcon({ node }: { node: UINode }) {
+  if (node.image) {
+    let source = "";
+    try { source = node.image.toDataURL("image/png"); } catch { /* 测试画布或无效图片不显示缩略图 */ }
+    if (source) return <span className="psd-layer-thumb"><img src={source} alt="" /></span>;
+  }
+  if (node.children?.length || node.ctrl?.type === "Layout") {
+    return <span className="psd-folder-icon" aria-label="文件夹"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 5.5h4l1.6 1.7h7.4v6.3a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5Z" /><path d="M2.5 5.5V4a1.5 1.5 0 0 1 1.5-1.5h3l1.5 1.7h4" /></svg></span>;
+  }
+  if (node.text) return <span className="psd-text-icon" aria-label="文字">T</span>;
+  return <span className="psd-empty-icon" aria-label="图层"><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="3" width="12" height="12" rx="2" /></svg></span>;
 }
 
 export const TYPE_LABELS: Record<CtrlType, string> = {
@@ -115,6 +139,8 @@ function Row(p: {
   onToggleLock: (id: string) => void;
   renamingId: string | null;
   renameCaretMode: "all" | "prefix";
+  nameMode: LayerNameMode;
+  panelStyle: LayerPanelStyle;
   onRename: (id: string, name: string) => void;
   onCancelRename: () => void;
   warningIds?: string[];
@@ -156,7 +182,7 @@ function Row(p: {
             </svg>
           )}
         </button>
-        <TypeIcon type={p.n.ctrl?.type} />
+        {p.panelStyle === "psd" ? <PsdLayerIcon node={p.n} /> : <TypeIcon type={p.n.ctrl?.type} />}
         {p.renamingId === p.n.id ? (
           <InlineRename
             name={p.n.name}
@@ -164,7 +190,7 @@ function Row(p: {
             onCommit={(name) => p.onRename(p.n.id, name)}
             onCancel={p.onCancelRename}
           />
-        ) : <span className="name" title={p.n.name}>{p.n.name}</span>}
+        ) : <span className="name" title={p.nameMode === "original" ? `PSD 原名：${displayName(p.n, p.nameMode)}\n工程名称：${p.n.name}` : p.n.name}>{displayName(p.n, p.nameMode)}</span>}
         <button className="icon" title={p.n.visible === false ? "显示" : "隐藏"}
           onClick={(e) => {
             e.stopPropagation();
@@ -201,6 +227,8 @@ function Row(p: {
           onToggleLock={p.onToggleLock}
           renamingId={p.renamingId}
           renameCaretMode={p.renameCaretMode}
+          nameMode={p.nameMode}
+          panelStyle={p.panelStyle}
           onRename={p.onRename}
           onCancelRename={p.onCancelRename}
           warningIds={p.warningIds}
@@ -211,7 +239,7 @@ function Row(p: {
   );
 }
 
-/** 控件工作区：仅提供类似游戏引擎的层级管理，并展示节点当前控件类型图标。 */
+/** 层级工作区：在 PSD 整理和工程层级两种视图之间切换，但始终操作同一份节点树。 */
 export default function ControlsPanel(p: Props) {
   const sorted = [...p.nodes].sort((a, b) => b.zIndex - a.zIndex);
   const orderedIds = flattenLayerIds(p.nodes);
@@ -233,12 +261,21 @@ export default function ControlsPanel(p: Props) {
     window.addEventListener("pointerup", stop);
   };
   return (
-    <aside className="layer-panel controls-panel" style={{ width }}>
+    <aside className={`layer-panel controls-panel ${p.panelStyle === "psd" ? "psd-style" : "editor-style"}`} style={{ width }}>
       <div className="panel-head">
         <h3>层级</h3>
+        <div className="layer-style-switch" role="group" aria-label="层级面板样式">
+          <button className={p.panelStyle === "psd" ? "on" : ""} onClick={() => p.onPanelStyleChange("psd")} title="使用 Photoshop 风格整理层级">PSD 整理</button>
+          <button className={p.panelStyle === "editor" ? "on" : ""} onClick={() => p.onPanelStyleChange("editor")} title="使用 UI2HTML 控件层级视图">工程层级</button>
+        </div>
         {p.selectedIds.length > 1 && <span className="selection-count">已选 {p.selectedIds.length}</span>}
       </div>
-      <p className="panel-hint">Ctrl/⌘ 多选 · Ctrl+G 打组 · Alt+G 取消 · Ctrl+[/] 调整层级 · F2 重命名 · T 转换 · Ctrl+B 图片=绑定/控件=完成 · Alt+W 关闭</p>
+      <div className="layer-name-switch" role="group" aria-label="层级名称显示">
+        <span>名称</span>
+        <button className={p.nameMode === "original" ? "on" : ""} onClick={() => p.onNameModeChange("original")} title="只读显示 PSD 导入时的原始图层名称">PSD 原名</button>
+        <button className={p.nameMode === "ai" ? "on" : ""} onClick={() => p.onNameModeChange("ai")} title="显示可编辑的工程名称；AI 命名后为英文名称">工程名称</button>
+      </div>
+      <p className="panel-hint">Ctrl/⌘ 多选 · Ctrl+G 打组 · Alt+G 取消 · Ctrl+[/] 调整层级 · F2 重命名 · T 命名+转换 · Ctrl+B 图片=绑定/控件=完成 · Alt+W 关闭</p>
       <ul>
         {sorted.map((node) => (
           <Row
@@ -253,6 +290,8 @@ export default function ControlsPanel(p: Props) {
             onToggleLock={p.onToggleLock}
             renamingId={p.renamingId}
             renameCaretMode={p.renameCaretMode}
+            nameMode={p.nameMode}
+            panelStyle={p.panelStyle}
             onRename={p.onRename}
             onCancelRename={p.onCancelRename}
             warningIds={p.warningIds}

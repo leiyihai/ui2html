@@ -63,6 +63,7 @@ export function markControlType(node: UINode, type: CtrlType | null): UINode {
       ...node,
       id: `${node.id}-image`,
       name: `${node.name} Image`,
+      ...(node.originalName ? { originalName: `${node.originalName} Image` } : {}),
       image: node.image,
       children: undefined,
       ctrl: { type: "StaticImage" },

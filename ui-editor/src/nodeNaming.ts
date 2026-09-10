@@ -16,11 +16,44 @@ const CONTROL_NAME_PREFIXES: Partial<Record<CtrlType, string>> = {
   empty: "node_",
 };
 
+const CONTROL_TYPE_NAMES: Partial<Record<CtrlType, string>> = {
+  Layout: "布局",
+  Button: "按钮",
+  CheckBox: "复选框",
+  RadioButton: "单选框",
+  Edit: "输入框",
+  StaticImage: "静态图片",
+  StaticText: "静态文本",
+  ProgressBar: "进度条",
+  Slider: "滑动条",
+  List: "列表",
+  ListHorizontal: "横向列表",
+  GridView: "网格",
+  empty: "空节点",
+};
+
 const LEGACY_CONTROL_NAME_PREFIXES = ["check_", "input_", "list_", "text_"];
 
 /** 返回控件类型对应的自动命名前缀；未知类型统一回退到 node_。 */
 export function controlNamePrefix(type: CtrlType | string | null | undefined): string {
   return CONTROL_NAME_PREFIXES[type as CtrlType] ?? "node_";
+}
+
+/** PSD/UI2HTML 整理阶段使用的中文控件名称。 */
+export function controlTypeName(type: CtrlType): string {
+  return CONTROL_TYPE_NAMES[type] ?? "节点";
+}
+
+/** T 快捷键使用：一次生成中文整理名称，并避开同父级重名。 */
+export function quickControlName(node: UINode, type: CtrlType, siblings: UINode[]): string {
+  const base = controlTypeName(type);
+  const current = node.name.trim();
+  if (current === base || current.startsWith(`${base}_`)) return current;
+  const occupied = new Set(siblings.filter((item) => item.id !== node.id).map((item) => item.name));
+  if (!occupied.has(base)) return base;
+  let index = 2;
+  while (occupied.has(`${base}_${index}`)) index++;
+  return `${base}_${index}`;
 }
 
 /** 在同一父节点的名称集合中生成最小可用的自动名称。 */

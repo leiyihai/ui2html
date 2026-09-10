@@ -114,7 +114,7 @@ function toNode(layer: Layer, baseX: number, baseY: number, refW: number, refH: 
   isRoot = false): UINode | null {
   const i = counter.n++;
   const name = layer.name || `Layer ${i}`;
-  const base = { id: `node-${layerIdSeq++}`, name, scale: { x: 1, y: 1 }, rotation: 0,
+  const base = { id: `node-${layerIdSeq++}`, name, originalName: name, scale: { x: 1, y: 1 }, rotation: 0,
     opacity: layer.opacity ?? 1, visible: !(layer.hidden ?? false) };
 
   // 文件夹 → 组节点

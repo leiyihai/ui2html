@@ -167,6 +167,18 @@ describe("independent UI project snapshots", () => {
     expect(restored.naming?.source).toBe("manual");
   });
 
+  it("round-trips the PSD original name separately from the project name", () => {
+    const named = node("named", "img_bag_background");
+    named.originalName = "背包背景";
+    const saved = serializeScene({ designWidth: 100, designHeight: 100, nodes: [named] });
+    const restored = restoreSceneSnapshot(saved, new Map()).scene.nodes[0];
+
+    expect(saved.nodes[0].name).toBe("img_bag_background");
+    expect(saved.nodes[0].originalName).toBe("背包背景");
+    expect(restored.name).toBe("img_bag_background");
+    expect(restored.originalName).toBe("背包背景");
+  });
+
   it("round-trips confirmed nine-slice groups and restores their render source", () => {
     const source = node("panel", "img_panel", "panel.png");
     const scene: UIScene = {

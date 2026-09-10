@@ -175,6 +175,8 @@ export interface InteractionTemplate {
 export interface UINode {
   id: string;
   name: string;
+  /** PSD 导入时的原始图层名称，仅用于编辑器识别和展示，不参与引擎导出。 */
+  originalName?: string;
   image: HTMLCanvasElement | null;
   /** 工程 `.assets` 目录内的相对资源路径；PSD/外部图片导入后在首次保存时生成。 */
   assetPath?: string;

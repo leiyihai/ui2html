@@ -26,6 +26,11 @@ describe("control type marking", () => {
     expect(defaultFolderCtrlType()).toBe("Layout");
   });
 
+  it("only recognizes a Chinese control name at a complete name boundary", () => {
+    expect(defaultFolderCtrlType("按钮_确认")).toBe("Button");
+    expect(defaultFolderCtrlType("按钮背景")).toBe("Layout");
+  });
+
   it("marks a node with the selected type without changing its image or layout data", () => {
     const image = {} as HTMLCanvasElement;
     const source = node({ image });

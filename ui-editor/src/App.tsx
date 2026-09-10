@@ -8,7 +8,7 @@ import type { CtrlType, ImageBinding, InteractionTemplate, LayoutContext, NineSl
 import Appbar from "./components/Toolbar";
 import Workbar, { type Workspace } from "./components/WorkspaceTabs";
 import Inspector from "./components/Inspector";
-import ControlsPanel from "./components/ControlsPanel";
+import ControlsPanel, { type LayerNameMode, type LayerPanelStyle } from "./components/ControlsPanel";
 import TypePieMenu from "./components/TypePieMenu";
 import QuickActionMenu from "./components/QuickActionMenu";
 import { markControlType } from "./controlType";
@@ -20,8 +20,8 @@ import { openProject, projectFileName, saveProject } from "./projectApi";
 import { requestAiNaming } from "./projectApi";
 import { canvasFromImageFile, createImageNode } from "./imageImport";
 import { applySelection, createSelectionIntent, flattenLayerIds, type SelectionIntent } from "./selection";
-import { renameControlForType } from "./nodeNaming";
-import { applyAiNaming, applyFallbackNaming, buildNamingManifest, warningNodeIds } from "./aiNaming";
+import { quickControlName } from "./nodeNaming";
+import { applyAiNaming, buildNamingManifest, warningNodeIds } from "./aiNaming";
 import type { ProjectAnalysis } from "./types";
 import { presetsForDesign, type DeviceShell } from "./devicePreview";
 import ResourceBindingWorkspace from "./components/ResourceBindingWorkspace";
@@ -288,6 +288,8 @@ export default function App() {
   const [quickActionMenu, setQuickActionMenu] = useState<{ x: number; y: number } | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameCaretMode, setRenameCaretMode] = useState<"all" | "prefix">("all");
+  const [layerNameMode, setLayerNameMode] = useState<LayerNameMode>("original");
+  const [layerPanelStyle, setLayerPanelStyle] = useState<LayerPanelStyle>("psd");
 
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
@@ -438,6 +440,8 @@ export default function App() {
     setWarnings([]);
     setDirty(false);
     setRenameCaretMode("all");
+    setLayerNameMode("original");
+    setLayerPanelStyle("psd");
     setExportMsg("已新建空白工程");
   }, [applyScene, dirty, resetHistory]);
 
@@ -453,6 +457,8 @@ export default function App() {
       setProjectPath(opened.path);
       setProjectName(projectFileName(opened.path));
       setAnalysis(opened.analysis);
+      setLayerNameMode("original");
+      setLayerPanelStyle("psd");
       setViewport(view?.viewport ?? { width: restored.scene.designWidth, height: restored.scene.designHeight });
       setSafeArea(view?.safeArea ?? { left: 0, right: 0, top: 0, bottom: 0 });
       setScaleMode(view?.scaleMode ?? "cover");
@@ -518,22 +524,12 @@ export default function App() {
       await checkpoint("正在读取 PSD 图层……", 0.12);
       const imported = importPsd(buffer);
       await checkpoint("正在整理层级和控件类型……", 0.34);
-      const fallback = applyFallbackNaming(imported.scene);
-      await checkpoint("正在生成图片资源分析……", 0.52);
-      const manifest = buildNamingManifest(fallback.scene);
-      const referenceDataUrl = buildNamingReference(fallback.scene, manifest);
-      await checkpoint("正在调用 AI 批量命名……", 0.65);
-      let ai: Awaited<ReturnType<typeof requestAiNaming>>;
-      try {
-        ai = await requestAiNaming(manifest, referenceDataUrl, controller.signal);
-      } catch (error) {
-        ai = { available: false, message: error instanceof Error ? error.message : "AI 命名服务不可用" };
-      }
+      await checkpoint("正在整理图片资源……", 0.58);
       await checkpoint("正在校验并保存导入结果……", 0.88);
-      const named = ai.available && ai.result ? applyAiNaming(fallback.scene, ai.result) : fallback;
-      if (!ai.available && ai.message) named.analysis.warnings.push(`AI 命名未执行：${ai.message}`);
-      const currentScene = named.scene;
-      const currentAnalysis = named.analysis;
+      // PSD 导入只保留原始图层名称；中文控件文件夹的类型识别在 importPsd 内完成。
+      // AI 命名由用户在资源绑定完成后通过工具栏主动触发，避免导入后丢失 PSD 语义线索。
+      const currentScene = imported.scene;
+      const currentAnalysis = createEmptyAnalysis("local");
       if (controller.signal.aborted) throw new DOMException("导入已取消", "AbortError");
 
       // PSD 导入总是创建新的独立工程，不追加到当前工程。
@@ -549,13 +545,15 @@ export default function App() {
       setPreviewPan({ x: 0, y: 0 });
       setProjectPath(null);
       setProjectName(`${name.replace(/\.(psd|psb)$/i, "")}.ui.json`);
+      setLayerNameMode("original");
+      setLayerPanelStyle("psd");
       const importedIds = currentScene.nodes.map((node) => node.id);
       selectionAnchorRef.current = importedIds.at(-1) ?? null;
       setSelectedIds(importedIds);
       setSelectedId(importedIds.at(-1) ?? null);
       setWarnings([...imported.warnings, ...currentAnalysis.warnings]);
       setDirty(true);
-      setExportMsg(`已从 ${name} 导入 ${walkNodes(currentScene.nodes).length} 个节点，请在资源绑定页签中手动绑定`);
+      setExportMsg(`已从 ${name} 导入 ${walkNodes(currentScene.nodes).length} 个节点，已保留 PSD 原名，请在资源绑定页签中手动绑定`);
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") setExportMsg("已取消 PSD 导入");
       else setExportMsg(error instanceof Error ? error.message : `无法导入 ${name}`);
@@ -580,9 +578,10 @@ export default function App() {
         setExportMsg(`AI 命名不可用${ai.message ? `：${ai.message}` : ""}，已保留当前名称`);
         return;
       }
-      setImportProgress({ name: projectName, phase: "正在应用 AI 命名（手动名称不会覆盖）……", progress: 0.85 });
-      const named = applyAiNaming(current, ai.result);
+      setImportProgress({ name: projectName, phase: "正在应用 AI 命名（统一生成工程名称）……", progress: 0.85 });
+      const named = applyAiNaming(current, ai.result, { overwriteManual: true });
       applyScene(named.scene);
+      setLayerNameMode("ai");
       setAnalysis(named.analysis);
       setWarnings(named.analysis.warnings);
       setDirty(true);
@@ -665,6 +664,10 @@ export default function App() {
 
   /** F2：让当前单选节点进入层级树内联重命名状态。 */
   const beginRenameSelected = useCallback(() => {
+    if (layerNameMode === "original") {
+      setExportMsg("当前显示 PSD 原名，切换到“AI 名称”后才能重命名");
+      return;
+    }
     const current = sceneRef.current;
     const node = current && selectedId
       ? walkNodes(current.nodes).find((item) => item.id === selectedId)
@@ -672,7 +675,7 @@ export default function App() {
     if (!node || node.locked || selectedIds.length !== 1) return;
     setRenameCaretMode("all");
     setRenamingId(node.id);
-  }, [selectedId, selectedIds]);
+  }, [layerNameMode, selectedId, selectedIds]);
 
   const commitRename = useCallback((id: string, value: string) => {
     setRenamingId(null);
@@ -721,6 +724,8 @@ export default function App() {
     setDirty(false);
     setRenamingId(null);
     setRenameCaretMode("all");
+    setLayerNameMode("original");
+    setLayerPanelStyle("psd");
     setSelectedId(null);
     selectionAnchorRef.current = null;
     setSelectedIds([]);
@@ -817,18 +822,15 @@ export default function App() {
   }, [mutateScene]);
 
   /** 控件类型标签 */
-  const setCtrl = useCallback((id: string, type: CtrlType | null) => {
+  const setCtrl = useCallback((id: string, type: CtrlType | null, namingMode: "plain" | "quick" = "plain") => {
     const current = sceneRef.current;
     const source = current && walkNodes(current.nodes).find((node) => node.id === id);
     if (!current || !source) return;
     const sourcePath = findPath(current.nodes, id);
     const parentPath = sourcePath?.slice(0, -1) ?? [];
     const siblings = parentPath.length ? nodeAtPath(current.nodes, parentPath)?.children ?? [] : current.nodes;
-    const shouldAutoRename = Boolean(type)
-      && source.ctrl?.type !== type
-      && !isFixedRootNode(current, source, sourcePath);
-    const generatedName = shouldAutoRename
-      ? renameControlForType(source, type!, siblings.filter((node) => node.id !== id))
+    const generatedName = namingMode === "quick" && type && !isFixedRootNode(current, source, sourcePath)
+      ? quickControlName(source, type, siblings)
       : null;
 
     const supported = new Set(resourceSlotDefinitions(type ?? undefined).map((slot) => slot.key));
@@ -855,7 +857,7 @@ export default function App() {
     }
     mutateScene((s) => ({ ...s, nodes: nextNodes }));
     if (stale.length) setExportMsg(`已切换类型，并恢复 ${stale.length} 个不兼容资源节点`);
-    else if (generatedName && generatedName !== source.name) setExportMsg(`已切换类型并保留名称后缀：${generatedName}`);
+    else if (generatedName && generatedName !== source.name) setExportMsg(`已完成中文命名和控件类型转换：${generatedName}`);
   }, [mutateScene]);
 
   /** Ctrl+B / 资源绑定工作区：将图片手动填入目标控件的资源槽位。 */
@@ -1501,6 +1503,8 @@ export default function App() {
       />
       <div className="body">
         {workspace !== "slice" && <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
+          panelStyle={layerPanelStyle} onPanelStyleChange={setLayerPanelStyle}
+          nameMode={layerNameMode} onNameModeChange={(mode) => { setLayerNameMode(mode); if (mode === "original") setRenamingId(null); }}
           warningIds={warningIds}
           renamingId={renamingId} renameCaretMode={renameCaretMode}
           onRename={commitRename} onCancelRename={() => setRenamingId(null)}
@@ -1624,7 +1628,7 @@ export default function App() {
           x={typeMenu.x}
           y={typeMenu.y}
           node={pieNode}
-          onChoose={(type) => { setCtrl(pieNode.id, type); setTypeMenu(null); }}
+          onChoose={(type) => { setCtrl(pieNode.id, type, "quick"); setLayerNameMode("ai"); setTypeMenu(null); }}
           onClose={() => setTypeMenu(null)}
         />
       )}

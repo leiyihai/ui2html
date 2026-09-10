@@ -4,6 +4,7 @@ import { controlNamePrefix } from "./nodeNaming";
 export interface NamingManifestNode {
   id: string;
   name: string;
+  originalName?: string;
   type: CtrlType | "unknown";
   parentId: string | null;
   depth: number;
@@ -110,7 +111,8 @@ export function buildNamingManifest(scene: UIScene): NamingManifest {
   visitNodes(scene.nodes, (node, parentId, depth) => {
     const key = node.image ? assetKey(node.image) : undefined;
     nodes.push({
-      id: node.id, name: node.name, type: node.ctrl?.type ?? "unknown", parentId, depth,
+      id: node.id, name: node.name, ...(node.originalName ? { originalName: node.originalName } : {}),
+      type: node.ctrl?.type ?? "unknown", parentId, depth,
       rect: { ...node.designRect }, visible: node.visible,
       ...(node.text?.content ? { text: node.text.content.slice(0, 120) } : {}),
       ...(key ? { assetKey: key } : {}),
@@ -119,6 +121,7 @@ export function buildNamingManifest(scene: UIScene): NamingManifest {
       const current = assetMap.get(key) ?? { key, nodeIds: [], width: node.image.width, height: node.image.height, sourceNames: [] };
       current.nodeIds.push(node.id);
       if (!current.sourceNames.includes(node.name)) current.sourceNames.push(node.name);
+      if (node.originalName && !current.sourceNames.includes(node.originalName)) current.sourceNames.push(node.originalName);
       assetMap.set(key, current);
     }
   });
@@ -160,7 +163,8 @@ export function applyFallbackNaming(scene: UIScene): { scene: UIScene; analysis:
   };
 }
 
-export function applyAiNaming(source: UIScene, result: AiNamingResult): { scene: UIScene; analysis: ProjectAnalysis } {
+export function applyAiNaming(source: UIScene, result: AiNamingResult, options: { overwriteManual?: boolean } = {}): { scene: UIScene; analysis: ProjectAnalysis } {
+  const overwriteManual = options.overwriteManual ?? false;
   const fallback = applyFallbackNaming(source);
   const byNode = new Map((result.nodes ?? []).map((item) => [item.id, item]));
   const byAsset = new Map((result.assets ?? []).map((item) => [item.key, item]));
@@ -168,7 +172,7 @@ export function applyAiNaming(source: UIScene, result: AiNamingResult): { scene:
   const nodes: ProjectAnalysis["nodes"] = {};
   const assets: ProjectAnalysis["assets"] = {};
   const clone = (input: UINode): UINode => {
-    if (input.naming?.source === "manual") {
+    if (input.naming?.source === "manual" && !overwriteManual) {
       used.add(input.name);
       nodes[input.id] = { ...input.naming };
       return { ...input, children: input.children?.map(clone) };
