@@ -8,7 +8,33 @@ body {
 }
 .app { display: flex; flex-direction: column; height: 100%; }
 
-/* ---- 应用栏：文件 / 全局 / 导出 ---- */
+/* ---- 独立软件外壳：菜单栏 / 工具栏 ---- */
+.app-shell-header { flex: none; display: flex; flex-direction: column; }
+.menu-bar {
+  position: relative; z-index: 30; display: flex; align-items: center; gap: 6px;
+  min-height: 30px; padding: 0 10px; background: #161b22; border-bottom: 1px solid #2a313b;
+  color: #9cabbc; font-size: 12px;
+}
+.menu-brand-mark { display: grid; width: 18px; height: 18px; place-items: center; border: 1px solid #4c8caf; border-radius: 4px; background: #203c50; color: #bfeafa; font-size: 10px; font-weight: 700; }
+.menu-brand-name { color: #dbeaf4; font-size: 11px; font-weight: 700; letter-spacing: .08em; }
+.menu-brand-separator { width: 1px; height: 16px; margin: 0 3px; background: #33404d; }
+.menu-groups { display: flex; align-items: stretch; gap: 1px; height: 30px; }
+.menu-group { position: relative; display: flex; align-items: center; }
+.menu-trigger { height: 26px; padding: 0 11px; border: 1px solid transparent; border-radius: 4px; background: transparent; color: #aebdca; cursor: pointer; font: inherit; }
+.menu-trigger:hover, .menu-trigger.on { border-color: #344b5d; background: #25323d; color: #f0f8fc; }
+.menu-popover { position: absolute; top: 29px; left: 0; z-index: 31; width: 224px; padding: 5px; border: 1px solid #3b4d5c; border-radius: 6px; background: #202a34; box-shadow: 0 14px 30px rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.04); }
+.menu-popover.menu-file { width: 270px; }
+.menu-item { display: flex; width: 100%; min-height: 28px; align-items: center; justify-content: space-between; gap: 18px; padding: 0 8px; border: 0; border-radius: 4px; background: transparent; color: #c9d7e0; cursor: pointer; font: inherit; font-size: 11px; text-align: left; }
+.menu-item:hover:not(:disabled) { background: #2b4351; color: #f3fbff; }
+.menu-item:disabled { color: #647584; cursor: default; }
+.menu-item.danger { color: #e0a8a8; }
+.menu-item kbd { min-width: 70px; color: #718999; font: 10px ui-monospace, Consolas, monospace; text-align: right; }
+.menu-item input { display: none; }
+.menu-divider { height: 1px; margin: 5px 4px; background: #33414e; }
+.menu-section-label { padding: 5px 8px 4px; color: #6f9aae; font-size: 9px; letter-spacing: .08em; }
+.menu-context { margin-left: auto; color: #607788; font-size: 10px; }
+
+/* ---- 工具栏：文件 / 全局 / 导出 ---- */
 .appbar {
   display: flex; align-items: center; gap: 8px;
   padding: 6px 10px; background: #20252d; border-bottom: 1px solid #2a313b;
@@ -429,6 +455,19 @@ body {
 .import-progress-track { width: 100%; height: 5px; overflow: hidden; border-radius: 99px; background: #14202b; }
 .import-progress-track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #4a90d9, #75c7e8); transition: width .15s ease; }
 @keyframes import-spin { to { transform: rotate(360deg); } }
+
+.modal-backdrop { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; background: rgba(5, 8, 12, .68); backdrop-filter: blur(3px); }
+.help-dialog { width: min(430px, calc(100vw - 36px)); border: 1px solid #405568; border-radius: 9px; background: #202a34; box-shadow: 0 22px 60px rgba(0,0,0,.45); color: #dce8ef; }
+.help-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 20px 13px; border-bottom: 1px solid #334452; }
+.help-dialog-head h2 { margin: 4px 0 0; color: #eff8fb; font-size: 18px; }
+.shortcut-grid { display: grid; gap: 2px; padding: 14px 20px 10px; }
+.shortcut-row { display: flex; align-items: center; gap: 13px; min-height: 29px; color: #abc0cd; font-size: 11px; }
+.shortcut-row kbd { min-width: 88px; padding: 4px 6px; border: 1px solid #415565; border-radius: 4px; background: #17212a; color: #d9f3f5; font: 10px ui-monospace, Consolas, monospace; text-align: center; }
+.about-copy { padding: 25px 20px 22px; }
+.about-copy strong { display: block; margin-bottom: 9px; color: #8bd2dc; font-size: 22px; letter-spacing: .06em; }
+.about-copy p { margin: 0 0 12px; color: #b6c8d3; font-size: 12px; line-height: 1.7; }
+.about-copy small { color: #738c9c; font-size: 10px; }
+.help-dialog-foot { display: flex; justify-content: flex-end; padding: 11px 20px 16px; border-top: 1px solid #2f3e4b; }
 
 .body { flex: 1; display: flex; min-height: 0; }
 

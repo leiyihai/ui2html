@@ -290,6 +290,7 @@ export default function App() {
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameCaretMode, setRenameCaretMode] = useState<"all" | "prefix">("all");
   const [layerNameMode, setLayerNameMode] = useState<LayerNameMode>("original");
+  const [helpDialog, setHelpDialog] = useState<"shortcuts" | "about" | null>(null);
 
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
@@ -1475,6 +1476,10 @@ export default function App() {
         hasScene={!!scene} canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
         onSave={() => { void saveCurrentProject(); }} onSaveAs={() => { void saveCurrentProject(true); }}
         onExportHtml={exportHtml} onExportEngineJson={exportEngineJson} onGlobalFont={applyGlobalFont}
+        workspace={workspace} onWorkspace={setWorkspace} onCloseProject={closeProject}
+        onRename={beginRenameSelected} onGroup={groupSelected} onUngroup={ungroupSelected}
+        onMoveLayer={moveSelectedLayer} onShowShortcuts={() => setHelpDialog("shortcuts")}
+        onShowAbout={() => setHelpDialog("about")}
       />
       <Workbar ws={workspace} onWs={setWorkspace} hasScene={!!scene}
         viewport={viewport} onViewport={setViewport}
@@ -1652,6 +1657,17 @@ export default function App() {
             <small>{Math.round(importProgress.progress * 100)}% · 导入期间编辑器已锁定</small>
             <button className="btn" onClick={cancelPsdImport}>取消导入</button>
           </div>
+        </div>
+      )}
+      {helpDialog && (
+        <div className="modal-backdrop" role="presentation" onPointerDown={(event) => { if (event.target === event.currentTarget) setHelpDialog(null); }}>
+          <section className="help-dialog" role="dialog" aria-modal="true" aria-label={helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}>
+            <header className="help-dialog-head"><div><span className="workspace-kicker">UI2HTML</span><h2>{helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}</h2></div><button className="icon-btn" onClick={() => setHelpDialog(null)} aria-label="关闭">×</button></header>
+            {helpDialog === "shortcuts" ? <div className="shortcut-grid">
+              {["Ctrl+S|打开工程操作菜单", "Ctrl+Z|撤销", "Ctrl+X|重做", "F2|重命名节点", "T|转换控件类型", "Ctrl+G|打组", "Alt+G|取消打组", "Ctrl+[ / Ctrl+]|调整层级", "Ctrl+B|绑定资源 / 确认完成", "Alt+W|关闭当前工程"].map((item) => { const [key, label] = item.split("|"); return <div className="shortcut-row" key={key}><kbd>{key}</kbd><span>{label}</span></div>; })}
+            </div> : <div className="about-copy"><strong>UI2HTML</strong><p>面向 UI 美术的 PSD 导入、工程整理、视觉检查与自研引擎 JSON 转换工具。</p><small>工程与 PSD 解耦 · 资源可追溯 · 预览优先</small></div>}
+            <footer className="help-dialog-foot"><button className="btn primary" onClick={() => setHelpDialog(null)}>知道了</button></footer>
+          </section>
         </div>
       )}
       <footer className="statusbar">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ENGINE_EDITOR_FONT_FAMILY } from "../engineFont";
 import { nextFontInCycle } from "../fontPicker";
+import MenuBar from "./MenuBar";
 
 interface Props {
   projectName: string;
@@ -19,6 +20,15 @@ interface Props {
   onExportHtml: () => void;
   onExportEngineJson: () => void;
   onGlobalFont: (font: string) => void;
+  workspace: import("./WorkspaceTabs").Workspace;
+  onWorkspace: (workspace: import("./WorkspaceTabs").Workspace) => void;
+  onCloseProject: () => void;
+  onRename: () => void;
+  onGroup: () => void;
+  onUngroup: () => void;
+  onMoveLayer: (direction: "up" | "down") => void;
+  onShowShortcuts: () => void;
+  onShowAbout: () => void;
 }
 
 /** 应用栏：工程生命周期、素材导入、历史与预览导出。 */
@@ -51,7 +61,19 @@ export default function Appbar(p: Props) {
   };
 
   return (
-    <header className="appbar">
+    <header className="app-shell-header">
+      <MenuBar
+        hasScene={p.hasScene} canUndo={p.canUndo} canRedo={p.canRedo}
+        workspace={p.workspace} onWorkspace={p.onWorkspace}
+        onNew={p.onNew} onOpenProject={p.onOpenProject}
+        onImportPsd={p.onImportPsd} onImportImages={p.onImportImages}
+        onSave={p.onSave} onSaveAs={p.onSaveAs} onCloseProject={p.onCloseProject}
+        onUndo={p.onUndo} onRedo={p.onRedo} onRename={p.onRename}
+        onGroup={p.onGroup} onUngroup={p.onUngroup} onMoveLayer={p.onMoveLayer}
+        onShowShortcuts={p.onShowShortcuts} onShowAbout={p.onShowAbout}
+        onExportHtml={p.onExportHtml} onExportEngineJson={p.onExportEngineJson}
+      />
+      <div className="appbar">
       <span className="logo">UI Editor</span>
       <span className="project-title" title={p.projectName}>
         {p.projectName}{p.dirty ? " ●" : ""}
@@ -114,6 +136,7 @@ export default function Appbar(p: Props) {
       <button className="btn" disabled={!p.canRedo} onClick={p.onRedo} title="前进一步 (Ctrl+X)">↪ 重做</button>
       <button className="btn" disabled={!p.hasScene} onClick={p.onExportHtml}>预览 HTML</button>
       <button className="btn primary" disabled={!p.hasScene} onClick={p.onExportEngineJson}>导出 JSON</button>
+      </div>
     </header>
   );
 }
