@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyAiNaming, applyFallbackNaming, buildNamingManifest, type AiNamingResult, typePrefix, warningNodeIds } from "./aiNaming";
+import { applyAiNaming, applyFallbackNaming, buildNamingManifest, compactSemanticName, type AiNamingResult, typePrefix, warningNodeIds } from "./aiNaming";
 import type { UIScene, UINode } from "./types";
 
 function node(id: string, name: string, type: UINode["ctrl"] extends infer T ? T : never, image = false): UINode {
@@ -20,6 +20,25 @@ describe("AI naming pipeline", () => {
     expect(typePrefix("List")).toBe("vlist");
     expect(typePrefix("ListHorizontal")).toBe("hlist");
     expect(typePrefix("GridView")).toBe("grid");
+  });
+
+  it("compacts conventional UI words for AI names without changing fallback naming", () => {
+    expect(compactSemanticName("experience_progress_bar_background", "ProgressBar")).toBe("exp_bg");
+    expect(compactSemanticName("inventory_navigation_button", "Button")).toBe("inventory_nav");
+    expect(compactSemanticName("experience_progress_bar_background", undefined, "asset")).toBe("exp_prog_bar_bg");
+    expect(compactSemanticName("very_long_inventory_item_content_background_selected_state_description").length).toBeLessThanOrEqual(24);
+  });
+
+  it("applies compact names to accepted AI node and asset results", () => {
+    const image = node("a", "经验进度", { type: "ProgressBar" }, true);
+    const scene: UIScene = { designWidth: 100, designHeight: 100, nodes: [image] };
+    const assetKey = buildNamingManifest(scene).assets[0].key;
+    const named = applyAiNaming(scene, {
+      nodes: [{ id: "a", suffix: "experience_progress_bar_background", confidence: 0.96 }],
+      assets: [{ key: assetKey, name: "experience_progress_bar_background", confidence: 0.96 }],
+    });
+    expect(named.scene.nodes[0].name).toBe("pbar_exp_bg");
+    expect(named.scene.nodes[0].assetName).toBe("img_exp_prog_bar_bg");
   });
 
   it("creates stable local fallback names and an analysis record", () => {
@@ -55,6 +74,44 @@ describe("AI naming pipeline", () => {
     expect(manifest.assets[0].nodeIds).toEqual(["a", "b"]);
     expect(manifest.assets[0].sourceNames).toContain("背包背景");
     expect(manifest.design).toEqual({ width: 100, height: 100 });
+  });
+
+  it("includes resource-slot roles for images moved out of the layer tree", () => {
+    const control = node("button", "按钮", { type: "Button" });
+    const source = node("button-normal", "普通底图", { type: "StaticImage" }, true);
+    control.resources = {
+      NormalImage: {
+        id: source.id, name: source.name, image: source.image!, sourceNode: source,
+        sourceParentId: control.id, sourceIndex: 0,
+      },
+    };
+    const manifest = buildNamingManifest({ designWidth: 100, designHeight: 100, nodes: [control] });
+    expect(manifest.nodes).toHaveLength(1);
+    expect(manifest.assets).toHaveLength(1);
+    expect(manifest.assets[0].bindings).toEqual([{ controlNodeId: "button", slot: "NormalImage", slotLabel: "普通状态" }]);
+    expect(manifest.assets[0].sourceNames).toContain("普通底图");
+  });
+
+  it("renames images in resource slots while preserving the slot and stable source id", () => {
+    const control = node("button", "按钮", { type: "Button" });
+    const source = node("button-normal", "普通底图", { type: "StaticImage" }, true);
+    control.resources = {
+      NormalImage: {
+        id: source.id, name: source.name, image: source.image!, sourceNode: source,
+        sourceParentId: control.id, sourceIndex: 0,
+      },
+    };
+    const scene: UIScene = { designWidth: 100, designHeight: 100, nodes: [control] };
+    const assetKey = buildNamingManifest(scene).assets[0].key;
+    const named = applyAiNaming(scene, {
+      nodes: [{ id: "button", suffix: "confirm", confidence: 0.96 }],
+      assets: [{ key: assetKey, name: "normal", confidence: 0.96 }],
+    }, { overwriteManual: true });
+    const binding = named.scene.nodes[0].resources?.NormalImage;
+    expect(binding?.name).toBe("img_normal");
+    expect(binding?.sourceNode.id).toBe("button-normal");
+    expect(binding?.sourceNode.name).toBe("img_normal");
+    expect(binding?.sourceNode.assetName).toBe("img_normal");
   });
 
   it("keeps manually renamed nodes unchanged when AI naming is run again", () => {

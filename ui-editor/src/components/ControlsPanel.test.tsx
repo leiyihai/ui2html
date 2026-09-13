@@ -35,10 +35,9 @@ describe("ControlsPanel inline rename", () => {
       <ControlsPanel
         nodes={[bag]}
         selectedIds={[bag.id]}
-        panelStyle="editor"
-        onPanelStyleChange={vi.fn()}
         nameMode="ai"
         onNameModeChange={vi.fn()}
+        onAiRename={vi.fn()}
         renamingId={bag.id}
         renameCaretMode="all"
         onSelect={vi.fn()}
@@ -54,15 +53,14 @@ describe("ControlsPanel inline rename", () => {
     expect(html).toContain("Alt+W 关闭");
   });
 
-  it("switches the hierarchy between PSD and AI names", () => {
+  it("switches names without exposing a second PSD hierarchy style", () => {
     const original = renderToStaticMarkup(
       <ControlsPanel
         nodes={[bag]}
         selectedIds={[]}
-        panelStyle="psd"
-        onPanelStyleChange={vi.fn()}
         nameMode="original"
         onNameModeChange={vi.fn()}
+        onAiRename={vi.fn()}
         renamingId={null}
         renameCaretMode="all"
         onSelect={vi.fn()}
@@ -76,10 +74,9 @@ describe("ControlsPanel inline rename", () => {
       <ControlsPanel
         nodes={[bag]}
         selectedIds={[]}
-        panelStyle="editor"
-        onPanelStyleChange={vi.fn()}
         nameMode="ai"
         onNameModeChange={vi.fn()}
+        onAiRename={vi.fn()}
         renamingId={null}
         renameCaretMode="all"
         onSelect={vi.fn()}
@@ -93,5 +90,9 @@ describe("ControlsPanel inline rename", () => {
     expect(original).toContain(">背包</span>");
     expect(original).not.toContain(">bag</span>");
     expect(ai).toContain(">bag</span>");
+    expect(original).toContain("工程名称");
+    expect(original).toContain("AI 命名");
+    expect(original).not.toContain("PSD 整理");
+    expect(original).not.toContain("工程层级");
   });
 });

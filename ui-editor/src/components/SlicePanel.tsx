@@ -1,19 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { NineSliceCandidate, NineSliceGroup, NineSliceMargins, UIScene } from "../types";
-import { collectNineSliceImages, createManualNineSliceCandidate, type NineSliceImageEntry } from "../nineSlice";
+import { collectNineSliceImages, createManualNineSliceCandidate, sameNodeSet, type NineSliceImageEntry } from "../nineSlice";
 
-type SliceTab = "candidates" | "mark" | "result";
+type SliceTab = "mark" | "result";
 
 function statusLabel(status: NineSliceCandidate["status"]): string {
   return status === "confirmed" ? "已完成" : status === "skipped" ? "已跳过" : "待处理";
 }
 
-function sourceFor(candidate: NineSliceCandidate, entries: NineSliceImageEntry[]): NineSliceImageEntry | null {
-  return entries.find((entry) => entry.node.id === candidate.sourceNodeId) ?? null;
-}
-
 function groupFor(candidate: NineSliceCandidate, groups: NineSliceGroup[]): NineSliceGroup | undefined {
   return groups.find((group) => group.id === candidate.id);
+}
+
+function sourceFor(candidate: NineSliceCandidate, entries: NineSliceImageEntry[]): NineSliceImageEntry | null {
+  return entries.find((entry) => entry.node.id === candidate.sourceNodeId) ?? null;
 }
 
 export function SliceEditor(p: { source: NineSliceImageEntry; slice: NineSliceMargins; onChange: (slice: NineSliceMargins) => void }) {
@@ -105,44 +105,52 @@ export function SliceEditor(p: { source: NineSliceImageEntry; slice: NineSliceMa
 
 export default function NineSliceWorkspace(p: {
   scene: UIScene; onScan: () => void; onConfirm: (candidate: NineSliceCandidate, margins: NineSliceMargins) => void;
-  onSkip: (candidateId: string) => void; onRestoreSkipped: () => void; onManualCreate: (candidate: NineSliceCandidate) => void;
 }) {
   const entries = useMemo(() => collectNineSliceImages(p.scene), [p.scene]);
   const candidates = useMemo(() => p.scene.nineSliceCandidates ?? [], [p.scene.nineSliceCandidates]);
   const groups = useMemo(() => p.scene.nineSliceGroups ?? [], [p.scene.nineSliceGroups]);
-  const [tab, setTab] = useState<SliceTab>("candidates");
-  const [selectedId, setSelectedId] = useState<string | null>(candidates[0]?.id ?? null);
-  const [manualIds, setManualIds] = useState<string[]>([]);
-  const selected = candidates.find((candidate) => candidate.id === selectedId) ?? candidates[0] ?? null;
-  const source = selected ? sourceFor(selected, entries) : null;
-  const selectedGroup = selected ? groupFor(selected, groups) : undefined;
-  const [margins, setMargins] = useState<NineSliceMargins>(selectedGroup?.margins ?? selected?.suggestedMargins ?? { left: 0, top: 0, right: 0, bottom: 0 });
-  useEffect(() => {
-    if (!selected) { setSelectedId(candidates[0]?.id ?? null); return; }
-    setMargins({ ...(groupFor(selected, groups)?.margins ?? selected.suggestedMargins) });
-  }, [candidates, groups, selected]);
+  const [tab, setTab] = useState<SliceTab>("mark");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const selectedEntries = selectedIds.map((id) => entries.find((entry) => entry.node.id === id)).filter((entry): entry is NineSliceImageEntry => Boolean(entry));
+  const confirmedIds = useMemo(() => new Set(groups.flatMap((group) => group.memberNodeIds)), [groups]);
+  // 已完成的图片默认从候选列表移除；从结果页返回修改时，仅把当前编辑组临时放回列表。
+  const availableEntries = entries.filter((entry) => !confirmedIds.has(entry.node.id) || selectedIds.includes(entry.node.id));
+  const pendingEntries = entries.filter((entry) => !confirmedIds.has(entry.node.id));
+  const existingCandidate = selectedIds.length ? candidates.find((candidate) => sameNodeSet(candidate.memberNodeIds, selectedIds)) : undefined;
+  const workingCandidate = existingCandidate ?? (selectedEntries.length ? createManualNineSliceCandidate(selectedEntries) : null);
+  const displaySource = selectedEntries[0] ?? (existingCandidate ? sourceFor(existingCandidate, entries) : null);
+  const savedGroup = workingCandidate ? groupFor(workingCandidate, groups) : undefined;
+  const workingCandidateId = workingCandidate?.id;
+  const workingCandidateMargins = workingCandidate?.suggestedMargins;
+  const [margins, setMargins] = useState<NineSliceMargins>({ left: 0, top: 0, right: 0, bottom: 0 });
 
-  const pending = candidates.filter((candidate) => candidate.status === "suggested");
-  const skipped = candidates.filter((candidate) => candidate.status === "skipped");
+  useEffect(() => {
+    if (!selectedIds.length && availableEntries[0]) setSelectedIds([availableEntries[0].node.id]);
+    if (selectedIds.some((id) => !availableEntries.some((entry) => entry.node.id === id))) setSelectedIds([]);
+  }, [availableEntries, selectedIds]);
+  useEffect(() => {
+    if (workingCandidateMargins) setMargins({ ...(savedGroup?.margins ?? workingCandidateMargins) });
+  }, [workingCandidateId, savedGroup?.margins, workingCandidateMargins]);
+
   const confirmed = candidates.filter((candidate) => candidate.status === "confirmed");
-  const choose = (id: string, nextTab: SliceTab = tab) => { setSelectedId(id); setTab(nextTab); };
-  const toggleManual = (id: string) => setManualIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
-  const createManual = () => {
-    const selectedEntries = entries.filter((entry) => manualIds.includes(entry.node.id));
-    if (!selectedEntries.length) return;
-    const candidate = createManualNineSliceCandidate(selectedEntries);
-    p.onManualCreate(candidate);
-    setManualIds([]);
-    choose(candidate.id, "mark");
+  const toggleSelection = (id: string) => setSelectedIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+  const confirm = () => {
+    if (!workingCandidate) return;
+    p.onConfirm(workingCandidate, margins);
+    setSelectedIds([]);
+    setTab("result");
   };
 
   return <section className="nine-slice-workspace">
-    <header className="nine-slice-head"><div><span className="workspace-kicker">ASSET PROCESSING</span><h2>九宫格</h2><p>先确认图片，再在原图上标记边界并转换；结果页沿用第二阶段的边距。</p></div>
-      <div className="nine-slice-actions"><button className="btn primary" onClick={p.onScan}>扫描 / 更新候选</button><button className="btn" disabled={!skipped.length} onClick={p.onRestoreSkipped}>恢复已跳过</button></div></header>
-    <div className="nine-slice-summary"><span>待处理 <strong>{pending.length}</strong></span><span>已完成 <strong>{confirmed.length}</strong></span><span>已跳过 <strong>{skipped.length}</strong></span><span>图片资源 <strong>{entries.length}</strong></span></div>
-    <nav className="slice-tabs" aria-label="九宫格阶段"><button className={tab === "candidates" ? "on" : ""} onClick={() => setTab("candidates")}>1 · 候选图片</button><button className={tab === "mark" ? "on" : ""} disabled={!selected} onClick={() => setTab("mark")}>2 · 原图标记</button><button className={tab === "result" ? "on" : ""} disabled={!confirmed.length} onClick={() => setTab("result")}>3 · 九宫格结果</button></nav>
-    {tab === "candidates" && <div className="slice-stage candidates-stage"><main className="slice-image-catalog"><div className="nine-slice-list-title">候选图片</div><p className="slice-stage-hint">算法只做推荐。可以多选图片后手动创建一个逻辑图片组；同一组最终使用最大尺寸的原图。</p><div className="slice-catalog-grid">{entries.map((entry) => <button key={entry.node.id} className={`slice-catalog-card ${manualIds.includes(entry.node.id) ? "selected" : ""}`} onClick={() => toggleManual(entry.node.id)}><img src={entry.image.toDataURL("image/png")} alt="" /><strong>{entry.node.name}</strong><small>{entry.image.width} × {entry.image.height}</small></button>)}</div><button className="btn" disabled={!manualIds.length} onClick={createManual}>确认手动归组{manualIds.length ? `（${manualIds.length}）` : ""}</button></main><aside className="slice-candidate-list"><div className="nine-slice-list-title">算法推荐</div>{!candidates.length && <div className="slice-empty">点击“扫描 / 更新候选”开始分析。</div>}{candidates.map((candidate) => { const entry = sourceFor(candidate, entries); return <button key={candidate.id} className={`nine-candidate status-${candidate.status}`} onClick={() => choose(candidate.id, "mark")}>{entry && <img src={entry.image.toDataURL("image/png")} alt="" />}<span><strong>{entry?.node.name ?? "图片已缺失"}</strong><small>{candidate.memberNodeIds.length} 张 · {statusLabel(candidate.status)}</small></span><em>{Math.round(candidate.confidence * 100)}%</em></button>; })}</aside></div>}
-    {tab === "mark" && <div className="slice-stage mark-stage">{selected && source ? <main className="nine-slice-editor-panel"><div className="nine-slice-editor-title"><div><span>公共源图</span><h3>{source.node.name}</h3><small>{selected.memberNodeIds.length > 1 ? `同源图片 ${selected.memberNodeIds.length} 张，最大尺寸作为源图` : "单张图片"}</small></div><span className={`nine-status status-${selected.status}`}>{statusLabel(selected.status)}</span></div><p className="nine-slice-reason">{selected.reason}</p><SliceEditor source={source} slice={margins} onChange={setMargins} /><div className="nine-slice-editor-foot"><span>第二阶段是边距的唯一编辑入口；修改后重新点击转换。</span><div><button className="btn" onClick={() => p.onSkip(selected.id)}>跳过</button><button className="btn primary" onClick={() => p.onConfirm(selected, margins)}>转换并保存边距</button></div></div></main> : <div className="slice-empty large">请先在第一阶段选择或创建图片组。</div>}<aside className="slice-stage-side"><div className="nine-slice-list-title">图片组</div>{candidates.map((candidate) => <button key={candidate.id} className={`slice-stage-item ${candidate.id === selected?.id ? "on" : ""}`} onClick={() => choose(candidate.id, "mark")}><span>{sourceFor(candidate, entries)?.node.name ?? "图片已缺失"}</span><small>{statusLabel(candidate.status)}</small></button>)}</aside></div>}
-    {tab === "result" && <div className="slice-stage result-stage"><main><div className="nine-slice-list-title">已生成的九宫格图片</div><p className="slice-stage-hint">这里不再确认边距。边距沿用第二阶段；如需调整，请返回“原图标记”。</p><div className="slice-result-grid">{confirmed.map((candidate) => { const entry = sourceFor(candidate, entries); const group = groupFor(candidate, groups); return <article className="slice-result-card" key={candidate.id}>{entry && <img src={entry.node.sliceImage?.toDataURL("image/png") ?? entry.image.toDataURL("image/png")} alt="" />}<strong>{entry?.node.name ?? "图片已缺失"}</strong><small>{group ? `边距：${group.margins.left} / ${group.margins.top} / ${group.margins.right} / ${group.margins.bottom}` : "等待保存生成资源"}</small><button className="btn" onClick={() => choose(candidate.id, "mark")}>返回第二阶段修改</button></article>; })}</div></main></div>}
+    <header className="nine-slice-head"><div><span className="workspace-kicker">ASSET PROCESSING</span><h2>九宫格</h2><p>从候选图片中选择一张或多张，在右侧统一标记边距并生成引擎使用的九宫格资源。</p></div>
+      <div className="nine-slice-actions"><button className="btn" onClick={p.onScan}>更新候选</button><span className="nine-slice-count">待处理 {pendingEntries.length} · 已完成 {confirmed.length}</span></div></header>
+    <nav className="slice-tabs" aria-label="九宫格阶段"><button className={tab === "mark" ? "on" : ""} onClick={() => setTab("mark")}>候选图片与边距标记</button><button className={tab === "result" ? "on" : ""} disabled={!confirmed.length} onClick={() => setTab("result")}>九宫格结果</button></nav>
+    {tab === "mark" && <div className="slice-stage mark-stage slice-merged-stage"><aside className="slice-candidate-list"><div className="nine-slice-list-title">候选图片</div><p className="slice-stage-hint">可多选同源图片；右侧以第一张选中图片显示标记，确认后同组图片共用边距。</p>{!availableEntries.length && <div className="slice-empty">所有图片都已完成处理。</div>}{availableEntries.map((entry) => {
+      const candidate = candidates.find((item) => item.memberNodeIds.includes(entry.node.id));
+      return <button key={entry.node.id} className={`slice-candidate-image ${selectedIds.includes(entry.node.id) ? "selected" : ""}`} onClick={() => toggleSelection(entry.node.id)}>
+        <img src={entry.image.toDataURL("image/png")} alt="" /><span><strong>{entry.node.name}</strong><small>{entry.image.width} × {entry.image.height}{candidate ? ` · ${statusLabel(candidate.status)}` : ""}</small></span><i>{selectedIds.includes(entry.node.id) ? "✓" : ""}</i>
+      </button>;
+    })}</aside><main className="nine-slice-editor-panel">{workingCandidate && displaySource ? <><div className="nine-slice-editor-title"><div><span>当前标记图 · 已选 {selectedEntries.length} 张</span><h3>{displaySource.node.name}</h3><small>{selectedEntries.length > 1 ? "其他选中图片将沿用同一组边距；最终源图仍按最大尺寸选择" : "单张图片"}</small></div><span className="nine-status status-suggested">待标记</span></div><SliceEditor source={displaySource} slice={margins} onChange={setMargins} /><div className="nine-slice-editor-foot"><span>边距值是本组图片共用的引擎九宫格参数。</span><button className="btn primary" onClick={confirm}>转换并保存</button></div></> : <div className="slice-empty large">请先从左侧选择候选图片。</div>}</main></div>}
+    {tab === "result" && <div className="slice-stage result-stage"><main><div className="nine-slice-list-title">已生成的九宫格图片</div><p className="slice-stage-hint">边距沿用候选与标记页；如需调整，请回到上一页重新选择并标记。</p><div className="slice-result-grid">{confirmed.map((candidate) => { const entry = sourceFor(candidate, entries); const group = groupFor(candidate, groups); return <article className="slice-result-card" key={candidate.id}>{entry && <img src={entry.node.sliceImage?.toDataURL("image/png") ?? entry.image.toDataURL("image/png")} alt="" />}<strong>{entry?.node.name ?? "图片已缺失"}</strong><small>{group ? `边距：${group.margins.left} / ${group.margins.top} / ${group.margins.right} / ${group.margins.bottom}` : "等待保存生成资源"}</small><button className="btn" onClick={() => { setSelectedIds(candidate.memberNodeIds); setTab("mark"); }}>返回修改</button></article>; })}</div></main></div>}
   </section>;
 }

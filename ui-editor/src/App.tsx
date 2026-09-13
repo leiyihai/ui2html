@@ -8,7 +8,7 @@ import type { CtrlType, ImageBinding, InteractionTemplate, LayoutContext, NineSl
 import Appbar from "./components/Toolbar";
 import Workbar, { type Workspace } from "./components/WorkspaceTabs";
 import Inspector from "./components/Inspector";
-import ControlsPanel, { type LayerNameMode, type LayerPanelStyle } from "./components/ControlsPanel";
+import ControlsPanel, { type LayerNameMode } from "./components/ControlsPanel";
 import TypePieMenu from "./components/TypePieMenu";
 import QuickActionMenu from "./components/QuickActionMenu";
 import { markControlType } from "./controlType";
@@ -218,9 +218,10 @@ function buildNamingReference(scene: UIScene, manifest: ReturnType<typeof buildN
     context.fillStyle = "#a8bed0";
     context.font = "12px sans-serif";
     context.fillText("Unique image references", 10, stageHeight + 18);
-    const nodeById = new Map(walkNodes(scene.nodes).map((node) => [node.id, node]));
     manifest.assets.forEach((asset, index) => {
-      const node = nodeById.get(asset.nodeIds[0]);
+      // 资源槽位中的图片已经不在普通层级树里，必须从 resources 递归查找，
+      // 否则 AI 看到的联系表会漏掉这些资源的视觉缩略图。
+      const node = findNodeIncludingResources(scene.nodes, asset.nodeIds[0]);
       if (!node?.image) return;
       const col = index % contactColumns;
       const row = Math.floor(index / contactColumns);
@@ -289,7 +290,6 @@ export default function App() {
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameCaretMode, setRenameCaretMode] = useState<"all" | "prefix">("all");
   const [layerNameMode, setLayerNameMode] = useState<LayerNameMode>("original");
-  const [layerPanelStyle, setLayerPanelStyle] = useState<LayerPanelStyle>("psd");
 
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
@@ -441,7 +441,6 @@ export default function App() {
     setDirty(false);
     setRenameCaretMode("all");
     setLayerNameMode("original");
-    setLayerPanelStyle("psd");
     setExportMsg("已新建空白工程");
   }, [applyScene, dirty, resetHistory]);
 
@@ -458,7 +457,6 @@ export default function App() {
       setProjectName(projectFileName(opened.path));
       setAnalysis(opened.analysis);
       setLayerNameMode("original");
-      setLayerPanelStyle("psd");
       setViewport(view?.viewport ?? { width: restored.scene.designWidth, height: restored.scene.designHeight });
       setSafeArea(view?.safeArea ?? { left: 0, right: 0, top: 0, bottom: 0 });
       setScaleMode(view?.scaleMode ?? "cover");
@@ -527,7 +525,7 @@ export default function App() {
       await checkpoint("正在整理图片资源……", 0.58);
       await checkpoint("正在校验并保存导入结果……", 0.88);
       // PSD 导入只保留原始图层名称；中文控件文件夹的类型识别在 importPsd 内完成。
-      // AI 命名由用户在资源绑定完成后通过工具栏主动触发，避免导入后丢失 PSD 语义线索。
+      // AI 命名由用户在资源绑定完成后通过层级面板主动触发，避免导入后丢失 PSD 语义线索。
       const currentScene = imported.scene;
       const currentAnalysis = createEmptyAnalysis("local");
       if (controller.signal.aborted) throw new DOMException("导入已取消", "AbortError");
@@ -546,7 +544,6 @@ export default function App() {
       setProjectPath(null);
       setProjectName(`${name.replace(/\.(psd|psb)$/i, "")}.ui.json`);
       setLayerNameMode("original");
-      setLayerPanelStyle("psd");
       const importedIds = currentScene.nodes.map((node) => node.id);
       selectionAnchorRef.current = importedIds.at(-1) ?? null;
       setSelectedIds(importedIds);
@@ -725,7 +722,6 @@ export default function App() {
     setRenamingId(null);
     setRenameCaretMode("all");
     setLayerNameMode("original");
-    setLayerPanelStyle("psd");
     setSelectedId(null);
     selectionAnchorRef.current = null;
     setSelectedIds([]);
@@ -1017,25 +1013,14 @@ export default function App() {
         node.slice = { ...margins };
         node.sliceImage = generated ?? source.image;
       }),
-      nineSliceCandidates: (s.nineSliceCandidates ?? []).map((item) => item.id === candidate.id
-        ? { ...item, status: "confirmed", suggestedMargins: { ...margins } }
-        : item),
+      nineSliceCandidates: (s.nineSliceCandidates ?? []).some((item) => item.id === candidate.id)
+        ? (s.nineSliceCandidates ?? []).map((item) => item.id === candidate.id
+          ? { ...item, status: "confirmed", suggestedMargins: { ...margins } }
+          : item)
+        : [...(s.nineSliceCandidates ?? []), { ...candidate, status: "confirmed", suggestedMargins: { ...margins } }],
       nineSliceGroups: [...(s.nineSliceGroups ?? []).filter((item) => item.id !== group.id), group],
     }));
     setExportMsg(`已确认九宫格：${source.name}`);
-  }, [mutateScene]);
-
-  const skipNineSlice = useCallback((candidateId: string) => {
-    mutateScene((s) => ({ ...s, nineSliceCandidates: (s.nineSliceCandidates ?? []).map((item) => item.id === candidateId ? { ...item, status: "skipped" } : item) }));
-  }, [mutateScene]);
-
-  const restoreSkippedNineSlice = useCallback(() => {
-    mutateScene((s) => ({ ...s, nineSliceCandidates: (s.nineSliceCandidates ?? []).map((item) => item.status === "skipped" ? { ...item, status: "suggested" } : item) }));
-  }, [mutateScene]);
-
-  const addManualNineSlice = useCallback((candidate: NineSliceCandidate) => {
-    mutateScene((s) => ({ ...s, nineSliceCandidates: [...(s.nineSliceCandidates ?? []).filter((item) => item.id !== candidate.id), candidate] }));
-    setExportMsg("已创建手动九宫格候选，请确认边距");
   }, [mutateScene]);
 
   const toggleNineSlicePreview = useCallback(() => {
@@ -1487,7 +1472,6 @@ export default function App() {
         projectName={projectName} dirty={dirty}
         onNew={createNewProject} onOpenProject={openSavedProject}
         onImportPsd={loadPsd} onImportImages={importImages}
-        onAiRename={() => { void rerunAiNaming(); }}
         hasScene={!!scene} canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
         onSave={() => { void saveCurrentProject(); }} onSaveAs={() => { void saveCurrentProject(true); }}
         onExportHtml={exportHtml} onExportEngineJson={exportEngineJson} onGlobalFont={applyGlobalFont}
@@ -1503,7 +1487,7 @@ export default function App() {
       />
       <div className="body">
         {workspace !== "slice" && <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
-          panelStyle={layerPanelStyle} onPanelStyleChange={setLayerPanelStyle}
+          onAiRename={() => { void rerunAiNaming(); }}
           nameMode={layerNameMode} onNameModeChange={(mode) => { setLayerNameMode(mode); if (mode === "original") setRenamingId(null); }}
           warningIds={warningIds}
           renamingId={renamingId} renameCaretMode={renameCaretMode}
@@ -1559,9 +1543,6 @@ export default function App() {
           <NineSliceWorkspace scene={scene ?? { designWidth: 1280, designHeight: 720, nodes: [] }}
             onScan={scanNineSlice}
             onConfirm={confirmNineSlice}
-            onSkip={skipNineSlice}
-            onRestoreSkipped={restoreSkippedNineSlice}
-            onManualCreate={addManualNineSlice}
           />
         ) : workspace === "preview" ? (
           <section className="preview-workspace">
@@ -1628,7 +1609,7 @@ export default function App() {
           x={typeMenu.x}
           y={typeMenu.y}
           node={pieNode}
-          onChoose={(type) => { setCtrl(pieNode.id, type, "quick"); setLayerNameMode("ai"); setTypeMenu(null); }}
+          onChoose={(type) => { setCtrl(pieNode.id, type, "quick"); setTypeMenu(null); }}
           onClose={() => setTypeMenu(null)}
         />
       )}

@@ -12,7 +12,6 @@ interface Props {
   onOpenProject: () => void;
   onImportPsd: (buffer: ArrayBuffer, name: string) => void;
   onImportImages: (files: File[]) => void;
-  onAiRename: () => void;
   onSave: () => void;
   onSaveAs: () => void;
   onUndo: () => void;
@@ -87,9 +86,6 @@ export default function Appbar(p: Props) {
           }}
         />
       </label>
-      <button className="btn" disabled={!p.hasScene} onClick={p.onAiRename} title="资源绑定完成后，主动调用 Codex CLI 统一命名">
-        AI 命名
-      </button>
       <span className="vsep" />
       <button className="btn primary" disabled={!p.hasScene} onClick={p.onSave} title="保存工程 (Ctrl+S)">保存</button>
       <button className="btn" disabled={!p.hasScene} onClick={p.onSaveAs}>另存为</button>

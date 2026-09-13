@@ -1,5 +1,6 @@
-import type { CtrlType, ProjectAnalysis, UINode, UIScene } from "./types";
+import type { CtrlType, ProjectAnalysis, ResourceSlot, UINode, UIScene } from "./types";
 import { controlNamePrefix } from "./nodeNaming";
+import { resourceSlotDefinitions } from "./resourceBinding";
 
 export interface NamingManifestNode {
   id: string;
@@ -20,6 +21,8 @@ export interface NamingManifestAsset {
   width: number;
   height: number;
   sourceNames: string[];
+  /** 已绑定到控件槽位的资源角色，提供给 AI 作为图片命名语义。 */
+  bindings?: Array<{ controlNodeId: string; slot: ResourceSlot; slotLabel: string }>;
 }
 
 export interface NamingManifest {
@@ -32,6 +35,35 @@ export interface AiNamingResult {
   nodes?: Array<{ id: string; suffix?: string; confidence?: number; reason?: string }>;
   assets?: Array<{ key: string; name?: string; confidence?: number; reason?: string }>;
 }
+
+/**
+ * AI 名称的本地防线：提示词要求 AI 优先使用这些约定俗成的 UI 缩写，
+ * 这里再做一次规范化，避免模型偶尔返回过长或重复表达。
+ */
+export const COMMON_UI_ABBREVIATIONS: Record<string, string> = {
+  background: "bg",
+  foreground: "fg",
+  experience: "exp",
+  selected: "sel",
+  deselected: "unsel",
+  disabled: "dis",
+  enabled: "ena",
+  pressed: "press",
+  quantity: "qty",
+  number: "num",
+  message: "msg",
+  navigation: "nav",
+  information: "info",
+  configuration: "cfg",
+  character: "char",
+  description: "desc",
+  thumbnail: "thumb",
+  preview: "prev",
+  volume: "vol",
+  progress: "prog",
+};
+
+export const AI_NAME_MAX_SUFFIX_LENGTH = 24;
 
 /**
  * 返回需要在层级树中逐项提示的节点。
@@ -80,6 +112,44 @@ export function sanitizeSemanticName(value: string): string {
   return output || "node";
 }
 
+const GENERIC_REDUNDANT_WORDS = new Set(["ui", "control", "component", "widget", "element"]);
+const ASSET_REDUNDANT_WORDS = new Set(["image", "texture", "asset"]);
+const TYPE_REDUNDANT_WORDS: Partial<Record<CtrlType, Set<string>>> = {
+  Button: new Set(["button"]),
+  CheckBox: new Set(["check", "checkbox", "box"]),
+  Edit: new Set(["edit", "input", "field"]),
+  GridView: new Set(["grid", "view"]),
+  Layout: new Set(["layout", "panel", "container"]),
+  List: new Set(["list", "view"]),
+  ListHorizontal: new Set(["list", "horizontal", "view"]),
+  ProgressBar: new Set(["progress", "prog", "bar"]),
+  RadioButton: new Set(["radio", "button"]),
+  Slider: new Set(["slider"]),
+  StaticImage: new Set(["image", "img"]),
+  StaticText: new Set(["text", "label"]),
+};
+
+/**
+ * 压缩 AI 返回的语义名。只处理 AI 结果，不改变 PSD 原名和本地兜底命名，
+ * 这样美术仍能看到原始信息，AI 不可用时也保持既有兜底结果。
+ */
+export function compactSemanticName(value: string, type?: CtrlType, kind: "node" | "asset" = "node"): string {
+  const sanitized = sanitizeSemanticName(value);
+  const redundant = new Set(GENERIC_REDUNDANT_WORDS);
+  if (kind === "asset") ASSET_REDUNDANT_WORDS.forEach((word) => redundant.add(word));
+  if (type) TYPE_REDUNDANT_WORDS[type]?.forEach((word) => redundant.add(word));
+
+  const words = sanitized.split("_")
+    .map((word) => COMMON_UI_ABBREVIATIONS[word] ?? word)
+    .filter((word) => !redundant.has(word));
+  const output = words.join("_") || "item";
+  if (output.length <= AI_NAME_MAX_SUFFIX_LENGTH) return output;
+
+  const clipped = output.slice(0, AI_NAME_MAX_SUFFIX_LENGTH).replace(/_+$/g, "");
+  const lastSeparator = clipped.lastIndexOf("_");
+  return lastSeparator >= 8 ? clipped.slice(0, lastSeparator) : clipped;
+}
+
 function translateHint(value: string): string {
   let output = value.trim();
   for (const [source, target] of Object.entries(WORDS).sort((a, b) => b[0].length - a[0].length)) {
@@ -108,8 +178,29 @@ function visitNodes(nodes: UINode[], callback: (node: UINode, parentId: string |
 export function buildNamingManifest(scene: UIScene): NamingManifest {
   const nodes: NamingManifestNode[] = [];
   const assetMap = new Map<string, NamingManifestAsset>();
+  const registerAsset = (
+    image: HTMLCanvasElement,
+    nodeId: string,
+    sourceNames: string[],
+    binding?: { controlNodeId: string; slot: ResourceSlot; slotLabel: string },
+  ) => {
+    const key = assetKey(image);
+    const current = assetMap.get(key) ?? { key, nodeIds: [], width: image.width, height: image.height, sourceNames: [] };
+    if (!current.nodeIds.includes(nodeId)) current.nodeIds.push(nodeId);
+    for (const sourceName of sourceNames) {
+      if (sourceName && !current.sourceNames.includes(sourceName)) current.sourceNames.push(sourceName);
+    }
+    if (binding) {
+      current.bindings ??= [];
+      if (!current.bindings.some((item) => item.controlNodeId === binding.controlNodeId && item.slot === binding.slot)) {
+        current.bindings.push(binding);
+      }
+    }
+    assetMap.set(key, current);
+    return key;
+  };
   visitNodes(scene.nodes, (node, parentId, depth) => {
-    const key = node.image ? assetKey(node.image) : undefined;
+    const key = node.image ? registerAsset(node.image, node.id, [node.name, node.originalName ?? ""]) : undefined;
     nodes.push({
       id: node.id, name: node.name, ...(node.originalName ? { originalName: node.originalName } : {}),
       type: node.ctrl?.type ?? "unknown", parentId, depth,
@@ -117,12 +208,15 @@ export function buildNamingManifest(scene: UIScene): NamingManifest {
       ...(node.text?.content ? { text: node.text.content.slice(0, 120) } : {}),
       ...(key ? { assetKey: key } : {}),
     });
-    if (node.image && key) {
-      const current = assetMap.get(key) ?? { key, nodeIds: [], width: node.image.width, height: node.image.height, sourceNames: [] };
-      current.nodeIds.push(node.id);
-      if (!current.sourceNames.includes(node.name)) current.sourceNames.push(node.name);
-      if (node.originalName && !current.sourceNames.includes(node.originalName)) current.sourceNames.push(node.originalName);
-      assetMap.set(key, current);
+    for (const [slotKey, binding] of Object.entries(node.resources ?? {})) {
+      if (!binding) continue;
+      const image = binding.sourceNode.image ?? binding.image;
+      if (!image) continue;
+      const slot = slotKey as ResourceSlot;
+      const slotLabel = resourceSlotDefinitions(node.ctrl?.type).find((definition) => definition.key === slot)?.label ?? slot;
+      registerAsset(image, binding.sourceNode.id, [binding.sourceNode.name, binding.sourceNode.originalName ?? ""], {
+        controlNodeId: node.id, slot, slotLabel,
+      });
     }
   });
   return { design: { width: scene.designWidth, height: scene.designHeight }, nodes, assets: [...assetMap.values()] };
@@ -134,19 +228,37 @@ export function applyFallbackNaming(scene: UIScene): { scene: UIScene; analysis:
   const nodes: Record<string, ProjectAnalysis["nodes"][string]> = {};
   const assets: Record<string, ProjectAnalysis["assets"][string]> = {};
   const assetNames = new Map<string, string>();
+  const fallbackAssetName = (image: HTMLCanvasElement, hint: string): string => {
+    const key = assetKey(image);
+    const existing = assetNames.get(key);
+    if (existing) return existing;
+    const name = `img_${translateHint(hint.replace(/^img_/i, ""))}`;
+    assetNames.set(key, name);
+    assets[key] = { source: "fallback", confidence: 0.35, name, reason: "AI 命名不可用，使用本地备用命名" };
+    return name;
+  };
+  const renameResources = (input: UINode): UINode["resources"] | undefined => {
+    if (!input.resources) return input.resources;
+    return Object.fromEntries(Object.entries(input.resources).map(([slot, binding]) => {
+      if (!binding) return [slot, binding];
+      const image = binding.sourceNode.image ?? binding.image;
+      if (!image) return [slot, binding];
+      const name = fallbackAssetName(image, binding.sourceNode.name);
+      const sourceNode = { ...binding.sourceNode, name, assetName: name, image };
+      return [slot, { ...binding, name, image, sourceNode }];
+    })) as UINode["resources"];
+  };
   const clone = (input: UINode): UINode => {
     if (input.naming?.source === "manual") {
       used.add(input.name);
       nodes[input.id] = { ...input.naming };
-      return { ...input, children: input.children?.map(clone) };
+      return { ...input, resources: renameResources(input), children: input.children?.map(clone) };
     }
     const type = input.ctrl?.type;
     const suffix = translateHint(input.name.replace(/^(btn|chk|check|edit|input|grid|layout|vlist|list|hlist|pbar|radio|slider|img|txt|text|node)_/i, ""));
     const generated = uniqueName(typePrefix(type), suffix === "node" ? "item" : suffix, used);
     const key = input.image ? assetKey(input.image) : null;
-    const assetName = key
-      ? assetNames.get(key) ?? (() => { const value = `img_${translateHint(input.name)}`; const result = sanitizeSemanticName(value); assetNames.set(key, result); return result; })()
-      : undefined;
+    const assetName = key ? fallbackAssetName(input.image!, input.name) : undefined;
     nodes[input.id] = { source: "fallback", confidence: 0.35, suffix: generated.slice(typePrefix(type).length + 1), reason: "AI 命名不可用，使用本地规则" };
     if (key && assetName) assets[key] = { source: "fallback", confidence: 0.35, name: assetName, reason: "AI 命名不可用，使用本地规则" };
     return {
@@ -154,6 +266,7 @@ export function applyFallbackNaming(scene: UIScene): { scene: UIScene; analysis:
       name: generated,
       ...(assetName ? { assetName } : {}),
       naming: { source: "fallback", confidence: 0.35, suffix: generated.slice(typePrefix(type).length + 1), reason: "AI 命名不可用，使用本地规则" },
+      resources: renameResources(input),
       children: input.children?.map(clone),
     };
   };
@@ -171,17 +284,55 @@ export function applyAiNaming(source: UIScene, result: AiNamingResult, options: 
   const used = new Set<string>();
   const nodes: ProjectAnalysis["nodes"] = {};
   const assets: ProjectAnalysis["assets"] = {};
+  const fallbackAssetNames = new Map<string, string>();
+  const resolveAssetName = (image: HTMLCanvasElement, hint: string, existing?: string): { key: string; name: string } => {
+    const key = assetKey(image);
+    const asset = byAsset.get(key);
+    const nameCandidate = asset?.name ? compactSemanticName(asset.name.replace(/^img_/, ""), undefined, "asset") : null;
+    const assetConfidence = asset?.confidence ?? 0;
+    let name = nameCandidate && assetConfidence >= 0.5 ? `img_${nameCandidate}` : existing;
+    if (!name) {
+      name = fallbackAssetNames.get(key);
+      if (!name) {
+        const fallbackHint = hint.replace(/^img_/i, "");
+        name = `img_${translateHint(fallbackHint)}`;
+        fallbackAssetNames.set(key, name);
+      }
+    }
+    assets[key] = nameCandidate && assetConfidence >= 0.5
+      ? { source: "ai", confidence: assetConfidence, name, ...(asset?.reason ? { reason: asset.reason } : {}) }
+      : { source: "fallback", confidence: assetConfidence || 0.35, name, reason: asset?.reason ?? "AI 未返回可靠图片名" };
+    return { key, name };
+  };
+  const renameResources = (input: UINode): UINode["resources"] | undefined => {
+    if (!input.resources) return input.resources;
+    return Object.fromEntries(Object.entries(input.resources).map(([slot, binding]) => {
+      if (!binding) return [slot, binding];
+      const image = binding.sourceNode.image ?? binding.image;
+      if (!image) return [slot, binding];
+      const resolved = resolveAssetName(image, binding.sourceNode.name, binding.sourceNode.assetName);
+      const sourceNode = {
+        ...binding.sourceNode,
+        name: resolved.name,
+        assetName: resolved.name,
+        image,
+      };
+      return [slot, { ...binding, name: resolved.name, image, sourceNode }];
+    })) as UINode["resources"];
+  };
   const clone = (input: UINode): UINode => {
     if (input.naming?.source === "manual" && !overwriteManual) {
       used.add(input.name);
       nodes[input.id] = { ...input.naming };
-      return { ...input, children: input.children?.map(clone) };
+      return { ...input, resources: renameResources(input), children: input.children?.map(clone) };
     }
     const type = input.ctrl?.type;
     const item = byNode.get(input.id);
     const prefix = typePrefix(type);
     const fallbackSuffix = input.naming?.suffix ?? "item";
-    const aiSuffix = item?.suffix ? sanitizeSemanticName(item.suffix.replace(new RegExp(`^${prefix}_`, "i"), "")) : null;
+    const aiSuffix = item?.suffix
+      ? compactSemanticName(item.suffix.replace(new RegExp(`^${prefix}_`, "i"), ""), type)
+      : null;
     const confidence = item?.confidence ?? 0;
     const accepted = Boolean(aiSuffix && confidence >= 0.5);
     const name = uniqueName(prefix, accepted ? aiSuffix! : fallbackSuffix, used);
@@ -191,16 +342,9 @@ export function applyAiNaming(source: UIScene, result: AiNamingResult, options: 
     nodes[input.id] = naming;
     let assetName = input.assetName;
     if (input.image) {
-      const key = assetKey(input.image);
-      const asset = byAsset.get(key);
-      const nameCandidate = asset?.name ? sanitizeSemanticName(asset.name.replace(/^img_/, "")) : null;
-      const assetConfidence = asset?.confidence ?? 0;
-      assetName = nameCandidate && assetConfidence >= 0.5 ? `img_${nameCandidate}` : assetName ?? `img_${fallbackSuffix}`;
-      assets[key] = assetName && nameCandidate && assetConfidence >= 0.5
-        ? { source: "ai", confidence: assetConfidence, name: assetName, ...(asset?.reason ? { reason: asset.reason } : {}) }
-        : { source: "fallback", confidence: assetConfidence || 0.35, name: assetName, reason: asset?.reason ?? "AI 未返回可靠图片名" };
+      assetName = resolveAssetName(input.image, fallbackSuffix, assetName).name;
     }
-    return { ...input, name, ...(assetName ? { assetName } : {}), naming, children: input.children?.map(clone) };
+    return { ...input, name, ...(assetName ? { assetName } : {}), naming, resources: renameResources(input), children: input.children?.map(clone) };
   };
   const namedScene = { ...fallback.scene, nodes: fallback.scene.nodes.map(clone) };
   const warnings: string[] = [];
