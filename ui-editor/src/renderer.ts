@@ -186,7 +186,19 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
         fs = fitFontSize(t.content, t.fontSize, t.minFontSize,
           rect.width / result.scaleX, rect.height / result.scaleY);
       }
-      ctx.font = `${fs * scale}px ${fam}"PingFang SC", "Microsoft YaHei", sans-serif`;
+      const setTextFont = (fontSize: number) => {
+        ctx.font = `${fontSize * scale}px ${fam}"PingFang SC", "Microsoft YaHei", sans-serif`;
+      };
+      setTextFont(fs);
+      // PSD 的文字框来自原字体的度量。统一替换为 DroidSans 后，字宽可能变大；
+      // 自动单行文本应完整显示，而不是沿用旧框把末尾字形裁掉。
+      if (t.mode === "auto" && t.content) {
+        const measuredWidth = ctx.measureText(t.content).width;
+        if (measuredWidth > rect.width && rect.width > 0) {
+          fs *= rect.width / measuredWidth;
+          setTextFont(fs);
+        }
+      }
       ctx.fillStyle = t.textColor ?? t.color;
       ctx.textAlign = t.horizontalAlign === "left" ? "left" : t.horizontalAlign === "right" ? "right" : "center";
       ctx.textBaseline = "middle";
@@ -291,5 +303,20 @@ export function renderOverlay(ctx: CanvasRenderingContext2D, result: LayoutResul
     ctx.moveTo(ax - 8, ay); ctx.lineTo(ax + 8, ay);
     ctx.moveTo(ax, ay - 8); ctx.lineTo(ax, ay + 8);
     ctx.stroke();
+
+    // 主选中框的四角手柄：与画布上的拖拽缩放命中区域保持一致。
+    const handleSize = 8;
+    const half = handleSize / 2;
+    const handles: Array<[number, number]> = [
+      [rect.x, rect.y], [rect.x + rect.width, rect.y],
+      [rect.x, rect.y + rect.height], [rect.x + rect.width, rect.y + rect.height],
+    ];
+    ctx.fillStyle = "#dceff7";
+    ctx.strokeStyle = "#4a90d9";
+    ctx.lineWidth = 1;
+    for (const [x, y] of handles) {
+      ctx.fillRect(x - half, y - half, handleSize, handleSize);
+      ctx.strokeRect(x - half, y - half, handleSize, handleSize);
+    }
   }
 }

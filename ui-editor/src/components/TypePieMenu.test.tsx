@@ -13,22 +13,24 @@ const node: UINode = {
 };
 
 describe("TypeListMenu", () => {
-  it("renders the four groups in a fixed separated list", () => {
+  it("renders a compact single-column type list", () => {
     vi.stubGlobal("window", { innerWidth: 1280, innerHeight: 720 });
     const html = renderToStaticMarkup(<TypeListMenu x={640} y={360} node={node} onChoose={vi.fn()} onClose={vi.fn()} />);
-    expect((html.match(/class="type-list-group"/g) ?? []).length).toBe(4);
+    expect((html.match(/class="type-list-group"/g) ?? []).length).toBe(0);
+    expect((html.match(/class="type-list-option(?: |")/g) ?? []).length).toBe(11);
     expect(html).toContain("type-list-menu");
     expect(html).not.toContain("type-pie");
-    expect(html.indexOf("进度 / 滚动")).toBeLessThan(html.indexOf("容器 / 布局"));
-    expect(html.indexOf("容器 / 布局")).toBeLessThan(html.indexOf("交互控件"));
-    expect(html.indexOf("交互控件")).toBeLessThan(html.indexOf("内容展示"));
+    expect(html).toContain("当前：布局");
+    expect(html).not.toContain("进度 / 滚动");
+    expect(html).not.toContain("用户操作反馈");
   });
 
   it("marks the current type and keeps list family as a second choice", () => {
     vi.stubGlobal("window", { innerWidth: 1280, innerHeight: 720 });
     const html = renderToStaticMarkup(<TypeListMenu x={640} y={360} node={node} onChoose={vi.fn()} onClose={vi.fn()} />);
-    expect(html).toContain("当前");
+    expect(html).toContain("当前：布局");
     expect(html).toContain("列表容器");
+    expect(html).not.toContain("当前</em>");
     expect(html).not.toContain("横向列表");
     expect(html).not.toContain("网格列表");
   });

@@ -13,6 +13,23 @@ import type { LayoutContext, LayoutResult, UINode } from "./types";
 import { LINE_HEIGHT } from "./textMeasure";
 import { resolveLayoutValue } from "./layoutValues";
 
+function findNodeById(nodes: UINode[], id: string): UINode | undefined {
+  for (const node of nodes) {
+    if (node.id === id) return node;
+    const found = node.children ? findNodeById(node.children, id) : undefined;
+    if (found) return found;
+  }
+  return undefined;
+}
+
+function removeNodeById(nodes: UINode[], id: string): UINode[] {
+  return nodes.flatMap((node) => {
+    if (node.id === id) return [];
+    if (!node.children) return [node];
+    return [{ ...node, children: removeNodeById(node.children, id) }];
+  });
+}
+
 export class LayoutEngine {
   layoutScene(scene: { designWidth: number; designHeight: number; nodes: UINode[] }, ctx: LayoutContext): LayoutResult {
     const dw = scene.designWidth, dh = scene.designHeight;
@@ -79,7 +96,7 @@ export class LayoutEngine {
     const effOpacity = n.opacity * parentOpacity;
     // li 项按 PSD 视觉位置排序（水平按 x、垂直/格子按 y），重排后保持原视觉顺序
     const previewItem = cfg.previewItemId
-      ? n.children!.find((child) => child.id === cfg.previewItemId)
+      ? findNodeById(n.children!, cfg.previewItemId)
       : undefined;
     let lis = previewItem
       ? Array.from({ length: Math.max(1, Math.min(99, Math.round(cfg.previewItemCount ?? 1))) }, () => previewItem)
@@ -90,7 +107,7 @@ export class LayoutEngine {
         ? a.designRect.y - b.designRect.y || a.designRect.x - b.designRect.x
         : a.designRect.x - b.designRect.x);
     const others = previewItem
-      ? n.children!.filter((child) => child.id !== previewItem.id)
+      ? removeNodeById(n.children!, previewItem.id)
       : n.children!.filter((c) => !c.children || c.name.toLowerCase() === "list");
     const parentDesignWidth = parentRect ? parentRect.width / scaleX : ctx.designWidth;
     const parentDesignHeight = parentRect ? parentRect.height / scaleY : ctx.designHeight;

@@ -20,6 +20,12 @@ interface Props {
   onExportHtml: () => void;
   onExportEngineJson: () => void;
   onGlobalFont: (font: string) => void;
+  nameMode: import("./ControlsPanel").LayerNameMode;
+  onNameModeChange: (mode: import("./ControlsPanel").LayerNameMode) => void;
+  onAiRename: () => void;
+  onTypeConvert: () => void;
+  useNineSlicePreview: boolean;
+  onToggleNineSlicePreview: () => void;
   workspace: import("./WorkspaceTabs").Workspace;
   onWorkspace: (workspace: import("./WorkspaceTabs").Workspace) => void;
   onCloseProject: () => void;
@@ -31,7 +37,7 @@ interface Props {
   onShowAbout: () => void;
 }
 
-/** 应用栏：工程生命周期、素材导入、历史与预览导出。 */
+/** 当前流程工具栏：只放与当前工作区相关的高频操作。 */
 export default function Appbar(p: Props) {
   const [fontList, setFontList] = useState<string[]>([]);
   const [selectedFont, setSelectedFont] = useState(ENGINE_EDITOR_FONT_FAMILY);
@@ -63,6 +69,7 @@ export default function Appbar(p: Props) {
   return (
     <header className="app-shell-header">
       <MenuBar
+        projectName={p.projectName} dirty={p.dirty}
         hasScene={p.hasScene} canUndo={p.canUndo} canRedo={p.canRedo}
         workspace={p.workspace} onWorkspace={p.onWorkspace}
         onNew={p.onNew} onOpenProject={p.onOpenProject}
@@ -74,68 +81,36 @@ export default function Appbar(p: Props) {
         onExportHtml={p.onExportHtml} onExportEngineJson={p.onExportEngineJson}
       />
       <div className="appbar">
-      <span className="logo">UI Editor</span>
-      <span className="project-title" title={p.projectName}>
-        {p.projectName}{p.dirty ? " ●" : ""}
-      </span>
-      <span className="vsep" />
-      <button className="btn" onClick={p.onNew}>新建</button>
-      <button className="btn" onClick={p.onOpenProject}>打开工程</button>
-      <label className="btn">
-        导入 PSD
-        <input
-          type="file"
-          accept=".psd,.psb"
-          style={{ display: "none" }}
-          onChange={async (event) => {
-            const input = event.currentTarget;
-            const file = event.target.files?.[0];
-            if (file) p.onImportPsd(await file.arrayBuffer(), file.name);
-            input.value = "";
-          }}
-        />
-      </label>
-      <label className="btn">
-        导入图片
-        <input
-          type="file"
-          accept="image/png,image/jpeg,image/webp,image/bmp,image/gif,image/svg+xml"
-          multiple
-          style={{ display: "none" }}
-          onChange={(event) => {
-            p.onImportImages([...event.target.files ?? []]);
-            event.currentTarget.value = "";
-          }}
-        />
-      </label>
-      <span className="vsep" />
-      <button className="btn primary" disabled={!p.hasScene} onClick={p.onSave} title="保存工程 (Ctrl+S)">保存</button>
-      <button className="btn" disabled={!p.hasScene} onClick={p.onSaveAs}>另存为</button>
-      <span className="grow" />
-      <div className="font-picker" title="选择字体后立即应用到全部文本">
-        <select
-          className="global-font"
-          aria-label="项目字体"
-          value={selectedFont}
-          disabled={!p.hasScene || !fontList.length}
-          onChange={(event) => applyFont(event.target.value)}
-        >
-          {fontList.map((font) => <option key={font} value={font}>{font}</option>)}
-        </select>
-        <button
-          className="btn font-cycle"
-          type="button"
-          aria-label="循环切换字体"
-          title="循环切换字体"
-          disabled={!p.hasScene || fontList.length < 2}
-          onClick={cycleFont}
-        >↻</button>
+      <div className="toolbar-tools">
+      {p.workspace === "controls" && <>
+        <button className="btn tool-button" disabled={!p.hasScene} onClick={() => p.onNameModeChange(p.nameMode === "original" ? "ai" : "original")}
+          title={p.nameMode === "original" ? "切换到工程名称" : "切换到 PSD 原名"}>
+          {p.nameMode === "original" ? "PSD 原名" : "工程名称"}
+        </button>
+        <button className="btn tool-button" disabled={!p.hasScene} onClick={p.onAiRename} title="调用 AI 为节点和图片资源统一命名">AI 命名</button>
+        <button className="btn tool-button" disabled={!p.hasScene} onClick={p.onTypeConvert} title="打开控件类型选择菜单（T）">类型转换</button>
+        <div className="font-picker" title="选择字体后立即应用到全部文本">
+          <select
+            className="global-font"
+            aria-label="项目字体"
+            value={selectedFont}
+            disabled={!p.hasScene || !fontList.length}
+            onChange={(event) => applyFont(event.target.value)}
+          >
+            {fontList.map((font) => <option key={font} value={font}>{font}</option>)}
+          </select>
+          <button
+            className="btn font-cycle"
+            type="button"
+            aria-label="循环切换字体"
+            title="循环切换字体"
+            disabled={!p.hasScene || fontList.length < 2}
+            onClick={cycleFont}
+          >↻</button>
+        </div>
+      </>}
+      {p.workspace === "preview" && <label className="toolbar-check"><input type="checkbox" checked={p.useNineSlicePreview} disabled={!p.hasScene} onChange={p.onToggleNineSlicePreview} />九宫格预览</label>}
       </div>
-      <span className="vsep" />
-      <button className="btn" disabled={!p.canUndo} onClick={p.onUndo} title="后退一步 (Ctrl+Z)">↩ 撤销</button>
-      <button className="btn" disabled={!p.canRedo} onClick={p.onRedo} title="前进一步 (Ctrl+X)">↪ 重做</button>
-      <button className="btn" disabled={!p.hasScene} onClick={p.onExportHtml}>预览 HTML</button>
-      <button className="btn primary" disabled={!p.hasScene} onClick={p.onExportEngineJson}>导出 JSON</button>
       </div>
     </header>
   );

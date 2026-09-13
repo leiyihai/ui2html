@@ -1,0 +1,502 @@
+{
+  "version": 1,
+  "provider": "codex-cli",
+  "status": "complete",
+  "generatedAt": "2026-09-13T07:05:36.348Z",
+  "nodes": {
+    "node-1": {
+      "source": "ai",
+      "confidence": 0.92,
+      "suffix": "main_screen",
+      "reason": "整体游戏界面"
+    },
+    "node-3": {
+      "source": "ai",
+      "confidence": 0.95,
+      "suffix": "audio_settings",
+      "reason": "包含音乐开关、音量图标和音量滑块"
+    },
+    "node-5": {
+      "source": "ai",
+      "confidence": 0.9,
+      "suffix": "vol_track",
+      "reason": "音量控制背景轨道"
+    },
+    "node-6": {
+      "source": "ai",
+      "confidence": 0.9,
+      "suffix": "vol_fill",
+      "reason": "音量控制填充条"
+    },
+    "node-7": {
+      "source": "ai",
+      "confidence": 0.88,
+      "suffix": "vol_thumb",
+      "reason": "音量滑块拖动钮"
+    },
+    "node-8": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "vol",
+      "reason": "音量图标"
+    },
+    "node-9": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "radio_off",
+      "reason": "未选中单选状态"
+    },
+    "node-10": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "radio_on",
+      "reason": "选中单选状态"
+    },
+    "node-11": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "music",
+      "reason": "音乐设置文字"
+    },
+    "node-12": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "top_bar",
+      "reason": "顶部信息栏"
+    },
+    "node-14": {
+      "source": "ai",
+      "confidence": 0.96,
+      "suffix": "exp_status",
+      "reason": "经验值状态区域"
+    },
+    "node-15": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "exp",
+      "reason": "经验进度控件"
+    },
+    "node-18": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "exp_value",
+      "reason": "经验数值文字"
+    },
+    "node-19": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "exp",
+      "reason": "经验标签"
+    },
+    "node-20": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "game_title",
+      "reason": "游戏标题"
+    },
+    "group-1789282585486": {
+      "source": "ai",
+      "confidence": 0.62,
+      "suffix": "menu",
+      "reason": "顶部左侧功能按钮，具体用途不完全确定"
+    },
+    "node-22": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "chat",
+      "reason": "聊天区域"
+    },
+    "node-24": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "msg_input",
+      "reason": "聊天消息输入区域"
+    },
+    "node-26": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "msg_placeholder",
+      "reason": "消息输入提示文字"
+    },
+    "node-27": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "send",
+      "reason": "发送消息按钮"
+    },
+    "node-29": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channels",
+      "reason": "频道选择区域"
+    },
+    "node-31": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_1",
+      "reason": "第一频道选项"
+    },
+    "node-32": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_1",
+      "reason": "第一频道单选控件"
+    },
+    "node-35": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_1",
+      "reason": "第一频道标签"
+    },
+    "node-36": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_2",
+      "reason": "第二频道选项"
+    },
+    "node-37": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_2",
+      "reason": "第二频道单选控件"
+    },
+    "node-40": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_2",
+      "reason": "第二频道标签"
+    },
+    "node-41": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_3",
+      "reason": "第三频道选项"
+    },
+    "node-42": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_3",
+      "reason": "第三频道单选控件"
+    },
+    "node-45": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_3",
+      "reason": "第三频道标签"
+    },
+    "node-46": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "tabs",
+      "reason": "底部标签页区域"
+    },
+    "node-48": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_1",
+      "reason": "第一标签页选项"
+    },
+    "node-51": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_1",
+      "reason": "第一标签页文字"
+    },
+    "node-52": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_2",
+      "reason": "第二标签页选项"
+    },
+    "node-55": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_2",
+      "reason": "第二标签页文字"
+    },
+    "node-56": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_3",
+      "reason": "第三标签页选项"
+    },
+    "node-59": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_3",
+      "reason": "第三标签页文字"
+    },
+    "node-60": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "func",
+      "reason": "功能菜单面板"
+    },
+    "node-62": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "func",
+      "reason": "功能项目列表"
+    },
+    "node-63": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "merge_action",
+      "reason": "合成功能入口"
+    },
+    "node-64": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "merge",
+      "reason": "合成图标"
+    },
+    "node-65": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "merge",
+      "reason": "合成功能文字"
+    },
+    "node-66": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "nav_arrow",
+      "reason": "功能入口导航箭头"
+    },
+    "node-67": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "pet_action",
+      "reason": "宠物功能入口"
+    },
+    "node-68": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "pet",
+      "reason": "宠物图标"
+    },
+    "node-69": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "pet",
+      "reason": "宠物功能文字"
+    },
+    "node-70": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "nav_arrow",
+      "reason": "功能入口导航箭头"
+    },
+    "node-71": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "task_action",
+      "reason": "任务功能入口"
+    },
+    "node-72": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "task",
+      "reason": "任务图标"
+    },
+    "node-73": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "task",
+      "reason": "任务功能文字"
+    },
+    "node-74": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "nav_arrow",
+      "reason": "功能入口导航箭头"
+    },
+    "node-75": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "map_action",
+      "reason": "地图功能入口"
+    },
+    "node-76": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "map",
+      "reason": "地图图标"
+    },
+    "node-77": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "map",
+      "reason": "地图功能文字"
+    },
+    "node-78": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "nav_arrow",
+      "reason": "功能入口导航箭头"
+    },
+    "node-79": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "func_header",
+      "reason": "功能面板标题区域"
+    },
+    "node-80": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "func",
+      "reason": "功能标题文字"
+    },
+    "node-81": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "func",
+      "reason": "功能标题图标"
+    },
+    "node-82": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "bag",
+      "reason": "背包面板"
+    },
+    "node-83": {
+      "source": "ai",
+      "confidence": 0.95,
+      "suffix": "item",
+      "reason": "背包物品布局区域"
+    },
+    "node-85": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "item",
+      "reason": "背包物品列表"
+    },
+    "node-86": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "item_slot",
+      "reason": "物品槽位"
+    },
+    "node-88": {
+      "source": "ai",
+      "confidence": 0.9,
+      "suffix": "potion",
+      "reason": "图中显示为装有蓝色液体的道具"
+    },
+    "node-89": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "item_qty",
+      "reason": "物品数量文字"
+    },
+    "node-90": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "bag_header",
+      "reason": "背包标题区域"
+    },
+    "node-91": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "bag",
+      "reason": "背包标题文字"
+    },
+    "node-92": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "bag",
+      "reason": "背包标题图标"
+    },
+    "group-1789298797144": {
+      "source": "manual",
+      "confidence": 1,
+      "suffix": "vol"
+    }
+  },
+  "assets": {
+    "asset-468ed9cf": {
+      "source": "ai",
+      "confidence": 0.9,
+      "name": "img_vol_track",
+      "reason": "音量控制背景轨道"
+    },
+    "asset-64dce29f": {
+      "source": "ai",
+      "confidence": 0.9,
+      "name": "img_vol_fill",
+      "reason": "音量控制填充条"
+    },
+    "asset-108bf6bb": {
+      "source": "ai",
+      "confidence": 0.88,
+      "name": "img_vol_thumb",
+      "reason": "音量滑块拖动钮"
+    },
+    "asset-632c6d87": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_vol",
+      "reason": "音量图标"
+    },
+    "asset-4bfd5c5e": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_radio_off",
+      "reason": "未选中单选状态图"
+    },
+    "asset-f7e6be8a": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_radio_on",
+      "reason": "选中单选状态图"
+    },
+    "asset-2deac10e": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_merge",
+      "reason": "合成功能图标"
+    },
+    "asset-614fa1be": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_nav_arrow",
+      "reason": "导航箭头图标"
+    },
+    "asset-f597d1c5": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_pet",
+      "reason": "宠物图标"
+    },
+    "asset-7782679a": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_task",
+      "reason": "任务图标"
+    },
+    "asset-86550fde": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_map",
+      "reason": "地图图标"
+    },
+    "asset-bd3657ec": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_func",
+      "reason": "功能标题图标"
+    },
+    "asset-69a4a956": {
+      "source": "ai",
+      "confidence": 0.9,
+      "name": "img_potion",
+      "reason": "背包中的药水或液体道具"
+    },
+    "asset-7cc2e591": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_bag",
+      "reason": "背包标题图标"
+    }
+  },
+  "warnings": []
+}

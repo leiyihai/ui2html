@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createManualNineSliceCandidate, scanNineSliceCandidates } from "./nineSlice";
+import { createManualNineSliceCandidate, parseBulkMargins, rankNineSliceEntries, scanNineSliceCandidates } from "./nineSlice";
 import type { UIScene, UINode } from "./types";
 
 function image(width: number, height: number, key = "solid"): HTMLCanvasElement {
@@ -24,6 +24,13 @@ function node(id: string, name: string, canvas: HTMLCanvasElement): UINode {
 }
 
 describe("nine-slice candidate scanning", () => {
+  it("parses bulk margins in top-bottom-left-right order", () => {
+    expect(parseBulkMargins("2,3,4,1", 100, 80)).toEqual({ left: 4, top: 2, right: 1, bottom: 3 });
+    expect(parseBulkMargins("4", 100, 80)).toEqual({ left: 4, top: 4, right: 4, bottom: 4 });
+    expect(parseBulkMargins("2， 3，4，1", 100, 80)).toEqual({ left: 4, top: 2, right: 1, bottom: 3 });
+    expect(parseBulkMargins("2,3", 100, 80)).toBeNull();
+    expect(parseBulkMargins("60,30,20,20", 100, 80)).toBeNull();
+  });
   it("groups same visual content at different sizes and selects the largest source", () => {
     const small = node("small", "panel_small", image(40, 20));
     const large = node("large", "panel_large", image(80, 40));
@@ -45,5 +52,21 @@ describe("nine-slice candidate scanning", () => {
     expect(candidate.memberNodeIds).toEqual(["a", "b"]);
     expect(candidate.sourceNodeId).toBe("b");
     expect(candidate.confidence).toBe(1);
+  });
+
+  it("orders candidate thumbnails by stretch confidence and then name relevance", () => {
+    const panel = node("panel", "img_panel_background", image(80, 40, "panel"));
+    const icon = node("icon", "img_icon_star", image(256, 256, "icon"));
+    const entries = [
+      { node: icon, image: icon.image!, assetKey: "icon", signature: "icon" },
+      { node: panel, image: panel.image!, assetKey: "panel", signature: "panel" },
+    ];
+    const candidates = [{
+      id: "panel", memberNodeIds: ["panel"], sourceNodeId: "panel", sourceAssetKey: "panel",
+      suggestedMargins: { left: 8, top: 8, right: 8, bottom: 8 }, confidence: 0.82,
+      reason: "panel", status: "suggested" as const, signature: "panel",
+    }];
+
+    expect(rankNineSliceEntries(entries, candidates).map((entry) => entry.node.id)).toEqual(["panel", "icon"]);
   });
 });

@@ -4,6 +4,7 @@ import type { Workspace } from "./WorkspaceTabs";
 import MenuBar from "./MenuBar";
 
 const props = {
+  projectName: "示例.ui.json", dirty: false,
   hasScene: true, canUndo: true, canRedo: false, workspace: "controls" as Workspace,
   onWorkspace: vi.fn(), onNew: vi.fn(), onOpenProject: vi.fn(), onImportPsd: vi.fn(), onImportImages: vi.fn(),
   onSave: vi.fn(), onSaveAs: vi.fn(), onCloseProject: vi.fn(), onUndo: vi.fn(), onRedo: vi.fn(),
@@ -19,6 +20,7 @@ describe("MenuBar", () => {
     expect(html).toContain("视图");
     expect(html).toContain("帮助");
     expect(html).toContain("UI2HTML");
-    expect(html).toContain("工程编辑");
+    expect(html).toContain("示例.ui.json");
+    expect(html).toContain("资源绑定");
   });
 });

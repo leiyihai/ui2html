@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { renderUi } from "../renderer";
-import { effectivePreviewRect } from "../resourceBindingWorkspace";
+import { resolveOverviewRect } from "../resourceBindingWorkspace";
 import type { LayoutResult, UINode } from "../types";
 
 interface Props {
@@ -37,8 +37,7 @@ export default function SceneOverview(p: Props) {
     if (!context) return;
     renderUi(context, p.result, p.useNineSlice ?? false);
 
-    const selected = p.selectedId ? p.result.nodes.find((item) => item.node.id === p.selectedId) : null;
-    const bounds = selected && effectivePreviewRect(selected, p.viewport);
+    const bounds = resolveOverviewRect(p.result, p.selectedId, p.viewport);
     if (!bounds) return;
     const line = Math.max(2, Math.min(6, Math.min(canvas.width, canvas.height) / 180));
     context.save();

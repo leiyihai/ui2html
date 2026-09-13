@@ -4,6 +4,8 @@ import type { Workspace } from "./WorkspaceTabs";
 type MenuId = "file" | "edit" | "view" | "help" | null;
 
 interface Props {
+  projectName: string;
+  dirty: boolean;
   hasScene: boolean;
   canUndo: boolean;
   canRedo: boolean;
@@ -47,7 +49,7 @@ function Divider() { return <div className="menu-divider" role="separator" />; }
 /** 桌面软件风格的菜单栏；菜单动作与现有快捷键/工具栏共用回调。 */
 export default function MenuBar(p: Props) {
   const [open, setOpen] = useState<MenuId>(null);
-  const rootRef = useRef<HTMLElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onPointerDown = (event: PointerEvent) => {
@@ -82,11 +84,23 @@ export default function MenuBar(p: Props) {
     p.onImportImages(files);
   };
 
-  return <nav className="menu-bar" ref={rootRef} aria-label="应用菜单">
-    <div className="menu-brand-mark" aria-hidden="true">U</div>
-    <span className="menu-brand-name">UI2HTML</span>
-    <span className="menu-brand-separator" />
-    <div className="menu-groups">
+  return <div className="top-chrome" ref={rootRef}>
+    <div className="window-titlebar">
+      <div className="window-titlebar-project" title={p.projectName}>
+        <div className="window-titlebar-mark" aria-hidden="true">U</div>
+        <span className={`window-titlebar-state ${p.hasScene ? (p.dirty ? "dirty" : "ready") : "empty"}`} aria-hidden="true" />
+        <span className="window-titlebar-name">{p.projectName}</span>
+        <span className="window-titlebar-status">{p.hasScene ? (p.dirty ? "有未保存更改" : "已保存") : "未打开工程"}</span>
+      </div>
+      <div className="window-titlebar-drag" aria-hidden="true" />
+    </div>
+    <nav className="menu-bar" aria-label="应用菜单">
+      <div className="menu-drag-region" aria-hidden="true" />
+      <div className="menu-brand" aria-label="UI2HTML">
+        <div className="menu-brand-mark" aria-hidden="true">U</div>
+        <span className="menu-brand-separator" />
+      </div>
+      <div className="menu-groups">
       <div className="menu-group">
         <button className={`menu-trigger ${open === "file" ? "on" : ""}`} onClick={() => toggle("file")}>文件</button>
         {open === "file" && <div className="menu-popover menu-file" role="menu">
@@ -98,7 +112,7 @@ export default function MenuBar(p: Props) {
           <Divider />
           <MenuItem label="保存工程" shortcut="Ctrl+S" disabled={!p.hasScene} onClick={() => closeThen(p.onSave)} />
           <MenuItem label="另存为…" shortcut="Ctrl+Shift+S" disabled={!p.hasScene} onClick={() => closeThen(p.onSaveAs)} />
-          <MenuItem label="关闭当前工程" shortcut="Alt+W" disabled={!p.hasScene} onClick={() => closeThen(p.onCloseProject)} />
+          <MenuItem label="关闭当前工程" shortcut="Ctrl+W" disabled={!p.hasScene} onClick={() => closeThen(p.onCloseProject)} />
           <Divider />
           <MenuItem label="导出 HTML" disabled={!p.hasScene} onClick={() => closeThen(p.onExportHtml)} />
           <MenuItem label="导出自研引擎 JSON" disabled={!p.hasScene} onClick={() => closeThen(p.onExportEngineJson)} />
@@ -134,7 +148,16 @@ export default function MenuBar(p: Props) {
           <MenuItem label="关于 UI2HTML" onClick={() => closeThen(p.onShowAbout)} />
         </div>}
       </div>
-    </div>
-    <span className="menu-context">{p.hasScene ? "工程编辑" : "等待打开工程"}</span>
-  </nav>;
+      </div>
+      <div className="menu-workspaces-inline" aria-label="工作区">
+        {WORKSPACES.map((item) => <button key={item.value}
+          className={`menu-workspace ${p.workspace === item.value ? "on" : ""}`}
+          disabled={item.value !== "controls" && !p.hasScene}
+          onClick={() => p.onWorkspace(item.value)}
+          title={item.value === "controls" ? "工程层级与编辑" : item.label}>
+          <span>{item.label}</span>
+        </button>)}
+      </div>
+    </nav>
+  </div>;
 }

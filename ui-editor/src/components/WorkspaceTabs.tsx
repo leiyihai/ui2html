@@ -23,34 +23,14 @@ interface Props {
   onDeviceShell: (shell: DeviceShell) => void;
 }
 
-/** 工作区：层级、资源绑定、九宫格、预览和导出。 */
+/** 工作区上下文栏：工作区切换已提升到顶部菜单栏，这里只放当前工作区的视图参数。 */
 export default function Workbar(p: Props) {
   const presets = presetsForDesign(p.designWidth, p.designHeight);
   const preset = presets.find((item) => item.width === p.viewport.width && item.height === p.viewport.height)?.id ?? "custom";
+  if (p.ws !== "preview") return null;
   return (
-    <div className="workbar">
-      <nav className="ws-tabs" aria-label="工作区">
-        <button className={p.ws === "controls" ? "on" : ""} onClick={() => p.onWs("controls")}>
-          <span className="ws-ic">◎</span>层级
-        </button>
-        <button className={p.ws === "bindings" ? "on" : ""} disabled={!p.hasScene}
-          onClick={() => p.onWs("bindings")} title={!p.hasScene ? "请先打开或导入工程" : "手动绑定控件资源"}>
-          <span className="ws-ic">▦</span>资源绑定
-        </button>
-        <button className={p.ws === "slice" ? "on" : ""} disabled={!p.hasScene}
-          onClick={() => p.onWs("slice")} title={!p.hasScene ? "请先打开或导入工程" : "扫描和确认九宫格资源"}>
-          <span className="ws-ic">▧</span>九宫格
-        </button>
-        <button className={p.ws === "preview" ? "on" : ""} disabled={!p.hasScene}
-          onClick={() => p.onWs("preview")} title={!p.hasScene ? "请先打开或导入工程" : "设备和资源效果预览"}>
-          <span className="ws-ic">◉</span>预览
-        </button>
-        <button className={p.ws === "export" ? "on" : ""} disabled={!p.hasScene}
-          onClick={() => p.onWs("export")} title={!p.hasScene ? "请先打开或导入工程" : "导出自研引擎 JSON"}>
-          <span className="ws-ic">⇩</span>导出
-        </button>
-      </nav>
-      {p.ws === "preview" && <details className="device-preview" open={false}>
+    <div className="workspace-contextbar">
+      <details className="device-preview" open={false}>
         <summary>设备预览 · {p.viewport.width} × {p.viewport.height}</summary>
         <div className="device-preview-popover">
           <label>设备预设
@@ -88,9 +68,7 @@ export default function Workbar(p: Props) {
           </div>}
           <p>仅改变预览视口，不改变工程中的节点位置和尺寸。</p>
         </div>
-      </details>}
-      <span className="ws-spacer" />
-      <span className="workbar-hint">PSD 只负责导入，工程文件独立保存</span>
+      </details>
     </div>
   );
 }

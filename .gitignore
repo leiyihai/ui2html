@@ -1,4 +1,6 @@
 node_modules/
 dist/
+release/
 export/
 .DS_Store
+.ui-editor-backups/

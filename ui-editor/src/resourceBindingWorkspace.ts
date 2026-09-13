@@ -25,6 +25,26 @@ export function effectivePreviewRect(
   return { x: left, y: top, width: right - left, height: bottom - top };
 }
 
+/**
+ * Resolve the rectangle shown by the scene overview for a selected image.
+ * Resource images are moved out of the layout result when they are bound to a
+ * control, so their own id cannot be looked up directly. In that case the
+ * control that owns the binding is the visual target.
+ */
+export function resolveOverviewRect(
+  result: { nodes: LayoutResultNode[] },
+  selectedId: string | null,
+  viewport: { width: number; height: number },
+): UIRect | null {
+  if (!selectedId) return null;
+  const direct = result.nodes.find((item) => item.node.id === selectedId);
+  if (direct) return effectivePreviewRect(direct, viewport);
+
+  const owner = result.nodes.find((item) => Object.values(item.node.resources ?? {})
+    .some((binding) => binding?.sourceNode.id === selectedId));
+  return owner ? effectivePreviewRect(owner, viewport) : null;
+}
+
 export function isBindingComplete(target: ResourceBindingTarget): boolean {
   // “完成”表示没有剩余图片可供用户绑定；资源槽位可以按实际需求留空。
   return target.node.resourceBindingComplete === true || target.images.length === 0;

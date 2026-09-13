@@ -20,7 +20,8 @@ import { openProject, projectFileName, saveProject } from "./projectApi";
 import { requestAiNaming } from "./projectApi";
 import { canvasFromImageFile, createImageNode } from "./imageImport";
 import { applySelection, createSelectionIntent, flattenLayerIds, type SelectionIntent } from "./selection";
-import { quickControlName } from "./nodeNaming";
+import { typeConversionNames } from "./nodeNaming";
+import { prefersEngineeringNames } from "./layerNameMode";
 import { applyAiNaming, buildNamingManifest, warningNodeIds } from "./aiNaming";
 import type { ProjectAnalysis } from "./types";
 import { presetsForDesign, type DeviceShell } from "./devicePreview";
@@ -28,7 +29,7 @@ import ResourceBindingWorkspace from "./components/ResourceBindingWorkspace";
 import SceneOverview from "./components/SceneOverview";
 import NineSliceWorkspace from "./components/SlicePanel";
 import { generateNineSliceImage, groupFromCandidate, scanNineSliceCandidates } from "./nineSlice";
-import { syncNodeLayoutPosition } from "./layoutValues";
+import { normalizeLayoutValue, syncNodeLayoutPosition } from "./layoutValues";
 
 export interface ImportProgress {
   name: string;
@@ -95,6 +96,35 @@ function findParentNode(nodes: UINode[], id: string): UINode | null {
   }
   return null;
 }
+
+type ResizeCorner = "nw" | "ne" | "sw" | "se";
+type CanvasResizeDrag = {
+  id: string;
+  corner: ResizeCorner;
+  startClientX: number;
+  startClientY: number;
+  startWidth: number;
+  startHeight: number;
+  startOffsetX: number;
+  startOffsetY: number;
+  parentWidth: number;
+  parentHeight: number;
+  widthMode: "absolute" | "relative";
+  heightMode: "absolute" | "relative";
+};
+
+function resizeCornerAt(point: { x: number; y: number }, rect: { x: number; y: number; width: number; height: number }, tolerance: number): ResizeCorner | null {
+  const corners: Array<[ResizeCorner, number, number]> = [
+    ["nw", rect.x, rect.y], ["ne", rect.x + rect.width, rect.y],
+    ["sw", rect.x, rect.y + rect.height], ["se", rect.x + rect.width, rect.y + rect.height],
+  ];
+  const hit = corners.find(([, x, y]) => Math.hypot(point.x - x, point.y - y) <= tolerance);
+  return hit?.[0] ?? null;
+}
+
+const RESIZE_CURSORS: Record<ResizeCorner, string> = {
+  nw: "nwse-resize", se: "nwse-resize", ne: "nesw-resize", sw: "nesw-resize",
+};
 
 function isFixedRootNode(scene: UIScene, node: UINode, path: number[] | null): boolean {
   return Boolean(
@@ -283,6 +313,7 @@ export default function App() {
   const [dirty, setDirty] = useState(false);
   const [workspace, setWorkspace] = useState<Workspace>("controls");
   const [rightPanelTab, setRightPanelTab] = useState<"properties" | "overview">("properties");
+  const [rightPanelWidth, setRightPanelWidth] = useState(330);
   const [exportMsg, setExportMsg] = useState("");
   const [engineOutputPath, setEngineOutputPath] = useState("");
   const [typeMenu, setTypeMenu] = useState<{ x: number; y: number } | null>(null);
@@ -297,6 +328,7 @@ export default function App() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const previewWrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ id: string; startX: number; startY: number } | null>(null);
+  const resizeRef = useRef<CanvasResizeDrag | null>(null);
   const pointerRef = useRef({ x: 0, y: 0 });
   const sceneRef = useRef<UIScene | null>(null); // 同步引用（事件中立即更新）
   const historyRef = useRef<Snapshot[]>([]);
@@ -304,6 +336,28 @@ export default function App() {
   const selectionAnchorRef = useRef<string | null>(null);
   const importAbortRef = useRef<AbortController | null>(null);
   const previewDragRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
+  const rightPanelResizeRef = useRef<{ startX: number; startWidth: number } | null>(null);
+
+  const startRightPanelResize = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    rightPanelResizeRef.current = { startX: event.clientX, startWidth: rightPanelWidth };
+    const move = (next: PointerEvent) => {
+      if (!rightPanelResizeRef.current) return;
+      const nextWidth = rightPanelResizeRef.current.startWidth + rightPanelResizeRef.current.startX - next.clientX;
+      setRightPanelWidth(Math.max(240, Math.min(520, nextWidth)));
+    };
+    const stop = () => {
+      rightPanelResizeRef.current = null;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", stop);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", stop);
+  };
+
+  useEffect(() => {
+    document.title = `${projectName}${dirty ? " · 未保存" : ""} — UI2HTML`;
+  }, [projectName, dirty]);
 
   const layoutCtx: LayoutContext | null = useMemo(
     () => (scene ? {
@@ -367,7 +421,7 @@ export default function App() {
     renderOverlay(ov.getContext("2d")!, result, layoutCtx, {
       selectedId, selectedIds, showGrid: false, showSafeArea, showDesignBorder,
     });
-  }, [result, layoutCtx, selectedId, selectedIds, showSafeArea, showDesignBorder, scene?.useNineSlicePreview]);
+  }, [result, layoutCtx, workspace, selectedId, selectedIds, showSafeArea, showDesignBorder, scene?.useNineSlicePreview]);
 
   // 画布 CSS 尺寸：contain 到窗口（切回图层 tab 时重新计算）
   useEffect(() => {
@@ -457,7 +511,7 @@ export default function App() {
       setProjectPath(opened.path);
       setProjectName(projectFileName(opened.path));
       setAnalysis(opened.analysis);
-      setLayerNameMode("original");
+      setLayerNameMode(prefersEngineeringNames(opened.analysis) ? "ai" : "original");
       setViewport(view?.viewport ?? { width: restored.scene.designWidth, height: restored.scene.designHeight });
       setSafeArea(view?.safeArea ?? { left: 0, right: 0, top: 0, bottom: 0 });
       setScaleMode(view?.scaleMode ?? "cover");
@@ -710,7 +764,7 @@ export default function App() {
     setExportMsg(`已将节点重命名为「${nextName}」`);
   }, [mutateScene]);
 
-  /** Alt+W：关闭当前工程，避免与浏览器关闭页签的 Ctrl+W 冲突。 */
+  /** Ctrl+W：独立软件内关闭当前工程。 */
   const closeProject = useCallback(() => {
     if (!sceneRef.current) return;
     if (dirty && !window.confirm("当前工程有未保存修改，确定放弃并关闭吗？")) return;
@@ -723,11 +777,14 @@ export default function App() {
     setRenamingId(null);
     setRenameCaretMode("all");
     setLayerNameMode("original");
+    setWorkspace("controls");
+    setShowPreview(false);
     setSelectedId(null);
     selectionAnchorRef.current = null;
     setSelectedIds([]);
     setWarnings([]);
     setTypeMenu(null);
+    setQuickActionMenu(null);
     historyRef.current = [];
     futureRef.current = [];
     setHistLen(0);
@@ -826,8 +883,8 @@ export default function App() {
     const sourcePath = findPath(current.nodes, id);
     const parentPath = sourcePath?.slice(0, -1) ?? [];
     const siblings = parentPath.length ? nodeAtPath(current.nodes, parentPath)?.children ?? [] : current.nodes;
-    const generatedName = namingMode === "quick" && type && !isFixedRootNode(current, source, sourcePath)
-      ? quickControlName(source, type, siblings)
+    const generatedNames = namingMode === "quick" && type && !isFixedRootNode(current, source, sourcePath)
+      ? typeConversionNames(source, type, siblings)
       : null;
 
     const supported = new Set(resourceSlotDefinitions(type ?? undefined).map((slot) => slot.key));
@@ -836,7 +893,10 @@ export default function App() {
     let nextNodes = mapNodes(current.nodes, id, (node) => {
       const converted = markControlType(node, type);
       Object.assign(node, converted);
-      if (generatedName) node.name = generatedName;
+      if (generatedNames) {
+        node.originalName = generatedNames.originalName;
+        node.name = generatedNames.projectName;
+      }
       if (node.resources) {
         const kept = Object.fromEntries(Object.entries(node.resources).filter(([slot]) => supported.has(slot as ResourceSlot)));
         node.resources = Object.keys(kept).length ? kept : undefined;
@@ -854,7 +914,7 @@ export default function App() {
     }
     mutateScene((s) => ({ ...s, nodes: nextNodes }));
     if (stale.length) setExportMsg(`已切换类型，并恢复 ${stale.length} 个不兼容资源节点`);
-    else if (generatedName && generatedName !== source.name) setExportMsg(`已完成中文命名和控件类型转换：${generatedName}`);
+    else if (generatedNames && generatedNames.projectName !== source.name) setExportMsg(`已完成控件类型转换：${generatedNames.projectName}`);
   }, [mutateScene]);
 
   /** Ctrl+B / 资源绑定工作区：将图片手动填入目标控件的资源槽位。 */
@@ -1056,6 +1116,21 @@ export default function App() {
       return next.ids;
     });
   }, []);
+
+  /** 资源绑定回到层级时，空选择会让属性区看起来像空工程；默认定位到根节点。 */
+  const changeWorkspace = useCallback((nextWorkspace: Workspace) => {
+    if (nextWorkspace === workspace) return;
+    if (workspace === "bindings" && nextWorkspace === "controls" && selectedIds.length === 0) {
+      const root = sceneRef.current?.nodes[0];
+      if (root) {
+        selectionAnchorRef.current = root.id;
+        setSelectedId(root.id);
+        setSelectedIds([root.id]);
+        setFocusNodeId(root.id);
+      }
+    }
+    setWorkspace(nextWorkspace);
+  }, [workspace, selectedIds.length]);
 
   /** 资源绑定工作区的定位：同步选择、展开并滚动层级树，让目标节点进入明显视野。 */
   const locateNode = useCallback((id: string) => {
@@ -1313,7 +1388,7 @@ export default function App() {
         e.preventDefault();
         return;
       }
-      if (!e.ctrlKey && !e.metaKey && e.altKey && (e.key === "w" || e.key === "W")) {
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === "w" || e.key === "W")) {
         e.preventDefault();
         closeProject();
         return;
@@ -1345,6 +1420,7 @@ export default function App() {
           setTypeMenu(null);
           setQuickActionMenu(pointerRef.current);
         }
+        else if (e.key === "o" || e.key === "O") { e.preventDefault(); void openSavedProject(); }
         else if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
         else if (e.key === "x" || e.key === "X") { e.preventDefault(); redo(); }
         else if (e.key === "]") { e.preventDefault(); moveSelectedLayer("up"); }
@@ -1375,9 +1451,9 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [importProgress, undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject]);
+  }, [importProgress, undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, openSavedProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject]);
 
-  // 命中检测 + 拖动（文档 §17：拖动只改 offset，不碰 designRect）
+  // 命中检测 + 拖动；普通拖动只改 offset，四角拖动用于调整控件尺寸。
   const toLogical = (clientX: number, clientY: number) => {
     const ui = uiRef.current!;
     const r = ui.getBoundingClientRect();
@@ -1390,6 +1466,31 @@ export default function App() {
     if (showPreview) return;
     if (!result || !layoutCtx) return;
     const p = toLogical(e.clientX, e.clientY);
+    const selected = selectedId ? result.nodes.find((item) => item.node.id === selectedId) : null;
+    const selectedNode = selectedId ? walkNodes(sceneRef.current?.nodes ?? []).find((node) => node.id === selectedId) : null;
+    const handleTolerance = Math.max(8, 12 / Math.max(result.scaleX, result.scaleY));
+    const corner = selected && selectedNode && !selectedNode.locked ? resizeCornerAt(p, selected.rect, handleTolerance) : null;
+    if (corner && selected && selectedNode) {
+      const parent = findParentNode(sceneRef.current?.nodes ?? [], selectedNode.id);
+      pushHistory(sceneRef.current!);
+      e.currentTarget.setPointerCapture(e.pointerId);
+      resizeRef.current = {
+        id: selectedNode.id,
+        corner,
+        startClientX: e.clientX,
+        startClientY: e.clientY,
+        startWidth: selectedNode.designRect.width,
+        startHeight: selectedNode.designRect.height,
+        startOffsetX: selectedNode.anchor.offsetX,
+        startOffsetY: selectedNode.anchor.offsetY,
+        parentWidth: parent?.designRect.width ?? sceneRef.current!.designWidth,
+        parentHeight: parent?.designRect.height ?? sceneRef.current!.designHeight,
+        widthMode: selectedNode.layout?.width?.mode ?? "absolute",
+        heightMode: selectedNode.layout?.height?.mode ?? "absolute",
+      };
+      (e.currentTarget as HTMLElement).style.cursor = RESIZE_CURSORS[corner];
+      return;
+    }
     const hit = [...result.nodes]
       .sort((a, b) => b.node.zIndex - a.node.zIndex)
       .find((n) => n.visible && p.x >= n.rect.x && p.x <= n.rect.x + n.rect.width
@@ -1408,11 +1509,55 @@ export default function App() {
     if (additive || e.shiftKey) return;
     if (hit.node.locked) return;
     pushHistory(sceneRef.current!); // 拖动前记录一次，撤销回退整个拖动
+    e.currentTarget.setPointerCapture(e.pointerId);
     dragRef.current = { id: hit.node.id, startX: e.clientX, startY: e.clientY };
   };
   const onPointerMove = (e: React.PointerEvent) => {
+    const resize = resizeRef.current;
+    if (resize && !showPreview && layoutCtx && result) {
+      const canvas = uiRef.current;
+      if (!canvas) return;
+      const canvasRect = canvas.getBoundingClientRect();
+      const unitX = layoutCtx.viewportWidth / canvasRect.width / (result.scaleX || 1);
+      const unitY = layoutCtx.viewportHeight / canvasRect.height / (result.scaleY || 1);
+      const dx = (e.clientX - resize.startClientX) * unitX;
+      const dy = (e.clientY - resize.startClientY) * unitY;
+      const left = resize.corner === "nw" || resize.corner === "sw";
+      const top = resize.corner === "nw" || resize.corner === "ne";
+      const nextWidth = Math.max(1, resize.startWidth + (left ? -dx : dx));
+      const nextHeight = Math.max(1, resize.startHeight + (top ? -dy : dy));
+      const nextOffsetX = resize.startOffsetX + (left ? dx : 0);
+      const nextOffsetY = resize.startOffsetY + (top ? dy : 0);
+      updateNode(resize.id, (node) => {
+        node.designRect.width = nextWidth;
+        node.designRect.height = nextHeight;
+        node.anchor.offsetX = nextOffsetX;
+        node.anchor.offsetY = nextOffsetY;
+        node.layout = {
+          ...(node.layout ?? {
+            x: normalizeLayoutValue("absolute", nextOffsetX, resize.parentWidth),
+            y: normalizeLayoutValue("absolute", nextOffsetY, resize.parentHeight),
+            width: normalizeLayoutValue(resize.widthMode, resize.startWidth, resize.parentWidth),
+            height: normalizeLayoutValue(resize.heightMode, resize.startHeight, resize.parentHeight),
+          }),
+          width: normalizeLayoutValue(resize.widthMode, nextWidth, resize.parentWidth),
+          height: normalizeLayoutValue(resize.heightMode, nextHeight, resize.parentHeight),
+        };
+        if (node.list && node.list.sizeConfirmed === false) node.list = { ...node.list, sizeConfirmed: true };
+      }, false);
+      (e.currentTarget as HTMLElement).style.cursor = RESIZE_CURSORS[resize.corner];
+      return;
+    }
     const d = dragRef.current;
-    if (!d || !layoutCtx || !result) return;
+    if (!d || !layoutCtx || !result) {
+      if (!showPreview) {
+        const selected = selectedId ? result?.nodes.find((item) => item.node.id === selectedId) : null;
+        const tolerance = result ? Math.max(8, 12 / Math.max(result.scaleX, result.scaleY)) : 8;
+        const corner = selected ? resizeCornerAt(toLogical(e.clientX, e.clientY), selected.rect, tolerance) : null;
+        (e.currentTarget as HTMLElement).style.cursor = corner ? RESIZE_CURSORS[corner] : "default";
+      }
+      return;
+    }
     const start = { x: (d.startX - (uiRef.current!.getBoundingClientRect().left)) * (layoutCtx.viewportWidth / uiRef.current!.getBoundingClientRect().width), y: (d.startY - uiRef.current!.getBoundingClientRect().top) * (layoutCtx.viewportHeight / uiRef.current!.getBoundingClientRect().height) };
     const p = toLogical(e.clientX, e.clientY);
     const dx = p.x - start.x, dy = p.y - start.y;
@@ -1423,7 +1568,14 @@ export default function App() {
     }, false); // 拖动中不记录（按下时已记录一次）
     dragRef.current = { ...d, startX: e.clientX, startY: e.clientY };
   };
-  const onPointerUp = () => { dragRef.current = null; };
+  const onPointerUp = (e?: React.PointerEvent) => {
+    if (e && e.currentTarget instanceof HTMLCanvasElement && e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    dragRef.current = null;
+    resizeRef.current = null;
+    if (e) (e.currentTarget as HTMLElement).style.cursor = "default";
+  };
   const onPreviewWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     setPreviewZoom((value) => Math.max(0.4, Math.min(3, value * (e.deltaY < 0 ? 1.1 : 0.9))));
@@ -1454,9 +1606,9 @@ export default function App() {
     ? walkNodes(scene?.nodes ?? []).find((node) => node.id === selectedId) ?? null
     : null;
   const previewPresets = scene ? presetsForDesign(scene.designWidth, scene.designHeight) : [];
-  const canvasStack = (
+  const canvasStack = scene ? (
     <div className="canvas-stack">
-      <canvas ref={uiRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp} />
+      <canvas ref={uiRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} />
       <canvas ref={ovRef} style={{ pointerEvents: "none" }} />
       {deviceShell !== "desktop" && (
         <div className={`device-shell device-shell-${deviceShell} ${scene && scene.designHeight > scene.designWidth ? "portrait" : "landscape"}`} aria-hidden="true">
@@ -1465,7 +1617,7 @@ export default function App() {
         </div>
       )}
     </div>
-  );
+  ) : null;
 
   return (
     <div className="app" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { void handleDrop(event); }}>
@@ -1476,7 +1628,14 @@ export default function App() {
         hasScene={!!scene} canUndo={histLen > 0} canRedo={futureLen > 0} onUndo={undo} onRedo={redo}
         onSave={() => { void saveCurrentProject(); }} onSaveAs={() => { void saveCurrentProject(true); }}
         onExportHtml={exportHtml} onExportEngineJson={exportEngineJson} onGlobalFont={applyGlobalFont}
-        workspace={workspace} onWorkspace={setWorkspace} onCloseProject={closeProject}
+        nameMode={layerNameMode} onNameModeChange={(mode) => { setLayerNameMode(mode); if (mode === "original") setRenamingId(null); }}
+        onAiRename={() => { void rerunAiNaming(); }}
+        onTypeConvert={() => {
+          if (!selectedId || selectedIds.length !== 1) { setExportMsg("请先选中一个节点，再进行类型转换"); return; }
+          setTypeMenu(pointerRef.current);
+        }}
+        useNineSlicePreview={scene?.useNineSlicePreview ?? false} onToggleNineSlicePreview={toggleNineSlicePreview}
+        workspace={workspace} onWorkspace={changeWorkspace} onCloseProject={closeProject}
         onRename={beginRenameSelected} onGroup={groupSelected} onUngroup={ungroupSelected}
         onMoveLayer={moveSelectedLayer} onShowShortcuts={() => setHelpDialog("shortcuts")}
         onShowAbout={() => setHelpDialog("about")}
@@ -1492,8 +1651,7 @@ export default function App() {
       />
       <div className="body">
         {workspace !== "slice" && <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
-          onAiRename={() => { void rerunAiNaming(); }}
-          nameMode={layerNameMode} onNameModeChange={(mode) => { setLayerNameMode(mode); if (mode === "original") setRenamingId(null); }}
+          nameMode={layerNameMode}
           warningIds={warningIds}
           renamingId={renamingId} renameCaretMode={renameCaretMode}
           onRename={commitRename} onCancelRename={() => setRenamingId(null)}
@@ -1546,22 +1704,25 @@ export default function App() {
           />
         ) : workspace === "slice" ? (
           <NineSliceWorkspace scene={scene ?? { designWidth: 1280, designHeight: 720, nodes: [] }}
+            layout={result}
+            viewport={{ width: layoutCtx?.viewportWidth ?? viewport.width, height: layoutCtx?.viewportHeight ?? viewport.height }}
             onScan={scanNineSlice}
             onConfirm={confirmNineSlice}
           />
         ) : workspace === "preview" ? (
           <section className="preview-workspace">
-            <header className="preview-workspace-head"><div><span className="workspace-kicker">VISUAL CHECK</span><h2>预览</h2><p>设备比例、安全区和九宫格效果只影响检查显示，不改变节点数据。</p></div>
-              <label className="preview-slice-toggle"><input type="checkbox" checked={scene?.useNineSlicePreview ?? false} onChange={toggleNineSlicePreview} />使用已确认的九宫格图</label></header>
+            <header className="preview-workspace-head"><div><span className="workspace-kicker">VISUAL CHECK</span><h2>预览</h2><p>设备比例、安全区和九宫格效果只影响检查显示，不改变节点数据。</p></div></header>
             <div className="canvas-wrap preview-workspace-canvas" ref={wrapRef}>{canvasStack}</div>
           </section>
         ) : (
-          <div className="canvas-wrap" ref={wrapRef}>
+          <div className="canvas-wrap" ref={wrapRef}
+            onDoubleClick={() => { if (!scene && !importProgress) void openSavedProject(); }}>
             {!showPreview && canvasStack}
           </div>
         )}
         {workspace === "export" ? <div className="ws-panel" /> : workspace === "slice" ? null : (
-          <aside className="right-panel">
+          <aside className="right-panel" style={{ width: rightPanelWidth, minWidth: rightPanelWidth }}>
+            <div className="right-panel-resizer" onPointerDown={startRightPanelResize} title="拖动调整右侧面板宽度" />
             <nav className="right-panel-tabs" aria-label="右侧面板">
               <button className={rightPanelTab === "properties" ? "on" : ""} onClick={() => setRightPanelTab("properties")}>属性</button>
               <button className={rightPanelTab === "overview" ? "on" : ""} onClick={() => setRightPanelTab("overview")}>场景总览</button>
@@ -1664,7 +1825,7 @@ export default function App() {
           <section className="help-dialog" role="dialog" aria-modal="true" aria-label={helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}>
             <header className="help-dialog-head"><div><span className="workspace-kicker">UI2HTML</span><h2>{helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}</h2></div><button className="icon-btn" onClick={() => setHelpDialog(null)} aria-label="关闭">×</button></header>
             {helpDialog === "shortcuts" ? <div className="shortcut-grid">
-              {["Ctrl+S|打开工程操作菜单", "Ctrl+Z|撤销", "Ctrl+X|重做", "F2|重命名节点", "T|转换控件类型", "Ctrl+G|打组", "Alt+G|取消打组", "Ctrl+[ / Ctrl+]|调整层级", "Ctrl+B|绑定资源 / 确认完成", "Alt+W|关闭当前工程"].map((item) => { const [key, label] = item.split("|"); return <div className="shortcut-row" key={key}><kbd>{key}</kbd><span>{label}</span></div>; })}
+              {["Ctrl+S|打开工程操作菜单", "Ctrl+O|打开工程", "Ctrl+W|关闭当前工程", "Ctrl+Z|撤销", "Ctrl+X|重做", "F2|重命名节点", "T|转换控件类型", "Ctrl+G|打组", "Alt+G|取消打组", "Ctrl+[ / Ctrl+]|调整层级", "Ctrl+B|绑定资源 / 确认完成"].map((item) => { const [key, label] = item.split("|"); return <div className="shortcut-row" key={key}><kbd>{key}</kbd><span>{label}</span></div>; })}
             </div> : <div className="about-copy"><strong>UI2HTML</strong><p>面向 UI 美术的 PSD 导入、工程整理、视觉检查与自研引擎 JSON 转换工具。</p><small>工程与 PSD 解耦 · 资源可追溯 · 预览优先</small></div>}
             <footer className="help-dialog-foot"><button className="btn primary" onClick={() => setHelpDialog(null)}>知道了</button></footer>
           </section>
@@ -1674,6 +1835,13 @@ export default function App() {
         {warnings.length > 0 && (
           <span className="warn" title={warnings.join("\n")}>⚠ {warnings.length} 个导入/分析提示</span>
         )}
+        <span className="status-shortcuts">
+          {workspace === "controls" && "Ctrl/⌘ 多选 · Ctrl+G 打组 · Alt+G 取消打组 · F2 重命名 · T 转换类型 · Ctrl+[ / ] 调整层级"}
+          {workspace === "bindings" && "Ctrl+B：图片绑定资源 · 再按一次：确认控件绑定完成"}
+          {workspace === "slice" && "选择图片后拖动边界标记 · 确认后可在预览工作区切换对比"}
+          {workspace === "preview" && "拖动平移 · 滚轮缩放 · 设备预设用于适配检查"}
+          {workspace === "export" && "导出前检查资源、布局和引擎字段"}
+        </span>
         <span className="grow" />
         {exportMsg && <span className="ok">{exportMsg}</span>}
         {!scene && <span className="hint">新建或打开工程，也可以直接导入 PSD / 图片</span>}

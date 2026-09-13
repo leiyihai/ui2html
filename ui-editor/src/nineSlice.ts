@@ -7,6 +7,15 @@ export interface NineSliceImageEntry {
   signature: string;
 }
 
+/** 解析九宫格批量边距：单值复制到四边，四值顺序为上、下、左、右。 */
+export function parseBulkMargins(input: string, width: number, height: number): NineSliceMargins | null {
+  const values = input.trim().split(/[,，\s]+/).filter(Boolean).map(Number);
+  if ((values.length !== 1 && values.length !== 4) || values.some((value) => !Number.isInteger(value) || value < 0)) return null;
+  const [top, bottom, left, right] = values.length === 1 ? [values[0], values[0], values[0], values[0]] : values;
+  if (left + right > Math.max(0, width - 1) || top + bottom > Math.max(0, height - 1)) return null;
+  return { left, top, right, bottom };
+}
+
 const CANDIDATE_HINT = /(panel|border|button|background|back|frame|window|dialog|bar|track|底|背景|面板|边框|按钮|窗口|框)/i;
 const EXCLUDED_HINT = /(icon|logo|avatar|角色|头像|图标|装饰|effect|arrow|star)/i;
 const SAMPLE_SIZE = 16;
@@ -28,6 +37,31 @@ export function collectNineSliceImages(scene: UIScene): NineSliceImageEntry[] {
       assetKey: imageAssetKey(node.image),
       signature: imageSignature(node.image),
     }));
+}
+
+/** 候选展示排序：先看扫描出的可拉伸置信度，再看名称语义，最后让同组大图优先。 */
+export function rankNineSliceEntries(entries: NineSliceImageEntry[], candidates: NineSliceCandidate[]): NineSliceImageEntry[] {
+  const rank = (entry: NineSliceImageEntry) => {
+    const candidate = candidates.find((item) => item.memberNodeIds.includes(entry.node.id));
+    const name = [entry.node.name, entry.node.originalName, entry.node.assetName].filter(Boolean).join(" ");
+    const nameRelevance = (CANDIDATE_HINT.test(name) ? 1 : 0) - (EXCLUDED_HINT.test(name) ? 1 : 0);
+    return {
+      confidence: candidate?.confidence ?? 0,
+      nameRelevance,
+      source: candidate?.sourceNodeId === entry.node.id ? 1 : 0,
+      area: entry.image.width * entry.image.height,
+    };
+  };
+  return [...entries].sort((left, right) => {
+    const a = rank(left);
+    const b = rank(right);
+    return b.confidence - a.confidence
+      || b.nameRelevance - a.nameRelevance
+      || b.source - a.source
+      || b.area - a.area
+      || left.node.name.localeCompare(right.node.name)
+      || left.node.id.localeCompare(right.node.id);
+  });
 }
 
 /** 资源内容键：优先使用 PNG 数据，测试/损坏 Canvas 则退回尺寸。 */

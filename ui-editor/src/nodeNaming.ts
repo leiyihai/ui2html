@@ -84,3 +84,23 @@ export function renameControlForType(node: UINode, type: CtrlType, siblings: UIN
   while (occupied.has(`${base}_${index}`)) index++;
   return `${base}_${index}`;
 }
+
+/**
+ * T 类型转换同时维护两套显示名称：PSD 名称用于美术整理，工程名称用于导出。
+ * 已存在的 AI/手动语义后缀只进入工程名称；新打组等没有后缀的节点保留空前缀，
+ * 方便用户随后按 F2 补充。
+ */
+export function typeConversionNames(node: UINode, type: CtrlType, siblings: UINode[]): {
+  originalName: string;
+  projectName: string;
+} {
+  const originalNode = { ...node, name: node.originalName ?? node.name };
+  const originalSiblings = siblings.map((sibling) => ({
+    ...sibling,
+    name: sibling.originalName ?? sibling.name,
+  }));
+  return {
+    originalName: quickControlName(originalNode, type, originalSiblings),
+    projectName: renameControlForType(node, type, siblings.filter((sibling) => sibling.id !== node.id)),
+  };
+}

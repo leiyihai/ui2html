@@ -7,8 +7,6 @@ interface Props {
   nodes: UINode[];
   selectedIds: string[];
   nameMode: LayerNameMode;
-  onNameModeChange: (mode: LayerNameMode) => void;
-  onAiRename: () => void;
   onSelect: (id: string, intent: SelectionIntent) => void;
   onToggleVisible: (id: string) => void;
   onToggleLock: (id: string) => void;
@@ -226,7 +224,7 @@ function Row(p: {
 export default function ControlsPanel(p: Props) {
   const sorted = [...p.nodes].sort((a, b) => b.zIndex - a.zIndex);
   const orderedIds = flattenLayerIds(p.nodes);
-  const [width, setWidth] = useState(280);
+  const [width, setWidth] = useState(300);
   const resizing = useRef<{ startX: number; startWidth: number } | null>(null);
   const startResize = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -248,15 +246,7 @@ export default function ControlsPanel(p: Props) {
       <div className="panel-head">
         <h3>层级</h3>
         {p.selectedIds.length > 1 && <span className="selection-count">已选 {p.selectedIds.length}</span>}
-        <div className="layer-panel-actions">
-          <button className="layer-action" onClick={() => p.onNameModeChange(p.nameMode === "original" ? "ai" : "original")}
-            title={p.nameMode === "original" ? "切换到工程名称" : "切换到 PSD 原名"}>
-            {p.nameMode === "original" ? "PSD 原名" : "工程名称"}
-          </button>
-          <button className="layer-action ai" onClick={p.onAiRename} title="调用 Codex CLI 为节点和图片资源统一命名">AI 命名</button>
-        </div>
       </div>
-      <p className="panel-hint">Ctrl/⌘ 多选 · Ctrl+G 打组 · Alt+G 取消 · Ctrl+[/] 调整层级 · F2 重命名 · T 命名+转换 · Ctrl+B 图片=绑定/控件=完成 · Alt+W 关闭</p>
       <ul>
         {sorted.map((node) => (
           <Row

@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { ImageBinding, InteractionTemplate, LayoutValueMode, ResourceSlot, UINode, UIRect } from "../types";
 import { CTRL_TYPES, type CtrlType } from "../types";
 import { resourceSlotDefinitions } from "../resourceBinding";
 import { createDefaultEditText } from "../controlType";
 import { clampProgressValue, progressConfig } from "../progressControl";
-import { normalizeLayoutValue, resolveLayoutValue } from "../layoutValues";
+import { normalizeLayoutValue } from "../layoutValues";
 
 const PARENT_GRID: [string, number, number][] = [
   ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
@@ -17,8 +18,85 @@ const SELF_GRID: [string, number, number][] = [
   ["↙", 0, 1], ["↓", 0.5, 1], ["↘", 1, 1],
 ];
 
+export function horizontalPointerDelta(clientX: number, startX: number): number {
+  return clientX - startX;
+}
+
+export function arrowStepDirection(key: string): -1 | 0 | 1 {
+  if (key === "ArrowUp" || key === "ArrowRight") return 1;
+  if (key === "ArrowDown" || key === "ArrowLeft") return -1;
+  return 0;
+}
+
 function gridLabel(x: number, y: number): string {
   return PARENT_GRID.find(([, px, py]) => px === x && py === y)?.[0] ?? "自定义";
+}
+
+function DragNumberInput(p: {
+  value: number;
+  step?: number;
+  min?: number;
+  max?: number;
+  precision?: number;
+  className?: string;
+  onChange: (value: number, record?: boolean) => void;
+}) {
+  const step = p.step ?? 1;
+  const precision = p.precision ?? (step < 1 ? 2 : 0);
+  const factor = 10 ** precision;
+  const normalize = (value: number) => {
+    const rounded = Math.round(value * factor) / factor;
+    return Math.max(p.min ?? -Infinity, Math.min(p.max ?? Infinity, rounded));
+  };
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const direction = arrowStepDirection(event.key);
+    if (!direction) return;
+    event.preventDefault();
+    p.onChange(normalize(p.value + direction * step), true);
+  };
+  return <input className={`drag-number${p.className ? ` ${p.className}` : ""}`} type="number" value={p.value} step={p.step} min={p.min} max={p.max}
+    title="点击输入编辑；聚焦后使用方向键调整"
+    onKeyDown={onKeyDown}
+    onChange={(event) => p.onChange(normalize(Number(event.target.value) || 0), true)} />;
+}
+
+function DragValueLabel(p: {
+  value: number;
+  step: number;
+  min?: number;
+  max?: number;
+  onChange: (value: number, record?: boolean) => void;
+  children: React.ReactNode;
+}) {
+  const dragRef = useRef<{ pointerId: number; startX: number; startValue: number } | null>(null);
+  const precision = p.step < 1 ? 2 : 0;
+  const factor = 10 ** precision;
+  const normalize = (value: number) => {
+    const rounded = Math.round(value * factor) / factor;
+    return Math.max(p.min ?? -Infinity, Math.min(p.max ?? Infinity, rounded));
+  };
+  const onPointerDown = (event: React.PointerEvent<HTMLSpanElement>) => {
+    if (event.button !== 0) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragRef.current = { pointerId: event.pointerId, startX: event.clientX, startValue: p.value };
+    p.onChange(p.value, true);
+  };
+  const onPointerMove = (event: React.PointerEvent<HTMLSpanElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const distance = horizontalPointerDelta(event.clientX, drag.startX);
+    if (Math.abs(distance) <= 1) return;
+    event.preventDefault();
+    p.onChange(normalize(drag.startValue + distance * p.step), false);
+  };
+  const onPointerUp = (event: React.PointerEvent<HTMLSpanElement>) => {
+    if (dragRef.current?.pointerId === event.pointerId) dragRef.current = null;
+  };
+  return <div className="layout-value-label">
+    <span className="layout-value-copy">{p.children}</span>
+    <span className="value-drag-zone" title="按住左右拖动调整数值"
+      onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} />
+  </div>;
 }
 
 /** 数值行：label 按住左右拖动快速调值。 */
@@ -39,34 +117,82 @@ function NumRow(p: {
     const rounded = Math.round(value * factor) / factor;
     return Math.max(p.min ?? -Infinity, Math.min(p.max ?? Infinity, rounded));
   };
-  const onPointerDown = (e: React.PointerEvent<HTMLLabelElement>) => {
+  const onPointerDown = (e: React.PointerEvent<HTMLSpanElement>) => {
     const el = e.currentTarget;
     el.setPointerCapture(e.pointerId);
     p.set(p.value, true);
     const start = p.value;
-    const move = (ev: PointerEvent) => p.set(normalize(start + (ev.clientX - e.clientX) * step), false);
+    const move = (ev: PointerEvent) => p.set(normalize(start + horizontalPointerDelta(ev.clientX, e.clientX) * step), false);
     const up = () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); };
     el.addEventListener("pointermove", move);
     el.addEventListener("pointerup", up);
   };
   return (
     <div className="row">
-      <label className="drag" onPointerDown={onPointerDown} title="按住左右拖动调整数值">{p.label}</label>
-      <input type="number" value={p.value} step={p.inputStep} min={p.min} max={p.max}
-        onChange={(ev) => p.set(normalize(Number(ev.target.value) || 0), true)} />
+      <label>{p.label}</label>
+      <span className="value-drag-zone" title="按住左右拖动调整数值" onPointerDown={onPointerDown} />
+      <DragNumberInput value={p.value} step={p.inputStep ?? p.step} min={p.min} max={p.max} precision={precision}
+        onChange={(value, record) => p.set(normalize(value), record)} />
     </div>
   );
 }
 
-function InspectorSection(p: { title: string; summary?: string; defaultOpen?: boolean; children: React.ReactNode }) {
+function InspectorHelp(p: { text: string }) {
+  const [open, setOpen] = useState(false);
+  const [hovering, setHovering] = useState(false);
+  const [position, setPosition] = useState<{ left: number; top?: number; bottom?: number; width: number } | null>(null);
+  const buttonRef = useRef<HTMLSpanElement>(null);
+  const updatePosition = () => {
+    const rect = buttonRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const width = Math.min(280, Math.max(180, window.innerWidth - 24));
+    const left = Math.min(Math.max(12, rect.left), Math.max(12, window.innerWidth - width - 12));
+    const estimatedHeight = 96;
+    if (rect.bottom + 7 + estimatedHeight <= window.innerHeight || rect.top < estimatedHeight + 12) {
+      setPosition({ left, top: Math.min(rect.bottom + 7, window.innerHeight - estimatedHeight - 12), width });
+    } else {
+      setPosition({ left, bottom: Math.max(12, window.innerHeight - rect.top + 7), width });
+    }
+  };
+  const toggle = (event: React.MouseEvent<HTMLSpanElement>) => {
+    event.stopPropagation();
+    updatePosition();
+    setOpen((value) => !value);
+  };
+  const onKeyDown = (event: React.KeyboardEvent<HTMLSpanElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      event.stopPropagation();
+      updatePosition();
+      setOpen((value) => !value);
+    }
+  };
+  return (
+    <span className={open ? "inspector-help open" : "inspector-help"}
+      onMouseEnter={() => { updatePosition(); setHovering(true); }} onMouseLeave={() => setHovering(false)}>
+      <span ref={buttonRef} className="inspector-help-button" role="button" tabIndex={0} aria-label="显示说明"
+        aria-expanded={open} data-help={p.text} title="悬浮或点击查看说明" onClick={toggle} onKeyDown={onKeyDown}>?</span>
+      {(open || hovering) && position && typeof document !== "undefined" && createPortal(
+        <span className="inspector-help-popover" role="tooltip" style={{ left: position.left, top: position.top, bottom: position.bottom, width: position.width }}>
+          {p.text}
+        </span>, document.body,
+      )}
+    </span>
+  );
+}
+
+function InspectorSection(p: { title: string; help?: string; summary?: string; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(p.defaultOpen ?? true);
   return (
     <section className={`inspector-section ${open ? "open" : "closed"}`}>
-      <button className="inspector-section-head" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
-        <span className="section-chevron">{open ? "⌄" : "›"}</span>
-        <strong>{p.title}</strong>
+      <div className="inspector-section-head">
+        <button type="button" className="inspector-section-toggle" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
+          <span className="section-chevron">{open ? "⌄" : "›"}</span>
+          <strong>{p.title}</strong>
+        </button>
+        {p.help && <InspectorHelp text={p.help} />}
         {p.summary && <span className="section-summary">{p.summary}</span>}
-      </button>
+      </div>
       {open && <div className="inspector-section-body">{p.children}</div>}
     </section>
   );
@@ -109,6 +235,7 @@ interface Props {
 
 export default function Inspector(p: Props) {
   const n = p.node;
+  const [anchorTab, setAnchorTab] = useState<"parent" | "self">("parent");
   if (!n) return <aside className="inspector"><h3>属性</h3><p className="hint">选中一个图层</p></aside>;
 
   const set = <K extends keyof UINode>(key: K, val: UINode[K], record = true) =>
@@ -135,7 +262,7 @@ export default function Inspector(p: Props) {
       value: value?.mode === "relative" ? value.relative : value?.absolute ?? fallback,
     };
   };
-  const updateLayoutField = (key: "x" | "y" | "width" | "height", mode: LayoutValueMode, value: number) => {
+  const updateLayoutField = (key: "x" | "y" | "width" | "height", mode: LayoutValueMode, value: number, record = true) => {
     const base = key === "x" || key === "width" ? parentSize.width : parentSize.height;
     p.onUpdate((node) => {
       const current = key === "x" ? node.anchor.offsetX : key === "y" ? node.anchor.offsetY : key === "width" ? node.designRect.width : node.designRect.height;
@@ -157,7 +284,14 @@ export default function Inspector(p: Props) {
       }
       // keep the local value used by older renderer paths in sync with the visible design result
       void current;
-    });
+    }, record);
+  };
+  const toggleLayoutMode = (key: "x" | "y" | "width" | "height", field: ReturnType<typeof layoutField>) => {
+    const base = key === "x" || key === "width" ? parentSize.width : parentSize.height;
+    const absoluteValue = field.mode === "relative" ? field.value * base : field.value;
+    const nextMode: LayoutValueMode = field.mode === "relative" ? "absolute" : "relative";
+    const nextValue = nextMode === "relative" ? (base > 0 ? absoluteValue / base : 0) : absoluteValue;
+    updateLayoutField(key, nextMode, nextValue);
   };
 
   return (
@@ -172,7 +306,7 @@ export default function Inspector(p: Props) {
 
       <InspectorSection title="节点" summary={typeLabel}>
         <div className="row"><label>名称</label>
-          <input value={n.name} onChange={(e) => set("name", e.target.value)} /></div>
+          <input className="node-name-field" value={n.name} onChange={(e) => set("name", e.target.value)} /></div>
         <div className="row"><label>控件类型</label>
           <select value={n.ctrl?.type ?? ""}
             onChange={(e) => {
@@ -201,7 +335,9 @@ export default function Inspector(p: Props) {
       </InspectorSection>
 
       {editableText && (
-        <InspectorSection title={n.ctrl?.type === "Edit" ? "输入框文本" : "文本内容"} summary={`${Math.round(editableText.fontSize)} px`}>
+        <InspectorSection title={n.ctrl?.type === "Edit" ? "输入框文本" : "文本内容"}
+          help={editableText.mode !== "auto" ? "文本框宽高在“位置与尺寸”中调整。" : "设置文本内容、字号、颜色和排版方式。"}
+          summary={`${Math.round(editableText.fontSize)} px`}>
           <textarea rows={2} value={editableText.content} placeholder={n.ctrl?.type === "Edit" ? "输入框中显示的文字" : undefined}
             onChange={(e) => set("text", { ...editableText, content: e.target.value })} />
           <div className="row"><label>排版</label>
@@ -250,7 +386,6 @@ export default function Inspector(p: Props) {
             set={(v) => set("text", { ...editableText, lineExtraSpace: v || 0 })} />
           <label className="chk"><input type="checkbox" checked={editableText.autoOmission ?? false}
             onChange={(e) => set("text", { ...editableText, autoOmission: e.target.checked })} /> 自动省略</label>
-          {editableText.mode !== "auto" && <p className="hint">文本框宽高在“位置与尺寸校正”中调整。</p>}
         </InspectorSection>
       )}
 
@@ -305,8 +440,8 @@ export default function Inspector(p: Props) {
       )}
 
       {resourceSlots.length > 0 && (
-        <InspectorSection title="资源" summary={`${boundResourceCount}/${resourceSlots.length}`}>
-          <p className="hint">可在资源绑定页签中查看缩略图并手动绑定，也可以选择图片后按 Ctrl+B。</p>
+        <InspectorSection title="资源" help="可在资源绑定页签中查看缩略图并手动绑定，也可以选择图片后按 Ctrl+B。"
+          summary={`${boundResourceCount}/${resourceSlots.length}`}>
           <div className="resource-slots">
             {resourceSlots.map((slot) => (
               <ResourceSlotRow key={slot.key} slot={slot.key} label={slot.label}
@@ -317,42 +452,59 @@ export default function Inspector(p: Props) {
         </InspectorSection>
       )}
 
-      <InspectorSection title="引擎对齐" summary={`父级 ${gridLabel(n.anchor.parentX, n.anchor.parentY)}`}>
-        <p className="hint correction-note">沿用九宫格设置控件相对父节点的对齐方式，同时保持当前视觉位置。</p>
-        <div className="subsection-label">Parent Anchor · HorizontalAlignment / VerticalAlignment</div>
-        <div className="grid">
-          {PARENT_GRID.map(([label, x, y]) => (
-            <button key={label} className={n.anchor.parentX === x && n.anchor.parentY === y ? "on" : ""}
-              onClick={() => p.onReanchor({ ...n.anchor, parentX: x, parentY: y })}>{label}</button>
-          ))}
+      <InspectorSection title="布局对齐" help="父级对齐对应引擎的水平/垂直对齐；自身锚点决定控件使用哪个位置作为定位基准。"
+        summary={`父级 ${gridLabel(n.anchor.parentX, n.anchor.parentY)}`}>
+        <div className="anchor-tabs" role="tablist" aria-label="布局对齐设置">
+          <button type="button" role="tab" aria-selected={anchorTab === "parent"}
+            className={anchorTab === "parent" ? "on" : ""} onClick={() => setAnchorTab("parent")}>
+            父级对齐
+          </button>
+          <button type="button" role="tab" aria-selected={anchorTab === "self"}
+            className={anchorTab === "self" ? "on" : ""} onClick={() => setAnchorTab("self")}>
+            自身锚点
+          </button>
         </div>
-        <div className="subsection-label">Self Anchor · 控件自身锚点</div>
-        <div className="grid">
-          {SELF_GRID.map(([label, x, y]) => (
-            <button key={label} className={n.anchor.selfX === x && n.anchor.selfY === y ? "on" : ""}
-              onClick={() => p.onReanchor({ ...n.anchor, selfX: x, selfY: y })}>{label}</button>
-          ))}
-        </div>
+        {anchorTab === "parent" ? (
+          <div role="tabpanel" aria-label="父级对齐">
+            <div className="subsection-label">对齐位置</div>
+            <div className="grid">
+              {PARENT_GRID.map(([label, x, y]) => (
+                <button key={label} className={n.anchor.parentX === x && n.anchor.parentY === y ? "on" : ""}
+                  onClick={() => p.onReanchor({ ...n.anchor, parentX: x, parentY: y })}>{label}</button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div role="tabpanel" aria-label="自身锚点">
+            <div className="subsection-label">锚点位置</div>
+            <div className="grid">
+              {SELF_GRID.map(([label, x, y]) => (
+                <button key={label} className={n.anchor.selfX === x && n.anchor.selfY === y ? "on" : ""}
+                  onClick={() => p.onReanchor({ ...n.anchor, selfX: x, selfY: y })}>{label}</button>
+              ))}
+            </div>
+          </div>
+        )}
       </InspectorSection>
 
-      <InspectorSection title="位置与尺寸校正" summary="PSD 视觉微调">
-        <p className="hint correction-note">PSD 导入的位置和尺寸默认保留；这里仅用于少量视觉校正。</p>
+      <InspectorSection title="位置与尺寸" help="PSD 导入的位置和尺寸默认保留；这里可直接微调节点的显示结果。" summary="节点变换">
         {(["x", "y", "width", "height"] as const).map((key) => {
           const field = layoutField(key);
           const label = key === "x" ? "X" : key === "y" ? "Y" : key === "width" ? "宽" : "高";
           return <div className="layout-value-row" key={key}>
-            <label className="layout-value-label">{label}</label>
-            <select value={field.mode} onChange={(e) => updateLayoutField(key, e.target.value as LayoutValueMode, field.mode === "relative"
-              ? resolveLayoutValue(n.layout?.[key], key === "x" || key === "width" ? parentSize.width : parentSize.height, field.value)
-              : field.value)}>
-              <option value="absolute">绝对</option><option value="relative">相对</option>
-            </select>
-            <input type="number" step={field.mode === "relative" ? 0.01 : 1} value={field.value}
-              onChange={(e) => updateLayoutField(key, field.mode, Number(e.target.value) || 0)} />
+            <DragValueLabel value={field.value} step={field.mode === "relative" ? 0.01 : 1}
+              onChange={(value, record) => updateLayoutField(key, field.mode, value, record)}>
+              <strong>{label}</strong><span>{field.mode === "relative" ? "相对" : "绝对"}</span>
+            </DragValueLabel>
+            <DragNumberInput step={field.mode === "relative" ? 0.01 : 1} precision={field.mode === "relative" ? 2 : 0}
+              className="layout-drag-number" value={field.value}
+              onChange={(value, record) => updateLayoutField(key, field.mode, value, record)} />
+            <button type="button" className="layout-mode-button" title="点击切换相对/绝对值" aria-label="切换相对/绝对值"
+              onClick={() => toggleLayoutMode(key, field)} aria-pressed={field.mode === "relative"}>
+              <span aria-hidden="true">⇄</span>
+            </button>
           </div>;
         })}
-        <div className="subsection-label">尺寸（设计像素）</div>
-        {p.rect && <div className="layout-readout"><span>当前布局</span><strong>{Math.round(p.rect.x)}, {Math.round(p.rect.y)} · {Math.round(p.rect.width)} × {Math.round(p.rect.height)}</strong></div>}
       </InspectorSection>
 
       <InspectorSection title="交互" summary={isInteractive ? "可配置" : "模板库"} defaultOpen={isInteractive}>

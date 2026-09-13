@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { collectResourceBindingTargets, effectivePreviewRect, isBindingComplete, orderResourceBindingTargets } from "./resourceBindingWorkspace";
+import { collectResourceBindingTargets, effectivePreviewRect, isBindingComplete, orderResourceBindingTargets, resolveOverviewRect } from "./resourceBindingWorkspace";
 import type { UINode } from "./types";
 
 const imageNode = (id: string, name: string): UINode => ({
@@ -58,6 +58,31 @@ describe("resource binding workspace", () => {
       visible: true,
       opacity: 1,
     }, { width: 1280, height: 720 })).toEqual({ x: 0, y: 50, width: 100, height: 70 });
+  });
+
+  it("resolves a bound image to the owning control in the scene overview", () => {
+    const source = imageNode("source-image", "img_background");
+    const control = {
+      ...groupNode("control", "layout_panel", { type: "Layout" }),
+      resources: {
+        LayoutBackImage: {
+          id: "binding",
+          name: source.name,
+          image: source.image!,
+          sourceNode: source,
+          sourceParentId: "control",
+          sourceIndex: 0,
+        },
+      },
+    };
+    expect(resolveOverviewRect({ nodes: [{
+      node: control,
+      rect: { x: 80, y: 40, width: 320, height: 180 },
+      visible: true,
+      opacity: 1,
+    }] }, "source-image", { width: 1280, height: 720 })).toEqual({
+      x: 80, y: 40, width: 320, height: 180,
+    });
   });
 
   it("reports completion only when every resource slot is filled", () => {

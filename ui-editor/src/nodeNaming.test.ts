@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CtrlType, UINode } from "./types";
-import { autoControlName, controlNamePrefix, controlTypeName, quickControlName, renameControlForType } from "./nodeNaming";
+import { autoControlName, controlNamePrefix, controlTypeName, quickControlName, renameControlForType, typeConversionNames } from "./nodeNaming";
 
 function sibling(id: string, name: string): UINode {
   return {
@@ -67,5 +67,28 @@ describe("automatic control naming", () => {
     expect(controlTypeName("ProgressBar")).toBe("进度条");
     expect(quickControlName(sibling("source", "经验"), "ProgressBar", [])).toBe("进度条");
     expect(quickControlName(sibling("source", "旧名"), "Button", [sibling("other", "按钮")])).toBe("按钮_2");
+  });
+
+  it("creates a Chinese PSD name and an empty English prefix for a newly grouped node", () => {
+    const source = sibling("group", "布局");
+    source.originalName = "布局";
+    source.ctrl = { type: "Layout" };
+
+    expect(typeConversionNames(source, "Slider", [source])).toEqual({
+      originalName: "滑动条",
+      projectName: "slider_",
+    });
+  });
+
+  it("keeps an existing AI suffix while changing the engineering type prefix", () => {
+    const source = sibling("volume", "layout_volume");
+    source.originalName = "音量";
+    source.ctrl = { type: "Layout" };
+    source.naming = { source: "ai", confidence: 0.92, suffix: "volume" };
+
+    expect(typeConversionNames(source, "Slider", [source])).toEqual({
+      originalName: "滑动条",
+      projectName: "slider_volume",
+    });
   });
 });

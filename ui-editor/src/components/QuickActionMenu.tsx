@@ -32,7 +32,7 @@ function menuLayout(pointer: { x: number; y: number }) {
   };
 }
 
-/** Ctrl+S 快捷操作面板：导入/工程操作在左侧，保存操作在右侧。 */
+/** Ctrl+S 快捷操作面板：使用与顶部文件菜单一致的紧凑分组列表。 */
 export default function QuickActionMenu(p: Props) {
   const layout = menuLayout(p);
 

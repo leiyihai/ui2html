@@ -1,7 +1,9 @@
 const { app, BrowserWindow } = require("electron");
 const { spawn } = require("node:child_process");
+const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const DEV_HOST = "127.0.0.1";
@@ -45,7 +47,14 @@ async function waitForDevServer() {
   throw new Error("UI2HTML 开发服务启动超时");
 }
 
-function createWindow(url) {
+function resolveAppIcon(isDist = false) {
+  const candidates = isDist
+    ? [path.join(PROJECT_ROOT, "dist", "app-icon.ico"), path.join(PROJECT_ROOT, "dist", "app-icon.png")]
+    : [path.join(PROJECT_ROOT, "public", "app-icon.ico"), path.join(PROJECT_ROOT, "public", "app-icon.png")];
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+function createWindow(url, isDist = false) {
   const window = new BrowserWindow({
     width: 1440,
     height: 960,
@@ -53,7 +62,15 @@ function createWindow(url) {
     minHeight: 680,
     backgroundColor: "#1c2026",
     autoHideMenuBar: true,
+    titleBarStyle: "hidden",
+    titleBarOverlay: {
+      color: "#161b22",
+      symbolColor: "#c9d7e0",
+      height: 30,
+    },
+    icon: resolveAppIcon(isDist),
     title: "UI2HTML",
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
@@ -61,20 +78,28 @@ function createWindow(url) {
     },
   });
   window.loadURL(url);
+  window.maximize();
+  window.show();
   return window;
 }
 
+function openApplicationWindow() {
+  const isDist = process.argv.includes("--dist") || app.isPackaged;
+  if (isDist) {
+    return createWindow(pathToFileURL(path.join(PROJECT_ROOT, "dist", "index.html")).toString(), true);
+  }
+  return createWindow(`http://${DEV_HOST}:${DEV_PORT}`);
+}
+
 app.whenReady().then(async () => {
-  if (process.argv.includes("--dist")) {
-    createWindow(`file://${path.join(PROJECT_ROOT, "dist", "index.html")}`);
+  if (process.argv.includes("--dist") || app.isPackaged) {
+    openApplicationWindow();
   } else {
     if (!(await probeDevServer())) startDevServer();
     await waitForDevServer();
-    createWindow(`http://${DEV_HOST}:${DEV_PORT}`);
+    openApplicationWindow();
   }
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow(`http://${DEV_HOST}:${DEV_PORT}`);
-  });
+  app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) openApplicationWindow(); });
 }).catch((error) => {
   console.error(error);
   app.quit();

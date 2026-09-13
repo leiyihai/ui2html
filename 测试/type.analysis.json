@@ -1,0 +1,755 @@
+{
+  "version": 1,
+  "provider": "codex-cli",
+  "status": "complete",
+  "generatedAt": "2026-09-09T07:30:05.657Z",
+  "nodes": {
+    "node-93": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "game_interface",
+      "reason": "Root layout contains the complete game interface."
+    },
+    "node-94": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "meadow_background",
+      "reason": "Full-screen atmospheric meadow background."
+    },
+    "node-95": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "music_controls",
+      "reason": "Panel contains music label, checkbox, volume icon, and slider."
+    },
+    "node-96": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "music_panel_frame",
+      "reason": "Background frame for music controls."
+    },
+    "node-97": {
+      "source": "ai",
+      "confidence": 0.97,
+      "suffix": "volume_slider_track",
+      "reason": "Horizontal track behind the volume control."
+    },
+    "node-98": {
+      "source": "ai",
+      "confidence": 0.97,
+      "suffix": "volume_slider_fill",
+      "reason": "Colored filled portion of the volume slider."
+    },
+    "node-99": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "volume_slider_thumb",
+      "reason": "Slider handle."
+    },
+    "node-100": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "volume_icon",
+      "reason": "Speaker icon identifies volume control."
+    },
+    "node-101": {
+      "source": "ai",
+      "confidence": 0.95,
+      "suffix": "music_checkbox_off",
+      "reason": "Unchecked music toggle state asset."
+    },
+    "node-102": {
+      "source": "ai",
+      "confidence": 0.95,
+      "suffix": "music_checkbox_on",
+      "reason": "Checked music toggle state asset."
+    },
+    "node-103": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "music_label",
+      "reason": "Visible text is Music."
+    },
+    "node-104": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "top_status_bar",
+      "reason": "Top bar contains title, experience, and close control."
+    },
+    "node-105": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "top_bar_frame",
+      "reason": "Background frame for the top status bar."
+    },
+    "node-106": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "experience_display",
+      "reason": "Group contains experience progress and value."
+    },
+    "node-107": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "experience_progress_bar",
+      "reason": "Experience progress bar container."
+    },
+    "node-108": {
+      "source": "ai",
+      "confidence": 0.95,
+      "suffix": "experience_bar_background",
+      "reason": "Dark background of the experience bar."
+    },
+    "node-109": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "experience_bar_fill",
+      "reason": "Blue filled experience progress."
+    },
+    "node-110": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "experience_value",
+      "reason": "Displays 720/1000."
+    },
+    "node-111": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "experience_label",
+      "reason": "Visible text is EXP."
+    },
+    "node-112": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "location_title",
+      "reason": "Visible title is MOSY MEADOW."
+    },
+    "node-113": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "close_button_icon",
+      "reason": "Cross icon used to close the interface."
+    },
+    "node-114": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "chat_bar",
+      "reason": "Bottom center area contains message input, send button, and channels."
+    },
+    "node-115": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "chat_bar_frame",
+      "reason": "Background frame for chat bar."
+    },
+    "node-116": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "message_input",
+      "reason": "Input area for entering messages."
+    },
+    "node-117": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "message_input_background",
+      "reason": "Background of message input."
+    },
+    "node-118": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "message_placeholder",
+      "reason": "Visible placeholder is Click to sms...."
+    },
+    "node-119": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "send_button",
+      "reason": "Container for the message send control."
+    },
+    "node-120": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "send_button_icon",
+      "reason": "Paper-plane send icon."
+    },
+    "node-121": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "chat_channel_selector",
+      "reason": "Group contains s1, s2, and s3 channel options."
+    },
+    "node-122": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_selector_background",
+      "reason": "Background for chat channel selector."
+    },
+    "node-123": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "channel_one_option",
+      "reason": "First channel option labeled s1."
+    },
+    "node-124": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "channel_one_radio",
+      "reason": "Radio control for channel s1."
+    },
+    "node-125": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_radio_off",
+      "reason": "Shared inactive radio appearance."
+    },
+    "node-126": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_radio_on",
+      "reason": "Shared active radio appearance."
+    },
+    "node-127": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "channel_one_label",
+      "reason": "Visible text is s1."
+    },
+    "node-128": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "channel_two_option",
+      "reason": "Second channel option labeled s2."
+    },
+    "node-129": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "channel_two_radio",
+      "reason": "Radio control for channel s2."
+    },
+    "node-130": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_radio_off",
+      "reason": "Shared inactive radio appearance."
+    },
+    "node-131": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_radio_on",
+      "reason": "Shared active radio appearance."
+    },
+    "node-132": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "channel_two_label",
+      "reason": "Visible text is s2."
+    },
+    "node-133": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "channel_three_option",
+      "reason": "Third channel option labeled s3."
+    },
+    "node-134": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "channel_three_radio",
+      "reason": "Radio control for channel s3."
+    },
+    "node-135": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_radio_off",
+      "reason": "Shared inactive radio appearance."
+    },
+    "node-136": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "channel_radio_on",
+      "reason": "Shared active radio appearance."
+    },
+    "node-137": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "channel_three_label",
+      "reason": "Visible text is s3."
+    },
+    "node-138": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_navigation",
+      "reason": "Bottom left area contains three tabs."
+    },
+    "node-139": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "tab_navigation_frame",
+      "reason": "Background frame for tab navigation."
+    },
+    "node-140": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_one",
+      "reason": "First tab container."
+    },
+    "node-141": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "tab_default_background",
+      "reason": "Shared tab background."
+    },
+    "node-142": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "tab_active_background",
+      "reason": "Active tab highlight background."
+    },
+    "node-143": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_one_label",
+      "reason": "Visible text is tab1."
+    },
+    "node-144": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_two",
+      "reason": "Second tab container."
+    },
+    "node-145": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "tab_default_background",
+      "reason": "Shared tab background."
+    },
+    "node-146": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "tab_active_background",
+      "reason": "Active tab highlight background."
+    },
+    "node-147": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_two_label",
+      "reason": "Visible text is tab2."
+    },
+    "node-148": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_three",
+      "reason": "Third tab container."
+    },
+    "node-149": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "tab_default_background",
+      "reason": "Shared tab background."
+    },
+    "node-150": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "tab_active_background",
+      "reason": "Active tab highlight background."
+    },
+    "node-151": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "tab_three_label",
+      "reason": "Visible text is tab3."
+    },
+    "node-152": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "function_panel",
+      "reason": "Left panel contains function navigation items."
+    },
+    "node-153": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "function_panel_frame",
+      "reason": "Decorated frame for function panel."
+    },
+    "node-154": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "function_menu_list",
+      "reason": "Vertical list of function menu buttons."
+    },
+    "node-155": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "merge_menu_button",
+      "reason": "Button labeled 合成 with merge icon."
+    },
+    "node-156": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "merge_icon",
+      "reason": "Icon represents item merging or synthesis."
+    },
+    "node-157": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "merge_label",
+      "reason": "Visible text is 合成."
+    },
+    "node-158": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "menu_arrow",
+      "reason": "Right-facing navigation arrow."
+    },
+    "node-159": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "pet_menu_button",
+      "reason": "Button labeled 宠物 with pet icon."
+    },
+    "node-160": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "pet_icon",
+      "reason": "Pet face icon."
+    },
+    "node-161": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "pet_label",
+      "reason": "Visible text is 宠物."
+    },
+    "node-162": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "menu_arrow",
+      "reason": "Right-facing navigation arrow."
+    },
+    "node-163": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "task_menu_button",
+      "reason": "Button labeled 任务 with task icon."
+    },
+    "node-164": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "task_icon",
+      "reason": "Task scroll icon."
+    },
+    "node-165": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "task_label",
+      "reason": "Visible text is 任务."
+    },
+    "node-166": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "menu_arrow",
+      "reason": "Right-facing navigation arrow."
+    },
+    "node-167": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "map_menu_button",
+      "reason": "Button labeled 地图 with map icon."
+    },
+    "node-168": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "map_icon",
+      "reason": "Map icon."
+    },
+    "node-169": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "map_label",
+      "reason": "Visible text is 地图."
+    },
+    "node-170": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "menu_arrow",
+      "reason": "Right-facing navigation arrow."
+    },
+    "node-171": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "function_panel_title",
+      "reason": "Title group for the function panel."
+    },
+    "node-172": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "function_label",
+      "reason": "Visible text is Func."
+    },
+    "node-173": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "function_icon",
+      "reason": "Three-line function menu icon."
+    },
+    "node-174": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "bag_panel",
+      "reason": "Right panel displays inventory contents."
+    },
+    "node-175": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "bag_content_list",
+      "reason": "List container for bag items."
+    },
+    "node-176": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "bag_panel_frame",
+      "reason": "Decorated frame for bag panel."
+    },
+    "node-177": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "inventory_item",
+      "reason": "Container for the displayed inventory item."
+    },
+    "node-178": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "inventory_item_content",
+      "reason": "Item slot containing icon and quantity."
+    },
+    "node-179": {
+      "source": "ai",
+      "confidence": 0.98,
+      "suffix": "inventory_slot_background",
+      "reason": "Background slot for inventory item."
+    },
+    "node-180": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "paint_bucket_item",
+      "reason": "Visible item is a paint bucket."
+    },
+    "node-181": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "item_quantity",
+      "reason": "Displays quantity 10."
+    },
+    "node-182": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "bag_panel_title",
+      "reason": "Title group for bag panel."
+    },
+    "node-183": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "bag_label",
+      "reason": "Visible text is Bag."
+    },
+    "node-184": {
+      "source": "ai",
+      "confidence": 0.99,
+      "suffix": "bag_icon",
+      "reason": "Small bag or inventory icon."
+    }
+  },
+  "assets": {
+    "asset-20ed8b09": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_meadow_background",
+      "reason": "Full-screen blue meadow background."
+    },
+    "asset-a93967bf": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_music_panel_frame",
+      "reason": "Music controls panel border."
+    },
+    "asset-468ed9cf": {
+      "source": "ai",
+      "confidence": 0.97,
+      "name": "img_volume_slider_track",
+      "reason": "Horizontal volume slider track."
+    },
+    "asset-64dce29f": {
+      "source": "ai",
+      "confidence": 0.97,
+      "name": "img_volume_slider_fill",
+      "reason": "Colored volume slider fill."
+    },
+    "asset-108bf6bb": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_volume_slider_thumb",
+      "reason": "Volume slider handle."
+    },
+    "asset-632c6d87": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_volume_icon",
+      "reason": "Speaker volume icon."
+    },
+    "asset-4bfd5c5e": {
+      "source": "ai",
+      "confidence": 0.95,
+      "name": "img_music_checkbox_off",
+      "reason": "Inactive checkbox state."
+    },
+    "asset-f7e6be8a": {
+      "source": "ai",
+      "confidence": 0.95,
+      "name": "img_music_checkbox_on",
+      "reason": "Active checkbox state."
+    },
+    "asset-41423845": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_top_bar_frame",
+      "reason": "Top status bar border."
+    },
+    "asset-c3b39c59": {
+      "source": "ai",
+      "confidence": 0.95,
+      "name": "img_experience_bar_background",
+      "reason": "Experience bar background."
+    },
+    "asset-8fe443e0": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_experience_bar_fill",
+      "reason": "Experience progress fill."
+    },
+    "asset-fac7a762": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_close_button_icon",
+      "reason": "Close cross icon."
+    },
+    "asset-f3661f27": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_chat_bar_frame",
+      "reason": "Chat bar border."
+    },
+    "asset-03f0543e": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_message_input_background",
+      "reason": "Message input background."
+    },
+    "asset-fef1e90e": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_send_button_icon",
+      "reason": "Paper-plane send icon."
+    },
+    "asset-22a6b5ca": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_channel_selector_background",
+      "reason": "Chat channel selector background."
+    },
+    "asset-6da2081f": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_channel_radio_off",
+      "reason": "Inactive channel radio button."
+    },
+    "asset-bc70105d": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_channel_radio_on",
+      "reason": "Active channel radio button."
+    },
+    "asset-3b485ea5": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_tab_navigation_frame",
+      "reason": "Tab navigation border."
+    },
+    "asset-7fe5590c": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_tab_default_background",
+      "reason": "Default tab background."
+    },
+    "asset-70861e5a": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_tab_active_background",
+      "reason": "Highlighted active tab background."
+    },
+    "asset-74345c3d": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_function_panel_frame",
+      "reason": "Decorated function panel frame."
+    },
+    "asset-2deac10e": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_merge_icon",
+      "reason": "Merge or synthesis icon."
+    },
+    "asset-614fa1be": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_menu_arrow",
+      "reason": "Right-facing navigation arrow."
+    },
+    "asset-f597d1c5": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_pet_icon",
+      "reason": "Pet face icon."
+    },
+    "asset-7782679a": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_task_icon",
+      "reason": "Task icon."
+    },
+    "asset-86550fde": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_map_icon",
+      "reason": "Map icon."
+    },
+    "asset-bd3657ec": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_function_icon",
+      "reason": "Function menu icon."
+    },
+    "asset-74038e7d": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_bag_panel_frame",
+      "reason": "Decorated bag panel frame."
+    },
+    "asset-803100ec": {
+      "source": "ai",
+      "confidence": 0.98,
+      "name": "img_inventory_slot_background",
+      "reason": "Inventory slot background."
+    },
+    "asset-69a4a956": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_paint_bucket_item",
+      "reason": "Paint bucket item icon."
+    },
+    "asset-7cc2e591": {
+      "source": "ai",
+      "confidence": 0.99,
+      "name": "img_bag_icon",
+      "reason": "Bag or inventory icon."
+    }
+  },
+  "warnings": []
+}
