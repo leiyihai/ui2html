@@ -28,6 +28,10 @@ interface Props {
   onShowAbout: () => void;
   onExportHtml: () => void;
   onExportEngineJson: () => void;
+  showSafeArea: boolean;
+  onToggleSafeArea: () => void;
+  showDesignBorder: boolean;
+  onToggleDesignBorder: () => void;
 }
 
 const WORKSPACES: Array<{ value: Workspace; label: string }> = [
@@ -38,6 +42,8 @@ const WORKSPACES: Array<{ value: Workspace; label: string }> = [
   { value: "export", label: "导出" },
 ];
 
+export const VIEW_AUXILIARY_ITEMS = ["设计画布边界", "安全区"] as const;
+
 function MenuItem(p: { label: string; shortcut?: string; disabled?: boolean; danger?: boolean; onClick: () => void }) {
   return <button className={`menu-item${p.danger ? " danger" : ""}`} disabled={p.disabled} onClick={p.onClick}>
     <span>{p.label}</span>{p.shortcut && <kbd>{p.shortcut}</kbd>}
@@ -45,6 +51,14 @@ function MenuItem(p: { label: string; shortcut?: string; disabled?: boolean; dan
 }
 
 function Divider() { return <div className="menu-divider" role="separator" />; }
+
+function MenuToggle(p: { label: string; checked: boolean; disabled?: boolean; onClick: () => void }) {
+  return <button className="menu-item menu-toggle" role="menuitemcheckbox" aria-checked={p.checked}
+    disabled={p.disabled} onClick={p.onClick}>
+    <span className="menu-toggle-check" aria-hidden="true">{p.checked ? "✓" : ""}</span>
+    <span>{p.label}</span>
+  </button>;
+}
 
 /** 桌面软件风格的菜单栏；菜单动作与现有快捷键/工具栏共用回调。 */
 export default function MenuBar(p: Props) {
@@ -138,6 +152,12 @@ export default function MenuBar(p: Props) {
           <div className="menu-section-label">工作区</div>
           {WORKSPACES.map((item) => <MenuItem key={item.value} label={item.label} disabled={item.value !== "controls" && !p.hasScene}
             onClick={() => closeThen(() => p.onWorkspace(item.value))} />)}
+          <Divider />
+          <div className="menu-section-label">辅助显示</div>
+          <MenuToggle label={VIEW_AUXILIARY_ITEMS[0]} checked={p.showDesignBorder} disabled={!p.hasScene}
+            onClick={() => closeThen(p.onToggleDesignBorder)} />
+          <MenuToggle label={VIEW_AUXILIARY_ITEMS[1]} checked={p.showSafeArea} disabled={!p.hasScene}
+            onClick={() => closeThen(p.onToggleSafeArea)} />
         </div>}
       </div>
       <div className="menu-group">

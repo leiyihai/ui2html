@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import type { Workspace } from "./WorkspaceTabs";
-import MenuBar from "./MenuBar";
+import MenuBar, { VIEW_AUXILIARY_ITEMS } from "./MenuBar";
 
 const props = {
   projectName: "示例.ui.json", dirty: false,
@@ -10,6 +10,7 @@ const props = {
   onSave: vi.fn(), onSaveAs: vi.fn(), onCloseProject: vi.fn(), onUndo: vi.fn(), onRedo: vi.fn(),
   onRename: vi.fn(), onGroup: vi.fn(), onUngroup: vi.fn(), onMoveLayer: vi.fn(),
   onShowShortcuts: vi.fn(), onShowAbout: vi.fn(), onExportHtml: vi.fn(), onExportEngineJson: vi.fn(),
+  showSafeArea: false, onToggleSafeArea: vi.fn(), showDesignBorder: false, onToggleDesignBorder: vi.fn(),
 };
 
 describe("MenuBar", () => {
@@ -22,5 +23,6 @@ describe("MenuBar", () => {
     expect(html).toContain("UI2HTML");
     expect(html).toContain("示例.ui.json");
     expect(html).toContain("资源绑定");
+    expect(VIEW_AUXILIARY_ITEMS).toEqual(["设计画布边界", "安全区"]);
   });
 });

@@ -40,54 +40,29 @@ export const TYPE_LABELS: Record<CtrlType, string> = {
   empty: "空节点",
 };
 
+const TYPE_GLYPHS: Record<CtrlType, string> = {
+  Layout: "▦",
+  StaticImage: "▣",
+  StaticText: "T",
+  Button: "▬",
+  CheckBox: "☑",
+  RadioButton: "◉",
+  ProgressBar: "▰",
+  Slider: "●",
+  Edit: "▤",
+  List: "≡",
+  ListHorizontal: "≡",
+  GridView: "▦",
+  empty: "·",
+};
+
 export function TypeIcon({ type }: { type?: CtrlType }) {
   const key = (type ?? "empty").toLowerCase();
   const label = type ? TYPE_LABELS[type] : "未标记";
 
-  let glyph;
-  switch (type) {
-    case "StaticImage":
-      glyph = <><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8" cy="9" r="1.5" /><path d="m4 17 5-5 4 4 3-3 5 5" /></>;
-      break;
-    case "StaticText":
-      glyph = <><path d="M4 5h16M12 5v14M8 19h8" /><path d="M7 5 4 19M17 5l3 14" /></>;
-      break;
-    case "Button":
-      glyph = <rect x="3" y="6" width="18" height="12" rx="3" />;
-      break;
-    case "CheckBox":
-      glyph = <><rect x="4" y="4" width="16" height="16" rx="2" /><path d="m8 12 3 3 6-7" /></>;
-      break;
-    case "RadioButton":
-      glyph = <><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3" /></>;
-      break;
-    case "ProgressBar":
-      glyph = <><rect x="3" y="8" width="18" height="8" rx="2" /><path d="M5 10h8v4H5z" /></>;
-      break;
-    case "Slider":
-      glyph = <><path d="M4 12h16" /><circle cx="15" cy="12" r="3" /></>;
-      break;
-    case "Edit":
-      glyph = <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M8 9v6M11 12h6" /></>;
-      break;
-    case "List":
-    case "ListHorizontal":
-      glyph = <><path d="M5 6h14M5 12h14M5 18h14" /><circle cx="3" cy="6" r=".7" fill="currentColor" /><circle cx="3" cy="12" r=".7" fill="currentColor" /><circle cx="3" cy="18" r=".7" fill="currentColor" /></>;
-      break;
-    case "GridView":
-      glyph = <><rect x="4" y="4" width="6" height="6" rx="1" /><rect x="14" y="4" width="6" height="6" rx="1" /><rect x="4" y="14" width="6" height="6" rx="1" /><rect x="14" y="14" width="6" height="6" rx="1" /></>;
-      break;
-    case "Layout":
-      glyph = <><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 9v12" /></>;
-      break;
-    default:
-      glyph = <><circle cx="12" cy="12" r="7" /><path d="M9 12h6" /></>;
-      break;
-  }
-
   return (
     <span className={`type-ic ctrl-type-icon ctrl-${key}`} title={label} aria-label={label}>
-      <svg viewBox="0 0 24 24" aria-hidden="true">{glyph}</svg>
+      <span className="type-glyph" aria-hidden="true">{TYPE_GLYPHS[type ?? "empty"]}</span>
     </span>
   );
 }

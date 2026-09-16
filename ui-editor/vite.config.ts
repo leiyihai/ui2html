@@ -305,6 +305,13 @@ async function runCodexNaming(manifest: unknown, referenceDataUrl?: string): Pro
 }
 
 export default defineConfig({
+  // 桌面壳和网页版通过此响应头确认自己连接的是当前 UI2HTML 开发服务，
+  // 避免 5173 被遗留的 Vite/网页服务占用时加载到错误的前端。
+  server: {
+    headers: {
+      "X-UI2HTML-Dev-Server": "1",
+    },
+  },
   plugins: [
     react(),
     {

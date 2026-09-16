@@ -6,7 +6,7 @@ import { buildExportHtml } from "./exportHtml";
 import { buildEngineJson, createEngineAssetManifest } from "./engineExport";
 import type { CtrlType, ImageBinding, InteractionTemplate, LayoutContext, NineSliceCandidate, NineSliceMargins, ResourceSlot, ScaleMode, UINode, UIScene } from "./types";
 import Appbar from "./components/Toolbar";
-import Workbar, { type Workspace } from "./components/WorkspaceTabs";
+import { type Workspace } from "./components/WorkspaceTabs";
 import Inspector from "./components/Inspector";
 import ControlsPanel, { type LayerNameMode } from "./components/ControlsPanel";
 import TypePieMenu from "./components/TypePieMenu";
@@ -24,12 +24,14 @@ import { typeConversionNames } from "./nodeNaming";
 import { prefersEngineeringNames } from "./layerNameMode";
 import { applyAiNaming, buildNamingManifest, warningNodeIds } from "./aiNaming";
 import type { ProjectAnalysis } from "./types";
-import { presetsForDesign, type DeviceShell } from "./devicePreview";
+import { type DeviceShell } from "./devicePreview";
 import ResourceBindingWorkspace from "./components/ResourceBindingWorkspace";
 import SceneOverview from "./components/SceneOverview";
 import NineSliceWorkspace from "./components/SlicePanel";
+import PreviewDeviceFrame from "./components/PreviewDeviceFrame";
 import { generateNineSliceImage, groupFromCandidate, scanNineSliceCandidates } from "./nineSlice";
 import { normalizeLayoutValue, syncNodeLayoutPosition } from "./layoutValues";
+import { clampCanvasZoom, findCanvasHit, panForZoomAtPoint } from "./canvasView";
 
 export interface ImportProgress {
   name: string;
@@ -292,17 +294,25 @@ const STATUS_MESSAGE_DURATION_MS = 4000;
 export default function App() {
   const [scene, setScene] = useState<UIScene | null>(null);
   const [viewport, setViewport] = useState({ width: 1280, height: 720 });
+  // 预览工作区自己的视口。在预览里换设备比例只影响预览，不能改到工程视口
+  // （否则回到层集工作区画布比例也跟着变，而且会被写进工程文件）。
+  const [previewViewport, setPreviewViewport] = useState<{ width: number; height: number } | null>(null);
   const [safeArea, setSafeArea] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
   const [scaleMode, setScaleMode] = useState<ScaleMode>("cover");
   const [deviceShell, setDeviceShell] = useState<DeviceShell>("desktop");
-  const [showPreview, setShowPreview] = useState(false);
+  const [showDeviceShell, setShowDeviceShell] = useState(true);
   const [previewZoom, setPreviewZoom] = useState(1);
   const [previewPan, setPreviewPan] = useState({ x: 0, y: 0 });
+  const [canvasZoom, setCanvasZoom] = useState(1);
+  const [canvasPan, setCanvasPan] = useState({ x: 0, y: 0 });
+  const [spaceHeld, setSpaceHeld] = useState(false);
+  const [canvasPanning, setCanvasPanning] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
   const [showSafeArea, setShowSafeArea] = useState(false);
-  const [showDesignBorder, setShowDesignBorder] = useState(true);
+  // 设计画布边界是纯查看辅助线，不写入工程；每次启动/打开工程均默认关闭。
+  const [showDesignBorder, setShowDesignBorder] = useState(false);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [histLen, setHistLen] = useState(0);
   const [futureLen, setFutureLen] = useState(0);
@@ -337,6 +347,9 @@ export default function App() {
   const importAbortRef = useRef<AbortController | null>(null);
   const previewDragRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
   const rightPanelResizeRef = useRef<{ startX: number; startWidth: number } | null>(null);
+  const canvasPanRef = useRef({ x: 0, y: 0 });
+  const canvasPanDragRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
+  const spaceHeldRef = useRef(false);
 
   const startRightPanelResize = (event: React.PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -359,17 +372,21 @@ export default function App() {
     document.title = `${projectName}${dirty ? " · 未保存" : ""} — UI2HTML`;
   }, [projectName, dirty]);
 
+  // 预览工作区走独立视口，其余工作区（含保存到工程文件）都用工程视口。
+  const activeViewport = workspace === "preview" && previewViewport ? previewViewport : viewport;
   const layoutCtx: LayoutContext | null = useMemo(
     () => (scene ? {
       designWidth: scene.designWidth,
       designHeight: scene.designHeight,
-      viewportWidth: viewport.width,
-      viewportHeight: viewport.height,
+      viewportWidth: activeViewport.width,
+      viewportHeight: activeViewport.height,
       safeArea,
       scaleMode,
     } : null),
-    [scene, viewport, safeArea, scaleMode],
+    [scene, activeViewport, safeArea, scaleMode],
   );
+  // 工程视口变化（新建 / 打开 / 导入）时丢弃预览视口，让它重新跟随工程。
+  useEffect(() => { setPreviewViewport(null); }, [viewport]);
   const result = useMemo(
     () => (scene && layoutCtx ? new LayoutEngine().layoutScene(scene, layoutCtx) : null),
     [scene, layoutCtx],
@@ -418,17 +435,25 @@ export default function App() {
       c.getContext("2d")!.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     renderUi(ui.getContext("2d")!, result, scene?.useNineSlicePreview ?? false);
+    const isPreview = workspace === "preview";
     renderOverlay(ov.getContext("2d")!, result, layoutCtx, {
-      selectedId, selectedIds, showGrid: false, showSafeArea, showDesignBorder,
+      selectedId: isPreview ? null : selectedId,
+      selectedIds: isPreview ? [] : selectedIds,
+      showGrid: false, showSafeArea, showDesignBorder,
     });
   }, [result, layoutCtx, workspace, selectedId, selectedIds, showSafeArea, showDesignBorder, scene?.useNineSlicePreview]);
 
   // 画布 CSS 尺寸：contain 到窗口（切回图层 tab 时重新计算）
   useEffect(() => {
     const fit = () => {
-      const wrap = showPreview ? previewWrapRef.current : wrapRef.current;
+      const wrap = workspace === "preview" ? previewWrapRef.current : wrapRef.current;
       if (!wrap || !layoutCtx || wrap.style.display === "none") return;
-      const s = Math.min(wrap.clientWidth / layoutCtx.viewportWidth, wrap.clientHeight / layoutCtx.viewportHeight) * 0.72;
+      const previewShellAllowance = workspace === "preview" && showDeviceShell ? 56 : 0;
+      const s = Math.min(
+        Math.max(1, wrap.clientWidth - previewShellAllowance) / layoutCtx.viewportWidth,
+        Math.max(1, wrap.clientHeight - previewShellAllowance) / layoutCtx.viewportHeight,
+      )
+        * (workspace === "preview" ? 0.9 : 0.72);
       for (const c of [uiRef.current, ovRef.current]) {
         if (c) { c.style.width = `${layoutCtx.viewportWidth * s}px`; c.style.height = `${layoutCtx.viewportHeight * s}px`; }
       }
@@ -436,7 +461,7 @@ export default function App() {
     fit();
     window.addEventListener("resize", fit);
     return () => window.removeEventListener("resize", fit);
-  }, [layoutCtx, workspace, showPreview]);
+  }, [layoutCtx, workspace, showDeviceShell]);
 
   // ---- 状态变更统一入口（record=true 时压入历史）----
   const applyScene = useCallback((next: UIScene) => { sceneRef.current = next; setScene(next); }, []);
@@ -486,7 +511,8 @@ export default function App() {
     setSafeArea({ left: 0, right: 0, top: 0, bottom: 0 });
     setScaleMode("cover");
     setDeviceShell("desktop");
-    setShowPreview(false);
+    setShowDeviceShell(true);
+    setShowDesignBorder(false);
     setPreviewZoom(1);
     setPreviewPan({ x: 0, y: 0 });
     selectionAnchorRef.current = null;
@@ -516,9 +542,9 @@ export default function App() {
       setSafeArea(view?.safeArea ?? { left: 0, right: 0, top: 0, bottom: 0 });
       setScaleMode(view?.scaleMode ?? "cover");
       setDeviceShell("desktop");
-      setShowPreview(false);
+      setShowDeviceShell(true);
       setShowSafeArea(view?.showSafeArea ?? false);
-      setShowDesignBorder(view?.showDesignBorder ?? true);
+      setShowDesignBorder(false);
       selectionAnchorRef.current = null;
       setSelectedId(null);
       setSelectedIds([]);
@@ -537,7 +563,7 @@ export default function App() {
     if (!current) return;
     try {
       const prepared = prepareSceneAssets(current);
-      const view: SavedProjectView = { viewport, safeArea, scaleMode, showSafeArea, showDesignBorder };
+      const view: SavedProjectView = { viewport, safeArea, scaleMode, showSafeArea };
       const saved = serializeScene(prepared.scene, view);
       const nextPath = await saveProject({
         path: projectPath,
@@ -556,7 +582,7 @@ export default function App() {
     } catch (error) {
       setExportMsg(error instanceof Error ? error.message : "保存工程失败");
     }
-  }, [analysis, applyScene, projectName, projectPath, safeArea, scaleMode, showDesignBorder, showSafeArea, viewport]);
+  }, [analysis, applyScene, projectName, projectPath, safeArea, scaleMode, showSafeArea, viewport]);
 
   const cancelPsdImport = useCallback(() => {
     importAbortRef.current?.abort();
@@ -592,8 +618,9 @@ export default function App() {
       setViewport({ width: currentScene.designWidth, height: currentScene.designHeight });
       setSafeArea({ left: 0, right: 0, top: 0, bottom: 0 });
       setDeviceShell("desktop");
+      setShowDeviceShell(true);
       // 导入完成后直接进入层级工作区；效果检查统一从“预览”页签进入。
-      setShowPreview(false);
+      setShowDesignBorder(false);
       setPreviewZoom(1);
       setPreviewPan({ x: 0, y: 0 });
       setProjectPath(null);
@@ -778,7 +805,8 @@ export default function App() {
     setRenameCaretMode("all");
     setLayerNameMode("original");
     setWorkspace("controls");
-    setShowPreview(false);
+    setShowDeviceShell(true);
+    setShowDesignBorder(false);
     setSelectedId(null);
     selectionAnchorRef.current = null;
     setSelectedIds([]);
@@ -1129,6 +1157,18 @@ export default function App() {
         setFocusNodeId(root.id);
       }
     }
+    if (nextWorkspace === "preview") {
+      // 预览是只读检查区，不携带编辑器的选中、重命名和类型菜单状态。
+      selectionAnchorRef.current = null;
+      setSelectedId(null);
+      setSelectedIds([]);
+      setFocusNodeId(null);
+      setRenamingId(null);
+      setTypeMenu(null);
+      setQuickActionMenu(null);
+      setPreviewZoom(1);
+      setPreviewPan({ x: 0, y: 0 });
+    }
     setWorkspace(nextWorkspace);
   }, [workspace, selectedIds.length]);
 
@@ -1370,6 +1410,38 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const isEditableTarget = (target: EventTarget | null) => {
+      const element = target as HTMLElement | null;
+      return Boolean(element && (element.tagName === "INPUT" || element.tagName === "TEXTAREA"
+        || element.tagName === "SELECT" || element.isContentEditable));
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.code !== "Space" || isEditableTarget(event.target)) return;
+      event.preventDefault();
+      if (spaceHeldRef.current) return;
+      spaceHeldRef.current = true;
+      setSpaceHeld(true);
+    };
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (event.code !== "Space") return;
+      spaceHeldRef.current = false;
+      setSpaceHeld(false);
+    };
+    const onBlur = () => {
+      spaceHeldRef.current = false;
+      setSpaceHeld(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", onBlur);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, []);
+
+  useEffect(() => {
     setTypeMenu(null);
   }, [selectedId, selectedIds]);
 
@@ -1420,6 +1492,19 @@ export default function App() {
           setTypeMenu(null);
           setQuickActionMenu(pointerRef.current);
         }
+        else if (e.key === "0" && workspace === "controls") {
+          e.preventDefault();
+          canvasPanRef.current = { x: 0, y: 0 };
+          canvasPanDragRef.current = null;
+          setCanvasPanning(false);
+          setCanvasPan({ x: 0, y: 0 });
+          setCanvasZoom(1);
+        }
+        else if (e.key === "0" && workspace === "preview") {
+          e.preventDefault();
+          setPreviewPan({ x: 0, y: 0 });
+          setPreviewZoom(1);
+        }
         else if (e.key === "o" || e.key === "O") { e.preventDefault(); void openSavedProject(); }
         else if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
         else if (e.key === "x" || e.key === "X") { e.preventDefault(); redo(); }
@@ -1451,7 +1536,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [importProgress, undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, openSavedProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject]);
+  }, [importProgress, undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, openSavedProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject, workspace]);
 
   // 命中检测 + 拖动；普通拖动只改 offset，四角拖动用于调整控件尺寸。
   const toLogical = (clientX: number, clientY: number) => {
@@ -1463,8 +1548,18 @@ export default function App() {
 
   const onPointerDown = (e: React.PointerEvent) => {
     pointerRef.current = { x: e.clientX, y: e.clientY };
-    if (showPreview) return;
+    if (workspace !== "controls") return;
+    if (workspace === "controls" && spaceHeldRef.current && e.button === 0) {
+      e.preventDefault();
+      e.currentTarget.setPointerCapture(e.pointerId);
+      canvasPanDragRef.current = { x: e.clientX, y: e.clientY, panX: canvasPanRef.current.x, panY: canvasPanRef.current.y };
+      setCanvasPanning(true);
+      return;
+    }
     if (!result || !layoutCtx) return;
+    // 事件绑定在整个中间编辑区，而不是只有画布本体：画布居中、缩放或平移后，
+    // 画布外的空白也应视为“背景点击”，用于取消选择。下面的命中检测会把
+    // 画布外坐标自然判定为未命中；这里只清空选中状态，不动工程和画布视图。
     const p = toLogical(e.clientX, e.clientY);
     const selected = selectedId ? result.nodes.find((item) => item.node.id === selectedId) : null;
     const selectedNode = selectedId ? walkNodes(sceneRef.current?.nodes ?? []).find((node) => node.id === selectedId) : null;
@@ -1491,10 +1586,7 @@ export default function App() {
       (e.currentTarget as HTMLElement).style.cursor = RESIZE_CURSORS[corner];
       return;
     }
-    const hit = [...result.nodes]
-      .sort((a, b) => b.node.zIndex - a.node.zIndex)
-      .find((n) => n.visible && p.x >= n.rect.x && p.x <= n.rect.x + n.rect.width
-        && p.y >= n.rect.y && p.y <= n.rect.y + n.rect.height);
+    const hit = findCanvasHit(result.nodes, p);
     const additive = e.ctrlKey || e.metaKey;
     const current = sceneRef.current;
     if (!hit) {
@@ -1513,8 +1605,16 @@ export default function App() {
     dragRef.current = { id: hit.node.id, startX: e.clientX, startY: e.clientY };
   };
   const onPointerMove = (e: React.PointerEvent) => {
+    const panDrag = canvasPanDragRef.current;
+    if (panDrag && workspace === "controls") {
+      const nextPan = { x: panDrag.panX + e.clientX - panDrag.x, y: panDrag.panY + e.clientY - panDrag.y };
+      canvasPanRef.current = nextPan;
+      setCanvasPan(nextPan);
+      (e.currentTarget as HTMLElement).style.cursor = "grabbing";
+      return;
+    }
     const resize = resizeRef.current;
-    if (resize && !showPreview && layoutCtx && result) {
+    if (resize && layoutCtx && result) {
       const canvas = uiRef.current;
       if (!canvas) return;
       const canvasRect = canvas.getBoundingClientRect();
@@ -1550,12 +1650,10 @@ export default function App() {
     }
     const d = dragRef.current;
     if (!d || !layoutCtx || !result) {
-      if (!showPreview) {
-        const selected = selectedId ? result?.nodes.find((item) => item.node.id === selectedId) : null;
-        const tolerance = result ? Math.max(8, 12 / Math.max(result.scaleX, result.scaleY)) : 8;
-        const corner = selected ? resizeCornerAt(toLogical(e.clientX, e.clientY), selected.rect, tolerance) : null;
-        (e.currentTarget as HTMLElement).style.cursor = corner ? RESIZE_CURSORS[corner] : "default";
-      }
+      const selected = selectedId ? result?.nodes.find((item) => item.node.id === selectedId) : null;
+      const tolerance = result ? Math.max(8, 12 / Math.max(result.scaleX, result.scaleY)) : 8;
+      const corner = selected ? resizeCornerAt(toLogical(e.clientX, e.clientY), selected.rect, tolerance) : null;
+      (e.currentTarget as HTMLElement).style.cursor = corner ? RESIZE_CURSORS[corner] : "";
       return;
     }
     const start = { x: (d.startX - (uiRef.current!.getBoundingClientRect().left)) * (layoutCtx.viewportWidth / uiRef.current!.getBoundingClientRect().width), y: (d.startY - uiRef.current!.getBoundingClientRect().top) * (layoutCtx.viewportHeight / uiRef.current!.getBoundingClientRect().height) };
@@ -1569,12 +1667,34 @@ export default function App() {
     dragRef.current = { ...d, startX: e.clientX, startY: e.clientY };
   };
   const onPointerUp = (e?: React.PointerEvent) => {
-    if (e && e.currentTarget instanceof HTMLCanvasElement && e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
+    const target = e?.currentTarget as HTMLElement | undefined;
+    if (e && target?.hasPointerCapture(e.pointerId)) {
+      target.releasePointerCapture(e.pointerId);
     }
     dragRef.current = null;
     resizeRef.current = null;
-    if (e) (e.currentTarget as HTMLElement).style.cursor = "default";
+    canvasPanDragRef.current = null;
+    setCanvasPanning(false);
+    if (e) (e.currentTarget as HTMLElement).style.cursor = "";
+  };
+  const onCanvasWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (workspace !== "controls" || !e.ctrlKey || !uiRef.current) return;
+    e.preventDefault();
+    const currentZoom = canvasZoom;
+    const nextZoom = clampCanvasZoom(currentZoom * (e.deltaY < 0 ? 1.1 : 0.9));
+    if (nextZoom === currentZoom) return;
+    const rect = uiRef.current.getBoundingClientRect();
+    const currentPan = canvasPanRef.current;
+    const transformedCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    const center = { x: transformedCenter.x - currentPan.x, y: transformedCenter.y - currentPan.y };
+    const nextPan = panForZoomAtPoint(currentPan, currentZoom, nextZoom,
+      { x: e.clientX, y: e.clientY }, center);
+    canvasPanRef.current = nextPan;
+    setCanvasPan(nextPan);
+    setCanvasZoom(nextZoom);
+  };
+  const adjustCanvasZoom = (direction: 1 | -1) => {
+    setCanvasZoom((currentZoom) => clampCanvasZoom(currentZoom * (direction > 0 ? 1.1 : 0.9)));
   };
   const onPreviewWheel = (e: React.WheelEvent) => {
     e.preventDefault();
@@ -1592,31 +1712,23 @@ export default function App() {
   };
   const onPreviewPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
-    const drag = previewDragRef.current;
-    if (drag && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 5 && result && layoutCtx && uiRef.current) {
-      const point = toLogical(e.clientX, e.clientY);
-      const hit = [...result.nodes].sort((a, b) => b.node.zIndex - a.node.zIndex).find((item) => item.visible
-        && point.x >= item.rect.x && point.x <= item.rect.x + item.rect.width
-        && point.y >= item.rect.y && point.y <= item.rect.y + item.rect.height);
-      if (hit) selectNode(hit.node.id, createSelectionIntent(e, flattenLayerIds(scene?.nodes ?? [])));
-    }
     previewDragRef.current = null;
   };
   const pieNode = typeMenu && selectedId
     ? walkNodes(scene?.nodes ?? []).find((node) => node.id === selectedId) ?? null
     : null;
-  const previewPresets = scene ? presetsForDesign(scene.designWidth, scene.designHeight) : [];
   const canvasStack = scene ? (
-    <div className="canvas-stack">
-      <canvas ref={uiRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} />
+    <div className={`canvas-stack${workspace === "controls" ? " editor-canvas-stack" : ""}${spaceHeld && workspace === "controls" ? " space-ready" : ""}${canvasPanning && workspace === "controls" ? " is-panning" : ""}`}
+      style={workspace === "controls" ? { transform: `translate(${canvasPan.x}px, ${canvasPan.y}px) scale(${canvasZoom})` } : undefined}>
+      <canvas ref={uiRef} />
       <canvas ref={ovRef} style={{ pointerEvents: "none" }} />
-      {deviceShell !== "desktop" && (
-        <div className={`device-shell device-shell-${deviceShell} ${scene && scene.designHeight > scene.designWidth ? "portrait" : "landscape"}`} aria-hidden="true">
-          <span className="device-cutout" />
-          <span className="device-home-indicator" />
-        </div>
-      )}
     </div>
+  ) : null;
+  const previewCanvas = scene ? (
+    <PreviewDeviceFrame deviceShell={deviceShell} showDeviceShell={showDeviceShell}
+      portrait={scene.designHeight > scene.designWidth}>
+      {canvasStack}
+    </PreviewDeviceFrame>
   ) : null;
 
   return (
@@ -1639,18 +1751,18 @@ export default function App() {
         onRename={beginRenameSelected} onGroup={groupSelected} onUngroup={ungroupSelected}
         onMoveLayer={moveSelectedLayer} onShowShortcuts={() => setHelpDialog("shortcuts")}
         onShowAbout={() => setHelpDialog("about")}
-      />
-      <Workbar ws={workspace} onWs={setWorkspace} hasScene={!!scene}
-        viewport={viewport} onViewport={setViewport}
-        safeArea={safeArea} onSafeArea={setSafeArea}
-        scaleMode={scaleMode} onScaleMode={setScaleMode}
-        showSafeArea={showSafeArea} onShowSafeArea={setShowSafeArea}
-        showDesignBorder={showDesignBorder} onShowDesignBorder={setShowDesignBorder}
-        designWidth={scene?.designWidth ?? 1280} designHeight={scene?.designHeight ?? 720}
-        deviceShell={deviceShell} onDeviceShell={setDeviceShell}
+        showSafeArea={showSafeArea} onToggleSafeArea={() => setShowSafeArea((value) => !value)}
+        showDesignBorder={showDesignBorder} onToggleDesignBorder={() => setShowDesignBorder((value) => !value)}
+        preview={{
+          viewport: activeViewport, onViewport: setPreviewViewport, safeArea, onSafeArea: setSafeArea,
+          scaleMode, onScaleMode: setScaleMode, showSafeArea,
+          designWidth: scene?.designWidth ?? 1280, designHeight: scene?.designHeight ?? 720,
+          deviceShell, onDeviceShell: setDeviceShell,
+          showDeviceShell, onToggleDeviceShell: () => setShowDeviceShell((value) => !value),
+        }}
       />
       <div className="body">
-        {workspace !== "slice" && <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
+        {workspace !== "slice" && workspace !== "preview" && <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
           nameMode={layerNameMode}
           warningIds={warningIds}
           renamingId={renamingId} renameCaretMode={renameCaretMode}
@@ -1711,16 +1823,39 @@ export default function App() {
           />
         ) : workspace === "preview" ? (
           <section className="preview-workspace">
-            <header className="preview-workspace-head"><div><span className="workspace-kicker">VISUAL CHECK</span><h2>预览</h2><p>设备比例、安全区和九宫格效果只影响检查显示，不改变节点数据。</p></div></header>
-            <div className="canvas-wrap preview-workspace-canvas" ref={wrapRef}>{canvasStack}</div>
+            <div className="preview-canvas-wrap preview-workspace-canvas" ref={previewWrapRef} onWheel={onPreviewWheel}
+              onPointerDown={onPreviewPointerDown} onPointerMove={onPreviewPointerMove} onPointerUp={onPreviewPointerUp} onPointerCancel={onPreviewPointerUp}>
+              <div className="preview-canvas-transform" style={{ transform: `translate(${previewPan.x}px, ${previewPan.y}px) scale(${previewZoom})` }}>
+                {previewCanvas}
+              </div>
+            </div>
+            <footer className="preview-workspace-foot">
+              <span>预览视口：{activeViewport.width} × {activeViewport.height}</span>
+              <span className="preview-zoom-value">{Math.round(previewZoom * 100)}%</span>
+              <button className="btn" onClick={() => setPreviewZoom((value) => Math.max(0.4, Math.min(3, value * 0.9)))} aria-label="缩小预览">−</button>
+              <button className="btn" onClick={() => { setPreviewZoom(1); setPreviewPan({ x: 0, y: 0 }); }}>居中</button>
+              <button className="btn" onClick={() => setPreviewZoom((value) => Math.max(0.4, Math.min(3, value * 1.1)))} aria-label="放大预览">＋</button>
+            </footer>
           </section>
         ) : (
-          <div className="canvas-wrap" ref={wrapRef}
-            onDoubleClick={() => { if (!scene && !importProgress) void openSavedProject(); }}>
-            {!showPreview && canvasStack}
-          </div>
+          <section className="editor-workspace">
+            <div className={`canvas-wrap editor-canvas-viewport${spaceHeld ? " space-ready" : ""}${canvasPanning ? " is-panning" : ""}`} ref={wrapRef}
+              onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onWheel={onCanvasWheel}
+              onDoubleClick={() => { if (!scene && !importProgress) void openSavedProject(); }}>
+              {canvasStack}
+            </div>
+            <div className="canvas-workspace-footer">
+              {scene && (
+                <span className="canvas-zoom-controls" aria-label="画布缩放">
+                  <button type="button" className="status-zoom-btn" onClick={() => adjustCanvasZoom(-1)} aria-label="缩小画布">−</button>
+                  <span className="canvas-zoom-value" title="Ctrl+0 恢复最佳窗口预览大小">{Math.round(canvasZoom * 100)}%</span>
+                  <button type="button" className="status-zoom-btn" onClick={() => adjustCanvasZoom(1)} aria-label="放大画布">＋</button>
+                </span>
+              )}
+            </div>
+          </section>
         )}
-        {workspace === "export" ? <div className="ws-panel" /> : workspace === "slice" ? null : (
+        {workspace === "export" || workspace === "slice" || workspace === "preview" ? null : (
           <aside className="right-panel" style={{ width: rightPanelWidth, minWidth: rightPanelWidth }}>
             <div className="right-panel-resizer" onPointerDown={startRightPanelResize} title="拖动调整右侧面板宽度" />
             <nav className="right-panel-tabs" aria-label="右侧面板">
@@ -1779,35 +1914,6 @@ export default function App() {
           onClose={() => setTypeMenu(null)}
         />
       )}
-      {showPreview && scene && (
-        <div className="preview-overlay">
-          <section className="preview-dialog" aria-label="效果预览">
-            <header className="preview-dialog-head">
-              <div><span className="preview-kicker">IMPORT CHECK</span><h2>效果预览</h2></div>
-              <button className="btn" onClick={() => setShowPreview(false)}>进入 UI Editor 修改</button>
-            </header>
-            <nav className="preview-device-tabs" aria-label="设备预设">
-              {previewPresets.map((preset) => (
-                <button key={preset.id} className={deviceShell === preset.shell && viewport.width === preset.width && viewport.height === preset.height ? "on" : ""}
-                  onClick={() => { setViewport({ width: preset.width, height: preset.height }); setDeviceShell(preset.shell); setPreviewZoom(1); setPreviewPan({ x: 0, y: 0 }); }}>
-                  {preset.label}
-                </button>
-              ))}
-            </nav>
-            <div className="preview-canvas-wrap" ref={previewWrapRef} onWheel={onPreviewWheel}
-              onPointerDown={onPreviewPointerDown} onPointerMove={onPreviewPointerMove} onPointerUp={onPreviewPointerUp}>
-              <div className="preview-canvas-transform" style={{ transform: `translate(${previewPan.x}px, ${previewPan.y}px) scale(${previewZoom})` }}>
-                {canvasStack}
-              </div>
-              <div className="preview-tip">拖动平移 · 滚轮缩放 · CSS 设备外观仅用于视觉检查</div>
-            </div>
-            <footer className="preview-dialog-foot">
-              <span>当前预览：{viewport.width} × {viewport.height} · {deviceShell}</span>
-              <button className="btn" onClick={() => { setPreviewZoom(1); setPreviewPan({ x: 0, y: 0 }); }}>居中</button>
-            </footer>
-          </section>
-        </div>
-      )}
       {importProgress && (
         <div className="import-overlay" role="status" aria-live="polite">
           <div className="import-progress-card">
@@ -1825,7 +1931,7 @@ export default function App() {
           <section className="help-dialog" role="dialog" aria-modal="true" aria-label={helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}>
             <header className="help-dialog-head"><div><span className="workspace-kicker">UI2HTML</span><h2>{helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}</h2></div><button className="icon-btn" onClick={() => setHelpDialog(null)} aria-label="关闭">×</button></header>
             {helpDialog === "shortcuts" ? <div className="shortcut-grid">
-              {["Ctrl+S|打开工程操作菜单", "Ctrl+O|打开工程", "Ctrl+W|关闭当前工程", "Ctrl+Z|撤销", "Ctrl+X|重做", "F2|重命名节点", "T|转换控件类型", "Ctrl+G|打组", "Alt+G|取消打组", "Ctrl+[ / Ctrl+]|调整层级", "Ctrl+B|绑定资源 / 确认完成"].map((item) => { const [key, label] = item.split("|"); return <div className="shortcut-row" key={key}><kbd>{key}</kbd><span>{label}</span></div>; })}
+              {["Ctrl+S|打开工程操作菜单", "Ctrl+O|打开工程", "Ctrl+W|关闭当前工程", "Ctrl+Z|撤销", "Ctrl+X|重做", "F2|重命名节点", "T|转换控件类型", "Ctrl+G|打组", "Alt+G|取消打组", "Ctrl+[ / Ctrl+]|调整层级", "Ctrl+B|绑定资源 / 确认完成", "Ctrl+0|恢复最佳窗口预览大小"].map((item) => { const [key, label] = item.split("|"); return <div className="shortcut-row" key={key}><kbd>{key}</kbd><span>{label}</span></div>; })}
             </div> : <div className="about-copy"><strong>UI2HTML</strong><p>面向 UI 美术的 PSD 导入、工程整理、视觉检查与自研引擎 JSON 转换工具。</p><small>工程与 PSD 解耦 · 资源可追溯 · 预览优先</small></div>}
             <footer className="help-dialog-foot"><button className="btn primary" onClick={() => setHelpDialog(null)}>知道了</button></footer>
           </section>
@@ -1836,11 +1942,11 @@ export default function App() {
           <span className="warn" title={warnings.join("\n")}>⚠ {warnings.length} 个导入/分析提示</span>
         )}
         <span className="status-shortcuts">
-          {workspace === "controls" && "Ctrl/⌘ 多选 · Ctrl+G 打组 · Alt+G 取消打组 · F2 重命名 · T 转换类型 · Ctrl+[ / ] 调整层级"}
-          {workspace === "bindings" && "Ctrl+B：图片绑定资源 · 再按一次：确认控件绑定完成"}
-          {workspace === "slice" && "选择图片后拖动边界标记 · 确认后可在预览工作区切换对比"}
-          {workspace === "preview" && "拖动平移 · 滚轮缩放 · 设备预设用于适配检查"}
-          {workspace === "export" && "导出前检查资源、布局和引擎字段"}
+          {workspace === "controls" && <><span>Ctrl/⌘ 多选</span><span>Ctrl+G 打组</span><span>Alt+G 取消打组</span><span>F2 重命名</span><span>T 转换类型</span><span>Ctrl+[ / ] 调整层级</span><span>Ctrl+滚轮 缩放</span><span>Space+拖拽 平移</span></>}
+          {workspace === "bindings" && <><span>Ctrl+B 图片绑定资源</span><span>再按一次 确认控件绑定完成</span></>}
+          {workspace === "slice" && <><span>选择图片后拖动边界标记</span><span>确认后可在预览工作区切换对比</span></>}
+          {workspace === "preview" && <><span>拖动平移</span><span>滚轮缩放</span><span>设备预设用于适配检查</span></>}
+          {workspace === "export" && <span>导出前检查资源、布局和引擎字段</span>}
         </span>
         <span className="grow" />
         {exportMsg && <span className="ok">{exportMsg}</span>}

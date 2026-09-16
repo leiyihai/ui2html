@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "desktop": "electron electron/main.cjs",
+    "web": "node scripts/start-web.cjs",
     "build": "tsc -b && vite build",
     "package": "npm run build && node scripts/package-portable.cjs",
     "lint": "oxlint",

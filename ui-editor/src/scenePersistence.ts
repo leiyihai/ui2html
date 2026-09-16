@@ -46,7 +46,8 @@ export interface SavedProjectView {
   safeArea: { left: number; right: number; top: number; bottom: number };
   scaleMode: ScaleMode;
   showSafeArea: boolean;
-  showDesignBorder: boolean;
+  /** @deprecated 仅兼容读取旧工程；设计画布边界不再保存。 */
+  showDesignBorder?: boolean;
 }
 
 export interface SavedScene {
@@ -114,7 +115,6 @@ export function defaultProjectView(width: number, height: number): SavedProjectV
     safeArea: { left: 0, right: 0, top: 0, bottom: 0 },
     scaleMode: "cover",
     showSafeArea: false,
-    showDesignBorder: true,
   };
 }
 
@@ -126,7 +126,13 @@ export function serializeScene(scene: UIScene, view: SavedProjectView = defaultP
     designHeight: scene.designHeight,
     nodes: scene.nodes.map((node) => serializeNode(node)),
     templates: scene.interactionTemplates ?? [],
-    view,
+    // 设计画布边界是编辑器会话状态，明确剔除旧版本可能传入的字段。
+    view: {
+      viewport: { ...view.viewport },
+      safeArea: { ...view.safeArea },
+      scaleMode: view.scaleMode,
+      showSafeArea: view.showSafeArea,
+    },
     ...(scene.nineSliceCandidates ? { nineSliceCandidates: scene.nineSliceCandidates.map((item) => ({
       ...item,
       memberNodeIds: [...item.memberNodeIds],

@@ -107,11 +107,11 @@ describe("independent UI project snapshots", () => {
       safeArea: { left: 20, right: 20, top: 10, bottom: 10 },
       scaleMode: "contain",
       showSafeArea: true,
-      showDesignBorder: false,
     });
 
     expect(saved.view.viewport).toEqual({ width: 1920, height: 1080 });
     expect(saved.view.scaleMode).toBe("contain");
+    expect(saved.view).not.toHaveProperty("showDesignBorder");
   });
 
   it("round-trips the text displayed by an Edit control", () => {

@@ -53,12 +53,12 @@ function BindingCard(p: {
           </div>
         </div>
         {complete && target.node.resourceBindingComplete ? (
-          <button type="button" className="binding-status done status-action"
-            onClick={(event) => { event.stopPropagation(); p.onResetComplete(target.node.id); }} title="恢复为待处理状态">
-            <i aria-hidden="true" />已完成 · 恢复
+          <button type="button" className="binding-status done status-action" aria-label="已完成，点击恢复为待处理状态"
+            onClick={(event) => { event.stopPropagation(); p.onResetComplete(target.node.id); }} title="已完成 · 点击恢复为待处理状态">
+            <i aria-hidden="true">↶</i>
           </button>
-        ) : <span className={`binding-status ${complete ? "done" : "todo"}`}>
-          <i aria-hidden="true" />{complete ? "已完成" : "待绑定"}
+        ) : <span className={`binding-status ${complete ? "done" : "todo"}`} aria-label={complete ? "已完成" : "待绑定"} title={complete ? "已完成" : "待绑定"}>
+          <i aria-hidden="true">{complete ? "✓" : "•"}</i>
         </span>}
       </header>
 
@@ -149,9 +149,9 @@ function NodeEffectPreview(p: {
     const bounds = item && effectivePreviewRect(item, p.viewport);
     if (!canvas || !p.layout || !bounds) return;
     const width = 520;
-    const height = 190;
+    const height = 160;
     canvas.width = width;
-    canvas.height = height;
+    canvas.height = 160;
     const context = canvas.getContext("2d");
     if (!context) return;
     context.clearRect(0, 0, width, height);
@@ -178,7 +178,6 @@ function NodeEffectPreview(p: {
     <button type="button" className="binding-node-preview" onClick={() => p.onLocate(p.target.node.id)}
       title="点击预览区域定位层级并在总览中标记">
       <canvas ref={canvasRef} />
-      <span className="binding-preview-label">点击预览定位</span>
     </button>
   );
 }

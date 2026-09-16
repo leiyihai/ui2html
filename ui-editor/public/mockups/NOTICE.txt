@@ -1,0 +1,6 @@
+Device mockup templates sourced from:
+https://github.com/poyrazavsever/mockup-factory
+
+The upstream README describes the repository as MIT-licensed. This notice is
+kept with the copied templates so the source remains visible in the packaged
+editor. Verify the upstream asset license before distributing a release.
