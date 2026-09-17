@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LayoutEngine, reanchor } from "./layoutEngine";
 import { importPsd } from "./psdImport";
 import { renderOverlay, renderUi } from "./renderer";
@@ -32,6 +32,8 @@ import PreviewDeviceFrame from "./components/PreviewDeviceFrame";
 import { generateNineSliceImage, groupFromCandidate, scanNineSliceCandidates } from "./nineSlice";
 import { normalizeLayoutValue, syncNodeLayoutPosition } from "./layoutValues";
 import { clampCanvasZoom, findCanvasHit, panForZoomAtPoint } from "./canvasView";
+import ExportTargetPanel, { type ExportTarget } from "./components/ExportTargetPanel";
+import SettingsDialog from "./components/SettingsDialog";
 
 export interface ImportProgress {
   name: string;
@@ -290,6 +292,37 @@ const applySnap = (snap: Snapshot): Snapshot => ({
 
 const HISTORY_LIMIT = 50; // 步数不用保留太多
 const STATUS_MESSAGE_DURATION_MS = 4000;
+const UI_SCALE_STORAGE_KEY = "ui2html.uiScale";
+const UI_SCALE_DEFAULT = 1.2;
+const UI_SCALE_MIN = 1;
+const UI_SCALE_MAX = 1.3;
+const REDUCE_MOTION_STORAGE_KEY = "ui2html.reduceMotion";
+const SHOW_SHORTCUT_HINTS_STORAGE_KEY = "ui2html.showShortcutHints";
+
+function normalizeUiScale(value: number): number {
+  const rounded = Number(value.toFixed(2));
+  return Number.isFinite(rounded) && rounded >= UI_SCALE_MIN && rounded <= UI_SCALE_MAX ? rounded : UI_SCALE_MIN;
+}
+
+function readUiScale(): number {
+  try {
+    const raw = window.localStorage.getItem(UI_SCALE_STORAGE_KEY);
+    if (raw === null) return UI_SCALE_DEFAULT;
+    const saved = Number(raw);
+    return normalizeUiScale(saved);
+  } catch {
+    return UI_SCALE_DEFAULT;
+  }
+}
+
+function readStoredBoolean(key: string, fallback: boolean): boolean {
+  try {
+    const saved = window.localStorage.getItem(key);
+    return saved === null ? fallback : saved === "true";
+  } catch {
+    return fallback;
+  }
+}
 
 export default function App() {
   const [scene, setScene] = useState<UIScene | null>(null);
@@ -322,6 +355,7 @@ export default function App() {
   const [importProgress, setImportProgress] = useState<ImportProgress | null>(null);
   const [dirty, setDirty] = useState(false);
   const [workspace, setWorkspace] = useState<Workspace>("controls");
+  const [exportTarget, setExportTarget] = useState<ExportTarget>("engine");
   const [rightPanelTab, setRightPanelTab] = useState<"properties" | "overview">("properties");
   const [rightPanelWidth, setRightPanelWidth] = useState(330);
   const [exportMsg, setExportMsg] = useState("");
@@ -332,6 +366,10 @@ export default function App() {
   const [renameCaretMode, setRenameCaretMode] = useState<"all" | "prefix">("all");
   const [layerNameMode, setLayerNameMode] = useState<LayerNameMode>("original");
   const [helpDialog, setHelpDialog] = useState<"shortcuts" | "about" | null>(null);
+  const [settingsDialog, setSettingsDialog] = useState(false);
+  const [uiScale, setUiScale] = useState(readUiScale);
+  const [reduceMotion, setReduceMotion] = useState(() => readStoredBoolean(REDUCE_MOTION_STORAGE_KEY, false));
+  const [showShortcutHints, setShowShortcutHints] = useState(() => readStoredBoolean(SHOW_SHORTCUT_HINTS_STORAGE_KEY, true));
 
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
@@ -371,6 +409,17 @@ export default function App() {
   useEffect(() => {
     document.title = `${projectName}${dirty ? " · 未保存" : ""} — UI2HTML`;
   }, [projectName, dirty]);
+
+  useEffect(() => {
+    try { window.localStorage.setItem(UI_SCALE_STORAGE_KEY, String(uiScale)); } catch { /* 设置持久化失败不影响编辑 */ }
+  }, [uiScale]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(REDUCE_MOTION_STORAGE_KEY, String(reduceMotion));
+      window.localStorage.setItem(SHOW_SHORTCUT_HINTS_STORAGE_KEY, String(showShortcutHints));
+    } catch { /* 设置持久化失败不影响编辑 */ }
+  }, [reduceMotion, showShortcutHints]);
 
   // 预览工作区走独立视口，其余工作区（含保存到工程文件）都用工程视口。
   const activeViewport = workspace === "preview" && previewViewport ? previewViewport : viewport;
@@ -1112,6 +1161,21 @@ export default function App() {
     setExportMsg(`已确认九宫格：${source.name}`);
   }, [mutateScene]);
 
+  const skipNineSlice = useCallback((candidate: NineSliceCandidate) => {
+    mutateScene((s) => {
+      const nextCandidate = { ...candidate, memberNodeIds: [...candidate.memberNodeIds], status: "skipped" as const };
+      const previous = s.nineSliceCandidates ?? [];
+      const found = previous.some((item) => item.id === candidate.id);
+      return {
+        ...s,
+        nineSliceCandidates: found
+          ? previous.map((item) => item.id === candidate.id ? nextCandidate : item)
+          : [...previous, nextCandidate],
+      };
+    });
+    setExportMsg(`已跳过 ${candidate.memberNodeIds.length} 张图片的九宫格处理`);
+  }, [mutateScene]);
+
   const toggleNineSlicePreview = useCallback(() => {
     mutateScene((s) => ({ ...s, useNineSlicePreview: !s.useNineSlicePreview }));
   }, [mutateScene]);
@@ -1732,7 +1796,7 @@ export default function App() {
   ) : null;
 
   return (
-    <div className="app" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { void handleDrop(event); }}>
+    <div className={`app${reduceMotion ? " reduce-motion" : ""}`} style={{ "--ui-scale": uiScale } as CSSProperties} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { void handleDrop(event); }}>
       <Appbar
         projectName={projectName} dirty={dirty}
         onNew={createNewProject} onOpenProject={openSavedProject}
@@ -1751,6 +1815,7 @@ export default function App() {
         onRename={beginRenameSelected} onGroup={groupSelected} onUngroup={ungroupSelected}
         onMoveLayer={moveSelectedLayer} onShowShortcuts={() => setHelpDialog("shortcuts")}
         onShowAbout={() => setHelpDialog("about")}
+        onShowSettings={() => setSettingsDialog(true)}
         showSafeArea={showSafeArea} onToggleSafeArea={() => setShowSafeArea((value) => !value)}
         showDesignBorder={showDesignBorder} onToggleDesignBorder={() => setShowDesignBorder((value) => !value)}
         preview={{
@@ -1761,8 +1826,8 @@ export default function App() {
           showDeviceShell, onToggleDeviceShell: () => setShowDeviceShell((value) => !value),
         }}
       />
-      <div className="body">
-        {workspace !== "slice" && workspace !== "preview" && <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
+      <div className={`body${workspace === "export" ? " export-body" : ""}`}>
+        {workspace === "export" ? <ExportTargetPanel target={exportTarget} onTarget={setExportTarget} /> : workspace !== "slice" && workspace !== "preview" && <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
           nameMode={layerNameMode}
           warningIds={warningIds}
           renamingId={renamingId} renameCaretMode={renameCaretMode}
@@ -1770,7 +1835,7 @@ export default function App() {
           onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
           onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
         />}
-        {workspace === "export" ? (
+        {workspace === "export" ? exportTarget === "engine" ? (
           <section className="export-panel">
             <div className="export-panel-card">
               <span className="export-kicker">FINAL OUTPUT</span>
@@ -1802,6 +1867,15 @@ export default function App() {
               </details>
             </div>
           </section>
+        ) : (
+          <section className="export-panel export-target-placeholder">
+            <div className="export-target-placeholder-card">
+              <span className="export-kicker">TARGET ADAPTER</span>
+              <h2>{exportTarget === "figma" ? "Figma" : exportTarget === "godot" ? "Godot" : "Unity"}</h2>
+              <p>这个目标格式的转换器尚未接入。当前工程数据已经与 PSD 解耦，后续可以在这里增加对应的导出规则。</p>
+              <span className="export-target-placeholder-badge">计划支持 · 暂不导出</span>
+            </div>
+          </section>
         ) : workspace === "bindings" ? (
           <ResourceBindingWorkspace
             nodes={scene?.nodes ?? []}
@@ -1820,6 +1894,7 @@ export default function App() {
             viewport={{ width: layoutCtx?.viewportWidth ?? viewport.width, height: layoutCtx?.viewportHeight ?? viewport.height }}
             onScan={scanNineSlice}
             onConfirm={confirmNineSlice}
+            onSkip={skipNineSlice}
           />
         ) : workspace === "preview" ? (
           <section className="preview-workspace">
@@ -1937,17 +2012,21 @@ export default function App() {
           </section>
         </div>
       )}
+      {settingsDialog && <SettingsDialog uiScale={uiScale} onUiScale={(value) => setUiScale(normalizeUiScale(value))}
+        onReset={() => setUiScale(UI_SCALE_DEFAULT)} reduceMotion={reduceMotion} onReduceMotion={setReduceMotion}
+        showShortcutHints={showShortcutHints} onShowShortcutHints={setShowShortcutHints}
+        onClose={() => setSettingsDialog(false)} />}
       <footer className="statusbar">
         {warnings.length > 0 && (
           <span className="warn" title={warnings.join("\n")}>⚠ {warnings.length} 个导入/分析提示</span>
         )}
-        <span className="status-shortcuts">
+        {showShortcutHints && <span className="status-shortcuts">
           {workspace === "controls" && <><span>Ctrl/⌘ 多选</span><span>Ctrl+G 打组</span><span>Alt+G 取消打组</span><span>F2 重命名</span><span>T 转换类型</span><span>Ctrl+[ / ] 调整层级</span><span>Ctrl+滚轮 缩放</span><span>Space+拖拽 平移</span></>}
           {workspace === "bindings" && <><span>Ctrl+B 图片绑定资源</span><span>再按一次 确认控件绑定完成</span></>}
           {workspace === "slice" && <><span>选择图片后拖动边界标记</span><span>确认后可在预览工作区切换对比</span></>}
           {workspace === "preview" && <><span>拖动平移</span><span>滚轮缩放</span><span>设备预设用于适配检查</span></>}
           {workspace === "export" && <span>导出前检查资源、布局和引擎字段</span>}
-        </span>
+        </span>}
         <span className="grow" />
         {exportMsg && <span className="ok">{exportMsg}</span>}
         {!scene && <span className="hint">新建或打开工程，也可以直接导入 PSD / 图片</span>}

@@ -53,6 +53,7 @@ interface Props {
   onMoveLayer: (direction: "up" | "down") => void;
   onShowShortcuts: () => void;
   onShowAbout: () => void;
+  onShowSettings?: () => void;
   showSafeArea: boolean;
   onToggleSafeArea: () => void;
   showDesignBorder: boolean;
@@ -108,6 +109,7 @@ export default function Appbar(p: Props) {
         onUndo={p.onUndo} onRedo={p.onRedo} onRename={p.onRename}
         onGroup={p.onGroup} onUngroup={p.onUngroup} onMoveLayer={p.onMoveLayer}
         onShowShortcuts={p.onShowShortcuts} onShowAbout={p.onShowAbout}
+        onShowSettings={p.onShowSettings}
         onExportHtml={p.onExportHtml} onExportEngineJson={p.onExportEngineJson}
         showSafeArea={p.showSafeArea} onToggleSafeArea={p.onToggleSafeArea}
         showDesignBorder={p.showDesignBorder} onToggleDesignBorder={p.onToggleDesignBorder}

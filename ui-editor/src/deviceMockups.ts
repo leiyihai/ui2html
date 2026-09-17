@@ -32,7 +32,7 @@ const CSS_SHELLS: ReadonlySet<DeviceShell> = new Set<DeviceShell>([
   "waterdrop", "notch", "pill", "punch-hole", "island", "fullscreen",
 ]);
 
-// 机身比例取自 device-mockup 的 phone 画法：bezel 横向 8px / 屏幕宽 110，纵向 10px / 屏高 232，
+// 机身比例采用通用手机外壳比例基准：bezel 横向 8px / 屏幕宽 110，纵向 10px / 屏高 232，
 // 机身圆角 17px / 机身宽 126，屏幕圆角 14px / 屏宽 110。
 const BEZEL_X_RATIO = 8 / 110;
 const BEZEL_Y_RATIO = 10 / 232;

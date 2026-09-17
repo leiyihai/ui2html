@@ -39,6 +39,12 @@ export function collectNineSliceImages(scene: UIScene): NineSliceImageEntry[] {
     }));
 }
 
+/** 结果页返回标记页时，保留仍存在于工程中的已处理节点选中状态。 */
+export function retainKnownNineSliceSelection(selectedIds: string[], entries: NineSliceImageEntry[]): string[] {
+  const knownIds = new Set(entries.map((entry) => entry.node.id));
+  return selectedIds.filter((id) => knownIds.has(id));
+}
+
 /** 候选展示排序：先看扫描出的可拉伸置信度，再看名称语义，最后让同组大图优先。 */
 export function rankNineSliceEntries(entries: NineSliceImageEntry[], candidates: NineSliceCandidate[]): NineSliceImageEntry[] {
   const rank = (entry: NineSliceImageEntry) => {
@@ -115,31 +121,78 @@ export function suggestedMargins(image: HTMLCanvasElement): NineSliceMargins {
   };
 }
 
-function stretchVariation(image: HTMLCanvasElement, margins: NineSliceMargins): number {
+interface AxisVariation {
+  deviation: number;
+  peakDelta: number;
+  averageDelta: number;
+}
+
+interface StretchVariation {
+  x: AxisVariation;
+  y: AxisVariation;
+}
+
+const NO_VARIATION: AxisVariation = { deviation: 0, peakDelta: 0, averageDelta: 0 };
+
+function profileVariation(profile: Float64Array): AxisVariation {
+  if (!profile.length) return NO_VARIATION;
+  let mean = 0;
+  for (const value of profile) mean += value;
+  mean /= profile.length;
+  let square = 0;
+  for (const value of profile) square += (value - mean) ** 2;
+  if (profile.length < 2) return { deviation: Math.sqrt(square / profile.length) / 128, peakDelta: 0, averageDelta: 0 };
+  let peakDelta = 0;
+  let totalDelta = 0;
+  for (let index = 1; index < profile.length; index++) {
+    const delta = Math.abs(profile[index] - profile[index - 1]);
+    peakDelta = Math.max(peakDelta, delta);
+    totalDelta += delta;
+  }
+  return {
+    deviation: Math.sqrt(square / profile.length) / 128,
+    peakDelta,
+    averageDelta: totalDelta / (profile.length - 1),
+  };
+}
+
+function stretchVariation(image: HTMLCanvasElement, margins: NineSliceMargins): StretchVariation {
   try {
     const context = image.getContext("2d", { willReadFrequently: true });
-    if (!context) return 0;
+    if (!context) return { x: NO_VARIATION, y: NO_VARIATION };
     const left = Math.max(0, Math.min(image.width - 1, margins.left));
     const top = Math.max(0, Math.min(image.height - 1, margins.top));
     const width = Math.max(1, image.width - margins.left - margins.right);
     const height = Math.max(1, image.height - margins.top - margins.bottom);
     const pixels = context.getImageData(left, top, width, height).data;
-    let count = 0, mean = 0, square = 0;
-    for (let i = 0; i < pixels.length; i += 4) {
-      const value = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3;
-      count++;
-      mean += value;
-      square += value * value;
+    const columnProfile = new Float64Array(width);
+    const rowProfile = new Float64Array(height);
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const offset = (y * width + x) * 4;
+        const value = (pixels[offset] + pixels[offset + 1] + pixels[offset + 2]) / 3;
+        columnProfile[x] += value;
+        rowProfile[y] += value;
+      }
     }
-    if (!count) return 0;
-    mean /= count;
-    return Math.sqrt(Math.max(0, square / count - mean * mean)) / 128;
+    for (let index = 0; index < width; index++) columnProfile[index] /= height;
+    for (let index = 0; index < height; index++) rowProfile[index] /= width;
+    return { x: profileVariation(columnProfile), y: profileVariation(rowProfile) };
   } catch {
-    return 0;
+    return { x: NO_VARIATION, y: NO_VARIATION };
   }
 }
 
-/** 生成用于引擎九宫格的紧凑源图；原图边角保持不变，中间按变化程度保留 1px 或约 25%。 */
+function centerScale(length: number, variation: AxisVariation, hasVariation: boolean): number {
+  if (!hasVariation) return 1 / length;
+  // 短而明显的过渡如果也按 25% 压缩，会在结果图中退化成一条线。
+  // 对这类轴保留一半中心区域，仍能明显减小资源体积，同时留下可辨认的渐变过渡。
+  const preservesShortTransition = variation.peakDelta >= 4
+    && variation.peakDelta >= Math.max(1, variation.averageDelta * 3);
+  return preservesShortTransition ? 0.5 : 0.25;
+}
+
+/** 生成用于引擎九宫格的紧凑源图；整体纯色压成 1px，渐变轴按变化特征保留 25% 或 50%。 */
 export function generateNineSliceImage(image: HTMLCanvasElement, margins: NineSliceMargins): HTMLCanvasElement | null {
   if (typeof document === "undefined" || !image.width || !image.height) return null;
   const left = Math.max(0, Math.min(margins.left, image.width - 1));
@@ -149,9 +202,10 @@ export function generateNineSliceImage(image: HTMLCanvasElement, margins: NineSl
   const centerWidth = Math.max(1, image.width - left - right);
   const centerHeight = Math.max(1, image.height - top - bottom);
   const variation = stretchVariation(image, { left, right, top, bottom });
-  const centerScale = variation > 0.12 ? 0.25 : 1 / centerWidth;
-  const centerScaleY = variation > 0.12 ? 0.25 : 1 / centerHeight;
-  const targetWidth = left + Math.max(1, Math.round(centerWidth * centerScale)) + right;
+  const hasVariation = variation.x.deviation > 0.02 || variation.y.deviation > 0.02;
+  const centerScaleX = centerScale(centerWidth, variation.x, hasVariation);
+  const centerScaleY = centerScale(centerHeight, variation.y, hasVariation);
+  const targetWidth = left + Math.max(1, Math.round(centerWidth * centerScaleX)) + right;
   const targetHeight = top + Math.max(1, Math.round(centerHeight * centerScaleY)) + bottom;
   const output = document.createElement("canvas");
   output.width = targetWidth;

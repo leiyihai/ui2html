@@ -6,7 +6,15 @@ body {
   background: #1c2026;
   color: #ddd;
 }
-.app { display: flex; flex-direction: column; height: 100%; }
+.app {
+  display: flex; flex-direction: column;
+  width: calc(100% / var(--ui-scale, 1)); height: calc(100% / var(--ui-scale, 1));
+  transform: scale(var(--ui-scale, 1)); transform-origin: top left;
+}
+.app.reduce-motion *, .app.reduce-motion *::before, .app.reduce-motion *::after {
+  animation-duration: .01ms !important; animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important; transition-duration: .01ms !important;
+}
 
 /* ---- 独立软件外壳：菜单栏 / 工具栏 ---- */
 .app-shell-header { flex: none; display: flex; flex-direction: column; }
@@ -135,6 +143,36 @@ body {
   flex: 1; min-width: 0; overflow: auto; padding: 36px 42px;
   background: radial-gradient(circle at 50% 0%, #243246 0, #15181d 52%);
 }
+.export-body { background: #15181d; }
+.export-target-panel {
+  width: 232px; min-width: 232px; flex: none; display: flex; flex-direction: column;
+  overflow-y: auto; padding: 18px 10px 12px; border-right: 1px solid #30353a; background: #202327;
+}
+.export-target-heading { padding: 2px 10px 17px; border-bottom: 1px solid #30353a; }
+.export-target-heading strong { display: block; margin-top: 6px; color: #eef4f7; font-size: 16px; font-weight: 650; }
+.export-target-heading small { display: block; margin-top: 6px; color: #78858e; font-size: 10px; line-height: 1.55; }
+.export-target-list { display: flex; flex-direction: column; gap: 4px; padding-top: 12px; }
+.export-target-item {
+  display: flex; align-items: center; gap: 9px; width: 100%; min-height: 52px; padding: 8px 9px;
+  border: 1px solid transparent; border-radius: 3px; background: transparent; color: #9ca8af; text-align: left; cursor: pointer;
+}
+.export-target-item:hover { background: #292f34; color: #e2e8eb; }
+.export-target-item.on { border-color: #416b80; background: #294252; color: #f2f8fa; box-shadow: inset 2px 0 #70c1df; }
+.export-target-mark { width: 27px; color: #78909e; font: 14px ui-monospace, Consolas, monospace; text-align: center; }
+.export-target-item.on .export-target-mark { color: #8bd4ec; }
+.export-target-copy { min-width: 0; flex: 1; }
+.export-target-copy strong, .export-target-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.export-target-copy strong { font-size: 12px; font-weight: 600; }
+.export-target-copy small { margin-top: 4px; color: #75838c; font-size: 9px; }
+.export-target-item.on .export-target-copy small { color: #9bbac6; }
+.export-target-state { flex: none; color: #77848d; font-size: 9px; }
+.export-target-state.ready { color: #8bcbb1; }
+.export-target-state.planned { color: #77848d; }
+.export-target-placeholder { display: grid; place-items: center; padding: 28px; }
+.export-target-placeholder-card { width: min(520px, 100%); padding: 30px 34px; border: 1px solid #303d47; border-radius: 6px; background: #202a32; }
+.export-target-placeholder-card h2 { margin: 8px 0 10px; color: #f0f5f7; font-size: 24px; }
+.export-target-placeholder-card p { margin: 0; color: #9aaab4; line-height: 1.7; }
+.export-target-placeholder-badge { display: inline-flex; margin-top: 18px; padding: 6px 9px; border: 1px solid #4a5359; border-radius: 3px; color: #9aa8af; font-size: 10px; }
 .export-panel-card {
   width: min(760px, 100%); margin: 0 auto; padding: 28px 32px;
   border: 1px solid #34485d; border-radius: 10px; background: rgba(29, 37, 48, .96);
@@ -421,6 +459,10 @@ body {
 .slice-candidate-image small { overflow: hidden; color: #8299a8; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
 .slice-candidate-image i { position: absolute; top: 14px; right: 14px; display: grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; background: #3a9ba5; color: #eefeff; font-size: 12px; font-style: normal; text-align: center; }
 .slice-candidate-image i:empty { display: none; }
+.slice-handled-section { margin-top: 20px; padding-top: 14px; border-top: 1px solid #2d424e; }
+.slice-handled-grid { margin-bottom: 0; }
+.slice-candidate-image.handled { cursor: default; opacity: .82; }
+.slice-candidate-image.handled:hover { border-color: #2d424e; background: #18242d; }
 .slice-merged-stage .nine-slice-editor-panel { min-width: 0; overflow: auto; padding: 14px 16px; }
 .slice-bulk-margins { display: flex; align-items: center; gap: 7px; margin-bottom: 0; color: #c4d6de; font-size: 11px; }
 .slice-bulk-margins label { flex: none; color: #9db5c1; }
@@ -484,6 +526,29 @@ body {
 .about-copy p { margin: 0 0 12px; color: #b6c8d3; font-size: 12px; line-height: 1.7; }
 .about-copy small { color: #738c9c; font-size: 10px; }
 .help-dialog-foot { display: flex; justify-content: flex-end; padding: 11px 20px 16px; border-top: 1px solid #2f3e4b; }
+.settings-dialog { width: min(560px, calc(100vw - 36px)); border: 1px solid #405568; border-radius: 7px; background: #202a34; box-shadow: 0 22px 60px rgba(0,0,0,.45); color: #dce8ef; }
+.settings-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 20px 13px; border-bottom: 1px solid #334452; }
+.settings-dialog-head h2 { margin: 4px 0 0; color: #eff8fb; font-size: 18px; }
+.settings-dialog-body { padding: 18px 20px 10px; }
+.settings-section { display: flex; align-items: center; justify-content: space-between; gap: 26px; padding: 0 0 18px; border-bottom: 1px solid #2f3e4b; }
+.settings-section-copy { min-width: 0; }
+.settings-section-copy strong, .settings-section-copy span, .settings-section-copy small { display: block; }
+.settings-section-copy strong { color: #e7f0f3; font-size: 13px; }
+.settings-section-copy span { margin-top: 7px; color: #acbdc7; font-size: 11px; }
+.settings-section-copy small { margin-top: 5px; color: #71838f; font-size: 10px; line-height: 1.5; }
+.settings-scale-control { width: 225px; flex: none; }
+.settings-scale-control input[type="range"] { width: 100%; accent-color: #70c1df; }
+.settings-scale-control output { display: block; margin-top: 7px; color: #ecf8fb; font: 16px ui-monospace, Consolas, monospace; text-align: center; }
+.settings-scale-actions { display: flex; justify-content: center; gap: 5px; margin-top: 9px; }
+.settings-scale-actions .btn { padding: 4px 7px; font-size: 10px; }
+.settings-options { display: grid; gap: 12px; justify-content: stretch; padding: 16px 0 15px; }
+.settings-option { display: flex; align-items: flex-start; gap: 10px; color: #d9e3e8; cursor: pointer; }
+.settings-option input { margin: 2px 0 0; accent-color: #70c1df; }
+.settings-option strong, .settings-option small { display: block; }
+.settings-option strong { font-size: 11px; font-weight: 600; }
+.settings-option small { margin-top: 4px; color: #71838f; font-size: 10px; }
+.settings-dialog-note { padding: 12px 0 4px; color: #71838f; font-size: 10px; }
+.settings-dialog-foot { display: flex; justify-content: flex-end; padding: 11px 20px 16px; border-top: 1px solid #2f3e4b; }
 
 .body { flex: 1; display: flex; min-height: 0; }
 
@@ -921,6 +986,9 @@ body {
   right: 0;
   background: radial-gradient(circle at top right, transparent 0 75%, #05070a 75%);
 }
+/* 横屏刘海已经贴在屏幕左侧，不需要向下延伸的两块过渡色，避免在内容区底部留下小色块。 */
+.preview-device-mockup-notch.landscape .preview-device-cutout::before,
+.preview-device-mockup-notch.landscape .preview-device-cutout::after { display: none; }
 
 /* 挖孔内部：听筒与前置镜头。尺寸按统一单位给出，横竖屏只交换方向，不会拉伸。 */
 .preview-device-mockup-notch .preview-device-cutout-inner::before {

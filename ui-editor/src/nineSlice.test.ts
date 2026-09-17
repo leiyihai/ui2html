@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { createManualNineSliceCandidate, parseBulkMargins, rankNineSliceEntries, scanNineSliceCandidates } from "./nineSlice";
+import { createManualNineSliceCandidate, generateNineSliceImage, parseBulkMargins, rankNineSliceEntries, retainKnownNineSliceSelection, scanNineSliceCandidates } from "./nineSlice";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { NineSliceImageCard } from "./components/SlicePanel";
 import type { UIScene, UINode } from "./types";
 
 function image(width: number, height: number, key = "solid"): HTMLCanvasElement {
@@ -10,6 +13,18 @@ function image(width: number, height: number, key = "solid"): HTMLCanvasElement 
     toDataURL: () => `data:image/png;base64,${key}-${width}x${height}`,
     getContext: () => ({ getImageData: () => ({ data, width, height }) }),
   } as unknown as HTMLCanvasElement;
+}
+
+function cropPixels(data: Uint8ClampedArray, sourceWidth: number, left: number, top: number, width: number, height: number): Uint8ClampedArray {
+  const cropped = new Uint8ClampedArray(width * height * 4);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const sourceOffset = ((top + y) * sourceWidth + left + x) * 4;
+      const targetOffset = (y * width + x) * 4;
+      cropped.set(data.subarray(sourceOffset, sourceOffset + 4), targetOffset);
+    }
+  }
+  return cropped;
 }
 
 function node(id: string, name: string, canvas: HTMLCanvasElement): UINode {
@@ -24,6 +39,69 @@ function node(id: string, name: string, canvas: HTMLCanvasElement): UINode {
 }
 
 describe("nine-slice candidate scanning", () => {
+  it("keeps a meaningful center area for a non-solid gradient", () => {
+    const width = 100;
+    const height = 40;
+    const data = new Uint8ClampedArray(width * height * 4);
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+      const value = 100 + Math.round(x / width * 20);
+      const offset = (y * width + x) * 4;
+      data[offset] = value;
+      data[offset + 1] = value;
+      data[offset + 2] = value;
+      data[offset + 3] = 255;
+    }
+    const sourceContext = { getImageData: (left: number, top: number, cropWidth: number, cropHeight: number) => ({ data: cropPixels(data, width, left, top, cropWidth, cropHeight), width: cropWidth, height: cropHeight }) };
+    const outputContext = { drawImage: () => undefined };
+    const previousDocument = globalThis.document;
+    globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => outputContext }) } as unknown as Document;
+    try {
+      const generated = generateNineSliceImage({ width, height, getContext: () => sourceContext } as unknown as HTMLCanvasElement, { left: 10, top: 8, right: 10, bottom: 8 });
+      expect(generated?.width).toBeGreaterThan(1 + 10 + 10);
+    } finally {
+      globalThis.document = previousDocument;
+    }
+  });
+
+  it("keeps a short vertical gradient transition from collapsing into a line", () => {
+    const width = 296;
+    const height = 404;
+    const data = new Uint8ClampedArray(width * height * 4);
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+      const value = y < 50 ? 16 : 26 + Math.round((y - 50) / (height - 50) * 40);
+      const offset = (y * width + x) * 4;
+      data[offset] = value;
+      data[offset + 1] = value + 2;
+      data[offset + 2] = value + 5;
+      data[offset + 3] = 255;
+    }
+    const sourceContext = { getImageData: (left: number, top: number, cropWidth: number, cropHeight: number) => ({ data: cropPixels(data, width, left, top, cropWidth, cropHeight), width: cropWidth, height: cropHeight }) };
+    const outputContext = { drawImage: () => undefined };
+    const previousDocument = globalThis.document;
+    globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => outputContext }) } as unknown as Document;
+    try {
+      const generated = generateNineSliceImage({ width, height, getContext: () => sourceContext } as unknown as HTMLCanvasElement, { left: 44, top: 44, right: 44, bottom: 44 });
+      expect(generated?.width).toBe(140);
+      expect(generated?.height).toBeGreaterThanOrEqual(240);
+    } finally {
+      globalThis.document = previousDocument;
+    }
+  });
+
+  it("retains a selected processed image when returning from results", () => {
+    const processed = node("processed", "panel_done", image(40, 20));
+    expect(retainKnownNineSliceSelection(["processed"], [{ node: processed, image: processed.image!, assetKey: "processed", signature: "processed" }])).toEqual(["processed"]);
+  });
+
+  it("uses the candidate card presentation for handled images", () => {
+    const panel = node("panel", "img_panel_background", image(80, 40, "panel"));
+    const entry = { node: panel, image: panel.image!, assetKey: "panel", signature: "panel" };
+    const markup = renderToStaticMarkup(createElement(NineSliceImageCard, { entry, handledStatus: "已跳过" }));
+    expect(markup).toContain("slice-candidate-image");
+    expect(markup).toContain("<img");
+    expect(markup).toContain("已跳过");
+  });
+
   it("parses bulk margins in top-bottom-left-right order", () => {
     expect(parseBulkMargins("2,3,4,1", 100, 80)).toEqual({ left: 4, top: 2, right: 1, bottom: 3 });
     expect(parseBulkMargins("4", 100, 80)).toEqual({ left: 4, top: 4, right: 4, bottom: 4 });

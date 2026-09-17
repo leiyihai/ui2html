@@ -204,4 +204,35 @@ describe("independent UI project snapshots", () => {
     expect(restored.nodes[0].sliceImage).toBe(nineCanvas);
     expect(collectSavedAssetPaths(saved)).toEqual(["panel.png", "9/panel.png"]);
   });
+
+  it("rebuilds an existing nine-slice result from the source image when opening a project", () => {
+    const source = node("panel", "img_panel", "panel.png");
+    const scene: UIScene = {
+      designWidth: 100, designHeight: 100, nodes: [source],
+      nineSliceGroups: [{
+        id: "slice-panel", memberNodeIds: ["panel"], sourceNodeId: "panel", sourceAssetKey: "panel-key",
+        sourceAssetPath: "9/panel.png", generatedAssetPath: "9/panel.9.png", margins: { left: 4, top: 4, right: 4, bottom: 4 },
+      }],
+    };
+    const saved = serializeScene(scene);
+    const sourceCanvas = {
+      width: 40, height: 24,
+      getContext: () => ({ getImageData: () => ({ data: new Uint8ClampedArray(40 * 24 * 4).fill(120), width: 32, height: 16 }) }),
+    } as unknown as HTMLCanvasElement;
+    const oldGeneratedCanvas = { width: 1, height: 1 } as HTMLCanvasElement;
+    const previousDocument = globalThis.document;
+    globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => ({ drawImage: () => undefined }) }) } as unknown as Document;
+    try {
+      const restored = restoreSceneSnapshot(saved, new Map([
+        ["panel.png", sourceCanvas],
+        ["9/panel.png", sourceCanvas],
+        ["9/panel.9.png", oldGeneratedCanvas],
+      ])).scene;
+      expect(restored.nodes[0].sliceImage).not.toBe(oldGeneratedCanvas);
+      expect(restored.nodes[0].sliceImage?.width).toBe(9);
+      expect(restored.nodes[0].sliceImage?.height).toBe(9);
+    } finally {
+      globalThis.document = previousDocument;
+    }
+  });
 });

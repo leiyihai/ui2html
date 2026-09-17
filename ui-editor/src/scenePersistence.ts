@@ -1,5 +1,6 @@
 import type { ImageBinding, InteractionTemplate, NineSliceCandidate, NineSliceGroup, ProjectAnalysis, ResourceSlot, ScaleMode, UIScene, UINode } from "./types";
 import { ensureRootLayout } from "./layoutValues";
+import { generateNineSliceImage } from "./nineSlice";
 
 /** 独立 UI 工程格式。版本 3 起不再保存 PSD 图层身份或依赖 PSD 重新挂载图片。版本 4 增加布局表达式和九宫格生成资源。 */
 export const SCENE_PERSISTENCE_VERSION = 4;
@@ -231,17 +232,23 @@ function applyNineSliceRuntime(nodes: UINode[], groups: NineSliceGroup[], assets
   visit(nodes);
   for (const group of groups) {
     const sourceNode = byId.get(group.sourceNodeId);
-    const sourceImage = (group.generatedAssetPath ? assets.get(group.generatedAssetPath) : undefined)
-      ?? (group.sourceAssetPath ? assets.get(group.sourceAssetPath) : undefined)
-      ?? sourceNode?.image ?? null;
+    const storedGeneratedImage = group.generatedAssetPath ? assets.get(group.generatedAssetPath) : undefined;
+    const sourceImage = (group.sourceAssetPath ? assets.get(group.sourceAssetPath) : undefined)
+      ?? sourceNode?.image
+      ?? storedGeneratedImage
+      ?? null;
+    // 生成图是算法产物，不应永久锁定在旧版本的压缩结果上。
+    // 打开工程时优先从源图重新生成，保证旧工程也能获得最新的渐变保护策略。
+    const generatedImage = sourceImage ? generateNineSliceImage(sourceImage, group.margins) : null;
+    const renderImage = generatedImage ?? storedGeneratedImage ?? sourceImage;
     if (group.sourceAssetPath && !assets.has(group.sourceAssetPath)) missing.push(group.sourceAssetPath);
-    if (group.generatedAssetPath && !assets.has(group.generatedAssetPath)) missing.push(group.generatedAssetPath);
+    if (group.generatedAssetPath && !storedGeneratedImage && !generatedImage) missing.push(group.generatedAssetPath);
     for (const memberId of group.memberNodeIds) {
       const node = byId.get(memberId);
       if (!node) continue;
       node.nineSliceGroupId = group.id;
       node.slice = { ...group.margins };
-      node.sliceImage = sourceImage;
+      node.sliceImage = renderImage;
     }
   }
 }

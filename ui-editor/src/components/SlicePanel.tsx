@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LayoutResult, NineSliceCandidate, NineSliceGroup, NineSliceMargins, UIScene } from "../types";
-import { collectNineSliceImages, createManualNineSliceCandidate, parseBulkMargins, rankNineSliceEntries, sameNodeSet, type NineSliceImageEntry } from "../nineSlice";
+import { collectNineSliceImages, createManualNineSliceCandidate, parseBulkMargins, rankNineSliceEntries, retainKnownNineSliceSelection, sameNodeSet, type NineSliceImageEntry } from "../nineSlice";
 import { applySelection, createSelectionIntent } from "../selection";
 import SceneOverview from "./SceneOverview";
 
@@ -16,6 +16,22 @@ function groupFor(candidate: NineSliceCandidate, groups: NineSliceGroup[]): Nine
 
 function sourceFor(candidate: NineSliceCandidate, entries: NineSliceImageEntry[]): NineSliceImageEntry | null {
   return entries.find((entry) => entry.node.id === candidate.sourceNodeId) ?? null;
+}
+
+export function NineSliceImageCard(p: {
+  entry: NineSliceImageEntry;
+  candidate?: NineSliceCandidate;
+  selected?: boolean;
+  handledStatus?: string;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}) {
+  const content = <>
+    <img src={p.entry.image.toDataURL("image/png")} alt="" />
+    <span><strong>{p.entry.node.name}</strong><small>{p.entry.image.width} × {p.entry.image.height}{p.handledStatus ? ` · ${p.handledStatus}` : p.candidate ? ` · ${statusLabel(p.candidate.status)}` : ""}</small></span>
+    <i>{p.selected ? "✓" : ""}</i>
+  </>;
+  if (p.handledStatus) return <div className="slice-candidate-image handled">{content}</div>;
+  return <button type="button" className={`slice-candidate-image ${p.selected ? "selected" : ""}`} onClick={p.onClick}>{content}</button>;
 }
 
 export function SliceEditor(p: { source: NineSliceImageEntry; slice: NineSliceMargins; onChange: (slice: NineSliceMargins) => void }) {
@@ -122,6 +138,7 @@ export default function NineSliceWorkspace(p: {
   viewport: { width: number; height: number };
   onScan: () => void;
   onConfirm: (candidate: NineSliceCandidate, margins: NineSliceMargins) => void;
+  onSkip: (candidate: NineSliceCandidate) => void;
 }) {
   const entries = useMemo(() => collectNineSliceImages(p.scene), [p.scene]);
   const candidates = useMemo(() => p.scene.nineSliceCandidates ?? [], [p.scene.nineSliceCandidates]);
@@ -131,14 +148,22 @@ export default function NineSliceWorkspace(p: {
   const selectionAnchorRef = useRef<string | null>(null);
   const initialSelectionDoneRef = useRef(false);
   const selectedEntries = selectedIds.map((id) => entries.find((entry) => entry.node.id === id)).filter((entry): entry is NineSliceImageEntry => Boolean(entry));
-  const confirmedIds = useMemo(() => new Set(groups.flatMap((group) => group.memberNodeIds)), [groups]);
-  // 已完成的图片默认从候选列表移除；从结果页返回修改时，仅把当前编辑组临时放回列表。
-  const availableEntries = entries.filter((entry) => !confirmedIds.has(entry.node.id) || selectedIds.includes(entry.node.id));
+  const confirmedIds = useMemo(() => new Set([
+    ...groups.flatMap((group) => group.memberNodeIds),
+    ...candidates.filter((candidate) => candidate.status === "confirmed").flatMap((candidate) => candidate.memberNodeIds),
+  ]), [candidates, groups]);
+  const skippedIds = useMemo(() => new Set(candidates
+    .filter((candidate) => candidate.status === "skipped")
+    .flatMap((candidate) => candidate.memberNodeIds)), [candidates]);
+  const handledIds = useMemo(() => new Set([...confirmedIds, ...skippedIds]), [confirmedIds, skippedIds]);
+  // 已处理或已跳过的图片移到下方；从结果页返回修改时仍可通过当前选中项打开编辑区。
+  const availableEntries = entries.filter((entry) => !handledIds.has(entry.node.id));
   const rankedAvailableEntries = useMemo(
     () => rankNineSliceEntries(availableEntries, candidates),
     [availableEntries, candidates],
   );
-  const pendingEntries = entries.filter((entry) => !confirmedIds.has(entry.node.id));
+  const pendingEntries = availableEntries;
+  const handledEntries = entries.filter((entry) => handledIds.has(entry.node.id));
   const existingCandidate = selectedIds.length ? candidates.find((candidate) => sameNodeSet(candidate.memberNodeIds, selectedIds)) : undefined;
   const workingCandidate = existingCandidate ?? (selectedEntries.length ? createManualNineSliceCandidate(selectedEntries) : null);
   const displaySource = selectedEntries[0] ?? (existingCandidate ? sourceFor(existingCandidate, entries) : null);
@@ -149,8 +174,7 @@ export default function NineSliceWorkspace(p: {
 
   useEffect(() => {
     setSelectedIds((current) => {
-      const validIds = new Set(availableEntries.map((entry) => entry.node.id));
-      const next = current.filter((id) => validIds.has(id));
+      const next = retainKnownNineSliceSelection(current, entries);
       if (!initialSelectionDoneRef.current && !next.length && availableEntries[0]) {
         const firstId = availableEntries[0].node.id;
         selectionAnchorRef.current = firstId;
@@ -165,6 +189,9 @@ export default function NineSliceWorkspace(p: {
   }, [workingCandidateId, savedGroup?.margins, workingCandidateMargins]);
 
   const confirmed = candidates.filter((candidate) => candidate.status === "confirmed");
+  const candidateForEntry = (id: string) => candidates
+    .filter((candidate) => candidate.memberNodeIds.includes(id))
+    .sort((left, right) => Number(left.status === "suggested") - Number(right.status === "suggested"))[0];
   const selectCandidate = (event: React.MouseEvent<HTMLButtonElement>, id: string) => {
     const orderedIds = rankedAvailableEntries.map((entry) => entry.node.id);
     const next = applySelection(
@@ -188,25 +215,59 @@ export default function NineSliceWorkspace(p: {
     if (!workingCandidate) return;
     p.onConfirm(workingCandidate, margins);
     selectionAnchorRef.current = null;
-    setSelectedIds([]);
-    setTab("result");
+    const next = rankedAvailableEntries.find((entry) => !selectedIds.includes(entry.node.id));
+    setSelectedIds(next ? [next.node.id] : []);
+  };
+  const skip = () => {
+    if (!selectedEntries.length) return;
+    const skippedCandidate = {
+      ...(existingCandidate ?? createManualNineSliceCandidate(selectedEntries)),
+      memberNodeIds: selectedEntries.map((entry) => entry.node.id).sort(),
+      status: "skipped" as const,
+      reason: "用户手动跳过九宫格处理",
+    };
+    p.onSkip(skippedCandidate);
+    selectionAnchorRef.current = null;
+    const next = rankedAvailableEntries.find((entry) => !selectedIds.includes(entry.node.id));
+    setSelectedIds(next ? [next.node.id] : []);
   };
 
   return <section className="nine-slice-workspace">
-    <nav className="slice-tabs" aria-label="九宫格阶段"><div className="slice-tab-list"><button className={tab === "mark" ? "on" : ""} onClick={() => setTab("mark")}>候选图片与边距标记</button><button className={tab === "result" ? "on" : ""} disabled={!confirmed.length} onClick={() => setTab("result")}>九宫格结果</button></div><div className="slice-tabs-actions"><button className="btn" onClick={p.onScan}>更新候选</button><span className="nine-slice-count">待处理 {pendingEntries.length} · 已完成 {confirmed.length}</span></div></nav>
-    {tab === "mark" && <div className="slice-stage mark-stage slice-merged-stage"><aside className="slice-candidate-list"><div className="nine-slice-list-title">候选图片</div><p className="slice-stage-hint">按 Windows 规则选择：普通点击替换，Ctrl 加选/减选，Shift 连选；点击空白处取消选择。</p>{!rankedAvailableEntries.length && <div className="slice-empty">所有图片都已完成处理。</div>}<div className="slice-candidate-grid" onPointerDown={clearCandidateSelection}>{rankedAvailableEntries.map((entry) => {
-      const candidate = candidates.find((item) => item.memberNodeIds.includes(entry.node.id));
-      return <button key={entry.node.id} className={`slice-candidate-image ${selectedIds.includes(entry.node.id) ? "selected" : ""}`} onClick={(event) => selectCandidate(event, entry.node.id)}>
-        <img src={entry.image.toDataURL("image/png")} alt="" /><span><strong>{entry.node.name}</strong><small>{entry.image.width} × {entry.image.height}{candidate ? ` · ${statusLabel(candidate.status)}` : ""}</small></span><i>{selectedIds.includes(entry.node.id) ? "✓" : ""}</i>
-      </button>;
-      })}</div></aside><main className="nine-slice-editor-panel"><div className="nine-slice-overview"><SceneOverview
-      result={p.layout}
-      nodes={p.scene.nodes}
-      viewport={p.viewport}
-      selectedId={displaySource?.node.id ?? null}
-      onLocate={(id) => { if (rankedAvailableEntries.some((entry) => entry.node.id === id)) setSelectedIds([id]); }}
-      useNineSlice={p.scene.useNineSlicePreview}
-    /></div>{workingCandidate && displaySource ? <><div className="nine-slice-editor-title"><div><span>当前标记图 · 已选 {selectedEntries.length} 张</span><h3>{displaySource.node.name}</h3><small>{selectedEntries.length > 1 ? "其他选中图片将沿用同一组边距；最终源图仍按最大尺寸选择" : "单张图片"}</small></div><span className="nine-status status-suggested">待标记</span></div><SliceEditor source={displaySource} slice={margins} onChange={setMargins} /><div className="nine-slice-editor-foot"><span>边距值是本组图片共用的引擎九宫格参数。</span><button className="btn primary" onClick={confirm}>转换并保存</button></div></> : <div className="slice-empty large">请先从左侧选择候选图片。</div>}</main></div>}
-    {tab === "result" && <div className="slice-stage result-stage"><main><div className="nine-slice-list-title">已生成的九宫格图片</div><p className="slice-stage-hint">边距沿用候选与标记页；如需调整，请回到上一页重新选择并标记。</p><div className="slice-result-grid">{confirmed.map((candidate) => { const entry = sourceFor(candidate, entries); const group = groupFor(candidate, groups); return <article className="slice-result-card" key={candidate.id}>{entry && <img src={entry.node.sliceImage?.toDataURL("image/png") ?? entry.image.toDataURL("image/png")} alt="" />}<strong>{entry?.node.name ?? "图片已缺失"}</strong><small>{group ? `边距：${group.margins.left} / ${group.margins.top} / ${group.margins.right} / ${group.margins.bottom}` : "等待保存生成资源"}</small><button className="btn" onClick={() => { setSelectedIds(candidate.memberNodeIds); setTab("mark"); }}>返回修改</button></article>; })}</div></main></div>}
+    <nav className="slice-tabs" aria-label="九宫格阶段">
+      <div className="slice-tab-list"><button className={tab === "mark" ? "on" : ""} onClick={() => setTab("mark")}>候选图片与边距标记</button><button className={tab === "result" ? "on" : ""} disabled={!confirmed.length} onClick={() => setTab("result")}>九宫格结果</button></div>
+      <div className="slice-tabs-actions"><button className="btn" onClick={p.onScan}>更新候选</button><span className="nine-slice-count">待处理 {pendingEntries.length} · 已处理 {entries.filter((entry) => confirmedIds.has(entry.node.id)).length} · 已跳过 {entries.filter((entry) => skippedIds.has(entry.node.id)).length}</span></div>
+    </nav>
+    {tab === "mark" && <div className="slice-stage mark-stage slice-merged-stage">
+      <aside className="slice-candidate-list">
+        <div className="nine-slice-list-title">候选图片</div>
+        {!rankedAvailableEntries.length && <div className="slice-empty">没有待处理候选图片。</div>}
+        <div className="slice-candidate-grid" onPointerDown={clearCandidateSelection}>{rankedAvailableEntries.map((entry) => <NineSliceImageCard
+          key={entry.node.id}
+          entry={entry}
+          candidate={candidateForEntry(entry.node.id)}
+          selected={selectedIds.includes(entry.node.id)}
+          onClick={(event) => selectCandidate(event, entry.node.id)}
+        />)}</div>
+        <section className="slice-handled-section">
+          <div className="nine-slice-list-title">已处理 / 已跳过</div>
+          {!handledEntries.length && <div className="slice-empty">暂无已处理图片。</div>}
+          <div className="slice-candidate-grid slice-handled-grid">{handledEntries.map((entry) => <NineSliceImageCard
+            key={entry.node.id}
+            entry={entry}
+            candidate={candidateForEntry(entry.node.id)}
+            handledStatus={candidateForEntry(entry.node.id)?.status === "skipped" ? "已跳过" : "已处理"}
+          />)}</div>
+        </section>
+      </aside>
+      <main className="nine-slice-editor-panel"><div className="nine-slice-overview"><SceneOverview
+        result={p.layout}
+        nodes={p.scene.nodes}
+        viewport={p.viewport}
+        selectedId={displaySource?.node.id ?? null}
+        onLocate={(id) => { if (entries.some((entry) => entry.node.id === id)) { selectionAnchorRef.current = id; setSelectedIds([id]); } }}
+        useNineSlice={p.scene.useNineSlicePreview}
+      /></div>{workingCandidate && displaySource ? <><div className="nine-slice-editor-title"><div><span>当前标记图 · 已选 {selectedEntries.length} 张</span><h3>{displaySource.node.name}</h3><small>{selectedEntries.length > 1 ? "其他选中图片将沿用同一组边距；最终源图仍按最大尺寸选择" : "单张图片"}</small></div><span className={`nine-status status-${workingCandidate.status}`}>{workingCandidate.status === "confirmed" ? "已处理" : workingCandidate.status === "skipped" ? "已跳过" : "待标记"}</span></div><SliceEditor source={displaySource} slice={margins} onChange={setMargins} /><div className="nine-slice-editor-foot"><span>边距值是本组图片共用的引擎九宫格参数。</span><div><button className="btn" onClick={skip}>跳过处理</button><button className="btn primary" onClick={confirm}>转换并保存</button></div></div></> : <div className="slice-empty large">请先从左侧选择候选图片。</div>}</main>
+    </div>}
+    {tab === "result" && <div className="slice-stage result-stage"><main><div className="nine-slice-list-title">已生成的九宫格图片</div><p className="slice-stage-hint">边距沿用候选与标记页；如需调整，请回到上一页重新选择并标记。</p><div className="slice-result-grid">{confirmed.map((candidate) => { const entry = sourceFor(candidate, entries); const group = groupFor(candidate, groups); const output = entry?.node.sliceImage ?? entry?.image; return <article className="slice-result-card" key={candidate.id}>{output && <img src={output.toDataURL("image/png")} alt="" />}<strong>{entry?.node.name ?? "图片已缺失"}</strong><small>{output ? `尺寸：${output.width} × ${output.height}` : "尺寸：未知"}{group ? ` · 边距：${group.margins.left} / ${group.margins.top} / ${group.margins.right} / ${group.margins.bottom}` : " · 等待保存生成资源"}</small><button className="btn" onClick={() => { setSelectedIds(candidate.memberNodeIds); setTab("mark"); }}>返回修改</button></article>; })}</div></main></div>}
   </section>;
 }

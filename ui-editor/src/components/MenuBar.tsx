@@ -26,6 +26,7 @@ interface Props {
   onMoveLayer: (direction: "up" | "down") => void;
   onShowShortcuts: () => void;
   onShowAbout: () => void;
+  onShowSettings?: () => void;
   onExportHtml: () => void;
   onExportEngineJson: () => void;
   showSafeArea: boolean;
@@ -158,6 +159,9 @@ export default function MenuBar(p: Props) {
             onClick={() => closeThen(p.onToggleDesignBorder)} />
           <MenuToggle label={VIEW_AUXILIARY_ITEMS[1]} checked={p.showSafeArea} disabled={!p.hasScene}
             onClick={() => closeThen(p.onToggleSafeArea)} />
+          <Divider />
+          <div className="menu-section-label">应用</div>
+          <MenuItem label="界面设置…" onClick={() => closeThen(() => p.onShowSettings?.())} />
         </div>}
       </div>
       <div className="menu-group">
