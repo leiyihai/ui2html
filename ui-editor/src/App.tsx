@@ -6,7 +6,7 @@ import { buildExportHtml } from "./exportHtml";
 import { buildEngineJson, createEngineAssetManifest } from "./engineExport";
 import type { CtrlType, ImageBinding, InteractionTemplate, LayoutContext, NineSliceCandidate, NineSliceMargins, ResourceSlot, ScaleMode, UINode, UIScene } from "./types";
 import Appbar from "./components/Toolbar";
-import { type Workspace } from "./components/WorkspaceTabs";
+import { WORKFLOW_OPTIONS, type Workspace, type WorkspaceOption } from "./components/WorkspaceTabs";
 import Inspector from "./components/Inspector";
 import ControlsPanel, { type LayerNameMode } from "./components/ControlsPanel";
 import TypePieMenu from "./components/TypePieMenu";
@@ -27,13 +27,38 @@ import type { ProjectAnalysis } from "./types";
 import { type DeviceShell } from "./devicePreview";
 import ResourceBindingWorkspace from "./components/ResourceBindingWorkspace";
 import SceneOverview from "./components/SceneOverview";
-import NineSliceWorkspace from "./components/SlicePanel";
+import NineSliceWorkspace, {
+  NineSliceCandidatesTool,
+  NineSliceMarkerTool,
+  NineSliceOverviewTool,
+  NineSliceWorkspaceProvider,
+} from "./components/SlicePanel";
 import PreviewDeviceFrame from "./components/PreviewDeviceFrame";
 import { generateNineSliceImage, groupFromCandidate, scanNineSliceCandidates } from "./nineSlice";
 import { normalizeLayoutValue, syncNodeLayoutPosition } from "./layoutValues";
 import { clampCanvasZoom, findCanvasHit, panForZoomAtPoint } from "./canvasView";
 import ExportTargetPanel, { type ExportTarget } from "./components/ExportTargetPanel";
 import SettingsDialog from "./components/SettingsDialog";
+import AreaLayout from "./components/AreaLayout";
+import WorkspaceAreaToolbar from "./components/WorkspaceAreaToolbar";
+import { CanvasZoomControl, FontPickerControl, PreviewToolActions } from "./components/AreaToolActions";
+import {
+  areaLeaves,
+  createDefaultAreaLayout,
+  createDefaultWorkspaceLayouts,
+  findArea,
+  joinArea,
+  migrateWorkspaceLayout,
+  resizeAreaSplit,
+  sanitizeAreaLayout,
+  splitArea,
+  swapAreaSplit,
+  updateAreaTool,
+  type AreaLeaf,
+  type AreaNode,
+  type AreaSplitAxis,
+  type AreaTool,
+} from "./areaLayout";
 
 export interface ImportProgress {
   name: string;
@@ -103,6 +128,7 @@ function findParentNode(nodes: UINode[], id: string): UINode | null {
 
 type ResizeCorner = "nw" | "ne" | "sw" | "se";
 type CanvasResizeDrag = {
+  areaId: string;
   id: string;
   corner: ResizeCorner;
   startClientX: number;
@@ -298,6 +324,8 @@ const UI_SCALE_MIN = 1;
 const UI_SCALE_MAX = 1.3;
 const REDUCE_MOTION_STORAGE_KEY = "ui2html.reduceMotion";
 const SHOW_SHORTCUT_HINTS_STORAGE_KEY = "ui2html.showShortcutHints";
+const AREA_LAYOUT_STORAGE_PREFIX = "ui2html.area-layout:";
+const WORKSPACE_OPTIONS_STORAGE_KEY = "ui2html.workspace-options";
 
 function normalizeUiScale(value: number): number {
   const rounded = Number(value.toFixed(2));
@@ -324,6 +352,56 @@ function readStoredBoolean(key: string, fallback: boolean): boolean {
   }
 }
 
+function readWorkspaceOptions(): WorkspaceOption[] {
+  const defaults = WORKFLOW_OPTIONS.map((item) => ({ ...item }));
+  try {
+    const raw = window.localStorage.getItem(WORKSPACE_OPTIONS_STORAGE_KEY);
+    if (!raw) return defaults;
+    const stored = JSON.parse(raw) as unknown;
+    if (!Array.isArray(stored)) return defaults;
+    const labels = new Map<string, string>();
+    const custom: WorkspaceOption[] = [];
+    for (const value of stored) {
+      if (!value || typeof value !== "object") continue;
+      const item = value as Partial<WorkspaceOption>;
+      if (typeof item.value !== "string" || typeof item.label !== "string") continue;
+      const label = item.label.trim().slice(0, 32);
+      if (!label) continue;
+      if (defaults.some((entry) => entry.value === item.value)) labels.set(item.value, label);
+      else if (item.value.startsWith("custom-") && !custom.some((entry) => entry.value === item.value)) {
+        custom.push({ value: item.value, label, builtIn: false });
+      }
+    }
+    return defaults.map((item) => ({ ...item, label: labels.get(item.value) ?? item.label })).concat(custom);
+  } catch {
+    return defaults;
+  }
+}
+
+function areaLayoutStorageKey(path: string | null, name: string): string {
+  return `${AREA_LAYOUT_STORAGE_PREFIX}${path ?? `untitled:${name}`}`;
+}
+
+const WORKFLOW_KEYS: Workspace[] = ["controls", "bindings", "slice", "preview", "export"];
+
+function readWorkspaceLayouts(path: string | null, name: string, workspaceIds: Workspace[] = WORKFLOW_KEYS): Record<Workspace, AreaNode> {
+  const defaults = createDefaultWorkspaceLayouts(workspaceIds);
+  try {
+    const raw = window.localStorage.getItem(areaLayoutStorageKey(path, name));
+    if (!raw) return defaults;
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    // 兼容旧版单一区域树：旧布局无法可靠映射到新的“工作区→工具区域”模型，改用清晰的默认组合。
+    if (parsed.kind) return defaults;
+    for (const workflow of workspaceIds) {
+      const restored = sanitizeAreaLayout(parsed[workflow]);
+      if (restored) defaults[workflow] = migrateWorkspaceLayout(workflow, restored, defaults[workflow]);
+    }
+    return defaults;
+  } catch {
+    return defaults;
+  }
+}
+
 export default function App() {
   const [scene, setScene] = useState<UIScene | null>(null);
   const [viewport, setViewport] = useState({ width: 1280, height: 720 });
@@ -338,6 +416,10 @@ export default function App() {
   const [previewPan, setPreviewPan] = useState({ x: 0, y: 0 });
   const [canvasZoom, setCanvasZoom] = useState(1);
   const [canvasPan, setCanvasPan] = useState({ x: 0, y: 0 });
+  const [areaCanvasZooms, setAreaCanvasZooms] = useState<Record<string, number>>({});
+  const [areaCanvasPans, setAreaCanvasPans] = useState<Record<string, { x: number; y: number }>>({});
+  const [areaPreviewZooms, setAreaPreviewZooms] = useState<Record<string, number>>({});
+  const [areaPreviewPans, setAreaPreviewPans] = useState<Record<string, { x: number; y: number }>>({});
   const [spaceHeld, setSpaceHeld] = useState(false);
   const [canvasPanning, setCanvasPanning] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -355,9 +437,13 @@ export default function App() {
   const [importProgress, setImportProgress] = useState<ImportProgress | null>(null);
   const [dirty, setDirty] = useState(false);
   const [workspace, setWorkspace] = useState<Workspace>("controls");
+  const [workspaceOptions, setWorkspaceOptions] = useState<WorkspaceOption[]>(readWorkspaceOptions);
+  const workspaceIds = workspaceOptions.map((item) => item.value);
+  const [areaLayouts, setAreaLayouts] = useState<Record<Workspace, AreaNode>>(() => createDefaultWorkspaceLayouts(workspaceIds));
+  const areaLayout = areaLayouts[workspace] ?? createDefaultAreaLayout("canvas");
+  const [activeAreaId, setActiveAreaId] = useState("area-controls-canvas");
   const [exportTarget, setExportTarget] = useState<ExportTarget>("engine");
-  const [rightPanelTab, setRightPanelTab] = useState<"properties" | "overview">("properties");
-  const [rightPanelWidth, setRightPanelWidth] = useState(330);
+  const [areaExportTargets, setAreaExportTargets] = useState<Record<string, ExportTarget>>({});
   const [exportMsg, setExportMsg] = useState("");
   const [engineOutputPath, setEngineOutputPath] = useState("");
   const [typeMenu, setTypeMenu] = useState<{ x: number; y: number } | null>(null);
@@ -375,7 +461,9 @@ export default function App() {
   const ovRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const previewWrapRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ id: string; startX: number; startY: number } | null>(null);
+  const areaCanvasRefs = useRef(new Map<string, { ui?: HTMLCanvasElement; ov?: HTMLCanvasElement; wrap?: HTMLDivElement; previewWrap?: HTMLDivElement }>());
+  const areaLayoutRef = useRef<AreaNode>(areaLayout);
+  const dragRef = useRef<{ areaId: string; id: string; startX: number; startY: number } | null>(null);
   const resizeRef = useRef<CanvasResizeDrag | null>(null);
   const pointerRef = useRef({ x: 0, y: 0 });
   const sceneRef = useRef<UIScene | null>(null); // 同步引用（事件中立即更新）
@@ -383,28 +471,62 @@ export default function App() {
   const futureRef = useRef<Snapshot[]>([]);
   const selectionAnchorRef = useRef<string | null>(null);
   const importAbortRef = useRef<AbortController | null>(null);
-  const previewDragRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
-  const rightPanelResizeRef = useRef<{ startX: number; startWidth: number } | null>(null);
+  const previewDragRef = useRef<{ areaId: string; x: number; y: number; panX: number; panY: number } | null>(null);
   const canvasPanRef = useRef({ x: 0, y: 0 });
-  const canvasPanDragRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
+  const canvasPanDragRef = useRef<{ areaId: string; x: number; y: number; panX: number; panY: number } | null>(null);
   const spaceHeldRef = useRef(false);
 
-  const startRightPanelResize = (event: React.PointerEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    rightPanelResizeRef.current = { startX: event.clientX, startWidth: rightPanelWidth };
-    const move = (next: PointerEvent) => {
-      if (!rightPanelResizeRef.current) return;
-      const nextWidth = rightPanelResizeRef.current.startWidth + rightPanelResizeRef.current.startX - next.clientX;
-      setRightPanelWidth(Math.max(240, Math.min(520, nextWidth)));
-    };
-    const stop = () => {
-      rightPanelResizeRef.current = null;
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", stop);
-    };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", stop);
+  useEffect(() => { areaLayoutRef.current = areaLayout; }, [areaLayout]);
+
+  useEffect(() => {
+    if (!scene) return;
+    try {
+      window.localStorage.setItem(areaLayoutStorageKey(projectPath, projectName), JSON.stringify(areaLayouts));
+    } catch { /* 区域布局只属于编辑器本地偏好，保存失败不影响工程 */ }
+  }, [areaLayouts, projectName, projectPath, scene]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(WORKSPACE_OPTIONS_STORAGE_KEY, JSON.stringify(workspaceOptions));
+    } catch { /* 工作区名称只属于编辑器偏好，保存失败不影响工程 */ }
+  }, [workspaceOptions]);
+
+  const setAreaLayout = useCallback((next: AreaNode | ((current: AreaNode) => AreaNode)) => {
+    setAreaLayouts((current) => {
+      const currentLayout = current[workspace] ?? createDefaultAreaLayout("canvas");
+      const nextLayout = typeof next === "function" ? next(currentLayout) : next;
+      return { ...current, [workspace]: nextLayout };
+    });
+  }, [workspace]);
+
+  const setAreaCanvasRef = (areaId: string, key: "ui" | "ov" | "wrap" | "previewWrap", value: HTMLCanvasElement | HTMLDivElement | null) => {
+    const refs = areaCanvasRefs.current.get(areaId) ?? {};
+    if (value) refs[key] = value as never;
+    else delete refs[key];
+    areaCanvasRefs.current.set(areaId, refs);
+    if (areaId === activeAreaId) {
+      if (key === "ui") uiRef.current = value as HTMLCanvasElement | null;
+      if (key === "ov") ovRef.current = value as HTMLCanvasElement | null;
+      if (key === "wrap") wrapRef.current = value as HTMLDivElement | null;
+      if (key === "previewWrap") previewWrapRef.current = value as HTMLDivElement | null;
+    }
   };
+
+  const areaRefs = (areaId: string) => areaCanvasRefs.current.get(areaId) ?? {};
+  const canvasZoomFor = (areaId: string) => areaCanvasZooms[areaId] ?? (areaId === activeAreaId ? canvasZoom : 1);
+  const canvasPanFor = (areaId: string) => areaCanvasPans[areaId] ?? (areaId === activeAreaId ? canvasPan : { x: 0, y: 0 });
+  const previewZoomFor = (areaId: string) => areaPreviewZooms[areaId] ?? (areaId === activeAreaId ? previewZoom : 1);
+  const previewPanFor = (areaId: string) => areaPreviewPans[areaId] ?? (areaId === activeAreaId ? previewPan : { x: 0, y: 0 });
+  const activateArea = useCallback((areaId: string) => {
+    const leaf = findArea(areaLayoutRef.current, areaId);
+    if (!leaf) return;
+    setActiveAreaId(areaId);
+    const refs = areaRefs(areaId);
+    uiRef.current = refs.ui ?? null;
+    ovRef.current = refs.ov ?? null;
+    wrapRef.current = refs.wrap ?? null;
+    previewWrapRef.current = refs.previewWrap ?? null;
+  }, []);
 
   useEffect(() => {
     document.title = `${projectName}${dirty ? " · 未保存" : ""} — UI2HTML`;
@@ -422,23 +544,45 @@ export default function App() {
   }, [reduceMotion, showShortcutHints]);
 
   // 预览工作区走独立视口，其余工作区（含保存到工程文件）都用工程视口。
-  const activeViewport = workspace === "preview" && previewViewport ? previewViewport : viewport;
-  const layoutCtx: LayoutContext | null = useMemo(
+  const editorLayoutCtx: LayoutContext | null = useMemo(
     () => (scene ? {
       designWidth: scene.designWidth,
       designHeight: scene.designHeight,
-      viewportWidth: activeViewport.width,
-      viewportHeight: activeViewport.height,
+      viewportWidth: viewport.width,
+      viewportHeight: viewport.height,
       safeArea,
       scaleMode,
     } : null),
-    [scene, activeViewport, safeArea, scaleMode],
+    [scene, viewport, safeArea, scaleMode],
+  );
+  const previewViewportValue = previewViewport ?? viewport;
+  const previewLayoutCtx: LayoutContext | null = useMemo(
+    () => (scene ? {
+      designWidth: scene.designWidth,
+      designHeight: scene.designHeight,
+      viewportWidth: previewViewportValue.width,
+      viewportHeight: previewViewportValue.height,
+      safeArea,
+      scaleMode,
+    } : null),
+    [scene, previewViewportValue, safeArea, scaleMode],
+  );
+  const activeViewport = workspace === "preview" ? previewViewportValue : viewport;
+  const activeAreaTool = findArea(areaLayout, activeAreaId)?.tool;
+  const layoutCtx = workspace === "preview" ? previewLayoutCtx : editorLayoutCtx;
+  const editorResult = useMemo(
+    () => (scene && editorLayoutCtx ? new LayoutEngine().layoutScene(scene, editorLayoutCtx) : null),
+    [scene, editorLayoutCtx],
+  );
+  const previewResult = useMemo(
+    () => (scene && previewLayoutCtx ? new LayoutEngine().layoutScene(scene, previewLayoutCtx) : null),
+    [scene, previewLayoutCtx],
   );
   // 工程视口变化（新建 / 打开 / 导入）时丢弃预览视口，让它重新跟随工程。
   useEffect(() => { setPreviewViewport(null); }, [viewport]);
   const result = useMemo(
-    () => (scene && layoutCtx ? new LayoutEngine().layoutScene(scene, layoutCtx) : null),
-    [scene, layoutCtx],
+    () => workspace === "preview" ? previewResult : editorResult,
+    [editorResult, previewResult, workspace],
   );
   // 预览、下载和测试包都使用同一份资源映射，避免 JSON 与 imageset 的 frame 名不一致。
   const preparedEngineProject = useMemo(
@@ -474,43 +618,55 @@ export default function App() {
 
   // 画布尺寸（含 devicePixelRatio）与渲染
   useEffect(() => {
-    if (!result) return;
-    const ui = uiRef.current, ov = ovRef.current;
-    if (!ui || !ov || !layoutCtx) return;
+    if (!scene) return;
     const dpr = window.devicePixelRatio || 1;
-    for (const c of [ui, ov]) {
-      c.width = layoutCtx.viewportWidth * dpr;
-      c.height = layoutCtx.viewportHeight * dpr;
-      c.getContext("2d")!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (const area of areaLeaves(areaLayout)) {
+      const refs = areaRefs(area.id);
+      const areaResult = area.tool === "preview" ? previewResult : editorResult;
+      const areaCtx = area.tool === "preview" ? previewLayoutCtx : editorLayoutCtx;
+      const ui = refs.ui;
+      const ov = refs.ov;
+      if (!ui || !ov || !areaResult || !areaCtx) continue;
+      for (const canvas of [ui, ov]) {
+        canvas.width = areaCtx.viewportWidth * dpr;
+        canvas.height = areaCtx.viewportHeight * dpr;
+        canvas.getContext("2d")!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      renderUi(ui.getContext("2d")!, areaResult, scene.useNineSlicePreview ?? false);
+      const isPreview = area.tool === "preview";
+      renderOverlay(ov.getContext("2d")!, areaResult, areaCtx, {
+        selectedId: isPreview ? null : selectedId,
+        selectedIds: isPreview ? [] : selectedIds,
+        showGrid: false, showSafeArea, showDesignBorder,
+      });
     }
-    renderUi(ui.getContext("2d")!, result, scene?.useNineSlicePreview ?? false);
-    const isPreview = workspace === "preview";
-    renderOverlay(ov.getContext("2d")!, result, layoutCtx, {
-      selectedId: isPreview ? null : selectedId,
-      selectedIds: isPreview ? [] : selectedIds,
-      showGrid: false, showSafeArea, showDesignBorder,
-    });
-  }, [result, layoutCtx, workspace, selectedId, selectedIds, showSafeArea, showDesignBorder, scene?.useNineSlicePreview]);
+  }, [areaLayout, editorLayoutCtx, editorResult, previewLayoutCtx, previewResult, scene, selectedId, selectedIds, showSafeArea, showDesignBorder]);
 
   // 画布 CSS 尺寸：contain 到窗口（切回图层 tab 时重新计算）
   useEffect(() => {
     const fit = () => {
-      const wrap = workspace === "preview" ? previewWrapRef.current : wrapRef.current;
-      if (!wrap || !layoutCtx || wrap.style.display === "none") return;
-      const previewShellAllowance = workspace === "preview" && showDeviceShell ? 56 : 0;
-      const s = Math.min(
-        Math.max(1, wrap.clientWidth - previewShellAllowance) / layoutCtx.viewportWidth,
-        Math.max(1, wrap.clientHeight - previewShellAllowance) / layoutCtx.viewportHeight,
-      )
-        * (workspace === "preview" ? 0.9 : 0.72);
-      for (const c of [uiRef.current, ovRef.current]) {
-        if (c) { c.style.width = `${layoutCtx.viewportWidth * s}px`; c.style.height = `${layoutCtx.viewportHeight * s}px`; }
+      for (const area of areaLeaves(areaLayout)) {
+        const refs = areaRefs(area.id);
+        const areaCtx = area.tool === "preview" ? previewLayoutCtx : editorLayoutCtx;
+        const wrap = area.tool === "preview" ? refs.previewWrap : refs.wrap;
+        if (!wrap || !areaCtx || wrap.style.display === "none") continue;
+        const previewShellAllowance = area.tool === "preview" && showDeviceShell ? 56 : 0;
+        const s = Math.min(
+          Math.max(1, wrap.clientWidth - previewShellAllowance) / areaCtx.viewportWidth,
+          Math.max(1, wrap.clientHeight - previewShellAllowance) / areaCtx.viewportHeight,
+        ) * (area.tool === "preview" ? 0.9 : 0.72);
+        for (const canvas of [refs.ui, refs.ov]) {
+          if (canvas) {
+            canvas.style.width = `${areaCtx.viewportWidth * s}px`;
+            canvas.style.height = `${areaCtx.viewportHeight * s}px`;
+          }
+        }
       }
     };
     fit();
     window.addEventListener("resize", fit);
     return () => window.removeEventListener("resize", fit);
-  }, [layoutCtx, workspace, showDeviceShell]);
+  }, [areaLayout, editorLayoutCtx, previewLayoutCtx, showDeviceShell]);
 
   // ---- 状态变更统一入口（record=true 时压入历史）----
   const applyScene = useCallback((next: UIScene) => { sceneRef.current = next; setScene(next); }, []);
@@ -555,6 +711,9 @@ export default function App() {
     applyScene(next);
     setProjectPath(null);
     setProjectName("未命名.ui.json");
+    setAreaLayouts(createDefaultWorkspaceLayouts(workspaceIds));
+    setActiveAreaId("area-controls-canvas");
+    setWorkspace("controls");
     setAnalysis(null);
     setViewport({ width: 1280, height: 720 });
     setSafeArea({ left: 0, right: 0, top: 0, bottom: 0 });
@@ -564,6 +723,10 @@ export default function App() {
     setShowDesignBorder(false);
     setPreviewZoom(1);
     setPreviewPan({ x: 0, y: 0 });
+    setAreaCanvasZooms({});
+    setAreaCanvasPans({});
+    setAreaPreviewZooms({});
+    setAreaPreviewPans({});
     selectionAnchorRef.current = null;
     setSelectedId(null);
     setSelectedIds([]);
@@ -572,7 +735,7 @@ export default function App() {
     setRenameCaretMode("all");
     setLayerNameMode("original");
     setExportMsg("已新建空白工程");
-  }, [applyScene, dirty, resetHistory]);
+  }, [applyScene, dirty, resetHistory, workspaceIds]);
 
   const openSavedProject = useCallback(async () => {
     if (dirty && !window.confirm("当前工程有未保存修改，确定放弃并打开其他工程吗？")) return;
@@ -581,10 +744,15 @@ export default function App() {
       if (!opened) return;
       const restored = restoreSceneSnapshot(opened.project, opened.assets);
       const view = opened.project.view;
+      const restoredAreaLayouts = readWorkspaceLayouts(opened.path, projectFileName(opened.path), workspaceIds);
+      const restoredActiveArea = areaLeaves(restoredAreaLayouts.controls)[0] ?? { id: "area-controls-canvas", tool: "canvas" as AreaTool };
       resetHistory();
       applyScene(restored.scene);
       setProjectPath(opened.path);
       setProjectName(projectFileName(opened.path));
+      setAreaLayouts(restoredAreaLayouts);
+      setActiveAreaId(restoredActiveArea.id);
+      setWorkspace("controls");
       setAnalysis(opened.analysis);
       setLayerNameMode(prefersEngineeringNames(opened.analysis) ? "ai" : "original");
       setViewport(view?.viewport ?? { width: restored.scene.designWidth, height: restored.scene.designHeight });
@@ -592,6 +760,10 @@ export default function App() {
       setScaleMode(view?.scaleMode ?? "cover");
       setDeviceShell("desktop");
       setShowDeviceShell(true);
+      setAreaCanvasZooms({});
+      setAreaCanvasPans({});
+      setAreaPreviewZooms({});
+      setAreaPreviewPans({});
       setShowSafeArea(view?.showSafeArea ?? false);
       setShowDesignBorder(false);
       selectionAnchorRef.current = null;
@@ -605,7 +777,7 @@ export default function App() {
     } catch (error) {
       setExportMsg(error instanceof Error ? error.message : "打开工程失败");
     }
-  }, [applyScene, dirty, resetHistory]);
+  }, [applyScene, dirty, resetHistory, workspaceIds]);
 
   const saveCurrentProject = useCallback(async (saveAs = false) => {
     const current = sceneRef.current;
@@ -672,8 +844,15 @@ export default function App() {
       setShowDesignBorder(false);
       setPreviewZoom(1);
       setPreviewPan({ x: 0, y: 0 });
+      setAreaCanvasZooms({});
+      setAreaCanvasPans({});
+      setAreaPreviewZooms({});
+      setAreaPreviewPans({});
       setProjectPath(null);
       setProjectName(`${name.replace(/\.(psd|psb)$/i, "")}.ui.json`);
+      setAreaLayouts(createDefaultWorkspaceLayouts(workspaceIds));
+      setActiveAreaId("area-controls-canvas");
+      setWorkspace("controls");
       setLayerNameMode("original");
       const importedIds = currentScene.nodes.map((node) => node.id);
       selectionAnchorRef.current = importedIds.at(-1) ?? null;
@@ -689,7 +868,7 @@ export default function App() {
       if (importAbortRef.current === controller) importAbortRef.current = null;
       setImportProgress(null);
     }
-  }, [applyScene, dirty, resetHistory]);
+  }, [applyScene, dirty, resetHistory, workspaceIds]);
 
   const rerunAiNaming = useCallback(async () => {
     const current = sceneRef.current;
@@ -854,6 +1033,12 @@ export default function App() {
     setRenameCaretMode("all");
     setLayerNameMode("original");
     setWorkspace("controls");
+    setAreaLayouts(createDefaultWorkspaceLayouts(workspaceIds));
+    setActiveAreaId("area-controls-canvas");
+    setAreaCanvasZooms({});
+    setAreaCanvasPans({});
+    setAreaPreviewZooms({});
+    setAreaPreviewPans({});
     setShowDeviceShell(true);
     setShowDesignBorder(false);
     setSelectedId(null);
@@ -867,7 +1052,7 @@ export default function App() {
     setHistLen(0);
     setFutureLen(0);
     setExportMsg("已关闭当前工程");
-  }, [dirty]);
+  }, [dirty, workspaceIds]);
 
   const exportHtml = useCallback(async () => {
     if (!scene) return;
@@ -1209,32 +1394,80 @@ export default function App() {
     });
   }, []);
 
-  /** 资源绑定回到层级时，空选择会让属性区看起来像空工程；默认定位到根节点。 */
-  const changeWorkspace = useCallback((nextWorkspace: Workspace) => {
-    if (nextWorkspace === workspace) return;
-    if (workspace === "bindings" && nextWorkspace === "controls" && selectedIds.length === 0) {
-      const root = sceneRef.current?.nodes[0];
-      if (root) {
-        selectionAnchorRef.current = root.id;
-        setSelectedId(root.id);
-        setSelectedIds([root.id]);
-        setFocusNodeId(root.id);
-      }
+  /** 切换指定区域的工具；工程数据、节点选中状态和顶部工作区仍然共享。 */
+  const changeAreaTool = useCallback((areaId: string, nextTool: AreaTool) => {
+    const previousTool = findArea(areaLayoutRef.current, areaId)?.tool ?? "canvas";
+    if (previousTool === nextTool) {
+      activateArea(areaId);
+      return;
     }
-    if (nextWorkspace === "preview") {
-      // 预览是只读检查区，不携带编辑器的选中、重命名和类型菜单状态。
-      selectionAnchorRef.current = null;
-      setSelectedId(null);
-      setSelectedIds([]);
-      setFocusNodeId(null);
+    if (nextTool === "preview") {
+      // 预览工具是只读检查区；共享选择状态不清空，切回编辑工具仍能继续工作。
       setRenamingId(null);
       setTypeMenu(null);
       setQuickActionMenu(null);
       setPreviewZoom(1);
       setPreviewPan({ x: 0, y: 0 });
+      setAreaPreviewZooms((current) => ({ ...current, [areaId]: 1 }));
+      setAreaPreviewPans((current) => ({ ...current, [areaId]: { x: 0, y: 0 } }));
     }
+    setAreaLayout((current) => updateAreaTool(current, areaId, nextTool));
+    setActiveAreaId(areaId);
+  }, [activateArea, setAreaLayout]);
+
+  /** 顶部工作区入口切换流程，并显示该流程自己保存的区域组合。 */
+  const changeWorkspace = useCallback((nextWorkspace: Workspace) => {
+    if (nextWorkspace === workspace) return;
+    const nextLayout = areaLayouts[nextWorkspace] ?? createDefaultAreaLayout("canvas");
     setWorkspace(nextWorkspace);
-  }, [workspace, selectedIds.length]);
+    setActiveAreaId(areaLeaves(nextLayout)[0]?.id ?? "area-1");
+  }, [areaLayouts, workspace]);
+
+  const addWorkspace = useCallback(() => {
+    let index = workspaceOptions.filter((item) => !item.builtIn).length + 1;
+    let id = `custom-${index}`;
+    while (workspaceOptions.some((item) => item.value === id)) {
+      index += 1;
+      id = `custom-${index}`;
+    }
+    const label = `工作区 ${index}`;
+    setWorkspaceOptions((current) => [...current, { value: id, label, builtIn: false }]);
+    setAreaLayouts((current) => ({ ...current, [id]: createDefaultAreaLayout("canvas") }));
+    setWorkspace(id);
+    setActiveAreaId(`area-${id}-canvas`);
+    setExportMsg(`已新建${label}`);
+  }, [workspaceOptions]);
+
+  const renameWorkspace = useCallback((workspaceId: Workspace, label: string) => {
+    const nextLabel = label.trim().slice(0, 32);
+    if (!nextLabel) return;
+    setWorkspaceOptions((current) => current.map((item) => item.value === workspaceId ? { ...item, label: nextLabel } : item));
+    setExportMsg(`已将工作区重命名为「${nextLabel}」`);
+  }, []);
+
+  const splitEditorArea = useCallback((areaId: string, axis: AreaSplitAxis, ratio: number) => {
+    setAreaLayout((current) => splitArea(current, areaId, axis, ratio));
+    setExportMsg("已创建新的工具区域，可在区域工具栏中独立切换工具");
+  }, [setAreaLayout]);
+
+  const resizeEditorArea = useCallback((splitId: string, ratio: number) => {
+    setAreaLayout((current) => resizeAreaSplit(current, splitId, ratio));
+  }, [setAreaLayout]);
+
+  const joinEditorArea = useCallback((areaId: string, keep: "current" | "sibling") => {
+    const next = joinArea(areaLayoutRef.current, areaId, keep);
+    const nextActive = findArea(next, areaId) ?? areaLeaves(next)[0] ?? null;
+    setAreaLayout(next);
+    if (nextActive) {
+      setActiveAreaId(nextActive.id);
+    }
+    setExportMsg("已合并工具区域");
+  }, [setAreaLayout]);
+
+  const swapEditorAreas = useCallback((splitId: string) => {
+    setAreaLayout((current) => swapAreaSplit(current, splitId));
+    setExportMsg("已交换工具区域");
+  }, [setAreaLayout]);
 
   /** 资源绑定工作区的定位：同步选择、展开并滚动层级树，让目标节点进入明显视野。 */
   const locateNode = useCallback((id: string) => {
@@ -1514,10 +1747,6 @@ export default function App() {
   }, [workspace]);
 
   useEffect(() => {
-    setRightPanelTab(workspace === "bindings" || workspace === "preview" ? "overview" : "properties");
-  }, [workspace]);
-
-  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (importProgress) {
@@ -1556,18 +1785,22 @@ export default function App() {
           setTypeMenu(null);
           setQuickActionMenu(pointerRef.current);
         }
-        else if (e.key === "0" && workspace === "controls") {
+        else if (e.key === "0" && activeAreaTool === "canvas") {
           e.preventDefault();
           canvasPanRef.current = { x: 0, y: 0 };
           canvasPanDragRef.current = null;
           setCanvasPanning(false);
           setCanvasPan({ x: 0, y: 0 });
           setCanvasZoom(1);
+          setAreaCanvasPans((current) => ({ ...current, [activeAreaId]: { x: 0, y: 0 } }));
+          setAreaCanvasZooms((current) => ({ ...current, [activeAreaId]: 1 }));
         }
-        else if (e.key === "0" && workspace === "preview") {
+        else if (e.key === "0" && activeAreaTool === "preview") {
           e.preventDefault();
           setPreviewPan({ x: 0, y: 0 });
           setPreviewZoom(1);
+          setAreaPreviewPans((current) => ({ ...current, [activeAreaId]: { x: 0, y: 0 } }));
+          setAreaPreviewZooms((current) => ({ ...current, [activeAreaId]: 1 }));
         }
         else if (e.key === "o" || e.key === "O") { e.preventDefault(); void openSavedProject(); }
         else if (e.key === "z" || e.key === "Z") { e.preventDefault(); undo(); }
@@ -1600,40 +1833,42 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [importProgress, undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, openSavedProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject, workspace]);
+  }, [importProgress, undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, openSavedProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject, activeAreaTool]);
 
   // 命中检测 + 拖动；普通拖动只改 offset，四角拖动用于调整控件尺寸。
-  const toLogical = (clientX: number, clientY: number) => {
-    const ui = uiRef.current!;
+  const toLogical = (clientX: number, clientY: number, areaId = activeAreaId) => {
+    const ui = areaRefs(areaId).ui ?? uiRef.current;
+    if (!ui || !editorLayoutCtx) return { x: Number.NaN, y: Number.NaN };
     const r = ui.getBoundingClientRect();
-    const k = layoutCtx!.viewportWidth / r.width;
+    const k = editorLayoutCtx.viewportWidth / r.width;
     return { x: (clientX - r.left) * k, y: (clientY - r.top) * k };
   };
 
-  const onPointerDown = (e: React.PointerEvent) => {
+  const onPointerDown = (e: React.PointerEvent, areaId = activeAreaId) => {
     pointerRef.current = { x: e.clientX, y: e.clientY };
-    if (workspace !== "controls") return;
-    if (workspace === "controls" && spaceHeldRef.current && e.button === 0) {
+    if (spaceHeldRef.current && e.button === 0) {
       e.preventDefault();
       e.currentTarget.setPointerCapture(e.pointerId);
-      canvasPanDragRef.current = { x: e.clientX, y: e.clientY, panX: canvasPanRef.current.x, panY: canvasPanRef.current.y };
+      const currentPan = canvasPanFor(areaId);
+      canvasPanDragRef.current = { areaId, x: e.clientX, y: e.clientY, panX: currentPan.x, panY: currentPan.y };
       setCanvasPanning(true);
       return;
     }
-    if (!result || !layoutCtx) return;
+    if (!editorResult || !editorLayoutCtx) return;
     // 事件绑定在整个中间编辑区，而不是只有画布本体：画布居中、缩放或平移后，
     // 画布外的空白也应视为“背景点击”，用于取消选择。下面的命中检测会把
     // 画布外坐标自然判定为未命中；这里只清空选中状态，不动工程和画布视图。
-    const p = toLogical(e.clientX, e.clientY);
-    const selected = selectedId ? result.nodes.find((item) => item.node.id === selectedId) : null;
+    const p = toLogical(e.clientX, e.clientY, areaId);
+    const selected = selectedId ? editorResult.nodes.find((item) => item.node.id === selectedId) : null;
     const selectedNode = selectedId ? walkNodes(sceneRef.current?.nodes ?? []).find((node) => node.id === selectedId) : null;
-    const handleTolerance = Math.max(8, 12 / Math.max(result.scaleX, result.scaleY));
+    const handleTolerance = Math.max(8, 12 / Math.max(editorResult.scaleX, editorResult.scaleY));
     const corner = selected && selectedNode && !selectedNode.locked ? resizeCornerAt(p, selected.rect, handleTolerance) : null;
     if (corner && selected && selectedNode) {
       const parent = findParentNode(sceneRef.current?.nodes ?? [], selectedNode.id);
       pushHistory(sceneRef.current!);
       e.currentTarget.setPointerCapture(e.pointerId);
       resizeRef.current = {
+        areaId,
         id: selectedNode.id,
         corner,
         startClientX: e.clientX,
@@ -1650,7 +1885,7 @@ export default function App() {
       (e.currentTarget as HTMLElement).style.cursor = RESIZE_CURSORS[corner];
       return;
     }
-    const hit = findCanvasHit(result.nodes, p);
+    const hit = findCanvasHit(editorResult.nodes, p);
     const additive = e.ctrlKey || e.metaKey;
     const current = sceneRef.current;
     if (!hit) {
@@ -1666,24 +1901,25 @@ export default function App() {
     if (hit.node.locked) return;
     pushHistory(sceneRef.current!); // 拖动前记录一次，撤销回退整个拖动
     e.currentTarget.setPointerCapture(e.pointerId);
-    dragRef.current = { id: hit.node.id, startX: e.clientX, startY: e.clientY };
+    dragRef.current = { areaId, id: hit.node.id, startX: e.clientX, startY: e.clientY };
   };
-  const onPointerMove = (e: React.PointerEvent) => {
+  const onPointerMove = (e: React.PointerEvent, areaId = activeAreaId) => {
     const panDrag = canvasPanDragRef.current;
-    if (panDrag && workspace === "controls") {
+    if (panDrag) {
       const nextPan = { x: panDrag.panX + e.clientX - panDrag.x, y: panDrag.panY + e.clientY - panDrag.y };
       canvasPanRef.current = nextPan;
       setCanvasPan(nextPan);
+      setAreaCanvasPans((current) => ({ ...current, [panDrag.areaId]: nextPan }));
       (e.currentTarget as HTMLElement).style.cursor = "grabbing";
       return;
     }
     const resize = resizeRef.current;
-    if (resize && layoutCtx && result) {
-      const canvas = uiRef.current;
+    if (resize && editorLayoutCtx && editorResult) {
+      const canvas = areaRefs(resize.areaId).ui ?? uiRef.current;
       if (!canvas) return;
       const canvasRect = canvas.getBoundingClientRect();
-      const unitX = layoutCtx.viewportWidth / canvasRect.width / (result.scaleX || 1);
-      const unitY = layoutCtx.viewportHeight / canvasRect.height / (result.scaleY || 1);
+       const unitX = editorLayoutCtx.viewportWidth / canvasRect.width / (editorResult.scaleX || 1);
+       const unitY = editorLayoutCtx.viewportHeight / canvasRect.height / (editorResult.scaleY || 1);
       const dx = (e.clientX - resize.startClientX) * unitX;
       const dy = (e.clientY - resize.startClientY) * unitY;
       const left = resize.corner === "nw" || resize.corner === "sw";
@@ -1713,20 +1949,23 @@ export default function App() {
       return;
     }
     const d = dragRef.current;
-    if (!d || !layoutCtx || !result) {
-      const selected = selectedId ? result?.nodes.find((item) => item.node.id === selectedId) : null;
-      const tolerance = result ? Math.max(8, 12 / Math.max(result.scaleX, result.scaleY)) : 8;
-      const corner = selected ? resizeCornerAt(toLogical(e.clientX, e.clientY), selected.rect, tolerance) : null;
+    if (!d || !editorLayoutCtx || !editorResult) {
+      const selected = selectedId ? editorResult?.nodes.find((item) => item.node.id === selectedId) : null;
+      const tolerance = editorResult ? Math.max(8, 12 / Math.max(editorResult.scaleX, editorResult.scaleY)) : 8;
+      const corner = selected ? resizeCornerAt(toLogical(e.clientX, e.clientY, areaId), selected.rect, tolerance) : null;
       (e.currentTarget as HTMLElement).style.cursor = corner ? RESIZE_CURSORS[corner] : "";
       return;
     }
-    const start = { x: (d.startX - (uiRef.current!.getBoundingClientRect().left)) * (layoutCtx.viewportWidth / uiRef.current!.getBoundingClientRect().width), y: (d.startY - uiRef.current!.getBoundingClientRect().top) * (layoutCtx.viewportHeight / uiRef.current!.getBoundingClientRect().height) };
-    const p = toLogical(e.clientX, e.clientY);
+    const dragCanvas = areaRefs(d.areaId).ui ?? uiRef.current;
+    if (!dragCanvas) return;
+    const dragRect = dragCanvas.getBoundingClientRect();
+     const start = { x: (d.startX - dragRect.left) * (editorLayoutCtx.viewportWidth / dragRect.width), y: (d.startY - dragRect.top) * (editorLayoutCtx.viewportHeight / dragRect.height) };
+    const p = toLogical(e.clientX, e.clientY, d.areaId);
     const dx = p.x - start.x, dy = p.y - start.y;
     updateNode(d.id, (n) => {
       if (n.adaptation.mode !== "anchor") n.adaptation.mode = "anchor"; // 拖动 → 锚点模式
-      n.anchor.offsetX += dx / result.scaleX;   // 预览位移 → 设计 offset（÷scale 等比）
-      n.anchor.offsetY += dy / result.scaleY;
+       n.anchor.offsetX += dx / editorResult.scaleX;   // 预览位移 → 设计 offset（÷scale 等比）
+       n.anchor.offsetY += dy / editorResult.scaleY;
     }, false); // 拖动中不记录（按下时已记录一次）
     dragRef.current = { ...d, startX: e.clientX, startY: e.clientY };
   };
@@ -1741,14 +1980,16 @@ export default function App() {
     setCanvasPanning(false);
     if (e) (e.currentTarget as HTMLElement).style.cursor = "";
   };
-  const onCanvasWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (workspace !== "controls" || !e.ctrlKey || !uiRef.current) return;
+  const onCanvasWheel = (e: React.WheelEvent<HTMLDivElement>, areaId = activeAreaId) => {
+    if (!e.ctrlKey) return;
     e.preventDefault();
-    const currentZoom = canvasZoom;
+    const canvas = areaRefs(areaId).ui ?? uiRef.current;
+    if (!canvas) return;
+    const currentZoom = canvasZoomFor(areaId);
     const nextZoom = clampCanvasZoom(currentZoom * (e.deltaY < 0 ? 1.1 : 0.9));
     if (nextZoom === currentZoom) return;
-    const rect = uiRef.current.getBoundingClientRect();
-    const currentPan = canvasPanRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const currentPan = canvasPanFor(areaId);
     const transformedCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
     const center = { x: transformedCenter.x - currentPan.x, y: transformedCenter.y - currentPan.y };
     const nextPan = panForZoomAtPoint(currentPan, currentZoom, nextZoom,
@@ -1756,23 +1997,39 @@ export default function App() {
     canvasPanRef.current = nextPan;
     setCanvasPan(nextPan);
     setCanvasZoom(nextZoom);
+    setAreaCanvasPans((current) => ({ ...current, [areaId]: nextPan }));
+    setAreaCanvasZooms((current) => ({ ...current, [areaId]: nextZoom }));
   };
-  const adjustCanvasZoom = (direction: 1 | -1) => {
-    setCanvasZoom((currentZoom) => clampCanvasZoom(currentZoom * (direction > 0 ? 1.1 : 0.9)));
+  const adjustCanvasZoom = (direction: 1 | -1, areaId = activeAreaId) => {
+    setAreaCanvasZooms((current) => {
+      const nextZoom = clampCanvasZoom((current[areaId] ?? 1) * (direction > 0 ? 1.1 : 0.9));
+      if (areaId === activeAreaId) setCanvasZoom(nextZoom);
+      return { ...current, [areaId]: nextZoom };
+    });
   };
-  const onPreviewWheel = (e: React.WheelEvent) => {
+  const adjustPreviewZoom = (direction: 1 | -1, areaId = activeAreaId) => {
+    setAreaPreviewZooms((current) => {
+      const nextZoom = Math.max(0.4, Math.min(3, (current[areaId] ?? 1) * (direction > 0 ? 1.1 : 0.9)));
+      if (areaId === activeAreaId) setPreviewZoom(nextZoom);
+      return { ...current, [areaId]: nextZoom };
+    });
+  };
+  const onPreviewWheel = (e: React.WheelEvent, areaId = activeAreaId) => {
     e.preventDefault();
-    setPreviewZoom((value) => Math.max(0.4, Math.min(3, value * (e.deltaY < 0 ? 1.1 : 0.9))));
+    adjustPreviewZoom(e.deltaY < 0 ? 1 : -1, areaId);
   };
-  const onPreviewPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  const onPreviewPointerDown = (e: React.PointerEvent<HTMLDivElement>, areaId = activeAreaId) => {
     if (e.button !== 0) return;
     e.currentTarget.setPointerCapture(e.pointerId);
-    previewDragRef.current = { x: e.clientX, y: e.clientY, panX: previewPan.x, panY: previewPan.y };
+    const currentPan = previewPanFor(areaId);
+    previewDragRef.current = { areaId, x: e.clientX, y: e.clientY, panX: currentPan.x, panY: currentPan.y };
   };
   const onPreviewPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const drag = previewDragRef.current;
     if (!drag) return;
-    setPreviewPan({ x: drag.panX + e.clientX - drag.x, y: drag.panY + e.clientY - drag.y });
+    const nextPan = { x: drag.panX + e.clientX - drag.x, y: drag.panY + e.clientY - drag.y };
+    setPreviewPan(nextPan);
+    setAreaPreviewPans((current) => ({ ...current, [drag.areaId]: nextPan }));
   };
   const onPreviewPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
@@ -1781,19 +2038,180 @@ export default function App() {
   const pieNode = typeMenu && selectedId
     ? walkNodes(scene?.nodes ?? []).find((node) => node.id === selectedId) ?? null
     : null;
-  const canvasStack = scene ? (
-    <div className={`canvas-stack${workspace === "controls" ? " editor-canvas-stack" : ""}${spaceHeld && workspace === "controls" ? " space-ready" : ""}${canvasPanning && workspace === "controls" ? " is-panning" : ""}`}
-      style={workspace === "controls" ? { transform: `translate(${canvasPan.x}px, ${canvasPan.y}px) scale(${canvasZoom})` } : undefined}>
-      <canvas ref={uiRef} />
-      <canvas ref={ovRef} style={{ pointerEvents: "none" }} />
+  const canvasStack = (areaId: string, tool: AreaTool) => scene && (tool === "canvas" || tool === "preview") ? (
+    <div className={`canvas-stack${tool === "canvas" ? " editor-canvas-stack" : ""}${spaceHeld && tool === "canvas" ? " space-ready" : ""}${canvasPanning && tool === "canvas" ? " is-panning" : ""}`}
+      style={tool === "canvas" ? { transform: `translate(${canvasPanFor(areaId).x}px, ${canvasPanFor(areaId).y}px) scale(${canvasZoomFor(areaId)})` } : undefined}>
+      <canvas ref={(value) => setAreaCanvasRef(areaId, "ui", value)} />
+      <canvas ref={(value) => setAreaCanvasRef(areaId, "ov", value)} style={{ pointerEvents: "none" }} />
     </div>
   ) : null;
-  const previewCanvas = scene ? (
+  const previewCanvas = (areaId: string) => scene ? (
     <PreviewDeviceFrame deviceShell={deviceShell} showDeviceShell={showDeviceShell}
       portrait={scene.designHeight > scene.designWidth}>
-      {canvasStack}
+      {canvasStack(areaId, "preview")}
     </PreviewDeviceFrame>
   ) : null;
+
+  const renderArea = (area: AreaLeaf) => {
+    const tool = area.tool;
+    const areaCtx = tool === "preview" ? previewLayoutCtx : editorLayoutCtx;
+    const areaResult = tool === "preview" ? previewResult : editorResult;
+    const exportAreaTarget = areaExportTargets[area.id] ?? exportTarget;
+    const setExportAreaTarget = (target: ExportTarget) => {
+      setAreaExportTargets((current) => ({ ...current, [area.id]: target }));
+      if (area.id === activeAreaId) setExportTarget(target);
+    };
+    const exportDetails = exportAreaTarget === "engine" ? (
+          <section className="export-panel">
+            <div className="export-panel-card">
+              <span className="export-kicker">FINAL OUTPUT</span>
+              <h2>导出自研引擎 JSON</h2>
+              <p>当前工程会转换为 <code>Dialog → Window</code> 结构。位置、尺寸使用当前视觉结果，图片统一进入引擎可识别的 imageset，字体统一映射为引擎预设。</p>
+              <div className={`export-check ${engineExport?.errors.length ? "has-errors" : "ready"}`}>
+                <strong>{engineExport?.errors.length ? "暂不能导出" : "可以导出"}</strong>
+                <span>{engineExport?.errors.length ? `发现 ${engineExport.errors.length} 个错误` : "基础字段校验通过"}</span>
+              </div>
+              {engineExport?.errors.length ? <div className="export-diagnostics error">{engineExport.errors.map((item) => <div key={item}>✕ {item}</div>)}</div> : null}
+              {engineExport?.warnings.length ? <div className="export-diagnostics">{engineExport.warnings.map((item) => <div key={item}>⚠ {item}</div>)}</div> : null}
+              <div className="engine-export-path">
+                <label htmlFor={`engine-output-path-${area.id}`}>引擎测试包输出目录</label>
+                <input id={`engine-output-path-${area.id}`} type="text" value={engineOutputPath}
+                  onChange={(event) => setEngineOutputPath(event.target.value)}
+                  placeholder="例如：C:\\Users\\你的用户名\\Desktop\\ui-engine-output" />
+                <p>填写本机目录。生成后会创建 <code>res/layout</code> 和 <code>res/imageset</code>；再将它们复制到引擎已登记的资源目录，用“引擎 UIEditor”打开。这里不是引擎源码路径，也不会修改真实引擎工程。</p>
+                <p className="export-note">图集优化：仅场景级氛围背景会生成 50% 尺寸的导出副本；引擎 JSON 仍按原设计范围显示，视觉尺寸不变。控件底图和普通图片不受影响。</p>
+              </div>
+              <div className="export-actions">
+                <button className="btn primary export-action" disabled={!engineExport || engineExport.errors.length > 0 || !engineOutputPath.trim()}
+                  onClick={() => { void exportEnginePackage(); }}>生成引擎测试包</button>
+                <button className="btn export-action" disabled={!engineExport || engineExport.errors.length > 0}
+                  onClick={exportEngineJson}>下载最终 JSON</button>
+              </div>
+              <details className="export-preview">
+                <summary>查看 JSON 预览</summary>
+            <pre>{engineExport?.json ?? ""}</pre>
+              </details>
+            </div>
+          </section>
+        ) : (
+          <section className="export-panel export-target-placeholder">
+            <div className="export-target-placeholder-card">
+              <span className="export-kicker">TARGET ADAPTER</span>
+              <h2>{exportAreaTarget === "figma" ? "Figma" : exportAreaTarget === "godot" ? "Godot" : "Unity"}</h2>
+              <p>这个目标格式的转换器尚未接入。当前工程数据已经与 PSD 解耦，后续可以在这里增加对应的导出规则。</p>
+              <span className="export-target-placeholder-badge">计划支持 · 暂不导出</span>
+            </div>
+          </section>
+        );
+    let toolContent: React.ReactNode;
+    if (tool === "layers") {
+      toolContent = <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
+        nameMode={layerNameMode} warningIds={warningIds} renamingId={renamingId} renameCaretMode={renameCaretMode}
+        onRename={commitRename} onCancelRename={() => setRenamingId(null)}
+        onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
+        onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })} />;
+    } else if (tool === "canvas") {
+      toolContent = <section className="editor-workspace">
+        <div className={`canvas-wrap editor-canvas-viewport${spaceHeld ? " space-ready" : ""}${canvasPanning ? " is-panning" : ""}`} ref={(value) => setAreaCanvasRef(area.id, "wrap", value)}
+          onPointerDown={(event) => onPointerDown(event, area.id)} onPointerMove={(event) => onPointerMove(event, area.id)} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onWheel={(event) => onCanvasWheel(event, area.id)}
+          onDoubleClick={() => { if (!scene && !importProgress) void openSavedProject(); }}>
+          {canvasStack(area.id, "canvas")}
+        </div>
+      </section>;
+    } else if (tool === "properties") {
+      toolContent = <aside className="right-panel area-tool-panel">
+        <Inspector
+          node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
+          rect={areaResult?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
+          parentDesignSize={(() => {
+            const selected = selectedId ? findNodeIncludingResources(scene?.nodes ?? [], selectedId) : null;
+            const parent = selected ? findParentNode(scene?.nodes ?? [], selected.id) : null;
+            return { width: parent?.designRect.width ?? scene?.designWidth ?? 1280, height: parent?.designRect.height ?? scene?.designHeight ?? 720 };
+          })()}
+          onUpdate={updateSelected} onSetCtrl={setCtrl}
+          onReanchor={(a) => updateSelected((n) => {
+            const r = areaResult?.nodes.find((x) => x.node.id === n.id)?.rect;
+            if (r && areaCtx) reanchor(n, scene!.designWidth, scene!.designHeight, r, areaCtx, areaResult!, a);
+          })}
+          templates={scene?.interactionTemplates ?? []} onTemplates={setTemplates} onUnbindResource={unbindResource} />
+      </aside>;
+    } else if (tool === "overview") {
+      const overviewProps = {
+        result: areaResult,
+        nodes: scene?.nodes ?? [],
+        viewport: { width: areaCtx?.viewportWidth ?? viewport.width, height: areaCtx?.viewportHeight ?? viewport.height },
+      };
+      toolContent = workspace === "slice"
+        ? <NineSliceOverviewTool {...overviewProps} />
+        : <SceneOverview {...overviewProps} selectedId={selectedId} onLocate={locateNode} useNineSlice={scene?.useNineSlicePreview} />;
+    } else if (tool === "bindings") {
+      toolContent = <ResourceBindingWorkspace nodes={scene?.nodes ?? []} layout={areaResult}
+        viewport={{ width: areaCtx?.viewportWidth ?? viewport.width, height: areaCtx?.viewportHeight ?? viewport.height }}
+        selectedIds={selectedIds}
+        onSelectImage={(id, event) => selectNode(id, createSelectionIntent(event, flattenLayerIds(scene?.nodes ?? [])))}
+        onLocate={locateNode} onBind={bindResources} onUnbind={unbindResource} onResetComplete={resetBindingComplete} />;
+    } else if (tool === "slice") {
+      toolContent = <NineSliceWorkspace scene={scene ?? { designWidth: 1280, designHeight: 720, nodes: [] }} layout={areaResult}
+        viewport={{ width: areaCtx?.viewportWidth ?? viewport.width, height: areaCtx?.viewportHeight ?? viewport.height }}
+        onScan={scanNineSlice} onConfirm={confirmNineSlice} onSkip={skipNineSlice} />;
+    } else if (tool === "slice-candidates") {
+      toolContent = <NineSliceCandidatesTool />;
+    } else if (tool === "slice-marker") {
+      toolContent = <NineSliceMarkerTool />;
+    } else if (tool === "preview") {
+      toolContent = <section className="preview-workspace">
+        <div className="preview-canvas-wrap preview-workspace-canvas" ref={(value) => setAreaCanvasRef(area.id, "previewWrap", value)} onWheel={(event) => onPreviewWheel(event, area.id)}
+          onPointerDown={(event) => onPreviewPointerDown(event, area.id)} onPointerMove={onPreviewPointerMove} onPointerUp={onPreviewPointerUp} onPointerCancel={onPreviewPointerUp}>
+          <div className="preview-canvas-transform" style={{ transform: `translate(${previewPanFor(area.id).x}px, ${previewPanFor(area.id).y}px) scale(${previewZoomFor(area.id)})` }}>
+            {previewCanvas(area.id)}
+          </div>
+        </div>
+        <footer className="preview-workspace-foot">
+          <span>预览视口：{areaCtx?.viewportWidth ?? viewport.width} × {areaCtx?.viewportHeight ?? viewport.height}</span>
+          <span className="preview-zoom-value">{Math.round(previewZoomFor(area.id) * 100)}%</span>
+          <button className="btn" onClick={() => adjustPreviewZoom(-1, area.id)} aria-label="缩小预览">−</button>
+          <button className="btn" onClick={() => { setAreaPreviewZooms((current) => ({ ...current, [area.id]: 1 })); setAreaPreviewPans((current) => ({ ...current, [area.id]: { x: 0, y: 0 } })); }}>居中</button>
+          <button className="btn" onClick={() => adjustPreviewZoom(1, area.id)} aria-label="放大预览">＋</button>
+        </footer>
+      </section>;
+    } else if (tool === "export-targets") {
+      toolContent = <section className="export-combined-workspace">
+        <ExportTargetPanel target={exportAreaTarget} onTarget={setExportAreaTarget} />
+        {exportDetails}
+      </section>;
+    }
+
+    let toolbarActions: React.ReactNode = null;
+    if (tool === "layers") {
+      toolbarActions = <>
+        <button className="btn tool-button" disabled={!scene} onClick={() => { setLayerNameMode((current) => current === "original" ? "ai" : "original"); if (layerNameMode === "original") setRenamingId(null); }}
+          title={layerNameMode === "original" ? "切换到工程名称" : "切换到 PSD 原名"}>
+          {layerNameMode === "original" ? "PSD 原名" : "工程名称"}
+        </button>
+        <button className="btn tool-button" disabled={!scene} onClick={() => { void rerunAiNaming(); }} title="调用 AI 为节点和图片资源统一命名">AI 命名</button>
+        <button className="btn tool-button" disabled={!scene} onClick={() => {
+          if (!selectedId || selectedIds.length !== 1) { setExportMsg("请先选中一个节点，再进行类型转换"); return; }
+          setTypeMenu(pointerRef.current);
+        }} title="打开控件类型选择菜单（T）">类型转换</button>
+        <FontPickerControl hasScene={!!scene} onFont={applyGlobalFont} />
+      </>;
+    } else if (tool === "canvas" && scene) {
+      toolbarActions = <CanvasZoomControl zoom={canvasZoomFor(area.id)} onAdjust={(direction) => adjustCanvasZoom(direction, area.id)} />;
+    } else if (tool === "preview") {
+      toolbarActions = <PreviewToolActions
+        hasScene={!!scene} viewport={activeViewport} onViewport={setPreviewViewport}
+        safeArea={safeArea} onSafeArea={setSafeArea} scaleMode={scaleMode} onScaleMode={setScaleMode}
+        showSafeArea={showSafeArea} designWidth={scene?.designWidth ?? 1280} designHeight={scene?.designHeight ?? 720}
+        deviceShell={deviceShell} onDeviceShell={setDeviceShell} showDeviceShell={showDeviceShell}
+        onToggleDeviceShell={() => setShowDeviceShell((value) => !value)}
+        useNineSlicePreview={scene?.useNineSlicePreview ?? false} onToggleNineSlicePreview={toggleNineSlicePreview} />;
+    }
+
+    return <div className={`area-instance area-tool-${tool}`}>
+      <WorkspaceAreaToolbar tool={tool} onTool={(next) => changeAreaTool(area.id, next)}>{toolbarActions}</WorkspaceAreaToolbar>
+      <div className="area-inner-body">{toolContent}</div>
+    </div>;
+  };
 
   return (
     <div className={`app${reduceMotion ? " reduce-motion" : ""}`} style={{ "--ui-scale": uiScale } as CSSProperties} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { void handleDrop(event); }}>
@@ -1811,7 +2229,8 @@ export default function App() {
           setTypeMenu(pointerRef.current);
         }}
         useNineSlicePreview={scene?.useNineSlicePreview ?? false} onToggleNineSlicePreview={toggleNineSlicePreview}
-        workspace={workspace} onWorkspace={changeWorkspace} onCloseProject={closeProject}
+        workspace={workspace} workspaces={workspaceOptions} onWorkspace={changeWorkspace}
+        onAddWorkspace={addWorkspace} onRenameWorkspace={renameWorkspace} onCloseProject={closeProject}
         onRename={beginRenameSelected} onGroup={groupSelected} onUngroup={ungroupSelected}
         onMoveLayer={moveSelectedLayer} onShowShortcuts={() => setHelpDialog("shortcuts")}
         onShowAbout={() => setHelpDialog("about")}
@@ -1826,144 +2245,14 @@ export default function App() {
           showDeviceShell, onToggleDeviceShell: () => setShowDeviceShell((value) => !value),
         }}
       />
-      <div className={`body${workspace === "export" ? " export-body" : ""}`}>
-        {workspace === "export" ? <ExportTargetPanel target={exportTarget} onTarget={setExportTarget} /> : workspace !== "slice" && workspace !== "preview" && <ControlsPanel nodes={scene?.nodes ?? []} selectedIds={selectedIds} onSelect={selectNode} focusNodeId={focusNodeId}
-          nameMode={layerNameMode}
-          warningIds={warningIds}
-          renamingId={renamingId} renameCaretMode={renameCaretMode}
-          onRename={commitRename} onCancelRename={() => setRenamingId(null)}
-          onToggleVisible={(id) => updateNode(id, (n) => { n.visible = !n.visible; })}
-          onToggleLock={(id) => updateNode(id, (n) => { n.locked = !n.locked; })}
-        />}
-        {workspace === "export" ? exportTarget === "engine" ? (
-          <section className="export-panel">
-            <div className="export-panel-card">
-              <span className="export-kicker">FINAL OUTPUT</span>
-              <h2>导出自研引擎 JSON</h2>
-              <p>当前工程会转换为 <code>Dialog → Window</code> 结构。位置、尺寸使用当前视觉结果，图片统一进入引擎可识别的 imageset，字体统一映射为引擎预设。</p>
-              <div className={`export-check ${engineExport?.errors.length ? "has-errors" : "ready"}`}>
-                <strong>{engineExport?.errors.length ? "暂不能导出" : "可以导出"}</strong>
-                <span>{engineExport?.errors.length ? `发现 ${engineExport.errors.length} 个错误` : "基础字段校验通过"}</span>
-              </div>
-              {engineExport?.errors.length ? <div className="export-diagnostics error">{engineExport.errors.map((item) => <div key={item}>✕ {item}</div>)}</div> : null}
-              {engineExport?.warnings.length ? <div className="export-diagnostics">{engineExport.warnings.map((item) => <div key={item}>⚠ {item}</div>)}</div> : null}
-              <div className="engine-export-path">
-                <label htmlFor="engine-output-path">引擎测试包输出目录</label>
-                <input id="engine-output-path" type="text" value={engineOutputPath}
-                  onChange={(event) => setEngineOutputPath(event.target.value)}
-                  placeholder="例如：C:\\Users\\你的用户名\\Desktop\\ui-engine-output" />
-                <p>填写本机目录。生成后会创建 <code>res/layout</code> 和 <code>res/imageset</code>；再将它们复制到引擎已登记的资源目录，用“引擎 UIEditor”打开。这里不是引擎源码路径，也不会修改真实引擎工程。</p>
-                <p className="export-note">图集优化：仅场景级氛围背景会生成 50% 尺寸的导出副本；引擎 JSON 仍按原设计范围显示，视觉尺寸不变。控件底图和普通图片不受影响。</p>
-              </div>
-              <div className="export-actions">
-                <button className="btn primary export-action" disabled={!engineExport || engineExport.errors.length > 0 || !engineOutputPath.trim()}
-                  onClick={() => { void exportEnginePackage(); }}>生成引擎测试包</button>
-                <button className="btn export-action" disabled={!engineExport || engineExport.errors.length > 0}
-                  onClick={exportEngineJson}>下载最终 JSON</button>
-              </div>
-              <details className="export-preview">
-                <summary>查看 JSON 预览</summary>
-                <pre>{engineExport?.json ?? ""}</pre>
-              </details>
-            </div>
-          </section>
-        ) : (
-          <section className="export-panel export-target-placeholder">
-            <div className="export-target-placeholder-card">
-              <span className="export-kicker">TARGET ADAPTER</span>
-              <h2>{exportTarget === "figma" ? "Figma" : exportTarget === "godot" ? "Godot" : "Unity"}</h2>
-              <p>这个目标格式的转换器尚未接入。当前工程数据已经与 PSD 解耦，后续可以在这里增加对应的导出规则。</p>
-              <span className="export-target-placeholder-badge">计划支持 · 暂不导出</span>
-            </div>
-          </section>
-        ) : workspace === "bindings" ? (
-          <ResourceBindingWorkspace
-            nodes={scene?.nodes ?? []}
-            layout={result}
-            viewport={{ width: layoutCtx?.viewportWidth ?? viewport.width, height: layoutCtx?.viewportHeight ?? viewport.height }}
-            selectedIds={selectedIds}
-            onSelectImage={(id, event) => selectNode(id, createSelectionIntent(event, flattenLayerIds(scene?.nodes ?? [])))}
-            onLocate={locateNode}
-            onBind={bindResources}
-            onUnbind={unbindResource}
-            onResetComplete={resetBindingComplete}
-          />
-        ) : workspace === "slice" ? (
-          <NineSliceWorkspace scene={scene ?? { designWidth: 1280, designHeight: 720, nodes: [] }}
-            layout={result}
-            viewport={{ width: layoutCtx?.viewportWidth ?? viewport.width, height: layoutCtx?.viewportHeight ?? viewport.height }}
-            onScan={scanNineSlice}
-            onConfirm={confirmNineSlice}
-            onSkip={skipNineSlice}
-          />
-        ) : workspace === "preview" ? (
-          <section className="preview-workspace">
-            <div className="preview-canvas-wrap preview-workspace-canvas" ref={previewWrapRef} onWheel={onPreviewWheel}
-              onPointerDown={onPreviewPointerDown} onPointerMove={onPreviewPointerMove} onPointerUp={onPreviewPointerUp} onPointerCancel={onPreviewPointerUp}>
-              <div className="preview-canvas-transform" style={{ transform: `translate(${previewPan.x}px, ${previewPan.y}px) scale(${previewZoom})` }}>
-                {previewCanvas}
-              </div>
-            </div>
-            <footer className="preview-workspace-foot">
-              <span>预览视口：{activeViewport.width} × {activeViewport.height}</span>
-              <span className="preview-zoom-value">{Math.round(previewZoom * 100)}%</span>
-              <button className="btn" onClick={() => setPreviewZoom((value) => Math.max(0.4, Math.min(3, value * 0.9)))} aria-label="缩小预览">−</button>
-              <button className="btn" onClick={() => { setPreviewZoom(1); setPreviewPan({ x: 0, y: 0 }); }}>居中</button>
-              <button className="btn" onClick={() => setPreviewZoom((value) => Math.max(0.4, Math.min(3, value * 1.1)))} aria-label="放大预览">＋</button>
-            </footer>
-          </section>
-        ) : (
-          <section className="editor-workspace">
-            <div className={`canvas-wrap editor-canvas-viewport${spaceHeld ? " space-ready" : ""}${canvasPanning ? " is-panning" : ""}`} ref={wrapRef}
-              onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onWheel={onCanvasWheel}
-              onDoubleClick={() => { if (!scene && !importProgress) void openSavedProject(); }}>
-              {canvasStack}
-            </div>
-            <div className="canvas-workspace-footer">
-              {scene && (
-                <span className="canvas-zoom-controls" aria-label="画布缩放">
-                  <button type="button" className="status-zoom-btn" onClick={() => adjustCanvasZoom(-1)} aria-label="缩小画布">−</button>
-                  <span className="canvas-zoom-value" title="Ctrl+0 恢复最佳窗口预览大小">{Math.round(canvasZoom * 100)}%</span>
-                  <button type="button" className="status-zoom-btn" onClick={() => adjustCanvasZoom(1)} aria-label="放大画布">＋</button>
-                </span>
-              )}
-            </div>
-          </section>
-        )}
-        {workspace === "export" || workspace === "slice" || workspace === "preview" ? null : (
-          <aside className="right-panel" style={{ width: rightPanelWidth, minWidth: rightPanelWidth }}>
-            <div className="right-panel-resizer" onPointerDown={startRightPanelResize} title="拖动调整右侧面板宽度" />
-            <nav className="right-panel-tabs" aria-label="右侧面板">
-              <button className={rightPanelTab === "properties" ? "on" : ""} onClick={() => setRightPanelTab("properties")}>属性</button>
-              <button className={rightPanelTab === "overview" ? "on" : ""} onClick={() => setRightPanelTab("overview")}>场景总览</button>
-            </nav>
-            {rightPanelTab === "overview" ? <SceneOverview
-              result={result}
-              nodes={scene?.nodes ?? []}
-              viewport={{ width: layoutCtx?.viewportWidth ?? viewport.width, height: layoutCtx?.viewportHeight ?? viewport.height }}
-              selectedId={selectedId}
-              onLocate={locateNode}
-              useNineSlice={scene?.useNineSlicePreview}
-            /> : <Inspector
-              node={walkNodes(scene?.nodes ?? []).find((n) => n.id === selectedId) ?? null}
-              rect={result?.nodes.find((n) => n.node.id === selectedId)?.rect ?? null}
-              parentDesignSize={(() => {
-                const selected = selectedId ? findNodeIncludingResources(scene?.nodes ?? [], selectedId) : null;
-                const parent = selected ? findParentNode(scene?.nodes ?? [], selected.id) : null;
-                return { width: parent?.designRect.width ?? scene?.designWidth ?? 1280, height: parent?.designRect.height ?? scene?.designHeight ?? 720 };
-              })()}
-              onUpdate={updateSelected}
-              onSetCtrl={setCtrl}
-              onReanchor={(a) => updateSelected((n) => {
-                const r = result?.nodes.find((x) => x.node.id === n.id)?.rect;
-                if (r && layoutCtx) reanchor(n, scene!.designWidth, scene!.designHeight, r, layoutCtx, result!, a);
-              })}
-              templates={scene?.interactionTemplates ?? []}
-              onTemplates={setTemplates}
-              onUnbindResource={unbindResource}
-            />}
-          </aside>
-        )}
+      <div className="body area-layout-body">
+        <NineSliceWorkspaceProvider scene={scene} layout={editorResult}
+          viewport={{ width: editorLayoutCtx?.viewportWidth ?? viewport.width, height: editorLayoutCtx?.viewportHeight ?? viewport.height }}
+          onScan={scanNineSlice} onConfirm={confirmNineSlice} onSkip={skipNineSlice}>
+          <AreaLayout layout={areaLayout} activeAreaId={activeAreaId} onActivate={activateArea}
+            onTool={changeAreaTool} onSplit={splitEditorArea} onResize={resizeEditorArea}
+            onJoin={joinEditorArea} onSwap={swapEditorAreas} renderArea={renderArea} />
+        </NineSliceWorkspaceProvider>
       </div>
       {quickActionMenu && (
         <QuickActionMenu

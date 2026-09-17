@@ -66,18 +66,9 @@ export default function SceneOverview(p: Props) {
 
   return (
     <section className="scene-overview" aria-label="场景总览">
-      <div className="scene-overview-head">
-        <div>
-          <span className="overview-kicker">MAP</span>
-          <h3>场景总览</h3>
-        </div>
-        <span>{p.viewport.width} × {p.viewport.height}</span>
-      </div>
       <button className="scene-overview-canvas" onClick={locateFromPoint} title="点击画布或红框定位节点">
         <canvas ref={canvasRef} aria-label="场景缩略图" />
-        {!p.result && <span>打开工程后显示</span>}
       </button>
-      <p className="scene-overview-hint">红框是当前节点范围 · 点击任意位置定位</p>
     </section>
   );
 }

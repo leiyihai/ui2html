@@ -1,12 +1,12 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import type { Workspace } from "./WorkspaceTabs";
+import { WORKFLOW_OPTIONS, type Workspace } from "./WorkspaceTabs";
 import MenuBar, { VIEW_AUXILIARY_ITEMS } from "./MenuBar";
 
 const props = {
   projectName: "示例.ui.json", dirty: false,
-  hasScene: true, canUndo: true, canRedo: false, workspace: "controls" as Workspace,
-  onWorkspace: vi.fn(), onNew: vi.fn(), onOpenProject: vi.fn(), onImportPsd: vi.fn(), onImportImages: vi.fn(),
+  hasScene: true, canUndo: true, canRedo: false, workspace: "controls" as Workspace, workspaces: WORKFLOW_OPTIONS,
+  onWorkspace: vi.fn(), onAddWorkspace: vi.fn(), onRenameWorkspace: vi.fn(), onNew: vi.fn(), onOpenProject: vi.fn(), onImportPsd: vi.fn(), onImportImages: vi.fn(),
   onSave: vi.fn(), onSaveAs: vi.fn(), onCloseProject: vi.fn(), onUndo: vi.fn(), onRedo: vi.fn(),
   onRename: vi.fn(), onGroup: vi.fn(), onUngroup: vi.fn(), onMoveLayer: vi.fn(),
   onShowShortcuts: vi.fn(), onShowAbout: vi.fn(), onExportHtml: vi.fn(), onExportEngineJson: vi.fn(),

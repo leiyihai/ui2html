@@ -10,7 +10,7 @@ const props = {
   onExportHtml: vi.fn(), onExportEngineJson: vi.fn(), onGlobalFont: vi.fn(),
   nameMode: "original" as const, onNameModeChange: vi.fn(), onAiRename: vi.fn(), onTypeConvert: vi.fn(),
   useNineSlicePreview: false, onToggleNineSlicePreview: vi.fn(), workspace: "controls" as const,
-  onWorkspace: vi.fn(), onCloseProject: vi.fn(), onRename: vi.fn(), onGroup: vi.fn(), onUngroup: vi.fn(),
+  workspaces: [{ value: "controls", label: "层级", builtIn: true }], onWorkspace: vi.fn(), onAddWorkspace: vi.fn(), onRenameWorkspace: vi.fn(), onCloseProject: vi.fn(), onRename: vi.fn(), onGroup: vi.fn(), onUngroup: vi.fn(),
   onMoveLayer: vi.fn(), onShowShortcuts: vi.fn(), onShowAbout: vi.fn(),
   showSafeArea: false, onToggleSafeArea: vi.fn(), showDesignBorder: false, onToggleDesignBorder: vi.fn(),
   preview: {
@@ -23,29 +23,23 @@ const props = {
 };
 
 describe("Appbar", () => {
-  it("keeps the font picker next to type conversion and omits redundant top-level actions", () => {
+  it("keeps the top chrome focused on application menus", () => {
     const html = renderToStaticMarkup(<Appbar {...props} />);
-    expect(html).toContain("类型转换");
-    expect(html).toContain('aria-label="项目字体"');
-    expect(html.indexOf("类型转换")).toBeLessThan(html.indexOf('aria-label="项目字体"'));
+    expect(html).toContain("文件");
+    expect(html).toContain("视图");
+    expect(html).not.toContain("类型转换");
+    expect(html).not.toContain('aria-label="项目字体"');
+    expect(html).not.toContain("class=\"appbar");
     expect(html).not.toContain("预览 HTML");
     expect(html).not.toContain("导出 JSON");
     expect(html).not.toContain("↩ 撤销");
     expect(html).not.toContain("↪ 重做");
   });
 
-  it("shows preview controls directly in the current workflow toolbar", () => {
+  it("does not render workflow controls in the top chrome", () => {
     const html = renderToStaticMarkup(<Appbar {...props} workspace="preview" />);
-    expect(html).toContain("preview-appbar");
-    expect(html).toContain('aria-label="设备预设"');
-    expect(html).toContain('aria-label="循环切换设备预设"');
-    expect(html).toContain('aria-label="显示设备壳"');
-    expect(html).toContain('aria-label="九宫格预览"');
-    expect(html).toContain('aria-label="预览缩放方式"');
-    expect(html).toContain('aria-label="循环切换缩放方式"');
-    expect(html).toContain('<optgroup label="手机">');
-    expect(html).toContain('<optgroup label="桌面">');
-    expect(html).not.toContain("<details");
+    expect(html).not.toContain('aria-label="设备预设"');
+    expect(html).not.toContain('aria-label="九宫格预览"');
   });
 
   it("cycles preview presets and scale modes in a loop", () => {

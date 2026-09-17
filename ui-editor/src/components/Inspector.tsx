@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import type { ImageBinding, InteractionTemplate, LayoutValueMode, ResourceSlot, UINode, UIRect } from "../types";
 import { CTRL_TYPES, type CtrlType } from "../types";
 import { resourceSlotDefinitions } from "../resourceBinding";
@@ -26,10 +25,6 @@ export function arrowStepDirection(key: string): -1 | 0 | 1 {
   if (key === "ArrowUp" || key === "ArrowRight") return 1;
   if (key === "ArrowDown" || key === "ArrowLeft") return -1;
   return 0;
-}
-
-function gridLabel(x: number, y: number): string {
-  return PARENT_GRID.find(([, px, py]) => px === x && py === y)?.[0] ?? "自定义";
 }
 
 function DragNumberInput(p: {
@@ -137,61 +132,15 @@ function NumRow(p: {
   );
 }
 
-function InspectorHelp(p: { text: string }) {
-  const [open, setOpen] = useState(false);
-  const [hovering, setHovering] = useState(false);
-  const [position, setPosition] = useState<{ left: number; top?: number; bottom?: number; width: number } | null>(null);
-  const buttonRef = useRef<HTMLSpanElement>(null);
-  const updatePosition = () => {
-    const rect = buttonRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const width = Math.min(280, Math.max(180, window.innerWidth - 24));
-    const left = Math.min(Math.max(12, rect.left), Math.max(12, window.innerWidth - width - 12));
-    const estimatedHeight = 96;
-    if (rect.bottom + 7 + estimatedHeight <= window.innerHeight || rect.top < estimatedHeight + 12) {
-      setPosition({ left, top: Math.min(rect.bottom + 7, window.innerHeight - estimatedHeight - 12), width });
-    } else {
-      setPosition({ left, bottom: Math.max(12, window.innerHeight - rect.top + 7), width });
-    }
-  };
-  const toggle = (event: React.MouseEvent<HTMLSpanElement>) => {
-    event.stopPropagation();
-    updatePosition();
-    setOpen((value) => !value);
-  };
-  const onKeyDown = (event: React.KeyboardEvent<HTMLSpanElement>) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      event.stopPropagation();
-      updatePosition();
-      setOpen((value) => !value);
-    }
-  };
-  return (
-    <span className={open ? "inspector-help open" : "inspector-help"}
-      onMouseEnter={() => { updatePosition(); setHovering(true); }} onMouseLeave={() => setHovering(false)}>
-      <span ref={buttonRef} className="inspector-help-button" role="button" tabIndex={0} aria-label="显示说明"
-        aria-expanded={open} data-help={p.text} title="悬浮或点击查看说明" onClick={toggle} onKeyDown={onKeyDown}>?</span>
-      {(open || hovering) && position && typeof document !== "undefined" && createPortal(
-        <span className="inspector-help-popover" role="tooltip" style={{ left: position.left, top: position.top, bottom: position.bottom, width: position.width }}>
-          {p.text}
-        </span>, document.body,
-      )}
-    </span>
-  );
-}
-
-function InspectorSection(p: { title: string; help?: string; summary?: string; defaultOpen?: boolean; children: React.ReactNode }) {
+function InspectorSection(p: { title: string; help?: string; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(p.defaultOpen ?? true);
   return (
     <section className={`inspector-section ${open ? "open" : "closed"}`}>
       <div className="inspector-section-head">
         <button type="button" className="inspector-section-toggle" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
           <span className="section-chevron">{open ? "⌄" : "›"}</span>
-          <strong>{p.title}</strong>
+          <strong title={p.help}>{p.title}</strong>
         </button>
-        {p.help && <InspectorHelp text={p.help} />}
-        {p.summary && <span className="section-summary">{p.summary}</span>}
       </div>
       {open && <div className="inspector-section-body">{p.children}</div>}
     </section>
@@ -245,11 +194,9 @@ export default function Inspector(p: Props) {
     if (m) return "#" + m.slice(1).map((v) => (+v).toString(16).padStart(2, "0")).join("");
     return /^#[0-9a-fA-F]{6}/.test(color) ? color.slice(0, 7) : "#ffffff";
   };
-  const typeLabel = CTRL_TYPES.find((item) => item.value === n.ctrl?.type)?.label ?? "未标记";
   const isInteractive = n.ctrl?.type === "Button" || n.ctrl?.type === "CheckBox";
   const isSelectableControl = n.ctrl?.type === "CheckBox" || n.ctrl?.type === "RadioButton";
   const resourceSlots = resourceSlotDefinitions(n.ctrl?.type);
-  const boundResourceCount = resourceSlots.filter((slot) => n.resources?.[slot.key]).length;
   const editableText = n.text ?? (n.ctrl?.type === "Edit" ? createDefaultEditText() : null);
   const isProgressControl = n.ctrl?.type === "ProgressBar" || n.ctrl?.type === "Slider";
   const progress = isProgressControl ? progressConfig(n) : null;
@@ -301,10 +248,9 @@ export default function Inspector(p: Props) {
           <h3>属性</h3>
           <span className="inspector-node-name" title={n.name}>{n.name}</span>
         </div>
-        <span className="inspector-type-chip">{typeLabel}</span>
       </div>
 
-      <InspectorSection title="节点" summary={typeLabel}>
+      <InspectorSection title="节点">
         <div className="row"><label>名称</label>
           <input className="node-name-field" value={n.name} onChange={(e) => set("name", e.target.value)} /></div>
         <div className="row"><label>控件类型</label>
@@ -336,8 +282,7 @@ export default function Inspector(p: Props) {
 
       {editableText && (
         <InspectorSection title={n.ctrl?.type === "Edit" ? "输入框文本" : "文本内容"}
-          help={editableText.mode !== "auto" ? "文本框宽高在“位置与尺寸”中调整。" : "设置文本内容、字号、颜色和排版方式。"}
-          summary={`${Math.round(editableText.fontSize)} px`}>
+          help={editableText.mode !== "auto" ? "文本框宽高在“位置与尺寸”中调整。" : "设置文本内容、字号、颜色和排版方式。"}>
           <textarea rows={2} value={editableText.content} placeholder={n.ctrl?.type === "Edit" ? "输入框中显示的文字" : undefined}
             onChange={(e) => set("text", { ...editableText, content: e.target.value })} />
           <div className="row"><label>排版</label>
@@ -390,7 +335,7 @@ export default function Inspector(p: Props) {
       )}
 
       {n.list && (
-        <InspectorSection title="列表布局" summary={n.list.type === "grid" ? `${n.list.columns} 列` : n.list.type === "vertical" ? "纵向" : "横向"}>
+        <InspectorSection title="列表布局">
           <div className="row"><label>排列</label>
             <select value={n.list.type}
               onChange={(e) => set("list", { ...n.list!, type: e.target.value as any })}>
@@ -424,7 +369,7 @@ export default function Inspector(p: Props) {
       )}
 
       {progress && (
-        <InspectorSection title="进度控件" summary={`${progress.value.toFixed(2)} · ${progress.direction === "horizontal" ? "水平" : "垂直"}`}>
+        <InspectorSection title="进度控件">
           <NumRow label="进度值" value={progress.value} step={0.01} min={0} max={1} precision={2} inputStep={0.01}
             set={(value) => set("progress", { ...progress, value: clampProgressValue(value) })} />
           <div className="row"><label>方向</label>
@@ -440,8 +385,7 @@ export default function Inspector(p: Props) {
       )}
 
       {resourceSlots.length > 0 && (
-        <InspectorSection title="资源" help="可在资源绑定页签中查看缩略图并手动绑定，也可以选择图片后按 Ctrl+B。"
-          summary={`${boundResourceCount}/${resourceSlots.length}`}>
+        <InspectorSection title="资源" help="可在资源绑定页签中查看缩略图并手动绑定，也可以选择图片后按 Ctrl+B。">
           <div className="resource-slots">
             {resourceSlots.map((slot) => (
               <ResourceSlotRow key={slot.key} slot={slot.key} label={slot.label}
@@ -452,8 +396,7 @@ export default function Inspector(p: Props) {
         </InspectorSection>
       )}
 
-      <InspectorSection title="布局对齐" help="父级对齐对应引擎的水平/垂直对齐；自身锚点决定控件使用哪个位置作为定位基准。"
-        summary={`父级 ${gridLabel(n.anchor.parentX, n.anchor.parentY)}`}>
+      <InspectorSection title="布局对齐" help="父级对齐对应引擎的水平/垂直对齐；自身锚点决定控件使用哪个位置作为定位基准。">
         <div className="anchor-tabs" role="tablist" aria-label="布局对齐设置">
           <button type="button" role="tab" aria-selected={anchorTab === "parent"}
             className={anchorTab === "parent" ? "on" : ""} onClick={() => setAnchorTab("parent")}>
@@ -487,7 +430,7 @@ export default function Inspector(p: Props) {
         )}
       </InspectorSection>
 
-      <InspectorSection title="位置与尺寸" help="PSD 导入的位置和尺寸默认保留；这里可直接微调节点的显示结果。" summary="节点变换">
+      <InspectorSection title="位置与尺寸" help="PSD 导入的位置和尺寸默认保留；这里可直接微调节点的显示结果。">
         {(["x", "y", "width", "height"] as const).map((key) => {
           const field = layoutField(key);
           const label = key === "x" ? "X" : key === "y" ? "Y" : key === "width" ? "宽" : "高";
@@ -507,7 +450,7 @@ export default function Inspector(p: Props) {
         })}
       </InspectorSection>
 
-      <InspectorSection title="交互" summary={isInteractive ? "可配置" : "模板库"} defaultOpen={isInteractive}>
+      <InspectorSection title="交互" defaultOpen={isInteractive}>
         {isInteractive && (
           <div className="row"><label>绑定模板</label>
             <select value={n.ctrl?.templateId ?? ""}
@@ -544,7 +487,7 @@ export default function Inspector(p: Props) {
         }])}>＋ 新建模板</button>
       </InspectorSection>
 
-      <InspectorSection title="工程资源" summary={n.assetPath ?? (n.image ? "保存后生成" : "无")} defaultOpen={false}>
+      <InspectorSection title="工程资源" defaultOpen={false}>
         <div className="source-readout"><span>节点 ID</span><strong>{n.id}</strong></div>
         <div className="source-readout"><span>资源路径</span><strong>{n.assetPath ?? (n.image ? "首次保存时生成" : "无")}</strong></div>
       </InspectorSection>

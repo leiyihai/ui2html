@@ -199,25 +199,8 @@ function Row(p: {
 export default function ControlsPanel(p: Props) {
   const sorted = [...p.nodes].sort((a, b) => b.zIndex - a.zIndex);
   const orderedIds = flattenLayerIds(p.nodes);
-  const [width, setWidth] = useState(300);
-  const resizing = useRef<{ startX: number; startWidth: number } | null>(null);
-  const startResize = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    resizing.current = { startX: e.clientX, startWidth: width };
-    const move = (event: PointerEvent) => {
-      if (!resizing.current) return;
-      setWidth(Math.max(220, Math.min(480, resizing.current.startWidth + event.clientX - resizing.current.startX)));
-    };
-    const stop = () => {
-      resizing.current = null;
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", stop);
-    };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", stop);
-  };
   return (
-    <aside className="layer-panel controls-panel" style={{ width }}>
+    <aside className="layer-panel controls-panel">
       <div className="panel-head">
         <h3>层级</h3>
         {p.selectedIds.length > 1 && <span className="selection-count">已选 {p.selectedIds.length}</span>}
@@ -244,7 +227,6 @@ export default function ControlsPanel(p: Props) {
           />
         ))}
       </ul>
-      <div className="panel-resizer" onPointerDown={startResize} title="拖动调整面板宽度" />
     </aside>
   );
 }

@@ -52,6 +52,8 @@ describe("Edit inspector", () => {
     expect(html).toContain('title="按住左右拖动调整数值"');
     expect(html).toContain('class="value-drag-zone"');
     expect(html).toContain("聚焦后使用方向键调整");
+    expect(html).not.toContain("inspector-type-chip");
+    expect(html).not.toContain("section-summary");
   });
 
   it("shows bounded progress controls for Slider and ProgressBar", () => {
@@ -116,8 +118,10 @@ describe("layout alignment inspector", () => {
     expect(html).toContain("对齐位置");
     expect(html).toContain("位置与尺寸");
     expect(html).not.toContain("位置与尺寸校正");
-    expect(html).toContain('class="inspector-help"');
+    expect(html).not.toContain('class="inspector-help"');
+    expect(html).not.toContain('class="inspector-help-button"');
     expect(html).toContain("父级对齐对应引擎");
+    expect(html).not.toContain("父级 ↗");
     expect(html).toContain('class="layout-mode-button"');
     expect(html).toContain('title="点击切换相对/绝对值"');
     expect(html).toContain("⇄");

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { LayoutResult, NineSliceCandidate, NineSliceGroup, NineSliceMargins, UIScene } from "../types";
 import { collectNineSliceImages, createManualNineSliceCandidate, parseBulkMargins, rankNineSliceEntries, retainKnownNineSliceSelection, sameNodeSet, type NineSliceImageEntry } from "../nineSlice";
 import { applySelection, createSelectionIntent } from "../selection";
@@ -112,11 +112,6 @@ export function SliceEditor(p: { source: NineSliceImageEntry; slice: NineSliceMa
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
     dragRef.current = null;
   };
-  const setMargin = (key: keyof NineSliceMargins, value: number) => {
-    const max = key === "left" || key === "right" ? p.source.image.width - 1 : p.source.image.height - 1;
-    const other = key === "left" ? p.slice.right : key === "right" ? p.slice.left : key === "top" ? p.slice.bottom : p.slice.top;
-    p.onChange({ ...p.slice, [key]: Math.max(0, Math.min(max - other, Math.round(value) || 0)) });
-  };
   const applyBulkMargins = () => {
     const next = parseBulkMargins(bulkMargins, p.source.image.width, p.source.image.height);
     if (!next) {
@@ -127,22 +122,58 @@ export function SliceEditor(p: { source: NineSliceImageEntry; slice: NineSliceMa
     p.onChange(next);
   };
   return <div className="slice-editor"><div className="slice-preview"><canvas ref={canvasRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} /></div>
-    <div className="slice-nums"><div className="slice-bulk-margins"><label htmlFor="slice-bulk-input">批量设置</label><input id="slice-bulk-input" value={bulkMargins} placeholder="上,下,左,右 或 4" onChange={(event) => { setBulkMargins(event.target.value); setBulkError(""); }} onKeyDown={(event) => { if (event.key === "Enter") applyBulkMargins(); }} /><button type="button" className="btn" onClick={applyBulkMargins}>应用</button></div>{bulkError && <div className="slice-bulk-error">{bulkError}</div>}<div className="slice-edge-margins">{(["left", "top", "right", "bottom"] as const).map((key) => <label className="slice-num" key={key}>
-      <span>{key === "left" ? "左" : key === "top" ? "上" : key === "right" ? "右" : "下"}</span><input type="number" min="0" value={p.slice[key]} onChange={(event) => setMargin(key, +event.target.value)} />
-    </label>)}</div></div></div>;
+    <div className="slice-nums"><div className="slice-bulk-margins"><label htmlFor="slice-bulk-input">批量设置</label><input id="slice-bulk-input" value={bulkMargins} placeholder="上,下,左,右 或 4" onChange={(event) => { setBulkMargins(event.target.value); setBulkError(""); }} onKeyDown={(event) => { if (event.key === "Enter") applyBulkMargins(); }} /><button type="button" className="btn" onClick={applyBulkMargins}>应用</button></div>{bulkError && <div className="slice-bulk-error">{bulkError}</div>}</div></div>;
 }
 
-export default function NineSliceWorkspace(p: {
+export interface NineSliceWorkspaceProps {
   scene: UIScene;
   layout: LayoutResult | null;
   viewport: { width: number; height: number };
   onScan: () => void;
   onConfirm: (candidate: NineSliceCandidate, margins: NineSliceMargins) => void;
   onSkip: (candidate: NineSliceCandidate) => void;
-}) {
-  const entries = useMemo(() => collectNineSliceImages(p.scene), [p.scene]);
-  const candidates = useMemo(() => p.scene.nineSliceCandidates ?? [], [p.scene.nineSliceCandidates]);
-  const groups = useMemo(() => p.scene.nineSliceGroups ?? [], [p.scene.nineSliceGroups]);
+}
+
+interface NineSliceState {
+  scene: UIScene | null;
+  layout: LayoutResult | null;
+  viewport: { width: number; height: number };
+  tab: SliceTab;
+  setTab: (tab: SliceTab) => void;
+  entries: NineSliceImageEntry[];
+  candidates: NineSliceCandidate[];
+  groups: NineSliceGroup[];
+  confirmed: NineSliceCandidate[];
+  selectedIds: string[];
+  selectedEntries: NineSliceImageEntry[];
+  rankedAvailableEntries: NineSliceImageEntry[];
+  handledEntries: NineSliceImageEntry[];
+  candidateForEntry: (id: string) => NineSliceCandidate | undefined;
+  workingCandidate: NineSliceCandidate | null;
+  displaySource: NineSliceImageEntry | null;
+  margins: NineSliceMargins;
+  setMargins: (margins: NineSliceMargins) => void;
+  scan: () => void;
+  selectCandidate: (event: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+  selectEntry: (id: string) => void;
+  selectEntries: (ids: string[]) => void;
+  clearCandidateSelection: (event: React.PointerEvent<HTMLDivElement>) => void;
+  confirm: () => void;
+  skip: () => void;
+}
+
+const NineSliceContext = createContext<NineSliceState | null>(null);
+
+export function useNineSliceWorkspace(): NineSliceState {
+  const state = useContext(NineSliceContext);
+  if (!state) throw new Error("useNineSliceWorkspace 必须在 NineSliceWorkspaceProvider 内使用");
+  return state;
+}
+
+export function NineSliceWorkspaceProvider(p: Omit<NineSliceWorkspaceProps, "scene"> & { scene: UIScene | null; children: ReactNode }) {
+  const entries = useMemo(() => p.scene ? collectNineSliceImages(p.scene) : [], [p.scene]);
+  const candidates = useMemo(() => p.scene?.nineSliceCandidates ?? [], [p.scene?.nineSliceCandidates]);
+  const groups = useMemo(() => p.scene?.nineSliceGroups ?? [], [p.scene?.nineSliceGroups]);
   const [tab, setTab] = useState<SliceTab>("mark");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selectionAnchorRef = useRef<string | null>(null);
@@ -162,7 +193,6 @@ export default function NineSliceWorkspace(p: {
     () => rankNineSliceEntries(availableEntries, candidates),
     [availableEntries, candidates],
   );
-  const pendingEntries = availableEntries;
   const handledEntries = entries.filter((entry) => handledIds.has(entry.node.id));
   const existingCandidate = selectedIds.length ? candidates.find((candidate) => sameNodeSet(candidate.memberNodeIds, selectedIds)) : undefined;
   const workingCandidate = existingCandidate ?? (selectedEntries.length ? createManualNineSliceCandidate(selectedEntries) : null);
@@ -183,7 +213,7 @@ export default function NineSliceWorkspace(p: {
       }
       return next.length === current.length ? current : next;
     });
-  }, [availableEntries]);
+  }, [availableEntries, entries]);
   useEffect(() => {
     if (workingCandidateMargins) setMargins({ ...(savedGroup?.margins ?? workingCandidateMargins) });
   }, [workingCandidateId, savedGroup?.margins, workingCandidateMargins]);
@@ -204,6 +234,14 @@ export default function NineSliceWorkspace(p: {
       ? next.anchorId ?? selectionAnchorRef.current ?? id
       : id;
     setSelectedIds(next.ids);
+  };
+  const selectEntries = (ids: string[]) => {
+    const knownIds = ids.filter((id) => entries.some((entry) => entry.node.id === id));
+    selectionAnchorRef.current = knownIds[0] ?? null;
+    setSelectedIds(knownIds);
+  };
+  const selectEntry = (id: string) => {
+    selectEntries([id]);
   };
   const clearCandidateSelection = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
@@ -232,42 +270,104 @@ export default function NineSliceWorkspace(p: {
     setSelectedIds(next ? [next.node.id] : []);
   };
 
-  return <section className="nine-slice-workspace">
-    <nav className="slice-tabs" aria-label="九宫格阶段">
-      <div className="slice-tab-list"><button className={tab === "mark" ? "on" : ""} onClick={() => setTab("mark")}>候选图片与边距标记</button><button className={tab === "result" ? "on" : ""} disabled={!confirmed.length} onClick={() => setTab("result")}>九宫格结果</button></div>
-      <div className="slice-tabs-actions"><button className="btn" onClick={p.onScan}>更新候选</button><span className="nine-slice-count">待处理 {pendingEntries.length} · 已处理 {entries.filter((entry) => confirmedIds.has(entry.node.id)).length} · 已跳过 {entries.filter((entry) => skippedIds.has(entry.node.id)).length}</span></div>
+  const state: NineSliceState = {
+    scene: p.scene,
+    layout: p.layout,
+    viewport: p.viewport,
+    tab,
+    setTab,
+    entries,
+    candidates,
+    groups,
+    confirmed,
+    selectedIds,
+    selectedEntries,
+    rankedAvailableEntries,
+    handledEntries,
+    candidateForEntry,
+    workingCandidate,
+    displaySource,
+    margins,
+    setMargins,
+    scan: p.onScan,
+    selectCandidate,
+    selectEntry,
+    selectEntries,
+    clearCandidateSelection,
+    confirm,
+    skip,
+  };
+
+  return <NineSliceContext.Provider value={state}>{p.children}</NineSliceContext.Provider>;
+}
+
+export function NineSliceCandidatesTool() {
+  const state = useNineSliceWorkspace();
+  const handledCount = state.handledEntries.length;
+  return <section className="nine-slice-candidates-tool">
+    <nav className="slice-tabs" aria-label="九宫格候选与结果">
+      <div className="slice-tab-list">
+        <button className={state.tab === "mark" ? "on" : ""} onClick={() => state.setTab("mark")}>候选图片</button>
+        <button className={state.tab === "result" ? "on" : ""} disabled={!state.confirmed.length} onClick={() => state.setTab("result")}>九宫格结果</button>
+      </div>
+      <div className="slice-tabs-actions"><button className="btn" onClick={state.scan}>更新候选</button><span className="nine-slice-count">待处理 {state.rankedAvailableEntries.length} · 已处理 {state.entries.filter((entry) => state.candidates.some((candidate) => candidate.status === "confirmed" && candidate.memberNodeIds.includes(entry.node.id))).length} · 已跳过 {state.entries.filter((entry) => state.candidates.some((candidate) => candidate.status === "skipped" && candidate.memberNodeIds.includes(entry.node.id))).length}</span></div>
     </nav>
-    {tab === "mark" && <div className="slice-stage mark-stage slice-merged-stage">
-      <aside className="slice-candidate-list">
-        <div className="nine-slice-list-title">候选图片</div>
-        {!rankedAvailableEntries.length && <div className="slice-empty">没有待处理候选图片。</div>}
-        <div className="slice-candidate-grid" onPointerDown={clearCandidateSelection}>{rankedAvailableEntries.map((entry) => <NineSliceImageCard
+    {state.tab === "mark" ? <div className="slice-candidates-scroll" onPointerDown={state.clearCandidateSelection}>
+      <div className="nine-slice-list-title">候选图片</div>
+      {!state.rankedAvailableEntries.length && <div className="slice-empty">没有待处理候选图片。</div>}
+      <div className="slice-candidate-grid">{state.rankedAvailableEntries.map((entry) => <NineSliceImageCard
+        key={entry.node.id}
+        entry={entry}
+        candidate={state.candidateForEntry(entry.node.id)}
+        selected={state.selectedIds.includes(entry.node.id)}
+        onClick={(event) => state.selectCandidate(event, entry.node.id)}
+      />)}</div>
+      <section className="slice-handled-section">
+        <div className="nine-slice-list-title">已处理 / 已跳过</div>
+        {!handledCount && <div className="slice-empty">暂无已处理图片。</div>}
+        <div className="slice-candidate-grid slice-handled-grid">{state.handledEntries.map((entry) => <NineSliceImageCard
           key={entry.node.id}
           entry={entry}
-          candidate={candidateForEntry(entry.node.id)}
-          selected={selectedIds.includes(entry.node.id)}
-          onClick={(event) => selectCandidate(event, entry.node.id)}
+          candidate={state.candidateForEntry(entry.node.id)}
+          handledStatus={state.candidateForEntry(entry.node.id)?.status === "skipped" ? "已跳过" : "已处理"}
         />)}</div>
-        <section className="slice-handled-section">
-          <div className="nine-slice-list-title">已处理 / 已跳过</div>
-          {!handledEntries.length && <div className="slice-empty">暂无已处理图片。</div>}
-          <div className="slice-candidate-grid slice-handled-grid">{handledEntries.map((entry) => <NineSliceImageCard
-            key={entry.node.id}
-            entry={entry}
-            candidate={candidateForEntry(entry.node.id)}
-            handledStatus={candidateForEntry(entry.node.id)?.status === "skipped" ? "已跳过" : "已处理"}
-          />)}</div>
-        </section>
-      </aside>
-      <main className="nine-slice-editor-panel"><div className="nine-slice-overview"><SceneOverview
-        result={p.layout}
-        nodes={p.scene.nodes}
-        viewport={p.viewport}
-        selectedId={displaySource?.node.id ?? null}
-        onLocate={(id) => { if (entries.some((entry) => entry.node.id === id)) { selectionAnchorRef.current = id; setSelectedIds([id]); } }}
-        useNineSlice={p.scene.useNineSlicePreview}
-      /></div>{workingCandidate && displaySource ? <><div className="nine-slice-editor-title"><div><span>当前标记图 · 已选 {selectedEntries.length} 张</span><h3>{displaySource.node.name}</h3><small>{selectedEntries.length > 1 ? "其他选中图片将沿用同一组边距；最终源图仍按最大尺寸选择" : "单张图片"}</small></div><span className={`nine-status status-${workingCandidate.status}`}>{workingCandidate.status === "confirmed" ? "已处理" : workingCandidate.status === "skipped" ? "已跳过" : "待标记"}</span></div><SliceEditor source={displaySource} slice={margins} onChange={setMargins} /><div className="nine-slice-editor-foot"><span>边距值是本组图片共用的引擎九宫格参数。</span><div><button className="btn" onClick={skip}>跳过处理</button><button className="btn primary" onClick={confirm}>转换并保存</button></div></div></> : <div className="slice-empty large">请先从左侧选择候选图片。</div>}</main>
+      </section>
+    </div> : <div className="slice-results-scroll">
+      <div className="nine-slice-list-title">已生成的九宫格图片</div>
+      <p className="slice-stage-hint">边距沿用标记工具；如需调整，请回到标记工具重新选择并标记。</p>
+      <div className="slice-result-grid">{state.confirmed.map((candidate) => { const entry = sourceFor(candidate, state.entries); const group = groupFor(candidate, state.groups); const output = entry?.node.sliceImage ?? entry?.image; return <article className="slice-result-card" key={candidate.id}>{output && <img src={output.toDataURL("image/png")} alt="" />}<strong>{entry?.node.name ?? "图片已缺失"}</strong><small>{output ? `尺寸：${output.width} × ${output.height}` : "尺寸：未知"}{group ? ` · 边距：${group.margins.left} / ${group.margins.top} / ${group.margins.right} / ${group.margins.bottom}` : " · 等待保存生成资源"}</small><button className="btn" onClick={() => { state.selectEntries(candidate.memberNodeIds); state.setTab("mark"); }}>返回修改</button></article>; })}</div>
     </div>}
-    {tab === "result" && <div className="slice-stage result-stage"><main><div className="nine-slice-list-title">已生成的九宫格图片</div><p className="slice-stage-hint">边距沿用候选与标记页；如需调整，请回到上一页重新选择并标记。</p><div className="slice-result-grid">{confirmed.map((candidate) => { const entry = sourceFor(candidate, entries); const group = groupFor(candidate, groups); const output = entry?.node.sliceImage ?? entry?.image; return <article className="slice-result-card" key={candidate.id}>{output && <img src={output.toDataURL("image/png")} alt="" />}<strong>{entry?.node.name ?? "图片已缺失"}</strong><small>{output ? `尺寸：${output.width} × ${output.height}` : "尺寸：未知"}{group ? ` · 边距：${group.margins.left} / ${group.margins.top} / ${group.margins.right} / ${group.margins.bottom}` : " · 等待保存生成资源"}</small><button className="btn" onClick={() => { setSelectedIds(candidate.memberNodeIds); setTab("mark"); }}>返回修改</button></article>; })}</div></main></div>}
   </section>;
+}
+
+export function NineSliceMarkerTool() {
+  const state = useNineSliceWorkspace();
+  const { workingCandidate, displaySource } = state;
+  return <section className="nine-slice-marker-tool">
+    <div className="nine-slice-marker-scroll">{state.tab === "result" ? <div className="slice-empty large">请从左侧九宫格结果卡片返回标记，或切换到候选图片。</div> : workingCandidate && displaySource ? <>
+      <div className="nine-slice-editor-title"><div className="nine-slice-editor-title-main"><h3>{displaySource.node.name}</h3><span>已选 {state.selectedEntries.length} 张</span></div><span className={`nine-status status-${workingCandidate.status}`}>{workingCandidate.status === "confirmed" ? "已处理" : workingCandidate.status === "skipped" ? "已跳过" : "待标记"}</span></div>
+      <SliceEditor source={displaySource} slice={state.margins} onChange={state.setMargins} />
+    </> : <div className="slice-empty large">请先从九宫格候选工具选择图片。</div>}</div>
+    {state.tab === "mark" && workingCandidate && displaySource && <div className="nine-slice-editor-foot"><span>边距值是本组图片共用的引擎九宫格参数。</span><div><button className="btn" onClick={state.skip}>跳过处理</button><button className="btn primary" onClick={state.confirm}>转换并保存</button></div></div>}
+  </section>;
+}
+
+export function NineSliceOverviewTool(p: { result: LayoutResult | null; nodes: UIScene["nodes"]; viewport: { width: number; height: number } }) {
+  const state = useNineSliceWorkspace();
+  return <SceneOverview result={p.result} nodes={state.scene?.nodes ?? p.nodes} viewport={p.viewport}
+    selectedId={state.displaySource?.node.id ?? null} onLocate={state.selectEntry} useNineSlice={state.scene?.useNineSlicePreview} />;
+}
+
+function LegacyNineSliceWorkspace() {
+  const state = useNineSliceWorkspace();
+  return <section className="nine-slice-workspace">
+    <div className="slice-stage mark-stage slice-merged-stage">
+      <aside className="slice-candidate-list legacy-slice-candidate-list"><NineSliceCandidatesTool /></aside>
+      <main className="nine-slice-editor-panel"><div className="nine-slice-overview"><NineSliceOverviewTool result={state.layout} nodes={state.scene?.nodes ?? []} viewport={state.viewport} /></div><NineSliceMarkerTool /></main>
+    </div>
+  </section>;
+}
+
+export default function NineSliceWorkspace(p: NineSliceWorkspaceProps) {
+  return <NineSliceWorkspaceProvider {...p}>{<LegacyNineSliceWorkspace />}</NineSliceWorkspaceProvider>;
 }

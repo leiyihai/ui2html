@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
-import type { Workspace } from "./WorkspaceTabs";
+import { useEffect, useRef, useState, type ChangeEvent, type MouseEvent as ReactMouseEvent } from "react";
+import type { Workspace, WorkspaceOption } from "./WorkspaceTabs";
 
 type MenuId = "file" | "edit" | "view" | "help" | null;
 
@@ -10,7 +10,10 @@ interface Props {
   canUndo: boolean;
   canRedo: boolean;
   workspace: Workspace;
+  workspaces: WorkspaceOption[];
   onWorkspace: (workspace: Workspace) => void;
+  onAddWorkspace: () => void;
+  onRenameWorkspace: (workspace: Workspace, label: string) => void;
   onNew: () => void;
   onOpenProject: () => void;
   onImportPsd: (buffer: ArrayBuffer, name: string) => void;
@@ -35,14 +38,6 @@ interface Props {
   onToggleDesignBorder: () => void;
 }
 
-const WORKSPACES: Array<{ value: Workspace; label: string }> = [
-  { value: "controls", label: "层级" },
-  { value: "bindings", label: "资源绑定" },
-  { value: "slice", label: "九宫格" },
-  { value: "preview", label: "预览" },
-  { value: "export", label: "导出" },
-];
-
 export const VIEW_AUXILIARY_ITEMS = ["设计画布边界", "安全区"] as const;
 
 function MenuItem(p: { label: string; shortcut?: string; disabled?: boolean; danger?: boolean; onClick: () => void }) {
@@ -64,6 +59,8 @@ function MenuToggle(p: { label: string; checked: boolean; disabled?: boolean; on
 /** 桌面软件风格的菜单栏；菜单动作与现有快捷键/工具栏共用回调。 */
 export default function MenuBar(p: Props) {
   const [open, setOpen] = useState<MenuId>(null);
+  const [renamingWorkspace, setRenamingWorkspace] = useState<Workspace | null>(null);
+  const [workspaceName, setWorkspaceName] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -83,6 +80,36 @@ export default function MenuBar(p: Props) {
 
   const toggle = (id: Exclude<MenuId, null>) => setOpen((current) => current === id ? null : id);
   const closeThen = (action: () => void) => { setOpen(null); action(); };
+  const beginWorkspaceRename = (item: WorkspaceOption, event: ReactMouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setRenamingWorkspace(item.value);
+    setWorkspaceName(item.label);
+  };
+  const commitWorkspaceRename = () => {
+    if (renamingWorkspace) {
+      const nextName = workspaceName.trim();
+      if (nextName) p.onRenameWorkspace(renamingWorkspace, nextName);
+    }
+    setRenamingWorkspace(null);
+  };
+  const renderWorkspaceTab = (item: WorkspaceOption) => {
+    const editing = renamingWorkspace === item.value;
+    return editing ? <input key={item.value} className="menu-workspace-editor" value={workspaceName} autoFocus
+      aria-label="工作区名称" onChange={(event) => setWorkspaceName(event.target.value)}
+      onBlur={commitWorkspaceRename}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") { event.preventDefault(); commitWorkspaceRename(); }
+        if (event.key === "Escape") { event.preventDefault(); setRenamingWorkspace(null); }
+      }} /> : <button key={item.value}
+        className={`menu-workspace ${p.workspace === item.value ? "on" : ""}`}
+        disabled={item.builtIn && item.value !== "controls" && !p.hasScene}
+        onClick={() => p.onWorkspace(item.value)}
+        onDoubleClick={(event) => beginWorkspaceRename(item, event)}
+        title="双击重命名工作区">
+        <span>{item.label}</span>
+      </button>;
+  };
   const handlePsd = async (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.currentTarget;
     const file = input.files?.[0];
@@ -151,7 +178,7 @@ export default function MenuBar(p: Props) {
         <button className={`menu-trigger ${open === "view" ? "on" : ""}`} onClick={() => toggle("view")}>视图</button>
         {open === "view" && <div className="menu-popover" role="menu">
           <div className="menu-section-label">工作区</div>
-          {WORKSPACES.map((item) => <MenuItem key={item.value} label={item.label} disabled={item.value !== "controls" && !p.hasScene}
+          {p.workspaces.map((item) => <MenuItem key={item.value} label={item.label} disabled={item.builtIn && item.value !== "controls" && !p.hasScene}
             onClick={() => closeThen(() => p.onWorkspace(item.value))} />)}
           <Divider />
           <div className="menu-section-label">辅助显示</div>
@@ -174,13 +201,10 @@ export default function MenuBar(p: Props) {
       </div>
       </div>
       <div className="menu-workspaces-inline" aria-label="工作区">
-        {WORKSPACES.map((item) => <button key={item.value}
-          className={`menu-workspace ${p.workspace === item.value ? "on" : ""}`}
-          disabled={item.value !== "controls" && !p.hasScene}
-          onClick={() => p.onWorkspace(item.value)}
-          title={item.value === "controls" ? "工程层级与编辑" : item.label}>
-          <span>{item.label}</span>
-        </button>)}
+        <div className="menu-workspace-scroll">
+          {p.workspaces.map(renderWorkspaceTab)}
+        </div>
+        <button className="menu-workspace-add" type="button" aria-label="新建工作区" title="新建工作区" onClick={p.onAddWorkspace}>＋</button>
       </div>
     </nav>
   </div>;
