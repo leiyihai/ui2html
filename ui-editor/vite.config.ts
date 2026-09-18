@@ -270,6 +270,7 @@ async function runCodexNaming(manifest: unknown, referenceDataUrl?: string): Pro
       "你是 UI 资源命名助手。不要修改任何文件，只返回 JSON。",
       "根据附带的 UI 效果参考图和图层清单，为所有节点生成英文语义后缀，为所有图片资源生成英文语义名。",
       "节点 suffix 不要包含控件类型前缀；图片 name 不要包含 img_ 前缀。只允许小写英文、数字和下划线。",
+      "控件类型前缀由程序统一添加为固定的三个字母，不要在 suffix 中自行添加控件类型前缀。",
       "名称要短而清晰：优先使用 1 到 3 个常见短词；如果存在 UI 开发中约定俗成的缩写，直接使用缩写，例如 background=bg、foreground=fg、experience=exp、selected=sel、message=msg、navigation=nav、quantity=qty。",
       "避免冗余词和重复表达：不要把控件前缀已经表达的 button、image、text、control、component、panel、container、progress、bar 等再写进后缀；不要输出过长的描述、完整句子或视觉细节说明。",
       "节点后缀尽量不超过 24 个字符；图片名也遵循同样的短命名原则。名称必须保持语义区分，不能为了变短而丢失关键用途。",

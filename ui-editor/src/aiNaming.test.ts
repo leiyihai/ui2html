@@ -15,11 +15,11 @@ function node(id: string, name: string, type: UINode["ctrl"] extends infer T ? T
 describe("AI naming pipeline", () => {
   it("uses the same engine prefixes as manual type conversion", () => {
     expect(typePrefix("CheckBox")).toBe("chk");
-    expect(typePrefix("Edit")).toBe("edit");
+    expect(typePrefix("Edit")).toBe("edt");
     expect(typePrefix("StaticText")).toBe("txt");
-    expect(typePrefix("List")).toBe("vlist");
-    expect(typePrefix("ListHorizontal")).toBe("hlist");
-    expect(typePrefix("GridView")).toBe("grid");
+    expect(typePrefix("List")).toBe("vls");
+    expect(typePrefix("ListHorizontal")).toBe("hls");
+    expect(typePrefix("GridView")).toBe("grd");
   });
 
   it("compacts conventional UI words for AI names without changing fallback naming", () => {
@@ -37,14 +37,14 @@ describe("AI naming pipeline", () => {
       nodes: [{ id: "a", suffix: "experience_progress_bar_background", confidence: 0.96 }],
       assets: [{ key: assetKey, name: "experience_progress_bar_background", confidence: 0.96 }],
     });
-    expect(named.scene.nodes[0].name).toBe("pbar_exp_bg");
+    expect(named.scene.nodes[0].name).toBe("pbr_exp_bg");
     expect(named.scene.nodes[0].assetName).toBe("img_exp_prog_bar_bg");
   });
 
   it("creates stable local fallback names and an analysis record", () => {
     const scene: UIScene = { designWidth: 100, designHeight: 100, nodes: [node("a", "音量", { type: "Slider" }, true)] };
     const fallback = applyFallbackNaming(scene);
-    expect(fallback.scene.nodes[0].name).toBe("slider_volume");
+    expect(fallback.scene.nodes[0].name).toBe("sld_volume");
     expect(fallback.scene.nodes[0].assetName).toBe("img_volume");
     expect(fallback.analysis.nodes.a.source).toBe("fallback");
   });

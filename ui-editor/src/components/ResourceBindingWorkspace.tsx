@@ -1,9 +1,9 @@
 import type { MouseEvent } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { renderUi } from "../renderer";
 import { collectResourceBindingTargets, effectivePreviewRect, imageDataUrl, isBindingComplete, orderResourceBindingTargets, type ResourceBindingTarget } from "../resourceBindingWorkspace";
 import type { LayoutResult, ResourceSlot, UINode } from "../types";
-import { TYPE_LABELS, TypeIcon } from "./ControlsPanel";
+import { TypeIcon } from "./ControlsPanel";
 
 interface Props {
   nodes: import("../types").UINode[];
@@ -29,9 +29,9 @@ function BindingCard(p: {
   viewport: Props["viewport"];
 }) {
   const { target } = p;
+  const [expanded, setExpanded] = useState(true);
   const selectedImages = target.images.filter((image) => p.selectedIds.includes(image.id));
   const type = target.node.ctrl?.type;
-  const label = type ? TYPE_LABELS[type] : "未标记";
   const boundCount = target.slots.filter((slot) => target.node.resources?.[slot.key]).length;
   const complete = isBindingComplete(target);
   const selected = p.selectedIds.includes(target.node.id) || selectedImages.length > 0;
@@ -44,87 +44,93 @@ function BindingCard(p: {
   return (
     <article className={`binding-card ${complete ? "complete" : "pending"}${selected ? " selected" : ""}`} onClick={locateFromCard}>
       <header className="binding-card-head">
-        <div className="binding-card-title">
+        <div className="binding-card-title" title={target.path.join(" / ")}>
           <TypeIcon type={type} />
+          {complete && target.node.resourceBindingComplete ? (
+            <button type="button" className="binding-status done status-action" aria-label="已完成，点击恢复为待处理状态"
+              onClick={(event) => { event.stopPropagation(); p.onResetComplete(target.node.id); }} title="已完成 · 点击恢复为待处理状态">
+              <i aria-hidden="true">↶</i>
+            </button>
+          ) : <span className={`binding-status ${complete ? "done" : "todo"}`} aria-label={complete ? "已完成" : "待绑定"} title={complete ? "已完成" : "待绑定"}>
+            <i aria-hidden="true">{complete ? "✓" : "•"}</i>
+          </span>}
           <div className="binding-card-heading">
-            <div className="binding-card-type">{label}</div>
-            <h3 title={target.node.name}>{target.node.name}</h3>
-            <span title={target.path.join(" / ")}>{target.path.join(" / ")}</span>
+            <h3>{target.node.name}</h3>
           </div>
         </div>
-        {complete && target.node.resourceBindingComplete ? (
-          <button type="button" className="binding-status done status-action" aria-label="已完成，点击恢复为待处理状态"
-            onClick={(event) => { event.stopPropagation(); p.onResetComplete(target.node.id); }} title="已完成 · 点击恢复为待处理状态">
-            <i aria-hidden="true">↶</i>
+        <div className="binding-card-actions">
+          <button type="button" className="binding-card-expand" aria-expanded={expanded}
+            aria-label={expanded ? "收起绑定详情" : "展开绑定详情"}
+            title={expanded ? "收起绑定详情" : "展开绑定详情"}
+            onClick={(event) => { event.stopPropagation(); setExpanded((value) => !value); }}>
+            <i className={`binding-card-expand-icon${expanded ? " expanded" : ""}`} aria-hidden="true" />
           </button>
-        ) : <span className={`binding-status ${complete ? "done" : "todo"}`} aria-label={complete ? "已完成" : "待绑定"} title={complete ? "已完成" : "待绑定"}>
-          <i aria-hidden="true">{complete ? "✓" : "•"}</i>
-        </span>}
+        </div>
       </header>
 
       <NodeEffectPreview target={target} layout={p.layout} viewport={p.viewport} onLocate={p.onLocate} />
 
-      <div className="binding-card-section">
-        <div className="binding-section-label">
-          <span>图片节点</span>
-          <small>{selectedImages.length ? `已选 ${selectedImages.length}` : `${target.images.length} 张`}</small>
-        </div>
-        {target.images.length ? (
-          <div className="binding-image-grid">
-            {target.images.map((image) => (
-              <button key={image.id} className={`binding-image-tile${p.selectedIds.includes(image.id) ? " selected" : ""}`}
-                aria-pressed={p.selectedIds.includes(image.id)} title={`${image.name} · 点击选择`}
-                onClick={(event) => p.onSelectImage(image.id, event)}>
-                <img src={imageDataUrl(image)} alt="" />
-                <span>{image.name}</span>
-                {p.selectedIds.includes(image.id) && <i>✓</i>}
+      {expanded && (
+        <div className="binding-card-details">
+          <section className="binding-detail-section">
+            <div className="binding-detail-head">
+              <span>图片</span>
+              <small>{selectedImages.length ? `已选 ${selectedImages.length}` : `${target.images.length} 张`}</small>
+              <button className="binding-batch-action" disabled={!selectedImages.length}
+                onClick={() => p.onBind(target.node.id, selectedImages.map((image) => image.id))}>
+                批量绑定
               </button>
-            ))}
-          </div>
-        ) : (
-          <div className="binding-empty-images">暂无未绑定的直属图片</div>
-        )}
-      </div>
-
-      <div className="binding-card-section binding-slots-section">
-        <div className="binding-section-label">
-          <span>控件资源槽位</span>
-          <small>{boundCount}/{target.slots.length} 已绑定</small>
-        </div>
-        <div className="binding-slot-list">
-          {target.slots.map((slot) => {
-            const binding = target.node.resources?.[slot.key];
-            return (
-              <div className={`binding-slot${binding ? " filled" : ""}`} key={slot.key}>
-                <div className="binding-slot-name">
-                  <strong>{slot.label}</strong>
-                  <small>{slot.key}</small>
-                </div>
-                {binding ? (
-                  <div className="binding-slot-value">
-                    <img src={imageDataUrl(binding.sourceNode)} alt="" />
-                    <span title={binding.name}>{binding.name}</span>
-                    <button className="binding-unbind" onClick={() => p.onUnbind(target.node.id, slot.key)} title="解除绑定">解除</button>
-                  </div>
-                ) : (
-                  <button className="binding-slot-action" disabled={!selectedImages.length}
-                    onClick={() => p.onBind(target.node.id, [selectedImages[0].id], slot.key)}>
-                    绑定所选图片
+            </div>
+            {target.images.length ? (
+              <div className="binding-image-grid">
+                {target.images.map((image) => (
+                  <button key={image.id} className={`binding-image-tile${p.selectedIds.includes(image.id) ? " selected" : ""}`}
+                    aria-pressed={p.selectedIds.includes(image.id)} title={`${image.name} · 点击选择`}
+                    onClick={(event) => p.onSelectImage(image.id, event)}>
+                    <img src={imageDataUrl(image)} alt="" />
+                    <span>{image.name}</span>
+                    {p.selectedIds.includes(image.id) && <i>✓</i>}
                   </button>
-                )}
+                ))}
               </div>
-            );
-          })}
-        </div>
-      </div>
+            ) : (
+              <div className="binding-empty-images">无可绑定图片</div>
+            )}
+          </section>
 
-      <footer className="binding-card-foot">
-        <span>{selectedImages.length ? "按选择顺序填入空槽位" : complete && target.images.length ? `已确认完成 · ${target.images.length} 张图片未绑定` : complete ? "资源关系已完成" : "可多选图片后批量绑定"}</span>
-        <button className="binding-batch-action" disabled={!selectedImages.length}
-          onClick={() => p.onBind(target.node.id, selectedImages.map((image) => image.id))}>
-          批量绑定 {selectedImages.length ? `(${selectedImages.length})` : ""}
-        </button>
-      </footer>
+          <section className="binding-detail-section binding-slots-section">
+            <div className="binding-detail-head">
+              <span>槽位</span>
+              <small>{boundCount}/{target.slots.length}</small>
+            </div>
+            <div className="binding-slot-list">
+              {target.slots.map((slot) => {
+                const binding = target.node.resources?.[slot.key];
+                return (
+                  <div className={`binding-slot${binding ? " filled" : ""}`} key={slot.key}>
+                    <div className="binding-slot-name">
+                      <strong>{slot.label}</strong>
+                      <small>{slot.key}</small>
+                    </div>
+                    {binding ? (
+                      <div className="binding-slot-value">
+                        <img src={imageDataUrl(binding.sourceNode)} alt="" />
+                        <span title={binding.name}>{binding.name}</span>
+                        <button className="binding-unbind" onClick={() => p.onUnbind(target.node.id, slot.key)} title="解除绑定">解除</button>
+                      </div>
+                    ) : (
+                      <button className="binding-slot-action" disabled={!selectedImages.length}
+                        onClick={() => p.onBind(target.node.id, [selectedImages[0].id], slot.key)}>
+                        绑定
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+      )}
     </article>
   );
 }
@@ -151,7 +157,7 @@ function NodeEffectPreview(p: {
     const width = 520;
     const height = 160;
     canvas.width = width;
-    canvas.height = 160;
+    canvas.height = height;
     const context = canvas.getContext("2d");
     if (!context) return;
     context.clearRect(0, 0, width, height);

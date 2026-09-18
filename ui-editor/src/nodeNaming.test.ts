@@ -15,10 +15,10 @@ function sibling(id: string, name: string): UINode {
 
 describe("automatic control naming", () => {
   it.each([
-    ["Button", "btn_"], ["CheckBox", "chk_"], ["RadioButton", "radio_"],
-    ["Edit", "edit_"], ["StaticImage", "img_"], ["StaticText", "txt_"],
-    ["ProgressBar", "pbar_"], ["Slider", "slider_"], ["List", "vlist_"],
-    ["ListHorizontal", "hlist_"], ["GridView", "grid_"], ["empty", "node_"],
+    ["Layout", "lyt_"], ["Button", "btn_"], ["CheckBox", "chk_"], ["RadioButton", "rdo_"],
+    ["Edit", "edt_"], ["StaticImage", "img_"], ["StaticText", "txt_"],
+    ["ProgressBar", "pbr_"], ["Slider", "sld_"], ["List", "vls_"],
+    ["ListHorizontal", "hls_"], ["GridView", "grd_"], ["empty", "nod_"],
   ] as [CtrlType, string][])('maps %s to %s', (type, prefix) => {
     expect(controlNamePrefix(type)).toBe(prefix);
   });
@@ -35,7 +35,7 @@ describe("automatic control naming", () => {
   });
 
   it("falls back to node_ for an unknown type", () => {
-    expect(controlNamePrefix("future-control" as CtrlType)).toBe("node_");
+    expect(controlNamePrefix("future-control" as CtrlType)).toBe("nod_");
   });
 
   it("changes only the type prefix and preserves the AI semantic suffix", () => {
@@ -43,24 +43,29 @@ describe("automatic control naming", () => {
     source.ctrl = { type: "Layout" };
     source.naming = { source: "ai", confidence: 0.92, suffix: "inventory_panel" };
 
-    expect(renameControlForType(source, "List", [])).toBe("vlist_inventory_panel");
-    expect(renameControlForType(source, "ListHorizontal", [])).toBe("hlist_inventory_panel");
-    expect(renameControlForType(source, "GridView", [])).toBe("grid_inventory_panel");
+    expect(renameControlForType(source, "List", [])).toBe("vls_inventory_panel");
+    expect(renameControlForType(source, "ListHorizontal", [])).toBe("hls_inventory_panel");
+    expect(renameControlForType(source, "GridView", [])).toBe("grd_inventory_panel");
   });
 
   it("keeps a preserved suffix unique among siblings", () => {
     const source = sibling("source", "layout_inventory_panel");
     source.naming = { source: "ai", confidence: 0.92, suffix: "inventory_panel" };
 
-    expect(renameControlForType(source, "GridView", [sibling("other", "grid_inventory_panel")]))
-      .toBe("grid_inventory_panel_2");
+    expect(renameControlForType(source, "GridView", [sibling("other", "grd_inventory_panel")]))
+      .toBe("grd_inventory_panel_2");
   });
 
   it("derives the suffix from an existing prefixed name when analysis metadata is absent", () => {
     const source = sibling("source", "btn_confirm_purchase");
     source.ctrl = { type: "Button" };
 
-    expect(renameControlForType(source, "Slider", [])).toBe("slider_confirm_purchase");
+    expect(renameControlForType(source, "Slider", [])).toBe("sld_confirm_purchase");
+  });
+
+  it("replaces old or unknown prefixes instead of preserving them", () => {
+    expect(renameControlForType(sibling("source", "radio_tab"), "RadioButton", [])).toBe("rdo_tab");
+    expect(renameControlForType(sibling("source", "wrong_confirm_purchase"), "Button", [])).toBe("btn_confirm_purchase");
   });
 
   it("creates a Chinese整理名称 for the one-step T action", () => {
@@ -76,7 +81,7 @@ describe("automatic control naming", () => {
 
     expect(typeConversionNames(source, "Slider", [source])).toEqual({
       originalName: "滑动条",
-      projectName: "slider_",
+      projectName: "sld_",
     });
   });
 
@@ -88,7 +93,7 @@ describe("automatic control naming", () => {
 
     expect(typeConversionNames(source, "Slider", [source])).toEqual({
       originalName: "滑动条",
-      projectName: "slider_volume",
+      projectName: "sld_volume",
     });
   });
 });

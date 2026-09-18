@@ -66,6 +66,23 @@ export interface ImportProgress {
   progress: number;
 }
 
+type ToolbarActionIconKind = "project-name" | "ai-name" | "type-convert";
+
+function ToolbarActionIcon({ kind }: { kind: ToolbarActionIconKind }) {
+  if (kind === "project-name") return <svg viewBox="0 0 20 20" aria-hidden="true">
+    <path fill="currentColor" d="M3 2.5h8l4 4v11H3v-15Zm7.5 1.8v3.1h3.1l-3.1-3.1ZM5 10.2h6.1v1.5H5v-1.5Zm0 3.1h6.1v1.5H5v-1.5Z" />
+    <path fill="currentColor" d="m13.4 12.1 1.2-1.2 3.1 3.1-1.2 1.2-3.1-3.1Zm-.7.7-.8 2.2 2.2-.8-.7-1.4-.7-.7Z" />
+  </svg>;
+  if (kind === "ai-name") return <svg viewBox="0 0 20 20" aria-hidden="true">
+    <path fill="currentColor" d="m9.9 1.5 1.4 5.7L17 8.6l-5.7 1.4-1.4 5.7-1.4-5.7-5.7-1.4 5.7-1.4 1.4-5.7Z" />
+    <path fill="currentColor" d="m15.9 12.2.6 2.2 2.1.6-2.1.6-.6 2.2-.6-2.2-2.2-.6 2.2-.6.6-2.2Z" />
+  </svg>;
+  return <svg viewBox="0 0 20 20" aria-hidden="true">
+    <path fill="currentColor" d="M2.5 2.5h6v6h-6v-6Zm9 9h6v6h-6v-6Z" />
+    <path fill="currentColor" d="M8 4.3h4.2l-1.5-1.5 1.1-1.1 3.4 3.4-3.4 3.4-1.1-1.1 1.5-1.5H8V4.3Zm4 11.4H7.8l1.5 1.5-1.1 1.1-3.4-3.4 3.4-3.4 1.1 1.1-1.5 1.5H12v1.6Z" />
+  </svg>;
+}
+
 // 树工具：组节点含 children，节点操作需要递归
 function walkNodes(nodes: UINode[], out: UINode[] = []): UINode[] {
   for (const n of nodes) { out.push(n); if (n.children) walkNodes(n.children, out); }
@@ -452,6 +469,7 @@ export default function App() {
   const [renameCaretMode, setRenameCaretMode] = useState<"all" | "prefix">("all");
   const [layerNameMode, setLayerNameMode] = useState<LayerNameMode>("original");
   const [helpDialog, setHelpDialog] = useState<"shortcuts" | "about" | null>(null);
+  const [aiNamingConfirm, setAiNamingConfirm] = useState(false);
   const [settingsDialog, setSettingsDialog] = useState(false);
   const [uiScale, setUiScale] = useState(readUiScale);
   const [reduceMotion, setReduceMotion] = useState(() => readStoredBoolean(REDUCE_MOTION_STORAGE_KEY, false));
@@ -900,6 +918,16 @@ export default function App() {
       setImportProgress(null);
     }
   }, [applyScene, projectName]);
+
+  const requestAiNamingConfirmation = useCallback(() => {
+    if (!sceneRef.current || importAbortRef.current) return;
+    setAiNamingConfirm(true);
+  }, []);
+
+  const confirmAiNaming = useCallback(() => {
+    setAiNamingConfirm(false);
+    void rerunAiNaming();
+  }, [rerunAiNaming]);
 
   const importImages = useCallback(async (files: File[]) => {
     if (!files.length) return;
@@ -2184,15 +2212,20 @@ export default function App() {
     let toolbarActions: React.ReactNode = null;
     if (tool === "layers") {
       toolbarActions = <>
-        <button className="btn tool-button" disabled={!scene} onClick={() => { setLayerNameMode((current) => current === "original" ? "ai" : "original"); if (layerNameMode === "original") setRenamingId(null); }}
+        <button className="btn tool-button icon-tool-button" disabled={!scene} onClick={() => { setLayerNameMode((current) => current === "original" ? "ai" : "original"); if (layerNameMode === "original") setRenamingId(null); }}
+          aria-label={layerNameMode === "original" ? "切换到工程名称" : "切换到 PSD 原名"}
           title={layerNameMode === "original" ? "切换到工程名称" : "切换到 PSD 原名"}>
-          {layerNameMode === "original" ? "PSD 原名" : "工程名称"}
+          <span className="toolbar-action-icon"><ToolbarActionIcon kind="project-name" /></span>
         </button>
-        <button className="btn tool-button" disabled={!scene} onClick={() => { void rerunAiNaming(); }} title="调用 AI 为节点和图片资源统一命名">AI 命名</button>
-        <button className="btn tool-button" disabled={!scene} onClick={() => {
+        <button className="btn tool-button icon-tool-button" disabled={!scene || !!importProgress} onClick={requestAiNamingConfirmation} aria-label="AI 命名" title="调用 AI 为节点和图片资源统一命名">
+          <span className="toolbar-action-icon"><ToolbarActionIcon kind="ai-name" /></span>
+        </button>
+        <button className="btn tool-button icon-tool-button" disabled={!scene} onClick={() => {
           if (!selectedId || selectedIds.length !== 1) { setExportMsg("请先选中一个节点，再进行类型转换"); return; }
           setTypeMenu(pointerRef.current);
-        }} title="打开控件类型选择菜单（T）">类型转换</button>
+        }} aria-label="类型转换" title="打开控件类型选择菜单（T）">
+          <span className="toolbar-action-icon"><ToolbarActionIcon kind="type-convert" /></span>
+        </button>
         <FontPickerControl hasScene={!!scene} onFont={applyGlobalFont} />
       </>;
     } else if (tool === "canvas" && scene) {
@@ -2223,7 +2256,7 @@ export default function App() {
         onSave={() => { void saveCurrentProject(); }} onSaveAs={() => { void saveCurrentProject(true); }}
         onExportHtml={exportHtml} onExportEngineJson={exportEngineJson} onGlobalFont={applyGlobalFont}
         nameMode={layerNameMode} onNameModeChange={(mode) => { setLayerNameMode(mode); if (mode === "original") setRenamingId(null); }}
-        onAiRename={() => { void rerunAiNaming(); }}
+        onAiRename={requestAiNamingConfirmation}
         onTypeConvert={() => {
           if (!selectedId || selectedIds.length !== 1) { setExportMsg("请先选中一个节点，再进行类型转换"); return; }
           setTypeMenu(pointerRef.current);
@@ -2298,6 +2331,25 @@ export default function App() {
               {["Ctrl+S|打开工程操作菜单", "Ctrl+O|打开工程", "Ctrl+W|关闭当前工程", "Ctrl+Z|撤销", "Ctrl+X|重做", "F2|重命名节点", "T|转换控件类型", "Ctrl+G|打组", "Alt+G|取消打组", "Ctrl+[ / Ctrl+]|调整层级", "Ctrl+B|绑定资源 / 确认完成", "Ctrl+0|恢复最佳窗口预览大小"].map((item) => { const [key, label] = item.split("|"); return <div className="shortcut-row" key={key}><kbd>{key}</kbd><span>{label}</span></div>; })}
             </div> : <div className="about-copy"><strong>UI2HTML</strong><p>面向 UI 美术的 PSD 导入、工程整理、视觉检查与自研引擎 JSON 转换工具。</p><small>工程与 PSD 解耦 · 资源可追溯 · 预览优先</small></div>}
             <footer className="help-dialog-foot"><button className="btn primary" onClick={() => setHelpDialog(null)}>知道了</button></footer>
+          </section>
+        </div>
+      )}
+      {aiNamingConfirm && (
+        <div className="modal-backdrop" role="presentation" onPointerDown={(event) => { if (event.target === event.currentTarget) setAiNamingConfirm(false); }}>
+          <section className="ai-naming-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="ai-naming-confirm-title">
+            <header className="ai-naming-confirm-head">
+              <div><span className="workspace-kicker">AI 命名</span><h2 id="ai-naming-confirm-title">确认重新命名？</h2></div>
+              <button className="icon-btn" type="button" onClick={() => setAiNamingConfirm(false)} aria-label="取消 AI 命名">×</button>
+            </header>
+            <div className="ai-naming-confirm-body">
+              <p>AI 将统一更新当前工程中的节点名称和图片资源名称。</p>
+              <p className="ai-naming-confirm-warning">这会覆盖现有的 AI 命名结果，以及本次明确允许覆盖的手动命名。</p>
+              <small>确认后会进入分析等待状态，期间编辑器将暂时禁止操作。</small>
+            </div>
+            <footer className="ai-naming-confirm-foot">
+              <button className="btn" type="button" onClick={() => setAiNamingConfirm(false)}>取消</button>
+              <button className="btn primary" type="button" onClick={confirmAiNaming}>确认命名</button>
+            </footer>
           </section>
         </div>
       )}
