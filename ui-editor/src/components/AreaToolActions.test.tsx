@@ -16,10 +16,12 @@ describe("area tool actions", () => {
       scaleMode="cover" onScaleMode={vi.fn()} showSafeArea={false}
       designWidth={1280} designHeight={720} deviceShell="desktop" onDeviceShell={vi.fn()}
       showDeviceShell={true} onToggleDeviceShell={vi.fn()}
-      useNineSlicePreview={false} onToggleNineSlicePreview={vi.fn()} />);
+      useNineSlicePreview={false} onToggleNineSlicePreview={vi.fn()}
+      previewLayoutMode="pure" onTogglePreviewLayout={vi.fn()} />);
     expect(html).toContain('aria-label="设备预设"');
     expect(html).toContain('aria-label="循环切换设备预设"');
     expect(html).toContain('aria-label="显示设备壳"');
     expect(html).toContain('aria-label="九宫格预览"');
+    expect(html).toContain('aria-label="切换编辑检查布局"');
   });
 });

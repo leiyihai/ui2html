@@ -177,10 +177,6 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
       const scale = Math.min(result.scaleX, result.scaleY) * (t.scale ?? 1);
       const fam = `"${t.font || ENGINE_EDITOR_FONT_FAMILY}", `;
       ctx.save();
-      // 所有模式都裁剪到 rect：auto 内容超出尺寸宽度时裁切，fixed/fit 限框内
-      ctx.beginPath();
-      ctx.rect(rect.x, rect.y, rect.width, rect.height);
-      ctx.clip();
       let fs = t.fontSize;
       if (t.mode === "fit") {
         fs = fitFontSize(t.content, t.fontSize, t.minFontSize,
@@ -201,18 +197,62 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
       }
       ctx.fillStyle = t.textColor ?? t.color;
       ctx.textAlign = t.horizontalAlign === "left" ? "left" : t.horizontalAlign === "right" ? "right" : "center";
-      ctx.textBaseline = "middle";
+      // Canvas 的 middle 基线是按字体行盒居中，不是按实际字形居中。
+      // PSD 的文字边界更接近可见字形边界，因此使用 alphabetic 基线，
+      // 再根据 actualBoundingBoxAscent/Descent 计算真正的字形位置。
+      ctx.textBaseline = "alphabetic";
       const lines = t.mode === "auto" || t.wordWrap === false ? [t.content] : wrapText(t.content, fs, rect.width / result.scaleX);
       const lineHeight = fs * LINE_HEIGHT * result.scaleY;
-      const contentHeight = lineHeight * lines.length + (lines.length - 1) * (t.lineExtraSpace ?? 0) * result.scaleY;
-      const firstLineCenter = t.verticalAlign === "top"
-        ? rect.y + lineHeight / 2
-        : t.verticalAlign === "bottom"
-          ? rect.y + rect.height - contentHeight + lineHeight / 2
-          : rect.y + (rect.height - contentHeight) / 2 + lineHeight / 2;
+      // 每次绘制都重新读取当前字体的字形度量。字体切换后不能继续使用
+      // 导入时或上一次字体缓存的 ascent/descent，否则拆分文字会失去共同底边。
+      const lineMetrics = lines.map((line) => ctx.measureText(line));
+      const fallbackAscent = lineHeight * 0.8;
+      const fallbackDescent = lineHeight * 0.2;
+      const measuredAscents = lineMetrics.map((item) => item.actualBoundingBoxAscent)
+        .filter((value): value is number => Number.isFinite(value) && value > 0);
+      const measuredDescents = lineMetrics.map((item) => item.actualBoundingBoxDescent)
+        .filter((value): value is number => Number.isFinite(value) && value > 0);
+      const glyphAscent = measuredAscents.length ? Math.max(...measuredAscents) : fallbackAscent;
+      const glyphDescent = measuredDescents.length ? Math.max(...measuredDescents) : fallbackDescent;
+      const glyphHeight = glyphAscent + glyphDescent;
+      const lineExtraSpace = (t.lineExtraSpace ?? 0) * result.scaleY;
+      const lineAdvance = glyphHeight + lineExtraSpace;
+      const contentHeight = glyphHeight * lines.length + (lines.length - 1) * lineExtraSpace;
+      const sourceBaselineOffset = typeof node.psd?.originalBaseline === "number"
+        && Number.isFinite(node.psd.originalBaseline)
+        && Number.isFinite(node.psd.originalY)
+        ? (node.psd.originalBaseline - node.psd.originalY) * result.scaleY * (t.scale ?? 1)
+        : undefined;
+      const firstLineBaseline = sourceBaselineOffset != null
+        ? rect.y + sourceBaselineOffset
+        : t.verticalAlign === "top"
+          ? rect.y + glyphAscent
+          : t.verticalAlign === "bottom"
+            ? rect.y + rect.height - glyphDescent - (lines.length - 1) * lineAdvance
+            : rect.y + (rect.height - contentHeight) / 2 + glyphAscent;
       const textX = t.horizontalAlign === "left" ? rect.x : t.horizontalAlign === "right" ? rect.x + rect.width : rect.x + rect.width / 2;
+      // 文字框是 PSD 的编辑边界，不一定覆盖替换字体的完整字形。只扩大
+      // 绘制时的临时裁剪范围，不改变节点矩形、锚点或选择框，避免 +13、
+      // 富文本片段等内容被裁掉，同时仍保留固定框的整体裁剪语义。
+      const fallbackWidth = Math.max(0, ...lineMetrics.map((item) => item.width || 0));
+      const glyphLeft = Math.max(0, ...lineMetrics.map((item) => Number.isFinite(item.actualBoundingBoxLeft) && item.actualBoundingBoxLeft >= 0
+        ? item.actualBoundingBoxLeft : (ctx.textAlign === "center" ? (item.width || fallbackWidth) / 2 : ctx.textAlign === "right" ? item.width || fallbackWidth : 0)));
+      const glyphRight = Math.max(0, ...lineMetrics.map((item) => Number.isFinite(item.actualBoundingBoxRight) && item.actualBoundingBoxRight >= 0
+        ? item.actualBoundingBoxRight : (ctx.textAlign === "center" ? (item.width || fallbackWidth) / 2 : ctx.textAlign === "left" ? item.width || fallbackWidth : 0)));
+      const visualLeft = textX - glyphLeft;
+      const visualRight = textX + glyphRight;
+      const visualTop = firstLineBaseline - glyphAscent;
+      const visualBottom = firstLineBaseline + (lines.length - 1) * lineAdvance + glyphDescent;
+      const clipPadding = Math.max(1, Math.ceil(scale));
+      const clipLeft = Math.min(rect.x, visualLeft) - clipPadding;
+      const clipTop = Math.min(rect.y, visualTop) - clipPadding;
+      const clipRight = Math.max(rect.x + rect.width, visualRight) + clipPadding;
+      const clipBottom = Math.max(rect.y + rect.height, visualBottom) + clipPadding;
+      ctx.beginPath();
+      ctx.rect(clipLeft, clipTop, clipRight - clipLeft, clipBottom - clipTop);
+      ctx.clip();
       for (let li = 0; li < lines.length; li++) {
-        const y = firstLineCenter + li * (lineHeight + (t.lineExtraSpace ?? 0) * result.scaleY);
+        const y = firstLineBaseline + li * lineAdvance;
         if (t.shadow) {
           ctx.save();
           ctx.fillStyle = t.shadowColor ?? "#000000";

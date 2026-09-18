@@ -10,7 +10,6 @@
 //   stretch ：填满容器（viewport 或 safe area）
 
 import type { LayoutContext, LayoutResult, UINode } from "./types";
-import { LINE_HEIGHT } from "./textMeasure";
 import { resolveLayoutValue } from "./layoutValues";
 
 function findNodeById(nodes: UINode[], id: string): UINode | undefined {
@@ -166,8 +165,9 @@ export class LayoutEngine {
         : parentRect ?? { x: 0, y: 0, width: ctx.viewportWidth, height: ctx.viewportHeight };
       rect = { x: area.x, y: area.y, width: area.width, height: area.height };
     } else {
-      // auto 模式文本：单行，框宽 = 尺寸宽度（显示裁切边界，内容超出裁切）；其他节点用 designRect
-      const isAutoText = n.text?.mode === "auto";
+      // auto 模式文本：单行，仍保留原文字框高度；内容宽度由渲染器按
+      // 单行策略处理。导入 PSD 时文字框本身就是视觉边界，不能用字号 ×
+      // 行高重算高度，否则会让文字整体发生垂直偏移。
       const parentDesignWidth = parentRect ? parentRect.width / scaleX : ctx.designWidth;
       const parentDesignHeight = parentRect ? parentRect.height / scaleY : ctx.designHeight;
       const resolvedWidth = resolveLayoutValue(n.layout?.width, parentDesignWidth, dw);
@@ -175,7 +175,7 @@ export class LayoutEngine {
       const offsetX = resolveLayoutValue(n.layout?.x, parentDesignWidth, n.anchor.offsetX);
       const offsetY = resolveLayoutValue(n.layout?.y, parentDesignHeight, n.anchor.offsetY);
       const w = resolvedWidth * scaleX;
-      const h = isAutoText ? n.text!.fontSize * LINE_HEIGHT * scaleY : resolvedHeight * scaleY;
+      const h = resolvedHeight * scaleY;
       if (n.adaptation.mode === "scale") {
         rect = parentRect
           ? { x: parentRect.x + offsetX * scaleX, y: parentRect.y + offsetY * scaleY, width: w, height: h }

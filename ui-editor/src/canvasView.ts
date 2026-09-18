@@ -5,6 +5,29 @@ export type CanvasPoint = { x: number; y: number };
 export type CanvasRect = { x: number; y: number; width: number; height: number };
 export type CanvasHitCandidate = { visible: boolean; node: { zIndex: number }; rect: CanvasRect };
 
+export function defaultPreviewView(): { zoom: number; pan: CanvasPoint } {
+  return { zoom: 1, pan: { x: 0, y: 0 } };
+}
+
+export function previewCanvasSizeForWrap(
+  wrapWidth: number,
+  wrapHeight: number,
+  viewportWidth: number,
+  viewportHeight: number,
+  showDeviceShell: boolean,
+): { width: number; height: number; scale: number } {
+  const deviceShellAllowance = showDeviceShell ? 56 : 0;
+  const scale = Math.min(
+    Math.max(1, wrapWidth - deviceShellAllowance) / viewportWidth,
+    Math.max(1, wrapHeight - deviceShellAllowance) / viewportHeight,
+  ) * 0.9;
+  return {
+    width: viewportWidth * scale,
+    height: viewportHeight * scale,
+    scale,
+  };
+}
+
 /** Find the topmost visible node under a logical canvas point. */
 export function findCanvasHit<T extends CanvasHitCandidate>(nodes: readonly T[], point: CanvasPoint): T | null {
   return [...nodes]

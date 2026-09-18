@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clampCanvasZoom, findCanvasHit, panForZoomAtPoint } from "./canvasView";
+import { clampCanvasZoom, defaultPreviewView, findCanvasHit, panForZoomAtPoint, previewCanvasSizeForWrap } from "./canvasView";
 
 describe("canvas view transform", () => {
   it("clamps editor zoom to a usable range", () => {
@@ -12,6 +12,19 @@ describe("canvas view transform", () => {
     const pan = panForZoomAtPoint({ x: 10, y: -5 }, 1, 2, { x: 210, y: 95 }, { x: 100, y: 100 });
     const local = { x: (210 - 100 - 10) / 1, y: (95 - 100 + 5) / 1 };
     expect({ x: 100 + pan.x + local.x * 2, y: 100 + pan.y + local.y * 2 }).toEqual({ x: 210, y: 95 });
+  });
+
+  it("resets preview mode changes to a centered full-view state", () => {
+    expect(defaultPreviewView()).toEqual({ zoom: 1, pan: { x: 0, y: 0 } });
+  });
+
+  it("fits the preview canvas to the active mode's available area", () => {
+    const wide = previewCanvasSizeForWrap(1900, 840, 1280, 720, false);
+    const edit = previewCanvasSizeForWrap(1160, 840, 1280, 720, false);
+
+    expect(edit.width).toBeLessThan(wide.width);
+    expect(edit.width).toBeLessThanOrEqual(1160);
+    expect(edit.height).toBeLessThanOrEqual(840);
   });
 
   it("treats an empty canvas area as a miss", () => {

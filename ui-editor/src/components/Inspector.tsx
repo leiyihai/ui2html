@@ -308,7 +308,11 @@ export default function Inspector(p: Props) {
             </select></div>
           <div className="row"><label>垂直对齐</label>
             <select value={editableText.verticalAlign ?? "center"}
-              onChange={(e) => set("text", { ...editableText, verticalAlign: e.target.value as "top" | "center" | "bottom" })}>
+              onChange={(e) => p.onUpdate((x) => {
+                x.text = { ...editableText, verticalAlign: e.target.value as "top" | "center" | "bottom" };
+                // 手动指定垂直对齐后，以用户设置为准，不再套用 PSD 原始基线。
+                if (x.psd) delete x.psd.originalBaseline;
+              })}>
               <option value="top">上</option><option value="center">居中</option><option value="bottom">下</option>
             </select></div>
           <label className="chk"><input type="checkbox" checked={editableText.wordWrap ?? false}

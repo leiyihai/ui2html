@@ -256,6 +256,8 @@ export interface UINode {
     originalY: number;
     originalWidth: number;
     originalHeight: number;
+    /** PSD 文本图层的原始字形基线（文档坐标），用于保持导入后的视觉位置。 */
+    originalBaseline?: number;
   };
 
   locked?: boolean;

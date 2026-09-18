@@ -22,22 +22,25 @@ export function FontPickerControl({ hasScene, onFont }: { hasScene: boolean; onF
     return () => { alive = false; };
   }, []);
 
-  const applyFont = (font: string) => {
+  const applyFont = async (font: string) => {
     if (!font) return;
+    // 先让浏览器完成字体加载，再触发工程重绘；否则 Canvas 可能先用
+    // fallback 字体测量一次，字体真正加载后却没有新的绘制时机。
+    try { await document.fonts.load(`16px "${font.replaceAll('"', "\\\"")}"`); } catch { /* 使用浏览器回退字体 */ }
     setSelectedFont(font);
     onFont(font);
   };
 
   return <div className="font-picker area-toolbar-font-picker" title="选择字体后立即应用到全部文本">
     <select className="global-font" aria-label="项目字体" value={selectedFont} disabled={!hasScene || !fontList.length}
-      onChange={(event) => applyFont(event.target.value)}>
+      onChange={(event) => { void applyFont(event.target.value); }}>
       {fontList.map((font) => <option key={font} value={font}>{font}</option>)}
     </select>
     <button className="btn font-cycle" type="button" aria-label="循环切换字体" title="循环切换字体"
       disabled={!hasScene || fontList.length < 2}
-      onClick={() => {
+        onClick={() => {
         const nextFont = nextFontInCycle(fontList, selectedFont);
-        if (nextFont) applyFont(nextFont);
+        if (nextFont) void applyFont(nextFont);
       }}>↻</button>
   </div>;
 }
@@ -67,6 +70,8 @@ export interface PreviewToolActionsProps {
   onToggleDeviceShell: () => void;
   useNineSlicePreview: boolean;
   onToggleNineSlicePreview: () => void;
+  previewLayoutMode: "pure" | "edit";
+  onTogglePreviewLayout: () => void;
 }
 
 export function PreviewToolActions(p: PreviewToolActionsProps) {
@@ -120,5 +125,10 @@ export function PreviewToolActions(p: PreviewToolActionsProps) {
     </div>}
     <button className={`btn preview-toggle-button${p.useNineSlicePreview ? " on" : ""}`} type="button" aria-pressed={p.useNineSlicePreview}
       aria-label="九宫格预览" title="切换九宫格预览" disabled={!p.hasScene} onClick={p.onToggleNineSlicePreview}>九宫格预览</button>
+    <button className={`btn preview-toggle-button${p.previewLayoutMode === "edit" ? " on" : ""}`} type="button"
+      aria-pressed={p.previewLayoutMode === "edit"} aria-label={p.previewLayoutMode === "edit" ? "切换纯预览布局" : "切换编辑检查布局"}
+      title={p.previewLayoutMode === "edit" ? "切换为纯预览" : "打开编辑检查布局"} disabled={!p.hasScene} onClick={p.onTogglePreviewLayout}>
+      {p.previewLayoutMode === "edit" ? "纯预览" : "编辑检查"}
+    </button>
   </div>;
 }

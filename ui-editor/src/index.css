@@ -380,6 +380,13 @@ body {
 }
 .nine-slice-workspace, .preview-workspace { flex: 1; min-width: 0; min-height: 0; overflow: hidden; background: #12181f; color: #dce8f0; }
 .preview-workspace { display: flex; flex-direction: column; }
+.preview-edit-layout { display: grid; grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) minmax(280px, 360px); flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden; gap: 1px; background: #0e1216; }
+.preview-edit-layers, .preview-edit-center, .preview-edit-properties { min-width: 0; min-height: 0; overflow: hidden; }
+.preview-edit-layers { background: #202731; overflow: auto; }
+.preview-edit-layers > .layer-panel { width: 100%; min-width: 0; height: 100%; box-sizing: border-box; border-right: 0; }
+.preview-edit-center { display: flex; flex-direction: column; background: #111416; }
+.preview-edit-properties { border-left: 1px solid #2a313b; background: #202731; }
+.preview-edit-properties > .inspector { width: auto; min-width: 0; height: 100%; box-sizing: border-box; overflow-y: auto; border: 0; }
 .nine-slice-workspace { display: flex; flex-direction: column; overflow: hidden; }
 .nine-slice-candidates-tool,
 .nine-slice-marker-tool {
@@ -1263,7 +1270,7 @@ body {
 
 /* 项目内置字体（public/fonts） */
 @font-face { font-family: "DroidSans"; src: url("/fonts/DroidSans.ttf") format("truetype"); }
-@font-face { font-family: "NotoSansSC-Black"; src: url("/fonts/NotoSansSC-Black.ttf") format("truetype"); }
+@font-face { font-family: "NotoSansSC-Black"; src: url("/fonts/NotoSansHans-Black.otf") format("opentype"); }
 
 /* ---- Blender 5+ inspired application chrome ---- */
 :root {

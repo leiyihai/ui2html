@@ -1,5 +1,6 @@
 // 导出自包含的自适应网页 HTML：场景数据 + 图片(base64) + 布局引擎(JS) 全部内联
 import type { ScaleMode, UINode, UIScene } from "./types";
+import type { HtmlFontAsset } from "./htmlFonts";
 
 interface FlatNode {
   name: string;
@@ -39,11 +40,17 @@ function flatten(nodes: UINode[], out: FlatNode[] = [], parentIdx = -1): FlatNod
 }
 
 export function buildExportHtml(scene: UIScene, scaleMode: ScaleMode,
-  safeArea: { left: number; right: number; top: number; bottom: number }): string {
+  safeArea: { left: number; right: number; top: number; bottom: number },
+  fontAssets: HtmlFontAsset[] = []): string {
   const data = JSON.stringify({
     width: scene.designWidth, height: scene.designHeight,
     scaleMode, safeArea, nodes: flatten(scene.nodes),
   });
+  const fontFaces = fontAssets.map((font) => {
+    const mime = font.format === "opentype" ? "font/otf" : "font/ttf";
+    return `@font-face{font-family:${JSON.stringify(font.family)};src:url(data:${mime};base64,${font.data}) format("${font.format}");font-style:normal;font-weight:normal;font-display:block;}`;
+  }).join("\n");
+  const embeddedFontFamilies = JSON.stringify(fontAssets.map((font) => font.family));
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -52,6 +59,7 @@ export function buildExportHtml(scene: UIScene, scaleMode: ScaleMode,
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>UI 预览</title>
 <style>
+  ${fontFaces}
   html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #15181d; overflow: hidden; }
   #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
   canvas { box-shadow: 0 0 0 1px #3a4150; }
@@ -61,6 +69,10 @@ export function buildExportHtml(scene: UIScene, scaleMode: ScaleMode,
 <div id="wrap"><canvas id="c"></canvas></div>
 <script>
 var SCENE = ${data};
+var EMBEDDED_FONTS = ${embeddedFontFamilies};
+var FONT_READY = (document.fonts && document.fonts.load)
+  ? Promise.all(EMBEDDED_FONTS.map(function (family) { return document.fonts.load('16px "' + family.replace(/"/g, '\\"') + '"'); })).catch(function () {})
+  : Promise.resolve();
 
 var IMGS = {};
 var READY = 0;
@@ -69,7 +81,7 @@ SCENE.nodes.forEach(function (n) {
   var im = new Image();
   im.src = n.img;
   IMGS[n.name] = im;
-  im.onload = function () { READY++; draw(); };
+  im.onload = function () { READY++; FONT_READY.then(draw); };
 });
 
 function origin(n, parent, vw, vh, sx, sy, lx, ly) {
@@ -228,7 +240,7 @@ function draw() {
 }
 
 window.addEventListener("resize", draw);
-draw();
+FONT_READY.then(draw);
 </script>
 </body>
 </html>

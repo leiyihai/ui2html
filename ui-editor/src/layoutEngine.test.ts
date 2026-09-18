@@ -48,4 +48,15 @@ describe("list item preview layout", () => {
     expect(result.nodes.filter((entry) => entry.node.id === "item-bg")).toHaveLength(3);
     expect(result.nodes.filter((entry) => entry.node.id === "item-label").map((entry) => entry.rect.x)).toEqual([0, 90, 180]);
   });
+
+  it("keeps an auto text node's source box height instead of moving it by line height", () => {
+    const title = node("title", "+13");
+    title.designRect = { x: 20, y: 14, width: 63, height: 27 };
+    title.anchor.offsetX = 20;
+    title.anchor.offsetY = 14;
+    title.text = { content: "+13", fontSize: 36, color: "#ffe786", mode: "auto", minFontSize: 18 };
+
+    const result = new LayoutEngine().layoutScene({ designWidth: 640, designHeight: 360, nodes: [title] }, context);
+    expect(result.nodes[0].rect).toMatchObject({ x: 20, y: 14, width: 63, height: 27 });
+  });
 });
