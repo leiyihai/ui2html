@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { UINode } from "../types";
 import { createSelectionIntent, flattenLayerIds, type SelectionIntent } from "../selection";
 import InlineRename from "./InlineRename";
+import { Icon, type IconName } from "./Icon";
 
 interface Props {
   nodes: UINode[];
@@ -22,32 +23,11 @@ export function nodeType(n: UINode): NodeType {
   return n.text ? "text" : "image";
 }
 
-const ICONS: Record<NodeType, React.ReactNode> = {
-  // 线性图标：组=嵌套容器，list=列表行，image=矩形+山形，text=段落线
-  group: (
-    <>
-      <rect x="2.5" y="4.5" width="11" height="9" rx="2" />
-      <path d="M5.5 2.5h7a1.5 1.5 0 0 1 1.5 1.5v7" />
-    </>
-  ),
-  list: (
-    <>
-      <rect x="2.5" y="3" width="11" height="10" rx="1.5" />
-      <path d="M5.5 6h5M5.5 8.5h5M5.5 11h3" />
-    </>
-  ),
-  image: (
-    <>
-      <rect x="2.5" y="3.5" width="11" height="9" rx="1.5" />
-      <circle cx="6" cy="6.8" r="1" />
-      <path d="M4.2 11.5 7.2 8.4l2 2 2.6-2.6" />
-    </>
-  ),
-  text: (
-    <>
-      <path d="M3 4.5h10M3 7h7M3 9.5h9M3 12h5" />
-    </>
-  ),
+const ICONS: Record<NodeType, IconName> = {
+  group: "layers",
+  list: "list",
+  image: "image",
+  text: "text",
 };
 
 const TYPE_CLASS: Record<NodeType, string> = {
@@ -65,14 +45,10 @@ function Row(p: { n: UINode; depth: number; selectedId: string | null; selectedI
         {p.depth > 0 && <span className="indent-line" style={{ left: 4 + p.depth * 16 }} />}
         <button className="fold" title={collapsed ? "展开" : "折叠"}
           onClick={(e) => { e.stopPropagation(); if (isGroup) setCollapsed(!collapsed); }}>
-          {isGroup && (
-            <svg viewBox="0 0 8 8" className={collapsed ? "" : "open"}>
-              <path d="M2 1.5l4 2.5-4 2.5" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
+          {isGroup && <Icon name="collapse" className={collapsed ? "" : "open"} size={13} />}
         </button>
         <span className={"type-ic " + TYPE_CLASS[type]} title={{ group: "组", list: "列表", image: "图片", text: "文本" }[type]}>
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">{ICONS[type]}</svg>
+          <Icon name={ICONS[type]} size={15} />
         </span>
         {p.renamingId === p.n.id ? (
           <InlineRename
@@ -85,17 +61,11 @@ function Row(p: { n: UINode; depth: number; selectedId: string | null; selectedI
         <span className="type-tag">{type === "list" ? "list" : ""}</span>
         <button className="icon" title="可见"
           onClick={(e) => { e.stopPropagation(); p.onToggleVisible(p.n.id); }}>
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-            {p.n.visible ? <><path d="M1.5 8s2.6-4 6.5-4 6.5 4 6.5 4-2.6 4-6.5 4S1.5 8 1.5 8Z" /><circle cx="8" cy="8" r="1.8" /></>
-              : <path d="M3 3l10 10M8 5.2a2.8 2.8 0 0 1 2.8 2.8M5 6.3A4 4 0 0 0 8.6 11M2.2 6.4A8.5 8.5 0 0 0 1.5 8s2.6 4 6.5 4c.9 0 1.7-.2 2.4-.5" />}
-          </svg>
+          <Icon name={p.n.visible ? "eye" : "eye-off"} size={14} />
         </button>
         <button className="icon" title="锁定"
           onClick={(e) => { e.stopPropagation(); p.onToggleLock(p.n.id); }}>
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-            {p.n.locked ? <><rect x="4" y="7.5" width="8" height="6" rx="1.5" /><path d="M5.5 7.5V5.5a2.5 2.5 0 0 1 5 0v2" /></>
-              : <path d="M5.5 7.5V5.5a2.5 2.5 0 0 1 5 0v2M4 7.5h8v6H4z" />}
-          </svg>
+          <Icon name={p.n.locked ? "lock" : "unlock"} size={14} />
         </button>
       </li>
       {!collapsed && [...(p.n.children ?? [])].sort((a, b) => b.zIndex - a.zIndex).map((c) => (

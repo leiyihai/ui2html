@@ -1,4 +1,5 @@
 import type { ChangeEvent } from "react";
+import { Icon } from "./Icon";
 
 interface Props {
   x: number;
@@ -69,20 +70,20 @@ export default function QuickActionMenu(p: Props) {
         <section className="quick-action-column quick-action-column-left">
           <div className="quick-action-heading">工程与导入</div>
           <button className="quick-action-item" onClick={() => { p.onClose(); p.onNew(); }}>
-            <span className="quick-action-icon">＋</span>
+            <span className="quick-action-icon"><Icon name="file-plus" /></span>
             <span>新建</span>
           </button>
           <button className="quick-action-item" onClick={() => { p.onClose(); p.onOpenProject(); }}>
-            <span className="quick-action-icon">↗</span>
+            <span className="quick-action-icon"><Icon name="folder-open" /></span>
             <span>打开工程</span>
           </button>
           <label className="quick-action-item">
-            <span className="quick-action-icon">◇</span>
+            <span className="quick-action-icon"><Icon name="file-image" /></span>
             <span>导入 PSD</span>
             <input type="file" accept=".psd,.psb" onChange={handlePsdChange} />
           </label>
           <label className="quick-action-item">
-            <span className="quick-action-icon">▧</span>
+            <span className="quick-action-icon"><Icon name="image" /></span>
             <span>导入图片</span>
             <input
               type="file"
@@ -105,7 +106,7 @@ export default function QuickActionMenu(p: Props) {
             disabled={!p.hasScene}
             onClick={() => { p.onClose(); p.onSave(); }}
           >
-            <span className="quick-action-icon">↓</span>
+            <span className="quick-action-icon"><Icon name="save" /></span>
             <span>保存</span>
           </button>
           <button
@@ -113,7 +114,7 @@ export default function QuickActionMenu(p: Props) {
             disabled={!p.hasScene}
             onClick={() => { p.onClose(); p.onSaveAs(); }}
           >
-            <span className="quick-action-icon">⇩</span>
+            <span className="quick-action-icon"><Icon name="download" /></span>
             <span>另存为</span>
           </button>
           <button
@@ -121,7 +122,7 @@ export default function QuickActionMenu(p: Props) {
             disabled={!p.hasScene}
             onClick={() => { p.onClose(); p.onCloseProject(); }}
           >
-            <span className="quick-action-icon">×</span>
+            <span className="quick-action-icon"><Icon name="close" /></span>
             <span>关闭当前工程</span>
           </button>
         </section>

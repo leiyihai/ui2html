@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CtrlType, UINode } from "../types";
 import { createSelectionIntent, flattenLayerIds, type SelectionIntent } from "../selection";
 import InlineRename from "./InlineRename";
+import { Icon, iconNameForControl } from "./Icon";
 
 interface Props {
   nodes: UINode[];
@@ -40,29 +41,13 @@ export const TYPE_LABELS: Record<CtrlType, string> = {
   empty: "空节点",
 };
 
-const TYPE_GLYPHS: Record<CtrlType, string> = {
-  Layout: "▦",
-  StaticImage: "▣",
-  StaticText: "T",
-  Button: "▬",
-  CheckBox: "☑",
-  RadioButton: "◉",
-  ProgressBar: "▰",
-  Slider: "●",
-  Edit: "▤",
-  List: "≡",
-  ListHorizontal: "≡",
-  GridView: "▦",
-  empty: "·",
-};
-
 export function TypeIcon({ type }: { type?: CtrlType }) {
   const key = (type ?? "empty").toLowerCase();
   const label = type ? TYPE_LABELS[type] : "未标记";
 
   return (
     <span className={`type-ic ctrl-type-icon ctrl-${key}`} title={label} aria-label={label}>
-      <span className="type-glyph" aria-hidden="true">{TYPE_GLYPHS[type ?? "empty"]}</span>
+      <Icon name={iconNameForControl(type)} className="type-glyph" />
     </span>
   );
 }
@@ -134,9 +119,7 @@ function Row(p: {
           title={hasChildren ? (collapsed ? "展开" : "折叠") : undefined}
         >
           {hasChildren && (
-            <svg viewBox="0 0 8 8" className={collapsed ? "" : "open"}>
-              <path d="M2 1.5l4 2.5-4 2.5" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <Icon name="collapse" className={collapsed ? "" : "open"} size={13} />
           )}
         </button>
         <TypeIcon type={p.n.ctrl?.type} />
@@ -154,10 +137,7 @@ function Row(p: {
             p.onToggleVisible(p.n.id);
           }}
         >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-            {p.n.visible === false ? <path d="M3 3l10 10M8 5.2a2.8 2.8 0 0 1 2.8 2.8M5 6.3A4 4 0 0 0 8.6 11M2.2 6.4A8.5 8.5 0 0 0 1.5 8s2.6 4 6.5 4c.9 0 1.7-.2 2.4-.5" />
-              : <><path d="M1.5 8s2.6-4 6.5-4 6.5 4 6.5 4-2.6 4-6.5 4S1.5 8 1.5 8Z" /><circle cx="8" cy="8" r="1.8" /></>}
-          </svg>
+          <Icon name={p.n.visible === false ? "eye-off" : "eye"} size={14} />
         </button>
         <button className="icon" title={p.n.locked ? "解锁" : "锁定"}
           onClick={(e) => {
@@ -165,10 +145,7 @@ function Row(p: {
             p.onToggleLock(p.n.id);
           }}
         >
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-            {p.n.locked ? <><rect x="4" y="7.5" width="8" height="6" rx="1.5" /><path d="M5.5 7.5V5.5a2.5 2.5 0 0 1 5 0v2" /></>
-              : <path d="M5.5 7.5V5.5a2.5 2.5 0 0 1 5 0v2M4 7.5h8v6H4z" />}
-          </svg>
+          <Icon name={p.n.locked ? "lock" : "unlock"} size={14} />
         </button>
       </li>
       {!collapsed && hasChildren && [...(p.n.children ?? [])].sort((a, b) => b.zIndex - a.zIndex).map((child) => (

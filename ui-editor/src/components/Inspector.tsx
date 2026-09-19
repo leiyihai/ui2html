@@ -5,16 +5,17 @@ import { resourceSlotDefinitions } from "../resourceBinding";
 import { createDefaultEditText } from "../controlType";
 import { clampProgressValue, progressConfig } from "../progressControl";
 import { normalizeLayoutValue } from "../layoutValues";
+import { Icon, type IconName } from "./Icon";
 
-const PARENT_GRID: [string, number, number][] = [
-  ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
-  ["←", 0, 0.5], ["●", 0.5, 0.5], ["→", 1, 0.5],
-  ["↙", 0, 1], ["↓", 0.5, 1], ["↘", 1, 1],
+const PARENT_GRID: [IconName, number, number][] = [
+  ["move-up-left", 0, 0], ["arrow-up", 0.5, 0], ["move-up-right", 1, 0],
+  ["arrow-left", 0, 0.5], ["circle", 0.5, 0.5], ["arrow-right", 1, 0.5],
+  ["move-down-left", 0, 1], ["arrow-down", 0.5, 1], ["move-down-right", 1, 1],
 ];
-const SELF_GRID: [string, number, number][] = [
-  ["↖", 0, 0], ["↑", 0.5, 0], ["↗", 1, 0],
-  ["←", 0, 0.5], ["●", 0.5, 0.5], ["→", 1, 0.5],
-  ["↙", 0, 1], ["↓", 0.5, 1], ["↘", 1, 1],
+const SELF_GRID: [IconName, number, number][] = [
+  ["move-up-left", 0, 0], ["arrow-up", 0.5, 0], ["move-up-right", 1, 0],
+  ["arrow-left", 0, 0.5], ["circle", 0.5, 0.5], ["arrow-right", 1, 0.5],
+  ["move-down-left", 0, 1], ["arrow-down", 0.5, 1], ["move-down-right", 1, 1],
 ];
 
 export function horizontalPointerDelta(clientX: number, startX: number): number {
@@ -138,7 +139,7 @@ function InspectorSection(p: { title: string; help?: string; defaultOpen?: boole
     <section className={`inspector-section ${open ? "open" : "closed"}`}>
       <div className="inspector-section-head">
         <button type="button" className="inspector-section-toggle" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
-          <span className="section-chevron">{open ? "⌄" : "›"}</span>
+          <Icon name={open ? "expand" : "collapse"} className="section-chevron" size={14} />
           <strong title={p.help}>{p.title}</strong>
         </button>
       </div>
@@ -159,7 +160,7 @@ function ResourceSlotRow(p: { slot: ResourceSlot; label: string; binding?: Image
         <div className="resource-bound">
           <img src={src} alt="" />
           <span title={p.binding.name}>{p.binding.name}</span>
-          <button className="icon" title="解除绑定" onClick={() => p.onUnbind(p.slot)}>✕</button>
+          <button className="icon" title="解除绑定" onClick={() => p.onUnbind(p.slot)}><Icon name="close" size={14} /></button>
         </div>
       ) : (
         <span className="resource-empty">空槽位 · Ctrl+B</span>
@@ -415,9 +416,9 @@ export default function Inspector(p: Props) {
           <div role="tabpanel" aria-label="父级对齐">
             <div className="subsection-label">对齐位置</div>
             <div className="grid">
-              {PARENT_GRID.map(([label, x, y]) => (
-                <button key={label} className={n.anchor.parentX === x && n.anchor.parentY === y ? "on" : ""}
-                  onClick={() => p.onReanchor({ ...n.anchor, parentX: x, parentY: y })}>{label}</button>
+              {PARENT_GRID.map(([icon, x, y], index) => (
+                <button key={`${icon}-${index}`} className={n.anchor.parentX === x && n.anchor.parentY === y ? "on" : ""}
+                  onClick={() => p.onReanchor({ ...n.anchor, parentX: x, parentY: y })}><Icon name={icon} size={13} /></button>
               ))}
             </div>
           </div>
@@ -425,9 +426,9 @@ export default function Inspector(p: Props) {
           <div role="tabpanel" aria-label="自身锚点">
             <div className="subsection-label">锚点位置</div>
             <div className="grid">
-              {SELF_GRID.map(([label, x, y]) => (
-                <button key={label} className={n.anchor.selfX === x && n.anchor.selfY === y ? "on" : ""}
-                  onClick={() => p.onReanchor({ ...n.anchor, selfX: x, selfY: y })}>{label}</button>
+              {SELF_GRID.map(([icon, x, y], index) => (
+                <button key={`${icon}-${index}`} className={n.anchor.selfX === x && n.anchor.selfY === y ? "on" : ""}
+                  onClick={() => p.onReanchor({ ...n.anchor, selfX: x, selfY: y })}><Icon name={icon} size={13} /></button>
               ))}
             </div>
           </div>
@@ -448,7 +449,7 @@ export default function Inspector(p: Props) {
               onChange={(value, record) => updateLayoutField(key, field.mode, value, record)} />
             <button type="button" className="layout-mode-button" title="点击切换相对/绝对值" aria-label="切换相对/绝对值"
               onClick={() => toggleLayoutMode(key, field)} aria-pressed={field.mode === "relative"}>
-              <span aria-hidden="true">⇄</span>
+              <Icon name="move-horizontal" size={14} />
             </button>
           </div>;
         })}
@@ -470,7 +471,7 @@ export default function Inspector(p: Props) {
               <div className="tpl-head">
                 <input value={t.name} title="模板名"
                   onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, name: e.target.value } : x))} />
-                <button className="icon" title="删除模板" onClick={() => p.onTemplates(p.templates.filter((x) => x.id !== t.id))}>✕</button>
+                <button className="icon" title="删除模板" onClick={() => p.onTemplates(p.templates.filter((x) => x.id !== t.id))}><Icon name="close" size={14} /></button>
               </div>
               <NumRow label="点击缩放" value={t.pressScale} step={0.01}
                 set={(v) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressScale: v || 1 } : x))} />
@@ -479,7 +480,7 @@ export default function Inspector(p: Props) {
               <div className="row"><label>点击高亮色</label>
                 <input type="color" value={t.pressTint ? toHex(t.pressTint) : "#ffffff"}
                   onChange={(e) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressTint: e.target.value + "40" } : x))} />
-                <button className="icon" onClick={() => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressTint: null } : x))} title="清除高亮">✕</button></div>
+                <button className="icon" onClick={() => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, pressTint: null } : x))} title="清除高亮"><Icon name="close" size={14} /></button></div>
               <NumRow label="动画时长" value={t.duration} step={0.01}
                 set={(v) => p.onTemplates(p.templates.map((x) => x.id === t.id ? { ...x, duration: v || 0.1 } : x))} />
             </div>
@@ -488,7 +489,7 @@ export default function Inspector(p: Props) {
         <button className="btn" onClick={() => p.onTemplates([...p.templates, {
           id: "t" + Date.now(), name: "模板" + (p.templates.length + 1),
           pressScale: 0.95, pressOpacity: 0.8, pressTint: null, duration: 0.1,
-        }])}>＋ 新建模板</button>
+        }])}><Icon name="plus" size={14} /> 新建模板</button>
       </InspectorSection>
 
       <InspectorSection title="工程资源" defaultOpen={false}>

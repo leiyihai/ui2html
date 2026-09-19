@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import type { UINode } from "../types";
-import TypeListMenu, { ListArrangementMenu } from "./TypePieMenu";
+import TypeListMenu, { ListArrangementMenu, menuLayout } from "./TypePieMenu";
 
 const node: UINode = {
   id: "layout-1", name: "布局", image: null, children: [],
@@ -13,6 +13,16 @@ const node: UINode = {
 };
 
 describe("TypeListMenu", () => {
+  it("clamps the menu center so the panel stays inside the viewport", () => {
+    vi.stubGlobal("window", { innerWidth: 1280, innerHeight: 720 });
+    expect(menuLayout({ x: 12, y: 708 })).toEqual({
+      left: 136, top: 548, transform: "translate(-50%, -50%) scale(1)", maxHeight: "calc((100vh - 24px) / 1)",
+    });
+    expect(menuLayout({ x: 640, y: 360 }, 1.2)).toEqual({
+      left: 640, top: 360, transform: "translate(-50%, -50%) scale(1.2)", maxHeight: "calc((100vh - 24px) / 1.2)",
+    });
+  });
+
   it("renders a compact single-column type list", () => {
     vi.stubGlobal("window", { innerWidth: 1280, innerHeight: 720 });
     const html = renderToStaticMarkup(<TypeListMenu x={640} y={360} node={node} onChoose={vi.fn()} onClose={vi.fn()} />);

@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { LayoutResult, NineSliceCandidate, NineSliceGroup, NineSliceMargins, UIScene } from "../types";
-import { collectNineSliceImages, createManualNineSliceCandidate, parseBulkMargins, rankNineSliceEntries, retainKnownNineSliceSelection, sameNodeSet, type NineSliceImageEntry } from "../nineSlice";
+import { bulkMarginsValidationError, collectNineSliceImages, createManualNineSliceCandidate, parseBulkMargins, rankNineSliceEntries, retainKnownNineSliceSelection, sameNodeSet, type NineSliceImageEntry } from "../nineSlice";
 import { applySelection, createSelectionIntent } from "../selection";
 import SceneOverview from "./SceneOverview";
+import { Icon } from "./Icon";
 
 type SliceTab = "mark" | "result";
 
@@ -28,7 +29,7 @@ export function NineSliceImageCard(p: {
   const content = <>
     <img src={p.entry.image.toDataURL("image/png")} alt="" />
     <span><strong>{p.entry.node.name}</strong><small>{p.entry.image.width} × {p.entry.image.height}{p.handledStatus ? ` · ${p.handledStatus}` : p.candidate ? ` · ${statusLabel(p.candidate.status)}` : ""}</small></span>
-    <i>{p.selected ? "✓" : ""}</i>
+    <i>{p.selected ? <Icon name="check" size={14} /> : null}</i>
   </>;
   if (p.handledStatus) return <div className="slice-candidate-image handled">{content}</div>;
   return <button type="button" className={`slice-candidate-image ${p.selected ? "selected" : ""}`} onClick={p.onClick}>{content}</button>;
@@ -37,9 +38,15 @@ export function NineSliceImageCard(p: {
 export function SliceEditor(p: { source: NineSliceImageEntry; slice: NineSliceMargins; onChange: (slice: NineSliceMargins) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dragRef = useRef<"top" | "bottom" | "left" | "right" | null>(null);
-  const scaleRef = useRef(1);
+  const scaleRef = useRef({ x: 1, y: 1 });
   const [bulkMargins, setBulkMargins] = useState("");
   const [bulkError, setBulkError] = useState("");
+
+  useEffect(() => {
+    // 切换图片时显示当前边距；拖拽标记线后也会由 p.slice 同步到输入框。
+    setBulkMargins(`${p.slice.top},${p.slice.bottom},${p.slice.left},${p.slice.right}`);
+    setBulkError("");
+  }, [p.source.node.id, p.slice]);
 
   useEffect(() => {
     const cv = canvasRef.current;
@@ -47,13 +54,13 @@ export function SliceEditor(p: { source: NineSliceImageEntry; slice: NineSliceMa
     const image = p.source.image;
     const dpr = window.devicePixelRatio || 1;
     const scale = Math.max(0.25, Math.min(300 / image.width, 210 / image.height, 8));
-    scaleRef.current = scale;
     cv.width = Math.max(1, Math.round(image.width * scale * dpr));
     cv.height = Math.max(1, Math.round(image.height * scale * dpr));
     cv.style.width = `${image.width * scale}px`;
     cv.style.height = `${image.height * scale}px`;
     const context = cv.getContext("2d");
     if (!context) return;
+    cv.style.cursor = "crosshair";
     context.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
     context.clearRect(0, 0, image.width, image.height);
     context.drawImage(image, 0, 0);
@@ -70,26 +77,36 @@ export function SliceEditor(p: { source: NineSliceImageEntry; slice: NineSliceMa
 
   const pointerPosition = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
+    // getBoundingClientRect 包含应用整体缩放；不能继续使用未缩放的内部 scale，
+    // 否则鼠标越靠近右侧/下侧，换算误差越明显。
+    const scaleX = rect.width / Math.max(1, p.source.image.width);
+    const scaleY = rect.height / Math.max(1, p.source.image.height);
+    scaleRef.current = { x: scaleX, y: scaleY };
     return {
-      x: Math.max(0, Math.min(p.source.image.width, Math.round((event.clientX - rect.left) / scaleRef.current))),
-      y: Math.max(0, Math.min(p.source.image.height, Math.round((event.clientY - rect.top) / scaleRef.current))),
+      x: Math.max(0, Math.min(p.source.image.width, Math.round((event.clientX - rect.left) / Math.max(.01, scaleX)))),
+      y: Math.max(0, Math.min(p.source.image.height, Math.round((event.clientY - rect.top) / Math.max(.01, scaleY)))),
     };
   };
   const lineAt = (x: number, y: number): "top" | "bottom" | "left" | "right" | null => {
     const { width, height } = p.source.image;
-    const threshold = 7 / scaleRef.current;
+    const thresholdX = 9 / Math.max(.01, scaleRef.current.x);
+    const thresholdY = 9 / Math.max(.01, scaleRef.current.y);
     const distances: ["top" | "bottom" | "left" | "right", number][] = [
-      ["top", Math.abs(y - p.slice.top)], ["bottom", Math.abs(y - (height - p.slice.bottom))],
-      ["left", Math.abs(x - p.slice.left)], ["right", Math.abs(x - (width - p.slice.right))],
+      ["top", Math.abs(y - p.slice.top) / thresholdY], ["bottom", Math.abs(y - (height - p.slice.bottom)) / thresholdY],
+      ["left", Math.abs(x - p.slice.left) / thresholdX], ["right", Math.abs(x - (width - p.slice.right)) / thresholdX],
     ];
     distances.sort((a, b) => a[1] - b[1]);
-    return distances[0][1] <= threshold ? distances[0][0] : null;
+    return distances[0][1] <= 1 ? distances[0][0] : null;
+  };
+  const setCursorForLine = (canvas: HTMLCanvasElement, line: "top" | "bottom" | "left" | "right" | null) => {
+    canvas.style.cursor = line === "left" || line === "right" ? "ew-resize" : line ? "ns-resize" : "crosshair";
   };
   const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const point = pointerPosition(event);
     const hit = lineAt(point.x, point.y);
     if (!hit) return;
     dragRef.current = hit;
+    setCursorForLine(event.currentTarget, hit);
     event.currentTarget.setPointerCapture(event.pointerId);
   };
   const onPointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
@@ -97,7 +114,7 @@ export function SliceEditor(p: { source: NineSliceImageEntry; slice: NineSliceMa
     const hit = dragRef.current;
     if (!hit) {
       const near = lineAt(point.x, point.y);
-      event.currentTarget.style.cursor = near === "left" || near === "right" ? "ew-resize" : near ? "ns-resize" : "crosshair";
+      setCursorForLine(event.currentTarget, near);
       return;
     }
     const { width, height } = p.source.image;
@@ -112,17 +129,26 @@ export function SliceEditor(p: { source: NineSliceImageEntry; slice: NineSliceMa
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
     dragRef.current = null;
   };
+  const onPointerCancel = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    dragRef.current = null;
+  };
   const applyBulkMargins = () => {
+    const validationError = bulkMarginsValidationError(bulkMargins, p.source.image.width, p.source.image.height);
+    if (validationError) {
+      setBulkError(validationError);
+      return;
+    }
     const next = parseBulkMargins(bulkMargins, p.source.image.width, p.source.image.height);
     if (!next) {
-      setBulkError("请输入一个数，或按“上,下,左,右”输入四个非负整数");
+      setBulkError("批量边距无法应用，请检查输入格式");
       return;
     }
     setBulkError("");
     p.onChange(next);
   };
-  return <div className="slice-editor"><div className="slice-preview"><canvas ref={canvasRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} /></div>
-    <div className="slice-nums"><div className="slice-bulk-margins"><label htmlFor="slice-bulk-input">批量设置</label><input id="slice-bulk-input" value={bulkMargins} placeholder="上,下,左,右 或 4" onChange={(event) => { setBulkMargins(event.target.value); setBulkError(""); }} onKeyDown={(event) => { if (event.key === "Enter") applyBulkMargins(); }} /><button type="button" className="btn" onClick={applyBulkMargins}>应用</button></div>{bulkError && <div className="slice-bulk-error">{bulkError}</div>}</div></div>;
+  return <div className="slice-editor"><div className="slice-preview"><canvas ref={canvasRef} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerCancel} /></div>
+    <div className="slice-nums"><div className="slice-bulk-margins"><label htmlFor="slice-bulk-input"><span>批量设置</span><small>{p.source.image.width} × {p.source.image.height}</small></label><input id="slice-bulk-input" value={bulkMargins} placeholder="上,下,左,右 或 4" onChange={(event) => { setBulkMargins(event.target.value); setBulkError(""); }} onKeyDown={(event) => { if (event.key === "Enter") applyBulkMargins(); }} /><button type="button" className="btn" onClick={applyBulkMargins}>应用</button></div>{bulkError && <div className="slice-bulk-error">{bulkError}</div>}</div></div>;
 }
 
 export interface NineSliceWorkspaceProps {
@@ -178,7 +204,10 @@ export function NineSliceWorkspaceProvider(p: Omit<NineSliceWorkspaceProps, "sce
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selectionAnchorRef = useRef<string | null>(null);
   const initialSelectionDoneRef = useRef(false);
-  const selectedEntries = selectedIds.map((id) => entries.find((entry) => entry.node.id === id)).filter((entry): entry is NineSliceImageEntry => Boolean(entry));
+  const selectedEntries = useMemo(
+    () => selectedIds.map((id) => entries.find((entry) => entry.node.id === id)).filter((entry): entry is NineSliceImageEntry => Boolean(entry)),
+    [entries, selectedIds],
+  );
   const confirmedIds = useMemo(() => new Set([
     ...groups.flatMap((group) => group.memberNodeIds),
     ...candidates.filter((candidate) => candidate.status === "confirmed").flatMap((candidate) => candidate.memberNodeIds),
@@ -195,7 +224,10 @@ export function NineSliceWorkspaceProvider(p: Omit<NineSliceWorkspaceProps, "sce
   );
   const handledEntries = entries.filter((entry) => handledIds.has(entry.node.id));
   const existingCandidate = selectedIds.length ? candidates.find((candidate) => sameNodeSet(candidate.memberNodeIds, selectedIds)) : undefined;
-  const workingCandidate = existingCandidate ?? (selectedEntries.length ? createManualNineSliceCandidate(selectedEntries) : null);
+  const workingCandidate = useMemo(
+    () => existingCandidate ?? (selectedEntries.length ? createManualNineSliceCandidate(selectedEntries) : null),
+    [existingCandidate, selectedEntries],
+  );
   const displaySource = selectedEntries[0] ?? (existingCandidate ? sourceFor(existingCandidate, entries) : null);
   const savedGroup = workingCandidate ? groupFor(workingCandidate, groups) : undefined;
   const workingCandidateId = workingCandidate?.id;

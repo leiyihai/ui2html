@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createManualNineSliceCandidate, generateNineSliceImage, parseBulkMargins, rankNineSliceEntries, retainKnownNineSliceSelection, scanNineSliceCandidates } from "./nineSlice";
+import { bulkMarginsValidationError, createManualNineSliceCandidate, generateNineSliceImage, parseBulkMargins, rankNineSliceEntries, retainKnownNineSliceSelection, scanNineSliceCandidates } from "./nineSlice";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NineSliceImageCard } from "./components/SlicePanel";
@@ -106,8 +106,11 @@ describe("nine-slice candidate scanning", () => {
     expect(parseBulkMargins("2,3,4,1", 100, 80)).toEqual({ left: 4, top: 2, right: 1, bottom: 3 });
     expect(parseBulkMargins("4", 100, 80)).toEqual({ left: 4, top: 4, right: 4, bottom: 4 });
     expect(parseBulkMargins("2， 3，4，1", 100, 80)).toEqual({ left: 4, top: 2, right: 1, bottom: 3 });
+    expect(parseBulkMargins("2,3，4,1", 100, 80)).toEqual({ left: 4, top: 2, right: 1, bottom: 3 });
+    expect(parseBulkMargins("2、3；4 1", 100, 80)).toEqual({ left: 4, top: 2, right: 1, bottom: 3 });
     expect(parseBulkMargins("2,3", 100, 80)).toBeNull();
     expect(parseBulkMargins("60,30,20,20", 100, 80)).toBeNull();
+    expect(bulkMarginsValidationError("60,60,60,60", 84, 84)).toContain("原图尺寸 84 × 84");
   });
   it("groups same visual content at different sizes and selects the largest source", () => {
     const small = node("small", "panel_small", image(40, 20));

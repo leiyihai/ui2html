@@ -124,7 +124,7 @@ describe("layout alignment inspector", () => {
     expect(html).not.toContain("父级 ↗");
     expect(html).toContain('class="layout-mode-button"');
     expect(html).toContain('title="点击切换相对/绝对值"');
-    expect(html).toContain("⇄");
+    expect(html).toContain("lucide-move-horizontal");
     expect(html).not.toContain("Parent Anchor");
     expect(html).not.toContain("Self Anchor");
   });

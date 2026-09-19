@@ -1,11 +1,15 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import type { CtrlType, UINode } from "../types";
 import { TYPE_LABELS, TypeIcon } from "./ControlsPanel";
+import { Icon } from "./Icon";
 
 interface Props {
   x: number;
   y: number;
   node: UINode;
+  /** The app shell is scaled as a whole; overlays rendered in body need this explicitly. */
+  uiScale?: number;
   onChoose: (type: CtrlType) => void;
   onClose: () => void;
 }
@@ -25,12 +29,15 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
-function menuLayout(pointer: { x: number; y: number }) {
-  const width = Math.min(248, window.innerWidth - 24);
-  const height = Math.min(320, window.innerHeight - 24);
+export function menuLayout(pointer: { x: number; y: number }, uiScale = 1) {
+  const scale = Math.max(0.5, Math.min(2, uiScale));
+  const width = Math.min(248 * scale, window.innerWidth - 24);
+  const height = Math.min(320 * scale, window.innerHeight - 24);
   return {
     left: clamp(pointer.x, width / 2 + 12, window.innerWidth - width / 2 - 12),
     top: clamp(pointer.y, height / 2 + 12, window.innerHeight - height / 2 - 12),
+    transform: `translate(-50%, -50%) scale(${scale})`,
+    maxHeight: `calc((100vh - 24px) / ${scale})`,
   };
 }
 
@@ -42,7 +49,7 @@ export function ListArrangementMenu(p: {
   return (
     <section className="type-list-submenu" aria-label="选择列表排列方式">
       <div className="type-list-submenu-head">
-        <button className="type-list-back" onClick={p.onBack} aria-label="返回类型列表">‹</button>
+        <button className="type-list-back" onClick={p.onBack} aria-label="返回类型列表"><Icon name="back" size={15} /></button>
         <div><span>列表容器</span><strong>选择排列方式</strong></div>
       </div>
       <div className="type-list-submenu-options">
@@ -61,9 +68,9 @@ export function ListArrangementMenu(p: {
 export default function TypeListMenu(p: Props) {
   const [showListArrangements, setShowListArrangements] = useState(false);
   const current = p.node.ctrl?.type ?? "empty";
-  const layout = menuLayout(p);
+  const layout = menuLayout(p, p.uiScale);
 
-  return (
+  const content = (
     <div className="type-list-backdrop" onPointerDown={(e) => { if (e.target === e.currentTarget) p.onClose(); }}>
       <div className="type-list-menu" style={layout} role="dialog" aria-label="选择控件类型" onPointerDown={(e) => e.stopPropagation()}>
         <header className="type-list-head"><strong>当前：{TYPE_LABELS[current]}</strong></header>
@@ -84,4 +91,7 @@ export default function TypeListMenu(p: Props) {
       </div>
     </div>
   );
+  // The app shell is scaled with CSS transform. Portaling to body keeps fixed positioning
+  // relative to the actual viewport instead of the transformed layer panel/canvas tree.
+  return typeof document === "undefined" ? content : createPortal(content, document.body);
 }

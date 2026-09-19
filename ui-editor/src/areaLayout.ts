@@ -61,11 +61,11 @@ export function createDefaultWorkspaceLayouts(customWorkspaceIds: string[] = [])
     bindings: split("split-bindings-main", "vertical", .2,
       leaf("area-bindings-layers", "layers"),
       split("split-bindings-right", "vertical", .75, leaf("area-bindings-resources", "bindings"), leaf("area-bindings-overview", "overview"))),
-    slice: split("split-slice-main", "vertical", .44,
+    slice: split("split-slice-main", "vertical", .72,
       leaf("area-slice-candidates", "slice-candidates"),
-      split("split-slice-right", "vertical", .64,
-        leaf("area-slice-marker", "slice-marker"),
-        leaf("area-slice-overview", "overview"))),
+      split("split-slice-right", "horizontal", .4,
+        leaf("area-slice-overview", "overview"),
+        leaf("area-slice-marker", "slice-marker"))),
     preview: leaf("area-preview", "preview"),
     export: leaf("area-export-targets", "export-targets"),
   };
@@ -75,11 +75,22 @@ export function createDefaultWorkspaceLayouts(customWorkspaceIds: string[] = [])
   return layouts;
 }
 
-/** 将早期“九宫格单区域”布局迁移到现在的可组合工具布局。自定义九宫格分割布局不覆盖。 */
+function isLegacyDefaultSliceLayout(node: AreaNode): boolean {
+  if (node.kind !== "split" || node.id !== "split-slice-main" || node.axis !== "vertical"
+    || Math.abs(node.ratio - .44) > .001
+    || node.first.kind !== "area" || node.first.id !== "area-slice-candidates" || node.first.tool !== "slice-candidates"
+    || node.second.kind !== "split" || node.second.id !== "split-slice-right" || node.second.axis !== "vertical"
+    || Math.abs(node.second.ratio - .64) > .001) return false;
+  return node.second.first.kind === "area" && node.second.first.id === "area-slice-marker" && node.second.first.tool === "slice-marker"
+    && node.second.second.kind === "area" && node.second.second.id === "area-slice-overview" && node.second.second.tool === "overview";
+}
+
+/** 将早期九宫格布局迁移到新的“左侧候选，右侧上下分栏”排版。自定义九宫格分割布局不覆盖。 */
 export function migrateWorkspaceLayout(workflow: Workspace, restored: AreaNode, fallback: AreaNode): AreaNode {
   if (workflow === "slice" && restored.kind === "area" && restored.id === "area-slice" && restored.tool === "slice") {
     return fallback;
   }
+  if (workflow === "slice" && isLegacyDefaultSliceLayout(restored)) return fallback;
   return restored;
 }
 
@@ -221,6 +232,32 @@ export function joinArea(node: AreaNode, areaId: string, keep: "current" | "sibl
   const first = joinArea(node.first, areaId, keep);
   if (first !== node.first) return { ...node, first };
   return { ...node, second: joinArea(node.second, areaId, keep) };
+}
+
+/**
+ * 移除一个相邻叶子区域，并让另一个叶子区域占据合并后的空间。
+ *
+ * 与右键菜单的“直接兄弟合并”不同，角落拖拽可以跨过嵌套分割，
+ * 因此需要移除任意叶子并沿途折叠只剩一个分支的 split 节点。
+ * keepId 区域本身会被保留，便于继续使用它当前的工具。
+ */
+export function joinAreaPair(node: AreaNode, removeId: string, keepId: string): AreaNode {
+  if (removeId === keepId || !findArea(node, removeId) || !findArea(node, keepId)) return node;
+
+  const remove = (candidate: AreaNode): { node: AreaNode | null; removed: boolean } => {
+    if (candidate.kind === "area") {
+      return candidate.id === removeId ? { node: null, removed: true } : { node: candidate, removed: false };
+    }
+    const first = remove(candidate.first);
+    const second = remove(candidate.second);
+    if (!first.removed && !second.removed) return { node: candidate, removed: false };
+    if (!first.node) return { node: second.node, removed: true };
+    if (!second.node) return { node: first.node, removed: true };
+    return { node: { ...candidate, first: first.node, second: second.node }, removed: true };
+  };
+
+  const result = remove(node).node;
+  return result && findArea(result, keepId) ? result : node;
 }
 
 export function isAreaNode(value: unknown): value is AreaNode {

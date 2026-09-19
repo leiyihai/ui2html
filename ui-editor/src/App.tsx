@@ -40,6 +40,7 @@ import { normalizeLayoutValue, syncNodeLayoutPosition } from "./layoutValues";
 import { clampCanvasZoom, defaultPreviewView, findCanvasHit, panForZoomAtPoint, previewCanvasSizeForWrap } from "./canvasView";
 import ExportTargetPanel, { type ExportTarget } from "./components/ExportTargetPanel";
 import SettingsDialog from "./components/SettingsDialog";
+import { Icon } from "./components/Icon";
 import AreaLayout from "./components/AreaLayout";
 import WorkspaceAreaToolbar from "./components/WorkspaceAreaToolbar";
 import { CanvasZoomControl, FontPickerControl, PreviewToolActions, type PreviewToolActionsProps } from "./components/AreaToolActions";
@@ -49,6 +50,7 @@ import {
   createDefaultWorkspaceLayouts,
   findArea,
   joinArea,
+  joinAreaPair,
   migrateWorkspaceLayout,
   resizeAreaSplit,
   sanitizeAreaLayout,
@@ -70,18 +72,9 @@ export interface ImportProgress {
 type ToolbarActionIconKind = "project-name" | "ai-name" | "type-convert";
 
 function ToolbarActionIcon({ kind }: { kind: ToolbarActionIconKind }) {
-  if (kind === "project-name") return <svg viewBox="0 0 20 20" aria-hidden="true">
-    <path fill="currentColor" d="M3 2.5h8l4 4v11H3v-15Zm7.5 1.8v3.1h3.1l-3.1-3.1ZM5 10.2h6.1v1.5H5v-1.5Zm0 3.1h6.1v1.5H5v-1.5Z" />
-    <path fill="currentColor" d="m13.4 12.1 1.2-1.2 3.1 3.1-1.2 1.2-3.1-3.1Zm-.7.7-.8 2.2 2.2-.8-.7-1.4-.7-.7Z" />
-  </svg>;
-  if (kind === "ai-name") return <svg viewBox="0 0 20 20" aria-hidden="true">
-    <path fill="currentColor" d="m9.9 1.5 1.4 5.7L17 8.6l-5.7 1.4-1.4 5.7-1.4-5.7-5.7-1.4 5.7-1.4 1.4-5.7Z" />
-    <path fill="currentColor" d="m15.9 12.2.6 2.2 2.1.6-2.1.6-.6 2.2-.6-2.2-2.2-.6 2.2-.6.6-2.2Z" />
-  </svg>;
-  return <svg viewBox="0 0 20 20" aria-hidden="true">
-    <path fill="currentColor" d="M2.5 2.5h6v6h-6v-6Zm9 9h6v6h-6v-6Z" />
-    <path fill="currentColor" d="M8 4.3h4.2l-1.5-1.5 1.1-1.1 3.4 3.4-3.4 3.4-1.1-1.1 1.5-1.5H8V4.3Zm4 11.4H7.8l1.5 1.5-1.1 1.1-3.4-3.4 3.4-3.4 1.1 1.1-1.5 1.5H12v1.6Z" />
-  </svg>;
+  if (kind === "project-name") return <Icon name="name-toggle" size={16} />;
+  if (kind === "ai-name") return <Icon name="sparkles" size={16} />;
+  return <Icon name="grid" size={16} />;
 }
 
 // 树工具：组节点含 children，节点操作需要递归
@@ -1515,6 +1508,14 @@ export default function App() {
     setExportMsg("已合并工具区域");
   }, [setAreaLayout]);
 
+  const joinEditorAreas = useCallback((removeId: string, keepId: string) => {
+    const next = joinAreaPair(areaLayoutRef.current, removeId, keepId);
+    const nextActive = findArea(next, keepId) ?? areaLeaves(next)[0] ?? null;
+    setAreaLayout(next);
+    if (nextActive) setActiveAreaId(nextActive.id);
+    setExportMsg("已合并工具区域");
+  }, [setAreaLayout]);
+
   const swapEditorAreas = useCallback((splitId: string) => {
     setAreaLayout((current) => swapAreaSplit(current, splitId));
     setExportMsg("已交换工具区域");
@@ -2160,8 +2161,8 @@ export default function App() {
                 <strong>{engineExport?.errors.length ? "暂不能导出" : "可以导出"}</strong>
                 <span>{engineExport?.errors.length ? `发现 ${engineExport.errors.length} 个错误` : "基础字段校验通过"}</span>
               </div>
-              {engineExport?.errors.length ? <div className="export-diagnostics error">{engineExport.errors.map((item) => <div key={item}>✕ {item}</div>)}</div> : null}
-              {engineExport?.warnings.length ? <div className="export-diagnostics">{engineExport.warnings.map((item) => <div key={item}>⚠ {item}</div>)}</div> : null}
+              {engineExport?.errors.length ? <div className="export-diagnostics error">{engineExport.errors.map((item) => <div key={item}><Icon name="close" size={13} /> {item}</div>)}</div> : null}
+              {engineExport?.warnings.length ? <div className="export-diagnostics">{engineExport.warnings.map((item) => <div key={item}><Icon name="alert" size={13} /> {item}</div>)}</div> : null}
               <div className="engine-export-path">
                 <label htmlFor={`engine-output-path-${area.id}`}>引擎测试包输出目录</label>
                 <input id={`engine-output-path-${area.id}`} type="text" value={engineOutputPath}
@@ -2247,9 +2248,9 @@ export default function App() {
       const previewFoot = <footer className="preview-workspace-foot">
         <span>预览视口：{areaCtx?.viewportWidth ?? viewport.width} × {areaCtx?.viewportHeight ?? viewport.height}</span>
         <span className="preview-zoom-value">{Math.round(previewZoomFor(area.id) * 100)}%</span>
-        <button className="btn" onClick={() => adjustPreviewZoom(-1, area.id)} aria-label="缩小预览">−</button>
+        <button className="btn" onClick={() => adjustPreviewZoom(-1, area.id)} aria-label="缩小预览"><Icon name="minus" size={14} /></button>
         <button className="btn" onClick={() => { setAreaPreviewZooms((current) => ({ ...current, [area.id]: 1 })); setAreaPreviewPans((current) => ({ ...current, [area.id]: { x: 0, y: 0 } })); }}>居中</button>
-        <button className="btn" onClick={() => adjustPreviewZoom(1, area.id)} aria-label="放大预览">＋</button>
+        <button className="btn" onClick={() => adjustPreviewZoom(1, area.id)} aria-label="放大预览"><Icon name="plus" size={14} /></button>
       </footer>;
       toolContent = <section className={`preview-workspace${previewLayoutMode === "edit" ? " preview-workspace-edit" : ""}`}>
         {previewLayoutMode === "edit" ? <div className="preview-edit-layout">
@@ -2347,7 +2348,7 @@ export default function App() {
           onScan={scanNineSlice} onConfirm={confirmNineSlice} onSkip={skipNineSlice}>
           <AreaLayout layout={areaLayout} activeAreaId={activeAreaId} onActivate={activateArea}
             onTool={changeAreaTool} onSplit={splitEditorArea} onResize={resizeEditorArea}
-            onJoin={joinEditorArea} onSwap={swapEditorAreas} renderArea={renderArea} />
+            onJoin={joinEditorArea} onJoinAreas={joinEditorAreas} onSwap={swapEditorAreas} renderArea={renderArea} uiScale={uiScale} />
         </NineSliceWorkspaceProvider>
       </div>
       {quickActionMenu && (
@@ -2370,6 +2371,7 @@ export default function App() {
           x={typeMenu.x}
           y={typeMenu.y}
           node={pieNode}
+          uiScale={uiScale}
           onChoose={(type) => { setCtrl(pieNode.id, type, "quick"); setTypeMenu(null); }}
           onClose={() => setTypeMenu(null)}
         />
@@ -2389,7 +2391,7 @@ export default function App() {
       {helpDialog && (
         <div className="modal-backdrop" role="presentation" onPointerDown={(event) => { if (event.target === event.currentTarget) setHelpDialog(null); }}>
           <section className="help-dialog" role="dialog" aria-modal="true" aria-label={helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}>
-            <header className="help-dialog-head"><div><span className="workspace-kicker">UI2HTML</span><h2>{helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}</h2></div><button className="icon-btn" onClick={() => setHelpDialog(null)} aria-label="关闭">×</button></header>
+            <header className="help-dialog-head"><div><span className="workspace-kicker">UI2HTML</span><h2>{helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}</h2></div><button className="icon-btn" onClick={() => setHelpDialog(null)} aria-label="关闭"><Icon name="close" size={16} /></button></header>
             {helpDialog === "shortcuts" ? <div className="shortcut-grid">
               {["Ctrl+S|打开工程操作菜单", "Ctrl+O|打开工程", "Ctrl+W|关闭当前工程", "Ctrl+Z|撤销", "Ctrl+X|重做", "F2|重命名节点", "T|转换控件类型", "Ctrl+G|打组", "Alt+G|取消打组", "Ctrl+[ / Ctrl+]|调整层级", "Ctrl+B|绑定资源 / 确认完成", "Ctrl+0|恢复最佳窗口预览大小"].map((item) => { const [key, label] = item.split("|"); return <div className="shortcut-row" key={key}><kbd>{key}</kbd><span>{label}</span></div>; })}
             </div> : <div className="about-copy"><strong>UI2HTML</strong><p>面向 UI 美术的 PSD 导入、工程整理、视觉检查与自研引擎 JSON 转换工具。</p><small>工程与 PSD 解耦 · 资源可追溯 · 预览优先</small></div>}
@@ -2402,7 +2404,7 @@ export default function App() {
           <section className="ai-naming-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="ai-naming-confirm-title">
             <header className="ai-naming-confirm-head">
               <div><span className="workspace-kicker">AI 命名</span><h2 id="ai-naming-confirm-title">确认重新命名？</h2></div>
-              <button className="icon-btn" type="button" onClick={() => setAiNamingConfirm(false)} aria-label="取消 AI 命名">×</button>
+              <button className="icon-btn" type="button" onClick={() => setAiNamingConfirm(false)} aria-label="取消 AI 命名"><Icon name="close" size={16} /></button>
             </header>
             <div className="ai-naming-confirm-body">
               <p>AI 将统一更新当前工程中的节点名称和图片资源名称。</p>
@@ -2422,7 +2424,7 @@ export default function App() {
         onClose={() => setSettingsDialog(false)} />}
       <footer className="statusbar">
         {warnings.length > 0 && (
-          <span className="warn" title={warnings.join("\n")}>⚠ {warnings.length} 个导入/分析提示</span>
+          <span className="warn" title={warnings.join("\n")}><Icon name="alert" size={14} /> {warnings.length} 个导入/分析提示</span>
         )}
         {showShortcutHints && <span className="status-shortcuts">
           {workspace === "controls" && <><span>Ctrl/⌘ 多选</span><span>Ctrl+G 打组</span><span>Alt+G 取消打组</span><span>F2 重命名</span><span>T 转换类型</span><span>Ctrl+[ / ] 调整层级</span><span>Ctrl+滚轮 缩放</span><span>Space+拖拽 平移</span></>}

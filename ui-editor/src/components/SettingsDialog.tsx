@@ -1,3 +1,5 @@
+import { Icon } from "./Icon";
+
 interface Props {
   uiScale: number;
   onUiScale: (value: number) => void;
@@ -19,7 +21,7 @@ export default function SettingsDialog({ uiScale, onUiScale, onReset, reduceMoti
             <span className="workspace-kicker">APPLICATION</span>
             <h2 id="settings-dialog-title">界面设置</h2>
           </div>
-          <button className="icon-btn" type="button" onClick={onClose} aria-label="关闭界面设置">×</button>
+          <button className="icon-btn" type="button" onClick={onClose} aria-label="关闭界面设置"><Icon name="close" size={16} /></button>
         </header>
         <div className="settings-dialog-body">
           <section className="settings-section">

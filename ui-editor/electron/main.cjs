@@ -11,6 +11,14 @@ const DEV_HOST = "127.0.0.1";
 const DEV_PORT = 5173;
 let viteProcess = null;
 
+// 某些 Windows 环境的 GPU 进程无法启动（缺少驱动 DLL 或远程桌面环境），
+// Electron 会在 GPU 多次崩溃后直接退出。UI2HTML 以 2D 画布为主，软件渲染足够，
+// 因此在创建窗口前关闭硬件加速，保证桌面版能稳定启动。
+app.disableHardwareAcceleration();
+app.commandLine.appendSwitch("disable-gpu");
+app.commandLine.appendSwitch("disable-gpu-compositing");
+app.commandLine.appendSwitch("in-process-gpu");
+
 function probeDevServer(port = DEV_PORT) {
   return new Promise((resolve) => {
     const request = http.get({ host: DEV_HOST, port, path: "/", timeout: 350 }, (response) => {

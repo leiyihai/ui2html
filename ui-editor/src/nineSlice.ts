@@ -7,12 +7,29 @@ export interface NineSliceImageEntry {
   signature: string;
 }
 
+function bulkMarginValues(input: string): number[] {
+  // 支持英文逗号、中文逗号/顿号、分号和空格，避免输入法切换造成误判。
+  return input.trim().split(/[,，、;；\s]+/).filter(Boolean).map(Number);
+}
+
+/** 返回批量边距输入的具体校验原因；null 表示格式和图片尺寸都可用。 */
+export function bulkMarginsValidationError(input: string, width: number, height: number): string | null {
+  const values = bulkMarginValues(input);
+  if ((values.length !== 1 && values.length !== 4) || values.some((value) => !Number.isSafeInteger(value) || value < 0)) {
+    return "请输入一个非负整数，或按“上,下,左,右”输入四个非负整数";
+  }
+  const [top, bottom, left, right] = values.length === 1 ? [values[0], values[0], values[0], values[0]] : values;
+  if (left + right > Math.max(0, width - 1) || top + bottom > Math.max(0, height - 1)) {
+    return `边距超过原图尺寸 ${width} × ${height}：左右合计最多 ${Math.max(0, width - 1)}，上下合计最多 ${Math.max(0, height - 1)}`;
+  }
+  return null;
+}
+
 /** 解析九宫格批量边距：单值复制到四边，四值顺序为上、下、左、右。 */
 export function parseBulkMargins(input: string, width: number, height: number): NineSliceMargins | null {
-  const values = input.trim().split(/[,，\s]+/).filter(Boolean).map(Number);
-  if ((values.length !== 1 && values.length !== 4) || values.some((value) => !Number.isInteger(value) || value < 0)) return null;
+  if (bulkMarginsValidationError(input, width, height)) return null;
+  const values = bulkMarginValues(input);
   const [top, bottom, left, right] = values.length === 1 ? [values[0], values[0], values[0], values[0]] : values;
-  if (left + right > Math.max(0, width - 1) || top + bottom > Math.max(0, height - 1)) return null;
   return { left, top, right, bottom };
 }
 

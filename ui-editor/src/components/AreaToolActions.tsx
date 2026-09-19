@@ -3,6 +3,7 @@ import { ENGINE_EDITOR_FONT_FAMILY } from "../engineFont";
 import { nextFontInCycle } from "../fontPicker";
 import { nextPreviewPreset, nextPreviewScaleMode, PREVIEW_SCALE_MODES, presetsForDesign, type DeviceShell } from "../devicePreview";
 import type { ScaleMode } from "../types";
+import { Icon } from "./Icon";
 
 export function FontPickerControl({ hasScene, onFont }: { hasScene: boolean; onFont: (font: string) => void }) {
   const [fontList, setFontList] = useState<string[]>([]);
@@ -41,15 +42,15 @@ export function FontPickerControl({ hasScene, onFont }: { hasScene: boolean; onF
         onClick={() => {
         const nextFont = nextFontInCycle(fontList, selectedFont);
         if (nextFont) void applyFont(nextFont);
-      }}>↻</button>
+      }}><Icon name="refresh" size={16} /></button>
   </div>;
 }
 
 export function CanvasZoomControl({ zoom, onAdjust }: { zoom: number; onAdjust: (direction: 1 | -1) => void }) {
   return <span className="canvas-zoom-controls area-toolbar-zoom-controls" aria-label="画布缩放">
-    <button type="button" className="status-zoom-btn" onClick={() => onAdjust(-1)} aria-label="缩小画布">−</button>
+    <button type="button" className="status-zoom-btn" onClick={() => onAdjust(-1)} aria-label="缩小画布"><Icon name="minus" size={14} /></button>
     <span className="canvas-zoom-value" title="Ctrl+0 恢复最佳窗口预览大小">{Math.round(zoom * 100)}%</span>
-    <button type="button" className="status-zoom-btn" onClick={() => onAdjust(1)} aria-label="放大画布">＋</button>
+    <button type="button" className="status-zoom-btn" onClick={() => onAdjust(1)} aria-label="放大画布"><Icon name="plus" size={14} /></button>
   </span>;
 }
 
@@ -97,7 +98,7 @@ export function PreviewToolActions(p: PreviewToolActionsProps) {
       </select>
       <button className="btn preview-cycle-button" type="button" aria-label="循环切换设备预设" title="循环切换设备预设"
         disabled={!p.hasScene || previewPresets.length < 2}
-        onClick={() => { const next = nextPreviewPreset(previewPresets, previewPreset); if (next) { p.onViewport({ width: next.width, height: next.height }); p.onDeviceShell(next.shell); } }}>↻</button>
+        onClick={() => { const next = nextPreviewPreset(previewPresets, previewPreset); if (next) { p.onViewport({ width: next.width, height: next.height }); p.onDeviceShell(next.shell); } }}><Icon name="refresh" size={16} /></button>
       <button className={`btn preview-toggle-button${p.showDeviceShell ? " on" : ""}`} type="button" aria-pressed={p.showDeviceShell}
         aria-label="显示设备壳" title="切换白色设备壳" disabled={!p.hasScene} onClick={p.onToggleDeviceShell}>设备壳</button>
       <span className="preview-context-size">{currentPreviewPreset ? `${currentPreviewPreset.width} × ${currentPreviewPreset.height}` : `${p.viewport.width} × ${p.viewport.height}`}</span>
@@ -116,7 +117,7 @@ export function PreviewToolActions(p: PreviewToolActionsProps) {
         {PREVIEW_SCALE_MODES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
       </select>
       <button className="btn preview-cycle-button" type="button" aria-label="循环切换缩放方式" title="循环切换缩放方式" disabled={!p.hasScene}
-        onClick={() => p.onScaleMode(nextPreviewScaleMode(p.scaleMode))}>↻</button>
+        onClick={() => p.onScaleMode(nextPreviewScaleMode(p.scaleMode))}><Icon name="refresh" size={16} /></button>
     </div>
     {p.showSafeArea && <div className="device-safe-area">
       {(["left", "right", "top", "bottom"] as const).map((side) => <label key={side}>{previewSideLabels[side]}

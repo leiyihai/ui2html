@@ -20,6 +20,7 @@ describe("area tool actions", () => {
       previewLayoutMode="pure" onTogglePreviewLayout={vi.fn()} />);
     expect(html).toContain('aria-label="设备预设"');
     expect(html).toContain('aria-label="循环切换设备预设"');
+    expect(html).not.toContain(">↻</button>");
     expect(html).toContain('aria-label="显示设备壳"');
     expect(html).toContain('aria-label="九宫格预览"');
     expect(html).toContain('aria-label="切换编辑检查布局"');

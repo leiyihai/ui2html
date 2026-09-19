@@ -114,4 +114,18 @@ describe("resource binding workspace", () => {
     complete.images = [];
     expect(orderResourceBindingTargets([complete, first, second]).map((target) => target.node.id)).toEqual(["first", "second", "complete"]);
   });
+
+  it("prioritizes controls whose appearance depends most on bound images", () => {
+    const targetFor = (id: string, type: NonNullable<UINode["ctrl"]>["type"]) =>
+      collectResourceBindingTargets([{ ...groupNode(id, id, { type }), children: [imageNode(`${id}-image`, `${id}-image`)] }])[0];
+    const layout = targetFor("layout", "Layout");
+    const button = targetFor("button", "Button");
+    const progress = targetFor("progress", "ProgressBar");
+    const slider = targetFor("slider", "Slider");
+    const edit = targetFor("edit", "Edit");
+    const list = targetFor("list", "ListHorizontal");
+    expect(orderResourceBindingTargets([layout, button, progress, slider, edit, list]).map((target) => target.node.id)).toEqual([
+      "progress", "slider", "button", "edit", "list", "layout",
+    ]);
+  });
 });

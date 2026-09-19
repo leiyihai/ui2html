@@ -1,12 +1,29 @@
 @echo off
 chcp 65001 >nul
-rem ===== UI 编辑器开发版启动入口 =====
-rem 1. 同步 psd 文件夹到 dev 静态目录（public/psd）
-rem 2. 启动 Electron 独立软件窗口(窗口内加载 Vite 本地服务)
+rem ===== UI2HTML desktop launcher =====
+rem 1. Sync PSD files into the dev public directory.
+rem 2. Start the Electron desktop window with the Vite dev server.
 
 cd /d %~dp0ui-editor
 if not exist "public\psd" mkdir "public\psd"
 copy /y "..\psd\*.psd" "public\psd\" >nul 2>&1
 powershell -NoProfile -Command "Get-ChildItem 'public\psd\*.psd' -Name | Set-Content -Encoding utf8 'public\psd\list.txt'"
 
-npm run desktop
+rem Install dependencies automatically on a new machine or checkout.
+rem Prefer the mirror for the Electron binary download.
+if not defined ELECTRON_MIRROR set "ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/"
+if not exist "node_modules\electron\dist\electron.exe" (
+  echo Installing UI2HTML dependencies...
+  call npm install
+  if errorlevel 1 goto :failed
+)
+
+call npm run desktop
+if errorlevel 1 goto :failed
+exit /b 0
+
+:failed
+echo.
+echo UI2HTML failed to start. See the error above.
+pause
+exit /b 1

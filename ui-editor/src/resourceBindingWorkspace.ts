@@ -1,4 +1,4 @@
-import type { LayoutResultNode, UINode, UIRect } from "./types";
+import type { CtrlType, LayoutResultNode, UINode, UIRect } from "./types";
 import { hasResourceSlots, resourceSlotDefinitions, type ResourceSlotDefinition } from "./resourceBinding";
 
 export interface ResourceBindingTarget {
@@ -50,10 +50,31 @@ export function isBindingComplete(target: ResourceBindingTarget): boolean {
   return target.node.resourceBindingComplete === true || target.images.length === 0;
 }
 
+/**
+ * 资源绑定处理优先级：越靠前，缺少图片时对控件外观/可用性的影响越大。
+ * Layout 的底图只是可选装饰，因此放在最后；同一优先级保持 PSD 层级顺序。
+ */
+const RESOURCE_BINDING_PRIORITY: Partial<Record<CtrlType, number>> = {
+  ProgressBar: 10,
+  Slider: 10,
+  Button: 20,
+  CheckBox: 20,
+  RadioButton: 20,
+  Edit: 30,
+  ListHorizontal: 40,
+  Layout: 90,
+};
+
+export function resourceBindingPriority(type?: CtrlType): number {
+  return type ? RESOURCE_BINDING_PRIORITY[type] ?? 50 : 50;
+}
+
 export function orderResourceBindingTargets(targets: ResourceBindingTarget[]): ResourceBindingTarget[] {
   return targets
     .map((target, index) => ({ target, index, complete: isBindingComplete(target) }))
-    .sort((a, b) => Number(a.complete) - Number(b.complete) || a.index - b.index)
+    .sort((a, b) => Number(a.complete) - Number(b.complete)
+      || resourceBindingPriority(a.target.node.ctrl?.type) - resourceBindingPriority(b.target.node.ctrl?.type)
+      || a.index - b.index)
     .map(({ target }) => target);
 }
 

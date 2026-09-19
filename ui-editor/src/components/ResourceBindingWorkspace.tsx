@@ -4,6 +4,7 @@ import { renderUi } from "../renderer";
 import { collectResourceBindingTargets, effectivePreviewRect, imageDataUrl, isBindingComplete, orderResourceBindingTargets, type ResourceBindingTarget } from "../resourceBindingWorkspace";
 import type { LayoutResult, ResourceSlot, UINode } from "../types";
 import { TypeIcon } from "./ControlsPanel";
+import { Icon } from "./Icon";
 
 interface Props {
   nodes: import("../types").UINode[];
@@ -49,10 +50,10 @@ function BindingCard(p: {
           {complete && target.node.resourceBindingComplete ? (
             <button type="button" className="binding-status done status-action" aria-label="已完成，点击恢复为待处理状态"
               onClick={(event) => { event.stopPropagation(); p.onResetComplete(target.node.id); }} title="已完成 · 点击恢复为待处理状态">
-              <i aria-hidden="true">↶</i>
+              <i aria-hidden="true"><Icon name="refresh" size={14} /></i>
             </button>
           ) : <span className={`binding-status ${complete ? "done" : "todo"}`} aria-label={complete ? "已完成" : "待绑定"} title={complete ? "已完成" : "待绑定"}>
-            <i aria-hidden="true">{complete ? "✓" : "•"}</i>
+            <i aria-hidden="true"><Icon name={complete ? "check" : "circle"} size={14} /></i>
           </span>}
           <div className="binding-card-heading">
             <h3>{target.node.name}</h3>
@@ -89,7 +90,7 @@ function BindingCard(p: {
                     onClick={(event) => p.onSelectImage(image.id, event)}>
                     <img src={imageDataUrl(image)} alt="" />
                     <span>{image.name}</span>
-                    {p.selectedIds.includes(image.id) && <i>✓</i>}
+                    {p.selectedIds.includes(image.id) && <i><Icon name="check" size={14} /></i>}
                   </button>
                 ))}
               </div>
@@ -217,7 +218,7 @@ export default function ResourceBindingWorkspace(p: Props) {
         </div>
       ) : (
         <div className="binding-workspace-empty">
-          <span className="binding-empty-mark">◎</span>
+          <span className="binding-empty-mark"><Icon name="binding" size={28} /></span>
           <strong>还没有可绑定的控件</strong>
           <p>先导入 PSD 或打开工程，再将节点转换为按钮、进度条等控件类型。</p>
         </div>

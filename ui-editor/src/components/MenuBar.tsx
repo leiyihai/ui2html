@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ChangeEvent, type MouseEvent as ReactMouseEvent } from "react";
 import type { Workspace, WorkspaceOption } from "./WorkspaceTabs";
+import { Icon } from "./Icon";
 
 type MenuId = "file" | "edit" | "view" | "help" | null;
 
@@ -51,7 +52,7 @@ function Divider() { return <div className="menu-divider" role="separator" />; }
 function MenuToggle(p: { label: string; checked: boolean; disabled?: boolean; onClick: () => void }) {
   return <button className="menu-item menu-toggle" role="menuitemcheckbox" aria-checked={p.checked}
     disabled={p.disabled} onClick={p.onClick}>
-    <span className="menu-toggle-check" aria-hidden="true">{p.checked ? "✓" : ""}</span>
+    <span className="menu-toggle-check" aria-hidden="true">{p.checked ? <Icon name="check" size={13} /> : null}</span>
     <span>{p.label}</span>
   </button>;
 }
@@ -204,7 +205,7 @@ export default function MenuBar(p: Props) {
         <div className="menu-workspace-scroll">
           {p.workspaces.map(renderWorkspaceTab)}
         </div>
-        <button className="menu-workspace-add" type="button" aria-label="新建工作区" title="新建工作区" onClick={p.onAddWorkspace}>＋</button>
+        <button className="menu-workspace-add" type="button" aria-label="新建工作区" title="新建工作区" onClick={p.onAddWorkspace}><Icon name="plus" size={14} /></button>
       </div>
     </nav>
   </div>;
