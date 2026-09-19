@@ -13,8 +13,8 @@ describe("WorkspaceAreaToolbar", () => {
   });
 
   it("keeps one icon and label for every available area tool", () => {
-    expect(AREA_TOOL_OPTIONS).toHaveLength(10);
-    expect(new Set(AREA_TOOL_OPTIONS.map((item) => item.icon)).size).toBe(10);
+    expect(AREA_TOOL_OPTIONS).toHaveLength(11);
+    expect(new Set(AREA_TOOL_OPTIONS.map((item) => item.icon)).size).toBe(11);
     for (const item of AREA_TOOL_OPTIONS) {
       expect(areaToolIcon(item.value)).toBe(item.icon);
       expect(areaToolLabel(item.value)).toBe(item.label);

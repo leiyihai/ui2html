@@ -17,6 +17,7 @@ export const AREA_TOOL_OPTIONS: Array<{ value: AreaTool; label: string; icon: Ic
   { value: "slice", label: "九宫格", icon: "grid-slice" },
   { value: "slice-candidates", label: "九宫格候选", icon: "image" },
   { value: "slice-marker", label: "九宫格标记", icon: "columns" },
+  { value: "animation", label: "动画时间轴", icon: "sparkles" },
   { value: "preview", label: "预览", icon: "monitor" },
   { value: "export-targets", label: "导出目标", icon: "download" },
 ];

@@ -172,6 +172,61 @@ export interface InteractionTemplate {
   duration: number;
 }
 
+/** 动画轨道支持的通用视觉属性；这些属性可由各目标引擎适配器映射。 */
+export type AnimationProperty = "x" | "y" | "scaleX" | "scaleY" | "rotation" | "opacity" | "width" | "height";
+
+export type AnimationEasing = "linear" | "ease-in" | "ease-out" | "ease-in-out";
+
+export interface AnimationKeyframe {
+  time: number;
+  value: number;
+  easing?: AnimationEasing;
+}
+
+export interface AnimationTrack {
+  property: AnimationProperty;
+  keyframes: AnimationKeyframe[];
+}
+
+export type AnimationDirection = "normal" | "reverse" | "alternate";
+
+/** 单个节点可复用的动画片段。动画只描述视觉变化，不包含引擎业务代码。 */
+export interface AnimationClip {
+  id: string;
+  name: string;
+  duration: number;
+  delay: number;
+  loop: number | "infinite";
+  direction: AnimationDirection;
+  autoPlay: boolean;
+  tracks: AnimationTrack[];
+  source?: "manual" | "ai" | "system";
+  /** 由内置特效适配器生成时记录来源，便于审查和目标引擎转换。 */
+  effectId?: string;
+  effectVersion?: string;
+  effectLicense?: string;
+}
+
+export type AnimationTrigger = "manual" | "onShow" | "onClick" | "onHover" | "onSelect" | "onValueChange";
+
+export interface AnimationFlowStep {
+  id: string;
+  nodeId: string;
+  clipId: string;
+  start: number;
+  duration?: number;
+}
+
+/** 跨多个节点的界面级流程；独立于目标引擎 UI JSON。 */
+export interface AnimationFlow {
+  id: string;
+  name: string;
+  duration: number;
+  trigger: AnimationTrigger;
+  steps: AnimationFlowStep[];
+  source?: "manual" | "ai" | "system";
+}
+
 export interface UINode {
   id: string;
   name: string;
@@ -224,6 +279,8 @@ export interface UINode {
   ctrl?: { type: CtrlType; templateId?: string; selected?: boolean };
   /** 已从层级树移入控件属性槽位的图片资源。 */
   resources?: Partial<Record<ResourceSlot, ImageBinding>>;
+  /** 节点级可复用动画片段；只影响视觉属性。 */
+  animations?: AnimationClip[];
   /** 用户确认该控件的资源处理已完成；允许仍有图片未绑定、但槽位已没有空位的情况。 */
   resourceBindingComplete?: boolean;
 
@@ -277,6 +334,8 @@ export interface UIScene {
   useNineSlicePreview?: boolean;
   /** 交互样式模板（控件工作区管理） */
   interactionTemplates?: InteractionTemplate[];
+  /** 界面级动画流程；不直接写入目标引擎 UI JSON。 */
+  animationFlows?: AnimationFlow[];
 }
 
 export type ScaleMode = "contain" | "width" | "height" | "fill" | "cover";
@@ -293,6 +352,8 @@ export interface LayoutContext {
 export interface LayoutResultNode {
   node: UINode;
   rect: UIRect;
+  /** 渲染时使用的旋转角度；未提供时回退到 node.rotation。 */
+  rotation?: number;
   /** 组内子节点的父组矩形（用于锚点参照 / reanchor） */
   parent?: UIRect;
   /** 有效可见性（组不可见时其后代也为 false） */

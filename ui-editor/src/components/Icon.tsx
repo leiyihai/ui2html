@@ -39,7 +39,9 @@ import {
   MoveUpLeft,
   MoveUpRight,
   Palette,
+  Pause,
   Plus,
+  Play,
   Redo2,
   RotateCcw,
   Save,
@@ -137,7 +139,9 @@ export type IconName =
   | "move-up-left"
   | "move-up-right"
   | "palette"
+  | "pause"
   | "plus"
+  | "play"
   | "preview"
   | "redo"
   | "refresh"
@@ -203,7 +207,9 @@ const ICONS: Record<IconName, LucideIcon> = {
   "move-up-left": MoveUpLeft,
   "move-up-right": MoveUpRight,
   palette: Palette,
+  pause: Pause,
   plus: Plus,
+  play: Play,
   preview: Maximize2,
   redo: Redo2,
   refresh: RotateCcw,

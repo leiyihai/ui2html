@@ -3,6 +3,7 @@ import type { ScaleMode, UINode, UIScene } from "./types";
 import type { HtmlFontAsset } from "./htmlFonts";
 
 interface FlatNode {
+  id: string;
   name: string;
   img: string;
   txt?: { t: string; fs: number; c: string; f?: string; m?: string; mfs?: number } | null;
@@ -14,6 +15,7 @@ interface FlatNode {
   p: number; // 父组在数组中的下标（-1 = 根级）
   li?: boolean; // 是父 list 的 li 项（由 list 重排）
   l?: UINode["list"] | null; // list 配置
+  animations?: UINode["animations"];
 }
 
 /** DFS 平铺：组节点在前（父下标 < 子下标），子节点带父组下标 */
@@ -23,6 +25,7 @@ function flatten(nodes: UINode[], out: FlatNode[] = [], parentIdx = -1): FlatNod
     const parentIsList = parentIdx >= 0 && !!(out[parentIdx] as any)?.l;
     const isLi = parentIsList && !!n.children && n.name.toLowerCase() !== "list";
     out.push({
+      id: n.id,
       name: n.name,
       img: n.image ? n.image.toDataURL("image/png") : "",
       txt: n.text ? { t: n.text.content, fs: n.text.fontSize, c: n.text.color, f: n.text.font, m: n.text.mode, mfs: n.text.minFontSize } : null,
@@ -33,6 +36,7 @@ function flatten(nodes: UINode[], out: FlatNode[] = [], parentIdx = -1): FlatNod
       p: parentIdx,
       ...(isLi ? { li: true } : {}),
       ...(n.list ? { l: n.list } : {}),
+      ...(n.animations?.length ? { animations: n.animations } : {}),
     });
     if (n.children) flatten(n.children, out, idx);
   }
@@ -44,7 +48,7 @@ export function buildExportHtml(scene: UIScene, scaleMode: ScaleMode,
   fontAssets: HtmlFontAsset[] = []): string {
   const data = JSON.stringify({
     width: scene.designWidth, height: scene.designHeight,
-    scaleMode, safeArea, nodes: flatten(scene.nodes),
+    scaleMode, safeArea, nodes: flatten(scene.nodes), animationFlows: scene.animationFlows ?? [],
   });
   const fontFaces = fontAssets.map((font) => {
     const mime = font.format === "opentype" ? "font/otf" : "font/ttf";

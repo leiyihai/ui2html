@@ -16,6 +16,7 @@ export type AreaTool =
   | "slice"
   | "slice-candidates"
   | "slice-marker"
+  | "animation"
   | "preview"
   | "export-targets";
 
@@ -66,6 +67,11 @@ export function createDefaultWorkspaceLayouts(customWorkspaceIds: string[] = [])
       split("split-slice-right", "horizontal", .4,
         leaf("area-slice-overview", "overview"),
         leaf("area-slice-marker", "slice-marker"))),
+    animation: split("split-animation-main", "vertical", .2,
+      leaf("area-animation-layers", "layers"),
+      split("split-animation-right", "horizontal", .54,
+        leaf("area-animation-canvas", "canvas"),
+        leaf("area-animation-editor", "animation"))),
     preview: leaf("area-preview", "preview"),
     export: leaf("area-export-targets", "export-targets"),
   };

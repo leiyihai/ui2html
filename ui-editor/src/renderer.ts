@@ -5,6 +5,58 @@ import type { ImageBinding, LayoutResult, LayoutContext, ResourceSlot, UINode } 
 import { ENGINE_EDITOR_FONT_FAMILY } from "./engineFont";
 import { progressConfig } from "./progressControl";
 import { fitFontSize, wrapText, LINE_HEIGHT } from "./textMeasure";
+import { evaluateAnimationClip } from "./animation";
+
+export interface AnimationPreviewState {
+  nodeId: string;
+  clipId: string;
+  time: number;
+}
+
+/** 将时间轴中的视觉属性映射到当前布局结果，不修改工程节点本身。 */
+export function applyAnimationPreview(
+  item: LayoutResult["nodes"][number],
+  preview: AnimationPreviewState | undefined,
+  scaleX = 1,
+  scaleY = 1,
+): LayoutResult["nodes"][number] {
+  if (!preview || item.node.id !== preview.nodeId) return item;
+  const clip = item.node.animations?.find((candidate) => candidate.id === preview.clipId);
+  if (!clip) return item;
+  const values = evaluateAnimationClip(clip, preview.time);
+  if (!Object.keys(values).length) return item;
+
+  const baseRect = item.rect;
+  const nextRect = { ...baseRect };
+  const baseScaleX = Math.abs(item.node.scale?.x ?? 1) || 1;
+  const baseScaleY = Math.abs(item.node.scale?.y ?? 1) || 1;
+  if (values.x !== undefined) nextRect.x += (values.x - item.node.anchor.offsetX) * scaleX;
+  if (values.y !== undefined) nextRect.y += (values.y - item.node.anchor.offsetY) * scaleY;
+  if (values.width !== undefined) {
+    const width = Math.max(0.001, values.width * scaleX);
+    nextRect.x -= (width - baseRect.width) * item.node.anchor.selfX;
+    nextRect.width = width;
+  }
+  if (values.height !== undefined) {
+    const height = Math.max(0.001, values.height * scaleY);
+    nextRect.y -= (height - baseRect.height) * item.node.anchor.selfY;
+    nextRect.height = height;
+  }
+  if (values.scaleX !== undefined) {
+    const width = Math.max(0.001, baseRect.width * (Math.abs(values.scaleX) / baseScaleX));
+    nextRect.x -= (width - baseRect.width) * item.node.anchor.selfX;
+    nextRect.width = width;
+  }
+  if (values.scaleY !== undefined) {
+    const height = Math.max(0.001, baseRect.height * (Math.abs(values.scaleY) / baseScaleY));
+    nextRect.y -= (height - baseRect.height) * item.node.anchor.selfY;
+    nextRect.height = height;
+  }
+  const nextOpacity = values.opacity === undefined
+    ? item.opacity
+    : Math.max(0, Math.min(1, item.opacity * (item.node.opacity > 0 ? values.opacity / item.node.opacity : values.opacity)));
+  return { ...item, rect: nextRect, opacity: nextOpacity, rotation: values.rotation ?? item.node.rotation };
+}
 
 /** 返回编辑状态下当前应显示的控件资源层，顺序为从底到顶。 */
 export function visibleControlResourceImages(node: UINode): HTMLCanvasElement[] {
@@ -132,7 +184,12 @@ function drawResourceImage(ctx: CanvasRenderingContext2D, binding: ImageBinding,
   else ctx.drawImage(binding.image, rect.x, rect.y, rect.width, rect.height);
 }
 
-export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, useSlice = false) {
+export function renderUi(
+  ctx: CanvasRenderingContext2D,
+  result: LayoutResult,
+  useSlice = false,
+  animationPreview?: AnimationPreviewState,
+) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const minimumDescendantZ = (node: LayoutResult["nodes"][number]["node"]): number => {
     let minimum = Number.POSITIVE_INFINITY;
@@ -149,8 +206,11 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
     && node.resources?.LayoutBackImage
     ? Math.min(node.zIndex, minimumDescendantZ(node) - 0.001)
     : node.zIndex;
-  const nodes = [...result.nodes].sort((a, b) => paintZ(a) - paintZ(b)); // zIndex 小(底)先画；Layout 底图先于自身后代
-  for (const { node, rect, visible, clipRect, opacity } of nodes) {
+  const renderNodes = animationPreview
+    ? result.nodes.map((item) => applyAnimationPreview(item, animationPreview, result.scaleX, result.scaleY))
+    : result.nodes;
+  const nodes = [...renderNodes].sort((a, b) => paintZ(a) - paintZ(b)); // zIndex 小(底)先画；Layout 底图先于自身后代
+  for (const { node, rect, visible, clipRect, opacity, rotation } of nodes) {
     if (!visible) continue; // 有效可见性：组隐藏时其后代也不显示
     ctx.save();
     if (clipRect) {
@@ -160,6 +220,12 @@ export function renderUi(ctx: CanvasRenderingContext2D, result: LayoutResult, us
       ctx.clip();
     }
     ctx.globalAlpha = opacity; // 有效透明度：父组 × 自身
+    const angle = rotation ?? node.rotation;
+    if (angle) {
+      ctx.translate(rect.x + rect.width / 2, rect.y + rect.height / 2);
+      ctx.rotate(angle * Math.PI / 180);
+      ctx.translate(-(rect.x + rect.width / 2), -(rect.y + rect.height / 2));
+    }
     if (node.ctrl?.type === "ProgressBar" || node.ctrl?.type === "Slider") {
       renderProgressControlResources(ctx, node, rect, result, useSlice);
     } else {

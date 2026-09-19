@@ -1,7 +1,7 @@
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LayoutEngine, reanchor } from "./layoutEngine";
 import { importPsd } from "./psdImport";
-import { renderOverlay, renderUi } from "./renderer";
+import { renderOverlay, renderUi, type AnimationPreviewState } from "./renderer";
 import { buildExportHtml } from "./exportHtml";
 import { loadUsedHtmlFonts } from "./htmlFonts";
 import { buildEngineJson, createEngineAssetManifest } from "./engineExport";
@@ -40,6 +40,8 @@ import { normalizeLayoutValue, syncNodeLayoutPosition } from "./layoutValues";
 import { clampCanvasZoom, defaultPreviewView, findCanvasHit, panForZoomAtPoint, previewCanvasSizeForWrap } from "./canvasView";
 import ExportTargetPanel, { type ExportTarget } from "./components/ExportTargetPanel";
 import SettingsDialog from "./components/SettingsDialog";
+import AnimationWorkspace from "./components/AnimationWorkspace";
+import { buildAnimationManifest, requestAiAnimation, type AnimationAiResult } from "./animationAi";
 import { Icon } from "./components/Icon";
 import AreaLayout from "./components/AreaLayout";
 import WorkspaceAreaToolbar from "./components/WorkspaceAreaToolbar";
@@ -249,6 +251,10 @@ function cloneNode(n: UINode): UINode {
     nineSliceGroupId: n.nineSliceGroupId,
     progress: n.progress ? { ...n.progress } : undefined,
     list: n.list ? { ...n.list, padding: { ...n.list.padding } } : undefined,
+    animations: n.animations?.map((clip) => ({
+      ...clip,
+      tracks: clip.tracks.map((track) => ({ ...track, keyframes: track.keyframes.map((keyframe) => ({ ...keyframe })) })),
+    })),
     resources,
     children: n.children?.map(cloneNode),
   };
@@ -314,18 +320,20 @@ function buildNamingReference(scene: UIScene, manifest: ReturnType<typeof buildN
 }
 
 // 撤销快照：保存九宫格配置和完整树结构；canvas 引用保持不变，只复制节点配置。
-type Snapshot = Pick<UIScene, "nodes" | "nineSliceCandidates" | "nineSliceGroups" | "useNineSlicePreview">;
+type Snapshot = Pick<UIScene, "nodes" | "nineSliceCandidates" | "nineSliceGroups" | "useNineSlicePreview" | "animationFlows">;
 const snapScene = (s: UIScene): Snapshot => ({
   nodes: s.nodes.map(cloneNode),
   nineSliceCandidates: s.nineSliceCandidates?.map((candidate) => ({ ...candidate, memberNodeIds: [...candidate.memberNodeIds], suggestedMargins: { ...candidate.suggestedMargins } })),
   nineSliceGroups: s.nineSliceGroups?.map((group) => ({ ...group, memberNodeIds: [...group.memberNodeIds], margins: { ...group.margins } })),
   useNineSlicePreview: s.useNineSlicePreview,
+  animationFlows: s.animationFlows?.map((flow) => ({ ...flow, steps: flow.steps.map((step) => ({ ...step })) })),
 });
 const applySnap = (snap: Snapshot): Snapshot => ({
   nodes: snap.nodes.map(cloneNode),
   nineSliceCandidates: snap.nineSliceCandidates?.map((candidate) => ({ ...candidate, memberNodeIds: [...candidate.memberNodeIds], suggestedMargins: { ...candidate.suggestedMargins } })),
   nineSliceGroups: snap.nineSliceGroups?.map((group) => ({ ...group, memberNodeIds: [...group.memberNodeIds], margins: { ...group.margins } })),
   useNineSlicePreview: snap.useNineSlicePreview,
+  animationFlows: snap.animationFlows?.map((flow) => ({ ...flow, steps: flow.steps.map((step) => ({ ...step })) })),
 });
 
 const HISTORY_LIMIT = 50; // 步数不用保留太多
@@ -394,7 +402,7 @@ function areaLayoutStorageKey(path: string | null, name: string): string {
   return `${AREA_LAYOUT_STORAGE_PREFIX}${path ?? `untitled:${name}`}`;
 }
 
-const WORKFLOW_KEYS: Workspace[] = ["controls", "bindings", "slice", "preview", "export"];
+const WORKFLOW_KEYS: Workspace[] = ["controls", "bindings", "slice", "animation", "preview", "export"];
 
 function readWorkspaceLayouts(path: string | null, name: string, workspaceIds: Workspace[] = WORKFLOW_KEYS): Record<Workspace, AreaNode> {
   const defaults = createDefaultWorkspaceLayouts(workspaceIds);
@@ -471,6 +479,10 @@ export default function App() {
   const [uiScale, setUiScale] = useState(readUiScale);
   const [reduceMotion, setReduceMotion] = useState(() => readStoredBoolean(REDUCE_MOTION_STORAGE_KEY, false));
   const [showShortcutHints, setShowShortcutHints] = useState(() => readStoredBoolean(SHOW_SHORTCUT_HINTS_STORAGE_KEY, true));
+  const [animationPreview, setAnimationPreview] = useState<AnimationPreviewState | null>(null);
+  const onAnimationPreviewChange = useCallback((preview: { nodeId: string; clipId: string; time: number; playing: boolean } | null) => {
+    setAnimationPreview(preview ? { nodeId: preview.nodeId, clipId: preview.clipId, time: preview.time } : null);
+  }, []);
 
   const uiRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
@@ -647,7 +659,10 @@ export default function App() {
         canvas.height = areaCtx.viewportHeight * dpr;
         canvas.getContext("2d")!.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
-      renderUi(ui.getContext("2d")!, areaResult, scene.useNineSlicePreview ?? false);
+      const preview = workspace === "animation" && animationPreview
+        ? { nodeId: animationPreview.nodeId, clipId: animationPreview.clipId, time: animationPreview.time }
+        : undefined;
+      renderUi(ui.getContext("2d")!, areaResult, scene.useNineSlicePreview ?? false, preview);
       const isPreview = area.tool === "preview";
       const previewCanEdit = isPreview && previewLayoutMode === "edit";
       renderOverlay(ov.getContext("2d")!, areaResult, areaCtx, {
@@ -656,7 +671,7 @@ export default function App() {
         showGrid: false, showSafeArea, showDesignBorder,
       });
     }
-  }, [areaLayout, editorLayoutCtx, editorResult, previewLayoutCtx, previewResult, previewLayoutMode, scene, selectedId, selectedIds, showSafeArea, showDesignBorder]);
+  }, [animationPreview, areaLayout, editorLayoutCtx, editorResult, previewLayoutCtx, previewResult, previewLayoutMode, scene, selectedId, selectedIds, showSafeArea, showDesignBorder, workspace]);
 
   // 画布 CSS 尺寸：contain 到窗口（切回图层 tab 时重新计算）
   useEffect(() => {
@@ -712,6 +727,54 @@ export default function App() {
     applyScene(mutator(prev));
     setDirty(true);
   }, [applyScene, pushHistory]);
+
+  const generateAiAnimation = useCallback(async (prompt: string, targetNodeIds: string[]): Promise<AnimationAiResult> => {
+    const current = sceneRef.current;
+    if (!current) return { available: false, provider: "local", suggestions: [], warnings: ["当前没有打开的工程"] };
+    const manifest = buildAnimationManifest(current, targetNodeIds);
+    let referenceDataUrl: string | undefined;
+    if (editorResult && editorLayoutCtx && typeof document !== "undefined") {
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(editorLayoutCtx.viewportWidth));
+      canvas.height = Math.max(1, Math.round(editorLayoutCtx.viewportHeight));
+      renderUi(canvas.getContext("2d")!, editorResult, current.useNineSlicePreview ?? false);
+      referenceDataUrl = canvas.toDataURL("image/png");
+    }
+    return requestAiAnimation({ prompt, targetNodeIds, manifest, referenceDataUrl });
+  }, [editorLayoutCtx, editorResult]);
+
+  const applyAiAnimationResult = useCallback((result: AnimationAiResult) => {
+    const current = sceneRef.current;
+    if (!current || !result.suggestions.length) return;
+    const existingClipIds = new Set(walkNodes(current.nodes).flatMap((node) => (node.animations ?? []).map((clip) => clip.id)));
+    const clipIdRemap = new Map<string, string>();
+    let applied = 0;
+    let nextNodes = current.nodes;
+    for (const suggestion of result.suggestions) {
+      const target = walkNodes(nextNodes).find((node) => node.id === suggestion.nodeId);
+      if (!target || target.locked) continue;
+      let clipId = suggestion.clip.id;
+      if (existingClipIds.has(clipId)) clipId = `${clipId}-${Date.now()}-${applied}`;
+      existingClipIds.add(clipId);
+      clipIdRemap.set(suggestion.clip.id, clipId);
+      const clip = { ...suggestion.clip, id: clipId, source: "ai" as const };
+      nextNodes = mapNodes(nextNodes, suggestion.nodeId, (node) => { node.animations = [...(node.animations ?? []), clip]; });
+      applied += 1;
+    }
+    const nextFlow = result.flow && result.flow.steps.length ? {
+      ...result.flow,
+      id: current.animationFlows?.some((flow) => flow.id === result.flow!.id) ? `${result.flow.id}-${Date.now()}` : result.flow.id,
+      steps: result.flow.steps
+        .map((step) => ({ ...step, clipId: clipIdRemap.get(step.clipId) ?? step.clipId }))
+        .filter((step) => clipIdRemap.has(step.clipId) || existingClipIds.has(step.clipId)),
+    } : undefined;
+    mutateScene((sceneValue) => ({
+      ...sceneValue,
+      nodes: nextNodes,
+      ...(nextFlow?.steps.length ? { animationFlows: [...(sceneValue.animationFlows ?? []), nextFlow] } : {}),
+    }));
+    setExportMsg(applied ? `已应用 ${applied} 条 AI 动画建议${nextFlow?.steps.length ? "，并创建 1 个动画流程" : ""}` : "AI 建议未找到可编辑节点");
+  }, [mutateScene]);
 
   const resetHistory = useCallback(() => {
     historyRef.current = [];
@@ -1167,6 +1230,51 @@ export default function App() {
       return { ...s, nodes };
     }, record);
   }, [mutateScene]);
+
+  /** Delete / Backspace：删除当前选中节点，并清理不再有效的辅助数据。 */
+  const deleteSelected = useCallback(() => {
+    const current = sceneRef.current;
+    if (!current) return;
+    const requestedIds = selectedIds.length ? selectedIds : (selectedId ? [selectedId] : []);
+    const selectedNodes = requestedIds
+      .map((id) => walkNodes(current.nodes).find((node) => node.id === id))
+      .filter((node): node is UINode => Boolean(node));
+    if (!selectedNodes.length) {
+      setSelectedIds([]);
+      setSelectedId(null);
+      return;
+    }
+    if (selectedNodes.some((node) => node.locked)) {
+      setExportMsg("删除失败：选中节点中包含已锁定节点");
+      return;
+    }
+    if (selectedNodes.some((node) => isFixedRootNode(current, node, findPath(current.nodes, node.id)))) {
+      setExportMsg("删除失败：根布局节点不能删除");
+      return;
+    }
+
+    const deletedIds = new Set(selectedNodes.map((node) => node.id));
+    const nextNodes = removeNodes(current.nodes, deletedIds);
+    const removedCount = walkNodes(current.nodes).length - walkNodes(nextNodes).length;
+    const nextCandidates = current.nineSliceCandidates?.filter((candidate) => !candidate.memberNodeIds.some((id) => deletedIds.has(id)));
+    const nextGroups = current.nineSliceGroups?.filter((group) => !group.memberNodeIds.some((id) => deletedIds.has(id)));
+    const nextFlows = current.animationFlows
+      ?.map((flow) => ({ ...flow, steps: flow.steps.filter((step) => !deletedIds.has(step.nodeId)) }))
+      .filter((flow) => flow.steps.length > 0);
+    mutateScene((sceneValue) => ({
+      ...sceneValue,
+      nodes: nextNodes,
+      nineSliceCandidates: nextCandidates,
+      nineSliceGroups: nextGroups,
+      animationFlows: nextFlows,
+    }));
+    setSelectedIds([]);
+    setSelectedId(null);
+    setAnimationPreview(null);
+    setTypeMenu(null);
+    setQuickActionMenu(null);
+    setExportMsg(`已删除 ${removedCount} 个节点`);
+  }, [mutateScene, selectedId, selectedIds]);
 
   /** 控件类型标签 */
   const setCtrl = useCallback((id: string, type: CtrlType | null, namingMode: "plain" | "quick" = "plain") => {
@@ -1810,7 +1918,7 @@ export default function App() {
         closeProject();
         return;
       }
-      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable)) return;
       if (e.key === "Escape" && typeMenu) {
         e.preventDefault();
         setTypeMenu(null);
@@ -1871,6 +1979,11 @@ export default function App() {
         }
         return;
       }
+      if (!e.ctrlKey && !e.metaKey && !e.altKey && (e.key === "Backspace" || e.key === "Delete")) {
+        e.preventDefault();
+        deleteSelected();
+        return;
+      }
       // 方向键微调选中图层位置（Shift=10px，默认1px）
       if (!selectedId) return;
       const step = e.shiftKey ? 10 : 1;
@@ -1885,7 +1998,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [importProgress, undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, openSavedProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject, activeAreaTool]);
+  }, [importProgress, undo, redo, selectedId, selectedIds, typeMenu, quickActionMenu, updateSelected, saveCurrentProject, openSavedProject, bindResources, groupSelected, ungroupSelected, moveSelectedLayer, beginRenameSelected, closeProject, activeAreaTool, deleteSelected]);
 
   // 命中检测 + 拖动；普通拖动只改 offset，四角拖动用于调整控件尺寸。
   const toLogical = (clientX: number, clientY: number, areaId = activeAreaId, mode: "editor" | "preview" = "editor") => {
@@ -2235,6 +2348,19 @@ export default function App() {
       toolContent = <NineSliceCandidatesTool />;
     } else if (tool === "slice-marker") {
       toolContent = <NineSliceMarkerTool />;
+    } else if (tool === "animation") {
+      const animationNode = selectedId ? walkNodes(scene?.nodes ?? []).find((node) => node.id === selectedId) ?? null : null;
+      toolContent = <AnimationWorkspace node={animationNode}
+        nodes={scene?.nodes ?? []}
+        onAnimations={(animations) => {
+          if (!animationNode) return;
+          updateNode(animationNode.id, (node) => { node.animations = animations; });
+        }}
+        animationFlows={scene?.animationFlows ?? []}
+        onAnimationFlows={(animationFlows) => mutateScene((sceneValue) => ({ ...sceneValue, animationFlows }))}
+        onAiGenerate={generateAiAnimation}
+        onApplyAiResult={applyAiAnimationResult}
+        onPreviewChange={onAnimationPreviewChange} />;
     } else if (tool === "preview") {
       const previewCanvasArea = <div className="preview-canvas-wrap preview-workspace-canvas" ref={(value) => setAreaCanvasRef(area.id, "previewWrap", value)} onWheel={(event) => onPreviewWheel(event, area.id)}
         onPointerDown={(event) => previewLayoutMode === "edit" ? onPreviewEditPointerDown(event, area.id) : onPreviewPointerDown(event, area.id)}
@@ -2393,7 +2519,7 @@ export default function App() {
           <section className="help-dialog" role="dialog" aria-modal="true" aria-label={helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}>
             <header className="help-dialog-head"><div><span className="workspace-kicker">UI2HTML</span><h2>{helpDialog === "shortcuts" ? "快捷键说明" : "关于 UI2HTML"}</h2></div><button className="icon-btn" onClick={() => setHelpDialog(null)} aria-label="关闭"><Icon name="close" size={16} /></button></header>
             {helpDialog === "shortcuts" ? <div className="shortcut-grid">
-              {["Ctrl+S|打开工程操作菜单", "Ctrl+O|打开工程", "Ctrl+W|关闭当前工程", "Ctrl+Z|撤销", "Ctrl+X|重做", "F2|重命名节点", "T|转换控件类型", "Ctrl+G|打组", "Alt+G|取消打组", "Ctrl+[ / Ctrl+]|调整层级", "Ctrl+B|绑定资源 / 确认完成", "Ctrl+0|恢复最佳窗口预览大小"].map((item) => { const [key, label] = item.split("|"); return <div className="shortcut-row" key={key}><kbd>{key}</kbd><span>{label}</span></div>; })}
+              {["Ctrl+S|打开工程操作菜单", "Ctrl+O|打开工程", "Ctrl+W|关闭当前工程", "Ctrl+Z|撤销", "Ctrl+X|重做", "F2|重命名节点", "T|转换控件类型", "Backspace / Delete|删除选中节点", "Ctrl+G|打组", "Alt+G|取消打组", "Ctrl+[ / Ctrl+]|调整层级", "Ctrl+B|绑定资源 / 确认完成", "Ctrl+0|恢复最佳窗口预览大小"].map((item) => { const [key, label] = item.split("|"); return <div className="shortcut-row" key={key}><kbd>{key}</kbd><span>{label}</span></div>; })}
             </div> : <div className="about-copy"><strong>UI2HTML</strong><p>面向 UI 美术的 PSD 导入、工程整理、视觉检查与自研引擎 JSON 转换工具。</p><small>工程与 PSD 解耦 · 资源可追溯 · 预览优先</small></div>}
             <footer className="help-dialog-foot"><button className="btn primary" onClick={() => setHelpDialog(null)}>知道了</button></footer>
           </section>

@@ -1,9 +1,9 @@
-import type { ImageBinding, InteractionTemplate, NineSliceCandidate, NineSliceGroup, ProjectAnalysis, ResourceSlot, ScaleMode, UIScene, UINode } from "./types";
+import type { AnimationClip, AnimationFlow, ImageBinding, InteractionTemplate, NineSliceCandidate, NineSliceGroup, ProjectAnalysis, ResourceSlot, ScaleMode, UIScene, UINode } from "./types";
 import { ensureRootLayout } from "./layoutValues";
 import { generateNineSliceImage } from "./nineSlice";
 
-/** 独立 UI 工程格式。版本 3 起不再保存 PSD 图层身份或依赖 PSD 重新挂载图片。版本 4 增加布局表达式和九宫格生成资源。 */
-export const SCENE_PERSISTENCE_VERSION = 4;
+/** 独立 UI 工程格式。版本 3 起不再保存 PSD 图层身份或依赖 PSD 重新挂载图片；版本 4 增加布局表达式和九宫格生成资源；版本 5 增加动画片段与流程。 */
+export const SCENE_PERSISTENCE_VERSION = 5;
 
 export interface SavedImageBinding {
   id: string;
@@ -30,6 +30,7 @@ export interface SavedNode {
   ctrl?: UINode["ctrl"];
   resources?: Partial<Record<ResourceSlot, SavedImageBinding>>;
   resourceBindingComplete?: boolean;
+  animations?: AnimationClip[];
   designRect: UINode["designRect"];
   layout?: UINode["layout"];
   anchor: UINode["anchor"];
@@ -57,6 +58,7 @@ export interface SavedScene {
   designHeight: number;
   nodes: SavedNode[];
   templates: InteractionTemplate[];
+  animationFlows?: AnimationFlow[];
   view: SavedProjectView;
   nineSliceCandidates?: NineSliceCandidate[];
   nineSliceGroups?: NineSliceGroup[];
@@ -79,6 +81,10 @@ function serializeNode(node: UINode, includeResources = true): SavedNode {
     ...(node.nineSliceGroupId ? { nineSliceGroupId: node.nineSliceGroupId } : {}),
     ...(node.ctrl ? { ctrl: { ...node.ctrl } } : {}),
     ...(node.resourceBindingComplete ? { resourceBindingComplete: true } : {}),
+    ...(node.animations?.length ? { animations: node.animations.map((clip) => ({
+      ...clip,
+      tracks: clip.tracks.map((track) => ({ ...track, keyframes: track.keyframes.map((keyframe) => ({ ...keyframe })) })),
+    })) } : {}),
     designRect: { ...node.designRect },
     ...(node.layout ? { layout: {
       x: { ...node.layout.x }, y: { ...node.layout.y },
@@ -127,6 +133,10 @@ export function serializeScene(scene: UIScene, view: SavedProjectView = defaultP
     designHeight: scene.designHeight,
     nodes: scene.nodes.map((node) => serializeNode(node)),
     templates: scene.interactionTemplates ?? [],
+    ...(scene.animationFlows?.length ? { animationFlows: scene.animationFlows.map((flow) => ({
+      ...flow,
+      steps: flow.steps.map((step) => ({ ...step })),
+    })) } : {}),
     // 设计画布边界是编辑器会话状态，明确剔除旧版本可能传入的字段。
     view: {
       viewport: { ...view.viewport },
@@ -197,6 +207,10 @@ function hydrateNode(saved: SavedNode, assets: Map<string, HTMLCanvasElement>, m
     ...(saved.nineSliceGroupId ? { nineSliceGroupId: saved.nineSliceGroupId } : {}),
     ...(saved.ctrl ? { ctrl: { ...saved.ctrl } } : {}),
     ...(saved.resourceBindingComplete ? { resourceBindingComplete: true } : {}),
+    ...(saved.animations?.length ? { animations: saved.animations.map((clip) => ({
+      ...clip,
+      tracks: clip.tracks.map((track) => ({ ...track, keyframes: track.keyframes.map((keyframe) => ({ ...keyframe })) })),
+    })) } : {}),
     ...(resources.length ? { resources: Object.fromEntries(resources) as UINode["resources"] } : {}),
     designRect: { ...saved.designRect },
     ...(saved.layout ? { layout: {
@@ -255,7 +269,7 @@ function applyNineSliceRuntime(nodes: UINode[], groups: NineSliceGroup[], assets
 
 /** 从 `.ui.json` 和同名 `.assets` 中恢复场景。 */
 export function restoreSceneSnapshot(saved: SavedScene, assets: Map<string, HTMLCanvasElement>): { scene: UIScene; missingAssets: string[] } {
-  if (saved.schemaVersion !== 3 && saved.schemaVersion !== SCENE_PERSISTENCE_VERSION) {
+  if (saved.schemaVersion !== 3 && saved.schemaVersion !== 4 && saved.schemaVersion !== SCENE_PERSISTENCE_VERSION) {
     throw new Error(`不支持的工程版本：${String(saved.schemaVersion)}，当前版本为 ${SCENE_PERSISTENCE_VERSION}`);
   }
   const missingAssets: string[] = [];
@@ -277,6 +291,10 @@ export function restoreSceneSnapshot(saved: SavedScene, assets: Map<string, HTML
       designHeight: saved.designHeight,
       nodes,
       interactionTemplates: saved.templates ?? [],
+      ...(saved.animationFlows?.length ? { animationFlows: saved.animationFlows.map((flow) => ({
+        ...flow,
+        steps: flow.steps.map((step) => ({ ...step })),
+      })) } : {}),
       sliceSources: [],
       nineSliceCandidates: saved.nineSliceCandidates?.map((item) => ({
         ...item,

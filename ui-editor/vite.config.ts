@@ -305,6 +305,49 @@ async function runCodexNaming(manifest: unknown, referenceDataUrl?: string): Pro
   }
 }
 
+async function runCodexAnimation(input: { prompt: string; manifest: unknown; referenceDataUrl?: string }): Promise<{ available: boolean; result?: unknown; message?: string }> {
+  const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "ui-editor-animation-ai-"));
+  const outputPath = path.join(temporaryDirectory, "result.txt");
+  const imagePath = path.join(temporaryDirectory, "reference.png");
+  try {
+    if (input.referenceDataUrl) {
+      const match = /^data:image\/png;base64,(.+)$/s.exec(input.referenceDataUrl);
+      if (match) fs.writeFileSync(imagePath, Buffer.from(match[1], "base64"));
+    }
+    const prompt = [
+      "你是 UI2HTML 的动画设计助手。只返回 JSON，不修改任何文件。",
+      "根据 UI 场景结构数据、效果参考图和用户提示词，生成可审查的视觉动画关键帧。",
+      "只允许修改动画片段与动画流程，不得修改节点层级、控件类型、资源绑定或目标引擎业务逻辑。",
+      "必须使用 manifest 中存在的 node id；可以为每个节点生成新的 clip，不要覆盖已有 clip。",
+      "优先使用 effectLibrary 中列出的效果；需要手工关键帧时只使用 x、y、scaleX、scaleY、rotation、opacity、width、height。",
+      "文本和界面上的数值只代表视觉示意，不要把它们当成真实业务数据。",
+      "严格返回：{\"suggestions\":[{\"id\":\"...\",\"nodeId\":\"...\",\"confidence\":0.0,\"reason\":\"...\",\"clip\":{\"id\":\"...\",\"name\":\"...\",\"duration\":0.5,\"delay\":0,\"loop\":1,\"direction\":\"normal\",\"autoPlay\":false,\"tracks\":[{\"property\":\"opacity\",\"keyframes\":[{\"time\":0,\"value\":0},{\"time\":0.5,\"value\":1}]}],\"source\":\"ai\",\"effectId\":\"fade-in\",\"effectVersion\":\"...\",\"effectLicense\":\"...\"}}],\"flow\":{\"id\":\"...\",\"name\":\"...\",\"duration\":1,\"trigger\":\"onShow\",\"steps\":[{\"id\":\"...\",\"nodeId\":\"...\",\"clipId\":\"...\",\"start\":0}]},\"warnings\":[]}。没有流程时可省略 flow。不要返回 Markdown 或额外解释。",
+      "用户提示词：" + input.prompt,
+      "场景 manifest：" + JSON.stringify(input.manifest),
+    ].join("\n");
+    const windowsNpmDirectory = process.env.APPDATA ? path.join(process.env.APPDATA, "npm") : "";
+    const windowsCodexJs = windowsNpmDirectory ? path.join(windowsNpmDirectory, "node_modules", "@openai", "codex", "bin", "codex.js") : "";
+    const useDirectNode = process.platform === "win32" && Boolean(windowsCodexJs) && fs.existsSync(windowsCodexJs);
+    const command = useDirectNode ? process.execPath : "codex";
+    await new Promise<void>((resolve, reject) => {
+      const args = [...(useDirectNode ? [windowsCodexJs] : []), "exec", "--ephemeral", "--sandbox", "read-only", "--output-last-message", outputPath];
+      if (fs.existsSync(imagePath)) args.push("--image", imagePath);
+      args.push("-");
+      const child = execFile(command, args, { windowsHide: true, encoding: "utf8", timeout: 180000, maxBuffer: 8 * 1024 * 1024 }, (error, stdout, stderr) => {
+        if (error) reject(new Error(stderr.trim() || stdout.trim() || error.message));
+        else resolve();
+      });
+      child.stdin?.end(prompt);
+    });
+    const output = fs.existsSync(outputPath) ? fs.readFileSync(outputPath, "utf8") : "";
+    return { available: true, result: parseAiJson(output) };
+  } catch (error) {
+    return { available: false, message: error instanceof Error ? error.message : String(error) };
+  } finally {
+    fs.rmSync(temporaryDirectory, { recursive: true, force: true });
+  }
+}
+
 export default defineConfig({
   // 桌面壳和网页版通过此响应头确认自己连接的是当前 UI2HTML 开发服务，
   // 避免 5173 被遗留的 Vite/网页服务占用时加载到错误的前端。
@@ -327,6 +370,19 @@ export default defineConfig({
               return sendJson(res, { available: false, message: "没有可分析的节点" });
             }
             const result = await runCodexNaming(body.manifest ?? {}, body.referenceDataUrl);
+            sendJson(res, result);
+          } catch (error) {
+            sendJson(res, { available: false, message: error instanceof Error ? error.message : String(error) });
+          }
+        });
+        server.middlewares.use("/api/ai/animation", async (req: MiddlewareRequest, res: MiddlewareResponse) => {
+          if (req.method !== "POST") { res.statusCode = 405; return res.end("Method Not Allowed"); }
+          try {
+            const body = JSON.parse(await readBody(req)) as { prompt?: string; manifest?: unknown; referenceDataUrl?: string };
+            if (!body.prompt?.trim() || !body.manifest || typeof body.manifest !== "object") {
+              return sendJson(res, { available: false, message: "动画提示词或场景数据为空" });
+            }
+            const result = await runCodexAnimation({ prompt: body.prompt.trim(), manifest: body.manifest, referenceDataUrl: body.referenceDataUrl });
             sendJson(res, result);
           } catch (error) {
             sendJson(res, { available: false, message: error instanceof Error ? error.message : String(error) });

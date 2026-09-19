@@ -1,5 +1,5 @@
 /** 顶部流程工作区；与区域内可切换的 AreaTool 不是同一层概念。 */
-export type BuiltInWorkspace = "controls" | "bindings" | "slice" | "preview" | "export";
+export type BuiltInWorkspace = "controls" | "bindings" | "slice" | "animation" | "preview" | "export";
 /** 自定义工作区使用稳定的字符串 id，布局只属于编辑器本地偏好。 */
 export type Workspace = string;
 export type Workflow = Workspace;
@@ -12,6 +12,7 @@ export const WORKFLOW_OPTIONS: WorkspaceOption[] = [
   { value: "controls", label: "层级", builtIn: true },
   { value: "bindings", label: "资源绑定", builtIn: true },
   { value: "slice", label: "九宫格", builtIn: true },
+  { value: "animation", label: "动画", builtIn: true },
   { value: "preview", label: "预览", builtIn: true },
   { value: "export", label: "导出", builtIn: true },
 ];

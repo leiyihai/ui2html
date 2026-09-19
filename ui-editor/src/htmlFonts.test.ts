@@ -50,4 +50,17 @@ describe("HTML export font assets", () => {
     expect(html).toContain("var FONT_READY");
     expect(html).toContain("FONT_READY.then(draw);");
   });
+
+  it("embeds stable node ids and animation data for downstream tooling", () => {
+    const scene = sceneWithFonts([undefined]);
+    scene.nodes[0].animations = [{
+      id: "clip-1", name: "入场", duration: 0.3, delay: 0, loop: 1, direction: "normal", autoPlay: false,
+      tracks: [{ property: "opacity", keyframes: [{ time: 0, value: 0 }, { time: 0.3, value: 1 }] }], source: "manual",
+    }];
+    scene.animationFlows = [{ id: "flow-1", name: "展示", duration: 0.3, trigger: "onShow", steps: [{ id: "step-1", nodeId: "text-0", clipId: "clip-1", start: 0 }] }];
+    const html = buildExportHtml(scene, "contain", { left: 0, right: 0, top: 0, bottom: 0 });
+    expect(html).toContain('"id":"text-0"');
+    expect(html).toContain('"id":"clip-1"');
+    expect(html).toContain('"animationFlows"');
+  });
 });
